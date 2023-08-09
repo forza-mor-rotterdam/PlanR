@@ -14,15 +14,25 @@
                 <h1 class="page-title">Meldingen</h1>
                 <span class="help-text">{{ startNum }} - {{ endNum }} van {{ totaal }} resultaten</span>
             </div>
-
-            <div class="container__filter" data-controller="filter">
-                <label class="visually-hidden">Locatie</label>
-                <div class="container__multiselect">
-                    <button class="toggle" data-action="filter#onToggleShow" type="button">Kies locatie(s) ({{locaties_geselecteerd}}/{{filter_options.begraafplaats|length}})</button>
-                    <div class="wrapper">
-                        {{ form.begraafplaats|render_rotterdam_formulier }}
-                        {{ form.ordering|render_rotterdam_formulier }}
-                        {{ form.limit|render_rotterdam_formulier }}
+            <div class="container__tools">
+                <div class="container__filter" data-controller="filter" data-filter-target="filterOverview">
+                    <div class="container__multiselect">
+                        <label class="visually-hidden">Locatie</label>
+                        <button class="toggle js-toggle" type="button">Selecteer locatie ({{locaties_geselecteerd}}/{{filter_options.begraafplaats|length}})</button>
+                        <div class="wrapper">
+                            {{ form.begraafplaats|render_rotterdam_formulier }}
+                            {{ form.ordering|render_rotterdam_formulier }}
+                            {{ form.limit|render_rotterdam_formulier }}
+                        </div>
+                    </div>
+                    <div class="container__multiselect">
+                        <label class="visually-hidden">Status</label>
+                        <button class="toggle js-toggle" type="button">Selecteer status ({{statussen_geselecteerd}}/{{filter_options.status|length}})</button>
+                        <div class="wrapper">
+                            {{ form.status|render_rotterdam_formulier }}
+                            {{ form.ordering|render_rotterdam_formulier }}
+                            {{ form.limit|render_rotterdam_formulier }}
+                        </div>
                     </div>
                 </div>
                 <a href="{{ melding_aanmaken_url }}" class="btn btn-action">
