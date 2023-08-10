@@ -63,7 +63,8 @@
                             <th class="sorting {{ GET|heeft_orden_oplopend:'locaties__vak' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'locaties__vak' }}" role="button">Vak</a></th>
                             <th>Categorie</th>
                             <th class="sorting {{ GET|heeft_orden_oplopend:'origineel_aangemaakt' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'origineel_aangemaakt' }}" role="button">Datum</a></th>
-                            <th class="sorting {{ GET|heeft_orden_oplopend:'afgesloten_op' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'afgesloten_op' }}" role="button">Status</a></th>
+                            {% comment %} <th class="sorting {{ GET|heeft_orden_oplopend:'afgesloten_op' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'afgesloten_op' }}" role="button">Status</a></th> {% endcomment %}
+                            <th>Status</th>
                             <th></th>
                         </tr>
                     </thead>
