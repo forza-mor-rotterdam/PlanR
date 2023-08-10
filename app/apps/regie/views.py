@@ -75,6 +75,7 @@ def overview(request):
 
     locaties_geselecteerd = len(query_dict.getlist("begraafplaats"))
     statussen_geselecteerd = len(query_dict.getlist("status"))
+    onderwerpen_geselecteerd = len(query_dict.getlist("onderwerp"))
 
     begraafplaatsen = [
         [k, f"{v[0]}"]
@@ -86,11 +87,17 @@ def overview(request):
         for k, v in data.get("filter_options", {}).get("status", {}).items()
     ]
 
+    onderwerpen = [
+        [k, f"{v[0]}"]
+        for k, v in data.get("filter_options", {}).get("onderwerp", {}).items()
+    ]
+
     form = FilterForm(
         query_dict,
         offset_options=offset_options,
         locatie_opties=begraafplaatsen,
         status_opties=statussen,
+        onderwerp_opties=onderwerpen,
     )
 
     filter_form_data = copy.deepcopy(standaard_waardes)
@@ -128,6 +135,7 @@ def overview(request):
             "form": form,
             "locaties_geselecteerd": locaties_geselecteerd,
             "statussen_geselecteerd": statussen_geselecteerd,
+            "onderwerpen_geselecteerd": onderwerpen_geselecteerd,
             "filter_options": data.get("filter_options", {}),
             "melding_aanmaken_url": melding_aanmaken_url,
         },
