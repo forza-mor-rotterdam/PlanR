@@ -205,10 +205,7 @@
             </p>
             {% endif %}
         </div>
-
     </div>
-
-
 
     {% elif field|is_textarea %}
         <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}">
@@ -219,8 +216,8 @@
                 <label class="{% if field.field.required %}{{ form.required_css_class }}{% endif %}" for="{{ field.auto_id }}">{{ field.label }}{% if not field.field.required %} <small>(Niet verplicht)</small>{% endif %}</label>
             {% endif %}
             <div>
-                <textarea id="{{ field.auto_id }}" class="form-control {% if field.errors %}is-invalid{% endif %}" rows="4" name="{{field.html_name}}" {% render_attrs field %} >{% if field.value %}{{ field.value }}{% endif %}</textarea>
-
+                <textarea id="{{ field.auto_id }}" class="form-control {% if field.errors %}is-invalid{% endif %}" rows="4" name="{{field.html_name}}" {% render_attrs field %} {% if field.field.required %}required{% endif %}>{% if field.value %}{{ field.value }}{% endif %}</textarea>
+                <p class="help-block invalid-text" style="margin:0;"></p>
                 {% for error in field.errors %}
                     <p class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</p>
                 {% endfor %}

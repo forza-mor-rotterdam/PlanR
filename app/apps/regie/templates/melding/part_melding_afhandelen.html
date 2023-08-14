@@ -40,27 +40,22 @@
                             data-meldingbehandelformulier-standaardafhandelteksten-value="{{standaard_afhandel_teksten|json_encode}}"
                             data-turbo-frame="_top"
                             enctype="multipart/form-data"
+                            id="afhandelForm"
+                            novalidate
                         >
 
                             {% csrf_token %}
 
-                            {% comment %} {{ form.status|render_rotterdam_formulier }} {% endcomment %}
-
-
-
-                            <div class="form-control__with-helptext">
+                            <div class="form-control__with-helptext js-validation">
                                 {{ form.omschrijving_intern|render_rotterdam_formulier }}
                             </div>
 
                             {% if melding.meta.terugkoppeling_gewenst == "Ja" and melding.meta.email_melder %}
-                                <div class="form-control__with-helptext">
+                                <div class="form-control__with-helptext js-validation">
                                     {{ form.omschrijving_extern|render_rotterdam_formulier }}
                                 </div>
                             {% endif %}
 
-                            {% comment %} {% if form.bijlagen %}
-                                {{ form.bijlagen|render_rotterdam_formulier }}
-                            {% endif %} {% endcomment %}
                             <div class="form-row btn-row">
                                 <button
                                     type="reset"
