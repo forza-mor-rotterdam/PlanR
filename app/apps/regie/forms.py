@@ -225,7 +225,7 @@ class MeldingAfhandelenForm(forms.Form):
                 "data-meldingbehandelformulier-target": "externalText",
             }
         ),
-        required=False,
+        required=True,
     )
 
     omschrijving_intern = forms.CharField(
