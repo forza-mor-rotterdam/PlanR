@@ -335,8 +335,8 @@ OPENID_CONFIG_URI = os.getenv(
 OPENID_CONFIG = {}
 try:
     OPENID_CONFIG = requests.get(OPENID_CONFIG_URI).json()
-except requests.exceptions.ConnectionError as e:
-    logger.error(f"OPENID_CONFIG FOUT, url: {OPENID_CONFIG_URI}, error: {e}")
+except Exception as e:
+    logger.warning(f"OPENID_CONFIG FOUT, url: {OPENID_CONFIG_URI}, error: {e}")
 
 OIDC_OP_AUTHORIZATION_ENDPOINT = os.getenv(
     "OIDC_OP_AUTHORIZATION_ENDPOINT", OPENID_CONFIG.get("authorization_endpoint")
@@ -366,9 +366,11 @@ if OIDC_OP_JWKS_ENDPOINT:
     OIDC_RP_SIGN_ALGO = "RS256"
 
 AUTHENTICATION_BACKENDS = [
-    "apps.authenticatie.auth.OIDCAuthenticationBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
+if OPENID_CONFIG_URI and OIDC_RP_CLIENT_ID:
+    AUTHENTICATION_BACKENDS.append("apps.authenticatie.auth.OIDCAuthenticationBackend")
+
 OIDC_OP_LOGOUT_URL_METHOD = "apps.authenticatie.views.provider_logout"
 ALLOW_LOGOUT_GET_METHOD = True
 OIDC_STORE_ID_TOKEN = True

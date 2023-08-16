@@ -1,7 +1,10 @@
 from urllib.parse import urlparse
 
 import requests
-from apps.meldingen.utils import get_meldingen_token
+from django.conf import settings
+from django.core.cache import cache
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from requests import Request, Response
 
 
@@ -16,8 +19,11 @@ class MeldingenService:
     class AntwoordFout(Exception):
         ...
 
-    def __init__(self, api_base_url: str, *args, **kwargs: dict):
-        self._api_base_url = api_base_url.strip().rstrip("/")
+    class DataOphalenFout(Exception):
+        ...
+
+    def __init__(self, *args, **kwargs: dict):
+        self._api_base_url = settings.MELDINGEN_URL
         super().__init__(*args, **kwargs)
 
     def get_url(self, url):
@@ -30,8 +36,35 @@ class MeldingenService:
             f"url: {url}, basis_url: {self._api_base_url}"
         )
 
+    def haal_token(self):
+        meldingen_token = cache.get("meldingen_token2")
+        if not meldingen_token:
+            email = settings.MELDINGEN_USERNAME
+            try:
+                validate_email(email)
+            except ValidationError:
+                email = f"{settings.MELDINGEN_USERNAME}@forzamor.nl"
+            token_response = requests.post(
+                settings.MELDINGEN_TOKEN_API,
+                json={
+                    "username": email,
+                    "password": settings.MELDINGEN_PASSWORD,
+                },
+            )
+            if token_response.status_code == 200:
+                meldingen_token = token_response.json().get("token")
+                cache.set(
+                    "meldingen_token", meldingen_token, settings.MELDINGEN_TOKEN_TIMEOUT
+                )
+            else:
+                raise MeldingenService.DataOphalenFout(
+                    f"status code: {token_response.status_code}, response text: {token_response.text}"
+                )
+
+        return meldingen_token
+
     def get_headers(self):
-        headers = {"Authorization": f"Token {get_meldingen_token()}"}
+        headers = {"Authorization": f"Token {self.haal_token()}"}
         return headers
 
     def do_request(self, url, method="get", data={}, raw_response=True):
