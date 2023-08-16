@@ -103,7 +103,7 @@
                         {% if melding.bijlagen|length > 0 or bijlagen_extra|length != 0 %}
                         <ul class="list-clean">
                             {% for bijlage in melding.bijlagen %}
-                            <li class="container__image" id="{{ bijlage.afbeelding_relative_url }}">
+                            <li class="container__image">
                                 <div class="image">
                                     <img src="{{bijlage.afbeelding_relative_url}}" alt=""/>
                                     <span>Foto van melder</span>
@@ -111,7 +111,7 @@
                             </li>
                             {% endfor %}
                             {% for b in bijlagen_extra %}
-                            <li class="container__image" id="{{ b.afbeelding_relative_url }}">
+                            <li class="container__image">
                                 <div class="image">
                                     <img src="{{b.afbeelding_relative_url}}" alt=""/>
                                     <span>Foto toegevoegd door medewerker</span>

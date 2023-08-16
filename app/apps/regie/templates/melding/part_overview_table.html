@@ -30,8 +30,6 @@
                         <button class="toggle js-toggle" type="button">Selecteer status ({{statussen_geselecteerd}}/{{filter_options.status|length}})</button>
                         <div class="wrapper">
                             {{ form.status|render_rotterdam_formulier }}
-                            {{ form.ordering|render_rotterdam_formulier }}
-                            {{ form.limit|render_rotterdam_formulier }}
                         </div>
                     </div>
                     <div class="container__multiselect">
@@ -39,8 +37,6 @@
                         <button class="toggle js-toggle" type="button">Selecteer categorie ({{onderwerpen_geselecteerd}}/{{filter_options.onderwerp|length}})</button>
                         <div class="wrapper">
                             {{ form.onderwerp|render_rotterdam_formulier }}
-                            {{ form.ordering|render_rotterdam_formulier }}
-                            {{ form.limit|render_rotterdam_formulier }}
                         </div>
                     </div>
                 </div>
