@@ -53,14 +53,14 @@
                                 style="width: calc(100% * {{ bijlagen_aantal|add:bijlagen_extra_aantal }})"
                             >
                                 {% for bijlage in melding.bijlagen %}
-                                <li class="container__image" id="{{ bijlage.afbeelding_relative_url }}">
+                                <li class="container__image" tabindex="0">
                                     <div class="image" style="background-image: url('{{bijlage.afbeelding_relative_url}}')" data-detail-target="selectedImage">
                                         <span>Foto van melder</span>
                                     </div>
                                 </li>
                                 {% endfor %}
                                 {% for b in bijlagen_extra reversed %}
-                                <li class="container__image" id="{{ b.afbeelding_relative_url }}">
+                                <li class="container__image" tabindex="0">
                                     <div class="image" style="background-image: url('{{b.afbeelding_relative_url}}')" data-detail-target="selectedImage">
                                         <span>Foto toegevoegd door medewerker</span>
                                     </div>
@@ -72,19 +72,21 @@
                             <div class="container__thumbs">
                                 <ul data-detail-target="thumbList">
                                     {% for bijlage in melding.bijlagen %}
-                                    <li data-action="click->detail#selectImage"
-                                        data-detail-image-index-param="{{ forloop.counter }}">
-                                        <div class="container__image">
-                                            <div class="image" style="background-image:url('{{bijlage.afbeelding_verkleind_relative_url}}');"></div>
-                                        </div>
+                                    <li>
+                                        <button data-action="click->detail#selectImage" data-detail-image-index-param="{{ forloop.counter }}" aria-label="Bekijk afbeelding">
+                                            <div class="container__image">
+                                                <div class="image" style="background-image:url('{{bijlage.afbeelding_verkleind_relative_url}}');"></div>
+                                            </div>
+                                        </button>
                                     </li>
                                     {% endfor %}
                                     {% for b in bijlagen_extra reversed %}
-                                    <li data-action="click->detail#selectImage"
-                                        data-detail-image-index-param="{{ forloop.counter|add:bijlagen_aantal }}">
-                                        <div class="container__image">
-                                            <div class="image" style="background-image:url('{{b.afbeelding_verkleind_relative_url}}');"></div>
-                                        </div>
+                                    <li>
+                                        <button data-action="click->detail#selectImage" data-detail-image-index-param="{{ forloop.counter|add:bijlagen_aantal }}" aria-label="Bekijk afbeelding">
+                                            <div class="container__image">
+                                                <div class="image" style="background-image:url('{{b.afbeelding_verkleind_relative_url}}');"></div>
+                                            </div>
+                                        </button>
                                     </li>
                                     {% endfor %}
                                 </ul>
