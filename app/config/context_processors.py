@@ -1,6 +1,5 @@
 import logging
 
-import jwt
 from django.conf import settings
 from django.urls import reverse
 from utils.diversen import absolute
@@ -9,12 +8,12 @@ logger = logging.getLogger(__name__)
 
 
 def general_settings(context):
-    oidc_id_token = context.session.get("oidc_id_token")
-    token_decoded = {}
-    try:
-        token_decoded = jwt.decode(oidc_id_token, options={"verify_signature": False})
-    except Exception:
-        logger.error("oidc_id_token is niet valide")
+    session_expiry_max_timestamp = context.session.get("_session_init_timestamp_", 0)
+    if session_expiry_max_timestamp:
+        session_expiry_max_timestamp += settings.SESSION_EXPIRE_MAXIMUM_SECONDS
+    session_expiry_timestamp = context.session.get("_session_current_timestamp_", 0)
+    if session_expiry_timestamp:
+        session_expiry_timestamp += settings.SESSION_EXPIRE_SECONDS
 
     return {
         "MELDINGEN_URL": settings.MELDINGEN_URL,
@@ -23,8 +22,8 @@ def general_settings(context):
         "CHECK_SESSION_IFRAME": settings.CHECK_SESSION_IFRAME,
         "GET": context.GET,
         "ABSOLUTE_ROOT": absolute(context).get("ABSOLUTE_ROOT"),
-        "OIDC_RP_CLIENT_ID": settings.OIDC_RP_CLIENT_ID,
-        "SESSION_STATE": token_decoded.get("session_state"),
+        "SESSION_EXPIRY_MAX_TIMESTAMP": session_expiry_max_timestamp,
+        "SESSION_EXPIRY_TIMESTAMP": session_expiry_timestamp,
         "LOGOUT_URL": reverse("oidc_logout"),
         "LOGIN_URL": f"{reverse('oidc_authentication_init')}?next={absolute(context).get('FULL_URL')}",
     }
