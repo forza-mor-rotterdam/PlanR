@@ -373,6 +373,13 @@ section {
 .display--flex {
     display: flex;
 }
+
+.display--flex--md {
+    @media (min-width: map-get($grid-breakpoints, md)) {
+        display: flex;
+    }
+}
+
 .display--flex--center {
     display: flex;
     align-items: center;
