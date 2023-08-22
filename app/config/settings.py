@@ -65,6 +65,7 @@ MIDDLEWARE = (
     "django_permissions_policy.PermissionsPolicyMiddleware",
     "csp.middleware.CSPMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django_session_timeout.middleware.SessionTimeoutMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -196,8 +197,8 @@ SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_NAME = "__Secure-sessionid" if not DEBUG else "sessionid"
 CSRF_COOKIE_NAME = "__Secure-csrftoken" if not DEBUG else "csrftoken"
-SESSION_COOKIE_SAMESITE = "Strict" if not DEBUG else "Lax"
-CSRF_COOKIE_SAMESITE = "Strict" if not DEBUG else "Lax"
+SESSION_COOKIE_SAMESITE = "Lax" # Strict does not work well together with OIDC
+CSRF_COOKIE_SAMESITE = "Lax" # Strict does not work well together with OIDC
 
 # Settings for Content-Security-Policy header
 CSP_DEFAULT_SRC = ("'self'",)
@@ -256,7 +257,21 @@ CACHES = {
     }
 }
 
+
+# Sessions are managed by django-session-timeout-joinup
+# Django session settings
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Session settings for django-session-timeout-joinup
+SESSION_EXPIRE_MAXIMUM_SECONDS = int(
+    os.getenv("SESSION_EXPIRE_MAXIMUM_SECONDS", "28800")
+)
+SESSION_EXPIRE_SECONDS = int(os.getenv("SESSION_EXPIRE_SECONDS", "3600"))
+SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD = int(
+    os.getenv("SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD", "1800")
+)
+
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = os.getenv("EMAIL_HOST")
@@ -335,8 +350,8 @@ OPENID_CONFIG_URI = os.getenv(
 OPENID_CONFIG = {}
 try:
     OPENID_CONFIG = requests.get(OPENID_CONFIG_URI).json()
-except requests.exceptions.ConnectionError as e:
-    logger.error(f"OPENID_CONFIG FOUT, url: {OPENID_CONFIG_URI}, error: {e}")
+except Exception as e:
+    logger.warning(f"OPENID_CONFIG FOUT, url: {OPENID_CONFIG_URI}, error: {e}")
 
 OIDC_OP_AUTHORIZATION_ENDPOINT = os.getenv(
     "OIDC_OP_AUTHORIZATION_ENDPOINT", OPENID_CONFIG.get("authorization_endpoint")
@@ -366,9 +381,11 @@ if OIDC_OP_JWKS_ENDPOINT:
     OIDC_RP_SIGN_ALGO = "RS256"
 
 AUTHENTICATION_BACKENDS = [
-    "apps.authenticatie.auth.OIDCAuthenticationBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
+if OPENID_CONFIG_URI and OIDC_RP_CLIENT_ID:
+    AUTHENTICATION_BACKENDS.append("apps.authenticatie.auth.OIDCAuthenticationBackend")
+
 OIDC_OP_LOGOUT_URL_METHOD = "apps.authenticatie.views.provider_logout"
 ALLOW_LOGOUT_GET_METHOD = True
 OIDC_STORE_ID_TOKEN = True
@@ -378,5 +395,5 @@ OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = int(
 
 LOGIN_REDIRECT_URL = "/"
 LOGIN_REDIRECT_URL_FAILURE = "/"
-LOGOUT_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = OIDC_OP_LOGOUT_ENDPOINT
 LOGIN_URL = "/oidc/authenticate/"

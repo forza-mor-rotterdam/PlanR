@@ -4,8 +4,8 @@ import math
 
 import requests
 import weasyprint
-from apps.meldingen import service_instance
-from apps.meldingen.utils import get_meldingen_token, get_taaktypes
+from apps.meldingen.service import MeldingenService
+from apps.meldingen.utils import get_taaktypes
 from apps.regie.forms import (
     BEHANDEL_OPTIES,
     BEHANDEL_RESOLUTIE,
@@ -60,7 +60,7 @@ def overview(request):
 
     request.session["overview_querystring"] = request.GET.urlencode()
 
-    data = service_instance.get_melding_lijst(query_string=query_dict.urlencode())
+    data = MeldingenService().get_melding_lijst(query_string=query_dict.urlencode())
 
     pagina_aantal = math.ceil(data.get("count", 0) / int(query_dict.get("limit")))
     offset_options = [
@@ -74,13 +74,30 @@ def overview(request):
     )
 
     locaties_geselecteerd = len(query_dict.getlist("begraafplaats"))
+    statussen_geselecteerd = len(query_dict.getlist("status"))
+    onderwerpen_geselecteerd = len(query_dict.getlist("onderwerp"))
+
     begraafplaatsen = [
         [k, f"{v[0]}"]
         for k, v in data.get("filter_options", {}).get("begraafplaats", {}).items()
     ]
 
+    statussen = [
+        [k, f"{v[0]}"]
+        for k, v in data.get("filter_options", {}).get("status", {}).items()
+    ]
+
+    onderwerpen = [
+        [k, f"{v[0]}"]
+        for k, v in data.get("filter_options", {}).get("onderwerp", {}).items()
+    ]
+
     form = FilterForm(
-        query_dict, offset_options=offset_options, locatie_opties=begraafplaatsen
+        query_dict,
+        offset_options=offset_options,
+        locatie_opties=begraafplaatsen,
+        status_opties=statussen,
+        onderwerp_opties=onderwerpen,
     )
 
     filter_form_data = copy.deepcopy(standaard_waardes)
@@ -117,6 +134,8 @@ def overview(request):
             "endNum": endNum,
             "form": form,
             "locaties_geselecteerd": locaties_geselecteerd,
+            "statussen_geselecteerd": statussen_geselecteerd,
+            "onderwerpen_geselecteerd": onderwerpen_geselecteerd,
             "filter_options": data.get("filter_options", {}),
             "melding_aanmaken_url": melding_aanmaken_url,
         },
@@ -125,7 +144,7 @@ def overview(request):
 
 @login_required
 def detail(request, id):
-    melding = service_instance.get_melding(id)
+    melding = MeldingenService().get_melding(id)
     taaktypes = get_taaktypes(melding)
     melding_bijlagen = [
         [bijlage for bijlage in meldinggebeurtenis.get("bijlagen", [])]
@@ -151,7 +170,7 @@ def detail(request, id):
                 file_name = default_storage.save(f.name, f)
                 bijlagen_base64.append({"bestand": to_base64(file_name)})
 
-            service_instance.melding_status_aanpassen(
+            MeldingenService().melding_status_aanpassen(
                 id,
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
                 bijlagen=bijlagen_base64,
@@ -182,7 +201,7 @@ def detail(request, id):
 
 @login_required
 def melding_afhandelen(request, id):
-    melding = service_instance.get_melding(id)
+    melding = MeldingenService().get_melding(id)
     afhandel_reden_opties = [(s, s) for s in melding.get("volgende_statussen", ())]
     melding_bijlagen = [
         [
@@ -206,7 +225,7 @@ def melding_afhandelen(request, id):
                 file_name = default_storage.save(f.name, f)
                 bijlagen_base64.append({"bestand": to_base64(file_name)})
 
-            service_instance.melding_status_aanpassen(
+            MeldingenService().melding_status_aanpassen(
                 id,
                 omschrijving_extern=form.cleaned_data.get("omschrijving_extern"),
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
@@ -232,7 +251,7 @@ def melding_afhandelen(request, id):
 
 @login_required
 def taak_starten(request, id):
-    melding = service_instance.get_melding(id)
+    melding = MeldingenService().get_melding(id)
     taaktypes = get_taaktypes(melding)
     form = TaakStartenForm(taaktypes=taaktypes)
     if request.POST:
@@ -240,7 +259,7 @@ def taak_starten(request, id):
         if form.is_valid():
             data = form.cleaned_data
             taaktypes_dict = {tt[0]: tt[1] for tt in taaktypes}
-            service_instance.taak_aanmaken(
+            MeldingenService().taak_aanmaken(
                 melding_uuid=id,
                 taaktype_url=data.get("taaktype"),
                 titel=taaktypes_dict.get(data.get("taaktype"), data.get("taaktype")),
@@ -261,7 +280,7 @@ def taak_starten(request, id):
 
 @login_required
 def taak_afronden(request, melding_uuid, taakopdracht_uuid):
-    melding = service_instance.get_melding(melding_uuid)
+    melding = MeldingenService().get_melding(melding_uuid)
     taakopdrachten = {
         to.get("uuid"): to for to in melding.get("taakopdrachten_voor_melding", [])
     }
@@ -275,7 +294,7 @@ def taak_afronden(request, melding_uuid, taakopdracht_uuid):
             for f in bijlagen:
                 file_name = default_storage.save(f.name, f)
                 bijlagen_base64.append({"bestand": to_base64(file_name)})
-            service_instance.taak_status_aanpassen(
+            MeldingenService().taak_status_aanpassen(
                 taakopdracht_url=taakopdracht.get("_links", {}).get("self"),
                 status=TAAK_BEHANDEL_STATUS.get(form.cleaned_data.get("status")),
                 resolutie=TAAK_BEHANDEL_RESOLUTIE.get(form.cleaned_data.get("status")),
@@ -299,7 +318,7 @@ def taak_afronden(request, melding_uuid, taakopdracht_uuid):
 
 @login_required
 def informatie_toevoegen(request, id):
-    melding = service_instance.get_melding(id)
+    melding = MeldingenService().get_melding(id)
     tijdlijn_data = melding_naar_tijdlijn(melding)
     form = InformatieToevoegenForm()
     if request.POST:
@@ -311,7 +330,7 @@ def informatie_toevoegen(request, id):
                 file_name = default_storage.save(f.name, f)
                 bijlagen_base64.append({"bestand": to_base64(file_name)})
 
-            service_instance.melding_gebeurtenis_toevoegen(
+            MeldingenService().melding_gebeurtenis_toevoegen(
                 id,
                 bijlagen=bijlagen_base64,
                 omschrijving_intern=form.cleaned_data.get("opmerking"),
@@ -348,7 +367,7 @@ def melding_lijst(request):
 
 @login_required
 def melding_pdf_download(request, id):
-    melding = service_instance.get_melding(id)
+    melding = MeldingenService().get_melding(id)
     base_url = request.build_absolute_uri()
     path_to_css_file = (
         "/app/frontend/public/build/app.css" if settings.DEBUG else "/static/app.css"
@@ -389,7 +408,7 @@ def melding_pdf_download(request, id):
 
 def meldingen_bestand(request):
     url = f"{settings.MELDINGEN_URL}{request.path}"
-    headers = {"Authorization": f"Token {get_meldingen_token()}"}
+    headers = {"Authorization": f"Token {MeldingenService().haal_token()}"}
     response = requests.get(url, stream=True, headers=headers)
     return StreamingHttpResponse(
         response.raw,

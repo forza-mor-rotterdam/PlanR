@@ -125,13 +125,17 @@ module.exports = (env, argv) => {
             {
                 from: './assets/images/*.*',
                 globOptions: {
-                    patterns: "*.+(png|jpg|jpeg|svg)",
+                    patterns: "*.+(png|jpg|jpeg|svg|ico)",
                   },
-                to: 'images/[path][name][ext]'
+                to: 'images/[name][ext]'
             },
             {
               from: './assets/icons/*.svg',
               to: 'icons/[path][name][ext]'
+            },
+            {
+              from: './assets/manifest.json',
+              to: '[name][ext]'
             }
           ],
         }),

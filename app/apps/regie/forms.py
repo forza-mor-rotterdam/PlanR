@@ -57,6 +57,30 @@ class FilterForm(forms.Form):
         required=False,
     )
 
+    status = forms.MultipleChoiceField(
+        label="Status",
+        widget=forms.CheckboxSelectMultiple(
+            attrs={
+                "class": "list--form-check-input",
+                "hideLabel": True,
+            }
+        ),
+        choices=[],
+        required=False,
+    )
+
+    onderwerp = forms.MultipleChoiceField(
+        label="Categorie",
+        widget=forms.CheckboxSelectMultiple(
+            attrs={
+                "class": "list--form-check-input",
+                "hideLabel": True,
+            }
+        ),
+        choices=[],
+        required=False,
+    )
+
     ordering = forms.CharField(
         widget=forms.HiddenInput(),
         initial="aangemaakt_op",
@@ -82,9 +106,13 @@ class FilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
         offset_options = kwargs.pop("offset_options", None)
         locatie_opties = kwargs.pop("locatie_opties", None)
+        status_opties = kwargs.pop("status_opties", None)
+        onderwerp_opties = kwargs.pop("onderwerp_opties", None)
         super().__init__(*args, **kwargs)
         self.fields["offset"].choices = offset_options
         self.fields["begraafplaats"].choices = locatie_opties
+        self.fields["status"].choices = status_opties
+        self.fields["onderwerp"].choices = onderwerp_opties
 
 
 class LoginForm(forms.Form):
@@ -197,7 +225,7 @@ class MeldingAfhandelenForm(forms.Form):
                 "data-meldingbehandelformulier-target": "externalText",
             }
         ),
-        required=False,
+        required=True,
     )
 
     omschrijving_intern = forms.CharField(

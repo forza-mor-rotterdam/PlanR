@@ -64,20 +64,21 @@
                                     <dd>{{ row_data.mg.taakgebeurtenis.omschrijving_intern }}</dd>
                                     {% endif %}
                                 {% else %}
-                                    {% if row_data.mg.status %}
-                                    <dt>Status</dt>
-                                    <dd>{{ row_data.mg.status.naam }}</dd>
+                                    {% if row_data.mg.gebruiker %}
+                                    <dt>Afgehandeld door</dt>
+                                    <dd>{{ row_data.mg.gebruiker|gebruiker_middels_email }}</dd>
+                                    {% endif %}
+                                    <dt>Datum</dt>
+                                    <dd>{{ row_data.mg.aangemaakt_op|to_date }}</dd>
+                                    {% if row_data.mg.omschrijving_extern %}
+                                    <dt>Bericht voor de melder</dt>
+                                    <dd>{{ row_data.mg.omschrijving_extern }}</dd>
                                     {% endif %}
                                     {% if row_data.mg.omschrijving_intern %}
                                     <dt>Interne opmerking</dt>
                                     <dd>{{ row_data.mg.omschrijving_intern }}</dd>
                                     {% endif %}
-                                    <dt>Datum</dt>
-                                    <dd>{{ row_data.mg.aangemaakt_op|to_date }}</dd>
-                                    {% if row_data.mg.gebruiker %}
-                                    <dt>Gebruiker</dt>
-                                    <dd>{{ row_data.mg.gebruiker|gebruiker_middels_email }}</dd>
-                                    {% endif %}
+
                                 {% endif %}
 
                             </dl>

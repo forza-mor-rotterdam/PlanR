@@ -1,16 +1,39 @@
-.container__filter {
+.container__tools {
     margin-top: $alert-padding-y;
-    display: flex;
 
-    >label {
-        line-height: 3.2;
-        margin-right: $alert-padding-x;
+    .container__filter {
+
+        >label {
+            line-height: 3.2;
+            margin-right: $alert-padding-x;
+        }
+
+        >div {
+            flex: 0 1 20%;
+            min-width: 250px;
+        }
+
+        @media (min-width: map-get($grid-breakpoints, md)) {
+            display: flex;
+            flex: 1;
+        }
     }
 
     > .btn {
         padding: 0 16px 0 10px;
         flex: 0;
     }
+
+
+    @media (min-width: map-get($grid-breakpoints, md)) {
+        display: flex;
+        flex: 1;
+
+        .toggle {
+            width: auto;
+        }
+    }
+
 }
 
 .filter-header {
@@ -25,7 +48,6 @@
 .container__multiselect {
     position: relative;
     z-index: 10;
-    flex: 1;
 
     .toggle {
         background-color: white;
@@ -33,6 +55,8 @@
         outline: 0;
         padding: 12px $input-padding-x;
         font-size: 16px;
+        width: 100%;
+        margin-bottom: 12px;
 
         &:after {
             content: "";
@@ -48,14 +72,16 @@
     .wrapper {
         flex: 1;
         position: absolute;
-        top: 100%;
+        top: calc(100% - 12px);
         left: 0;
         height: 0;
+        min-width: 220px;
         overflow: hidden;
         background-color: #fff;
     }
 
     &.show {
+        z-index: 100;
         .wrapper {
             height: 280px;
             border: 1px solid $gray-tint04;
@@ -83,5 +109,9 @@
                 margin: 0;
             }
         }
+    }
+
+    @media (min-width: map-get($grid-breakpoints, md)) {
+        padding-right: 12px;
     }
 }

@@ -95,11 +95,26 @@ fieldset {
     box-shadow: 0 0 0 1px $green-tint01;
 }
 
-.is-invalid:is(.form-control, .form-select){
-    border-bottom-color: $invalid-color!important;
-    border-bottom-width: 1px;
-    box-shadow: 0 1px 0 $invalid-color;
-    margin-bottom: 0;
+.is-invalid{
+
+    .form-control, .form-select{
+        border-bottom-color: $invalid-color!important;
+        border-bottom-width: 1px;
+        box-shadow: 0 1px 0 $invalid-color;
+        margin-bottom: 0;
+    }
+
+    .invalid-text {
+        margin-top: 0.5rem;
+        padding-left: 1rem;
+        position: relative;
+
+        &:before {
+            content: url('../icons/warning_triangle.svg');
+            position: absolute;
+            left: 0;
+        }
+    }
 }
 .was-validated .form-select:invalid, .form-select.is-invalid{
     border-color: #404B4F;
