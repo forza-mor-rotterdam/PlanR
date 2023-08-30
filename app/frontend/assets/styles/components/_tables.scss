@@ -60,7 +60,6 @@
         }
     }
 
-
     .background-image {
         background-color: $gray-tint01;
         background-image: url(../icons/noimage.svg);
@@ -88,6 +87,20 @@
         a {
             text-decoration: none;
             color: inherit;
+        }
+    }
+
+    td,
+    th {
+        &.js-has-no-address {
+            &.show-no-address {
+                //display: table-cell;
+            }
+        }
+        &.js-has-address {
+            &.hide-address {
+                display: none;
+            }
         }
     }
 
