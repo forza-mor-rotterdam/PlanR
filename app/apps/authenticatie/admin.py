@@ -1,4 +1,4 @@
-from apps.authenticatie.models import Gebruiker
+from apps.authenticatie.models import Gebruiker, Profiel
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
@@ -32,4 +32,9 @@ class GebruikerAdmin(UserAdmin):
     ordering = ("email",)
 
 
+class ProfielAdmin(admin.ModelAdmin):
+    ...
+
+
 admin.site.register(Gebruiker, GebruikerAdmin)
+admin.site.register(Profiel, ProfielAdmin)

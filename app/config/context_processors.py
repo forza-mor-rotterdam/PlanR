@@ -19,7 +19,6 @@ def general_settings(context):
         "MELDINGEN_URL": settings.MELDINGEN_URL,
         "DEBUG": settings.DEBUG,
         "DEV_SOCKET_PORT": settings.DEV_SOCKET_PORT,
-        "CHECK_SESSION_IFRAME": settings.CHECK_SESSION_IFRAME,
         "GET": context.GET,
         "ABSOLUTE_ROOT": absolute(context).get("ABSOLUTE_ROOT"),
         "SESSION_EXPIRY_MAX_TIMESTAMP": session_expiry_max_timestamp,

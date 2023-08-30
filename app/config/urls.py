@@ -22,24 +22,8 @@ from rest_framework.authtoken import views
 urlpatterns = [
     path("", root, name="root"),
     path("api-token-auth/", views.obtain_auth_token),
-    path(
-        "admin/login/",
-        RedirectView.as_view(
-            url="/oidc/authenticate/?next=/admin/",
-            permanent=False,
-        ),
-        name="admin_login",
-    ),
-    path(
-        "admin/logout/",
-        RedirectView.as_view(
-            url="/oidc/logout/?next=/admin/",
-            permanent=False,
-        ),
-        name="admin_logout",
-    ),
-    path("oidc/", include("mozilla_django_oidc.urls")),
     path("admin/", admin.site.urls),
+    path("oidc/", include("mozilla_django_oidc.urls")),
     path("melding/", melding_lijst, name="melding_lijst"),
     path("health/", include("health_check.urls")),
     path("part/melding/", overview, name="overview"),
@@ -71,6 +55,26 @@ urlpatterns = [
     ),
     re_path(r"media/", meldingen_bestand, name="meldingen_bestand"),
 ]
+
+if settings.OPENID_CONFIG and settings.OIDC_RP_CLIENT_ID:
+    urlpatterns += [
+        path(
+            "admin/login/",
+            RedirectView.as_view(
+                url="/oidc/authenticate/?next=/admin/",
+                permanent=False,
+            ),
+            name="admin_login",
+        ),
+        path(
+            "admin/logout/",
+            RedirectView.as_view(
+                url="/oidc/logout/?next=/admin/",
+                permanent=False,
+            ),
+            name="admin_logout",
+        ),
+    ]
 
 if settings.DEBUG:
     urlpatterns += [
