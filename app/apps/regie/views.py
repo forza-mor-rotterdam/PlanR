@@ -4,7 +4,7 @@ import math
 
 import requests
 import weasyprint
-from apps.context.constanten import FILTERS
+from apps.context.constanten import FILTER_NAMEN, FILTERS
 from apps.meldingen.service import MeldingenService
 from apps.meldingen.utils import get_taaktypes
 from apps.regie.forms import (
@@ -73,17 +73,26 @@ def overview(request):
         if str(query_dict.get("offset")) in [str(oo[0]) for oo in offset_options]
         else 0
     )
+    actieve_filters = FILTERS
+    if (
+        request.user
+        and request.user.profiel
+        and request.user.profiel.context
+        and request.user.profiel.context.filters
+    ):
+        actieve_filters = request.user.profiel.context.filters.get("fields")
 
+    actieve_filters = [f for f in actieve_filters if f in FILTER_NAMEN]
     filter_velden = [
         {
-            "naam": f[0],
+            "naam": f,
             "opties": [
                 [k, f"{v[0]}"]
-                for k, v in data.get("filter_options", {}).get(f[0], {}).items()
+                for k, v in data.get("filter_options", {}).get(f, {}).items()
             ],
-            "aantal_actief": len(query_dict.getlist(f[0])),
+            "aantal_actief": len(query_dict.getlist(f)),
         }
-        for f in FILTERS
+        for f in actieve_filters
     ]
 
     form = FilterForm(
