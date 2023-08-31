@@ -41,10 +41,11 @@
                         <tr>
                             <th></th>
                             <th class="sorting {{ GET|heeft_orden_oplopend:'id' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'id' }}" role="button">Melding</a></th>
-                            <th class="js-has-no-address">Begraafplaats</th>
-                            <th class="js-has-no-address sorting {{ GET|heeft_orden_oplopend:'locaties__grafnummer' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'locaties__grafnummer' }}" role="button">Grafnummer</a></th>
-                            <th class="js-has-no-address sorting {{ GET|heeft_orden_oplopend:'locaties__vak' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'locaties__vak' }}" role="button">Vak</a></th>
-                            {% if TEMPLATE_BASIS and TEMPLATE_BASIS != "benc" %}
+                            {% if not TEMPLATE_BASIS or TEMPLATE_BASIS == "benc" %}
+                                <th class="js-has-no-address">Begraafplaats</th>
+                                <th class="js-has-no-address sorting {{ GET|heeft_orden_oplopend:'locaties__grafnummer' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'locaties__grafnummer' }}" role="button">Grafnummer</a></th>
+                                <th class="js-has-no-address sorting {{ GET|heeft_orden_oplopend:'locaties__vak' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'locaties__vak' }}" role="button">Vak</a></th>
+                            {% elif TEMPLATE_BASIS and TEMPLATE_BASIS != "benc" %}
                                 <th class="js-has-address">Adres</th>
                                 <th class="js-has-address">Wijk</th>
                                 <th class="js-has-address">Buurt</th>
@@ -70,10 +71,11 @@
                                 {% endif %}
                             </td>
                             <td>{{melding.id}}</td>
-                            <td class="js-no-address">{% vind_in_dict filter_options.begraafplaats melding.locaties_voor_melding.0.begraafplaats %}</td>
-                            <td class="js-no-address">{% if melding.locaties_voor_melding.0.grafnummer %}{{ melding.locaties_voor_melding.0.grafnummer }} {% else %}n.v.t.{% endif %}</td>
-                            <td class="js-no-address">{% if melding.locaties_voor_melding.0.vak %}{{melding.locaties_voor_melding.0.vak}} {% else %}n.v.t.{% endif %}</td>
-                            {% if TEMPLATE_BASIS and TEMPLATE_BASIS != "benc" %}
+                            {% if not TEMPLATE_BASIS or TEMPLATE_BASIS == "benc" %}
+                                <td class="js-no-address">{% vind_in_dict filter_options.begraafplaats melding.locaties_voor_melding.0.begraafplaats %}</td>
+                                <td class="js-no-address">{% if melding.locaties_voor_melding.0.grafnummer %}{{ melding.locaties_voor_melding.0.grafnummer }} {% else %}n.v.t.{% endif %}</td>
+                                <td class="js-no-address">{% if melding.locaties_voor_melding.0.vak %}{{melding.locaties_voor_melding.0.vak}} {% else %}n.v.t.{% endif %}</td>
+                            {% elif TEMPLATE_BASIS and TEMPLATE_BASIS != "benc" %}
                                 <td class="js-has-address">{% if melding.locaties_voor_melding.0.straatnaam %}{{melding.locaties_voor_melding.0.straatnaam}} {{melding.locaties_voor_melding.0.huisnummer}}{% else %}n.v.t.{% endif %}</td>
                                 <td class="js-has-address">{% if melding.locaties_voor_melding.0.wijknaam %}{{melding.locaties_voor_melding.0.wijknaam}}{% else %}n.v.t.{% endif %}</td>
                                 <td class="js-has-address">{% if melding.locaties_voor_melding.0.buurtnaam %}{{melding.locaties_voor_melding.0.buurtnaam}}{% else %}n.v.t.{% endif %}</td>

@@ -4,7 +4,7 @@ import math
 
 import requests
 import weasyprint
-from apps.context.constanten import FILTER_NAMEN, FILTERS
+from apps.context.constanten import FILTER_NAMEN
 from apps.meldingen.service import MeldingenService
 from apps.meldingen.utils import get_taaktypes
 from apps.regie.forms import (
@@ -73,7 +73,7 @@ def overview(request):
         if str(query_dict.get("offset")) in [str(oo[0]) for oo in offset_options]
         else 0
     )
-    actieve_filters = FILTERS
+    actieve_filters = FILTER_NAMEN
     if (
         request.user
         and request.user.profiel
