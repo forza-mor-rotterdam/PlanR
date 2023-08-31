@@ -73,6 +73,14 @@ def overview(request):
         else 0
     )
 
+    if (
+        request.user
+        and request.user.profiel
+        and request.user.profiel.context
+        and request.user.profiel.context.filters
+    ):
+        request.user.profiel.context.filters.get("fields")
+
     locaties_geselecteerd = len(query_dict.getlist("begraafplaats"))
     statussen_geselecteerd = len(query_dict.getlist("status"))
     onderwerpen_geselecteerd = len(query_dict.getlist("onderwerp"))
