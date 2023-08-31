@@ -9,36 +9,24 @@
 <div data-controller="overview">
 
     <turbo-frame id="overvieww" data-turbo-action="advance" >
-        <form method="get" action="{% url 'overview' %}" id="filterForm">
+        <form method="get" action="{% url 'overview' %}" id="filterForm" data-controller="filter">
             <div class="filter-header">
                 <h1 class="page-title">Meldingen</h1>
                 <span class="help-text">{{ startNum }} - {{ endNum }} van {{ totaal }} resultaten</span>
             </div>
             <div class="container__tools">
-                <div class="container__filter" data-controller="filter" data-filter-target="filterOverview">
+                <div class="container__filter" data-filter-target="filterOverview">
+                    {{ form.ordering|render_rotterdam_formulier }}
+                    {{ form.limit|render_rotterdam_formulier }}
+                    {% for veld in form.filters %}
                     <div class="container__multiselect">
-                        <label class="visually-hidden">Locatie</label>
-                        <button class="toggle js-toggle" type="button">Selecteer locatie ({{locaties_geselecteerd}}/{{filter_options.begraafplaats|length}})</button>
+                        <label class="visually-hidden">{{ veld.naam }}</label>
+                        <button class="toggle js-toggle" type="button">{{ veld.label|capfirst }}</button>
                         <div class="wrapper">
-                            {{ form.begraafplaats|render_rotterdam_formulier }}
-                            {{ form.ordering|render_rotterdam_formulier }}
-                            {{ form.limit|render_rotterdam_formulier }}
+                            {{ veld|render_rotterdam_formulier }}
                         </div>
                     </div>
-                    <div class="container__multiselect">
-                        <label class="visually-hidden">Status</label>
-                        <button class="toggle js-toggle" type="button">Selecteer status ({{statussen_geselecteerd}}/{{filter_options.status|length}})</button>
-                        <div class="wrapper">
-                            {{ form.status|render_rotterdam_formulier }}
-                        </div>
-                    </div>
-                    <div class="container__multiselect">
-                        <label class="visually-hidden">Categorie</label>
-                        <button class="toggle js-toggle" type="button">Selecteer categorie ({{onderwerpen_geselecteerd}}/{{filter_options.onderwerp|length}})</button>
-                        <div class="wrapper">
-                            {{ form.onderwerp|render_rotterdam_formulier }}
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
                 <a href="{{ melding_aanmaken_url }}" class="btn btn-action">
                     <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -47,7 +35,6 @@
                     Nieuw
                 </a>
             </div>
-
             <div class="container__table">
                 <table class="table--overview">
                     <thead>

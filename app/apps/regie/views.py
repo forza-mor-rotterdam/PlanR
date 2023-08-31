@@ -4,6 +4,7 @@ import math
 
 import requests
 import weasyprint
+from apps.context.constanten import FILTER_NAMEN, FILTERS
 from apps.meldingen.service import MeldingenService
 from apps.meldingen.utils import get_taaktypes
 from apps.regie.forms import (
@@ -72,40 +73,32 @@ def overview(request):
         if str(query_dict.get("offset")) in [str(oo[0]) for oo in offset_options]
         else 0
     )
-
+    actieve_filters = FILTERS
     if (
         request.user
         and request.user.profiel
         and request.user.profiel.context
         and request.user.profiel.context.filters
     ):
-        request.user.profiel.context.filters.get("fields")
+        actieve_filters = request.user.profiel.context.filters.get("fields")
 
-    locaties_geselecteerd = len(query_dict.getlist("begraafplaats"))
-    statussen_geselecteerd = len(query_dict.getlist("status"))
-    onderwerpen_geselecteerd = len(query_dict.getlist("onderwerp"))
-
-    begraafplaatsen = [
-        [k, f"{v[0]}"]
-        for k, v in data.get("filter_options", {}).get("begraafplaats", {}).items()
-    ]
-
-    statussen = [
-        [k, f"{v[0]}"]
-        for k, v in data.get("filter_options", {}).get("status", {}).items()
-    ]
-
-    onderwerpen = [
-        [k, f"{v[0]}"]
-        for k, v in data.get("filter_options", {}).get("onderwerp", {}).items()
+    actieve_filters = [f for f in actieve_filters if f in FILTER_NAMEN]
+    filter_velden = [
+        {
+            "naam": f,
+            "opties": [
+                [k, f"{v[0]}"]
+                for k, v in data.get("filter_options", {}).get(f, {}).items()
+            ],
+            "aantal_actief": len(query_dict.getlist(f)),
+        }
+        for f in actieve_filters
     ]
 
     form = FilterForm(
         query_dict,
+        filter_velden=filter_velden,
         offset_options=offset_options,
-        locatie_opties=begraafplaatsen,
-        status_opties=statussen,
-        onderwerp_opties=onderwerpen,
     )
 
     filter_form_data = copy.deepcopy(standaard_waardes)
@@ -141,9 +134,6 @@ def overview(request):
             "startNum": startNum,
             "endNum": endNum,
             "form": form,
-            "locaties_geselecteerd": locaties_geselecteerd,
-            "statussen_geselecteerd": statussen_geselecteerd,
-            "onderwerpen_geselecteerd": onderwerpen_geselecteerd,
             "filter_options": data.get("filter_options", {}),
             "melding_aanmaken_url": melding_aanmaken_url,
         },

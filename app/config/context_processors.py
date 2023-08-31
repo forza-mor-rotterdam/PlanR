@@ -15,6 +15,10 @@ def general_settings(context):
     if session_expiry_timestamp:
         session_expiry_timestamp += settings.SESSION_EXPIRE_SECONDS
 
+    template_basis = None
+    if context.user and context.user.profiel and context.user.profiel.context:
+        template_basis = context.user.profiel.context.template
+
     return {
         "MELDINGEN_URL": settings.MELDINGEN_URL,
         "DEBUG": settings.DEBUG,
@@ -25,4 +29,5 @@ def general_settings(context):
         "SESSION_EXPIRY_TIMESTAMP": session_expiry_timestamp,
         "LOGOUT_URL": reverse("oidc_logout"),
         "LOGIN_URL": f"{reverse('oidc_authentication_init')}?next={absolute(context).get('FULL_URL')}",
+        "TEMPLATE_BASIS": template_basis,
     }
