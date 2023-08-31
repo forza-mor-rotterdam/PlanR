@@ -1,3 +1,4 @@
+import logging
 from urllib.parse import urlparse
 
 import requests
@@ -6,6 +7,8 @@ from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from requests import Request, Response
+
+logger = logging.getLogger(__name__)
 
 
 class MeldingenService:
@@ -210,4 +213,17 @@ class MeldingenService:
             method="patch",
             data=data,
             raw_response=False,
+        )
+
+    def signaal_aanmaken(self, data: {}):
+        response = self.do_request(
+            f"{self._api_path}/signaal/",
+            method="post",
+            data=data,
+        )
+        if response.status_code == 201:
+            return response.json()
+        logger.error(response.text)
+        raise MeldingenService.DataOphalenFout(
+            f"signaal_aanmaken: Verwacht status code 201, kreeg status code '{response.status_code}'"
         )

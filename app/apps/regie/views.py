@@ -1,3 +1,4 @@
+import base64
 import copy
 import logging
 import math
@@ -7,6 +8,7 @@ import weasyprint
 from apps.context.constanten import FILTER_NAMEN
 from apps.meldingen.service import MeldingenService
 from apps.meldingen.utils import get_taaktypes
+from apps.regie.constanten import MSB_WIJKEN
 from apps.regie.forms import (
     BEHANDEL_OPTIES,
     BEHANDEL_RESOLUTIE,
@@ -16,7 +18,10 @@ from apps.regie.forms import (
     TAAK_BEHANDEL_STATUS,
     FilterForm,
     InformatieToevoegenForm,
+    MeldingAanmakenForm,
     MeldingAfhandelenForm,
+    MSBLoginForm,
+    MSBMeldingZoekenForm,
     TaakAfrondenForm,
     TaakStartenForm,
 )
@@ -29,6 +34,8 @@ from django.http import HttpResponse, QueryDict, StreamingHttpResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils import timezone
+from utils.rd_convert import rd_to_wgs
 
 logger = logging.getLogger(__name__)
 
@@ -413,4 +420,222 @@ def meldingen_bestand(request):
         content_type=response.headers.get("content-type"),
         status=response.status_code,
         reason=response.reason,
+    )
+
+
+@login_required
+def melding_aanmaken(request):
+    if request.POST:
+        form = MeldingAanmakenForm(request.POST, request.FILES)
+        fotos = request.FILES.getlist("fotos", [])
+        file_names = []
+        for f in fotos:
+            file_name = default_storage.save(f.name, f)
+            file_names.append(file_name)
+        is_valid = form.is_valid()
+        if is_valid:
+            signaal_data = form.signaal_data(file_names)
+            logger.info(signaal_data)
+            signaal_response = MeldingenService().signaal_aanmaken(
+                data=signaal_data,
+            )
+            logger.info(signaal_response)
+            return redirect(
+                reverse(
+                    "melding_verzonden",
+                    kwargs={"signaal_uuid": signaal_response.get("uuid")},
+                )
+            )
+    else:
+        form = MeldingAanmakenForm()
+
+    return render(
+        request,
+        "melding/aanmaken.html",
+        {
+            "form": form,
+        },
+    )
+
+
+@login_required
+def melding_verzonden(request, signaal_uuid):
+    return render(
+        request,
+        "melding/verzonden.html",
+    )
+
+
+@login_required
+def msb_login(request):
+    form = MSBLoginForm()
+    errors = None
+    if request.POST:
+        form = MSBLoginForm(request.POST)
+        is_valid = form.is_valid()
+        if is_valid:
+            url = "https://diensten-acc.rotterdam.nl/sbmob/api/login"
+            login_data = {
+                "uid": form.cleaned_data["gebruikersnummer"],
+                "pwd": form.cleaned_data["wachtwoord"],
+            }
+            response = requests.post(url=url, data=login_data)
+            logger.info("msb_login=%s", response.status_code)
+            if response.status_code == 200:
+                request.session["msb_token"] = response.json().get("result")
+                return redirect(reverse("msb_melding_zoeken"))
+            logger.error("msb_login error=%s", response.text)
+            errors = [response.text]
+
+    return render(request, "msb/login.html", {"form": form, "errors": errors})
+
+
+@login_required
+def msb_melding_zoeken(request):
+    if not request.session.get("msb_token"):
+        return redirect(reverse("msb_login"))
+    form = MSBMeldingZoekenForm()
+    msb_data = request.session.get("msb_melding")
+    if request.POST:
+        form = MSBMeldingZoekenForm(request.POST)
+        is_valid = form.is_valid()
+        if is_valid:
+            url = f"https://diensten-acc.rotterdam.nl/sbmob/api/msb/melding/{form.cleaned_data.get('msb_nummer')}"
+            logger.info("msb melding url=%s", url)
+            response = requests.get(
+                url,
+                headers={
+                    "Authorization": f"Bearer {request.session.get('msb_token')}",
+                },
+            )
+            logger.info(
+                "msb melding zoeken response.status_code=%s", response.status_code
+            )
+            if response.status_code == 200:
+                msb_data = response.json().get("result", {"test": "test"})
+                request.session["msb_melding"] = response.json().get("result")
+                return redirect(reverse("msb_melding_zoeken"))
+            if response.status_code == 401:
+                return redirect(reverse("msb_login"))
+
+            logger.error("msb melding zoeken error=%s", response.text)
+
+    return render(
+        request,
+        "msb/melding_zoeken.html",
+        {
+            "form": form,
+            "msb_data": msb_data,
+        },
+    )
+
+
+@login_required
+def msb_importeer_melding(request):
+    if not request.session.get("msb_token"):
+        return redirect(reverse("msb_login"))
+    if not request.session.get("msb_melding"):
+        return redirect(reverse("msb_melding_zoeken"))
+
+    def _to_base64(binary_file_data):
+        base64_encoded_data = base64.b64encode(binary_file_data)
+        base64_message = base64_encoded_data.decode("utf-8")
+        return base64_message
+
+    msb_data = request.session.get("msb_melding")
+    msb_id = msb_data.get("id")
+    now = timezone.localtime(timezone.now())
+    wijk_buurt = [
+        {
+            "buurtnaam": b.get("omschrijving"),
+            "wijknaam": w.get("omschrijving"),
+        }
+        for w in MSB_WIJKEN
+        for b in w.get("buurten", [])
+        if b.get("code") == msb_data.get("locatie", {}).get("buurtNummer")
+    ]
+    huisnummer = msb_data.get("locatie", {}).get("adres", {}).get("huisnummer")
+    huisletter = None
+    try:
+        huisnummer = int(huisnummer)
+    except Exception:
+        huisletter = huisnummer
+        huisnummer = None
+
+    post_data = {
+        "signaal_url": "https://regie.rotterdam.nl/melding/signaal/42",
+        "melder": {
+            "naam": msb_data.get("melder", {}).get("naam"),
+            "email": msb_data.get("melder", {}).get("email"),
+            "telefoonnummer": msb_data.get("melder", {}).get("telefoon"),
+        },
+        "origineel_aangemaakt": msb_data.get("datumMelding", now.isoformat()),
+        "onderwerpen": [
+            "http://core.mor.local:8002/api/v1/onderwerp/grofvuil-op-straat/"
+        ],
+        "omschrijving_kort": msb_data.get("omschrijving", "")[:200],
+        "omschrijving": msb_data.get("aanvullendeInformatie", ""),
+        "meta": msb_data,
+        "meta_uitgebreid": {},
+        "adressen": [
+            {
+                "plaatsnaam": "Rotterdam",
+                "straatnaam": msb_data.get("locatie", {})
+                .get("adres", {})
+                .get("straatNaam"),
+            },
+        ],
+    }
+    if huisnummer:
+        post_data["adressen"][0]["huisnummer"] = huisnummer
+    if huisletter:
+        post_data["adressen"][0]["huisletter"] = huisletter
+
+    if wijk_buurt:
+        post_data["adressen"][0]["buurtnaam"] = wijk_buurt[0].get("buurtnaam")
+        post_data["adressen"][0]["wijknaam"] = wijk_buurt[0].get("wijknaam")
+    try:
+        wgs = rd_to_wgs(
+            msb_data.get("locatie", {}).get("x", 0),
+            msb_data.get("locatie", {}).get("y", 0),
+        )
+        post_data["adressen"][0]["geometrie"] = {
+            "type": "Point",
+            "coordinates": [wgs[1], wgs[0]],
+        }
+    except Exception:
+        logger.error("rd x=%s", msb_data.get("locatie", {}).get("x", 0))
+        logger.error("rd y=%s", msb_data.get("locatie", {}).get("y", 0))
+
+    logger.info("signaal aanmaken data=%s", post_data)
+    foto_urls = [
+        f"https://diensten-acc.rotterdam.nl{f.get('url')}"
+        for f in msb_data.get("fotos", [])
+    ]
+    logger.info("msb foto urls=%s", foto_urls)
+
+    post_data["bijlagen"] = []
+    for f in foto_urls:
+        f_response = requests.get(
+            url=f,
+            headers={
+                "Authorization": f"Bearer {request.session.get('msb_token')}",
+            },
+            stream=True,
+        )
+        logger.info("foto_response.status_code=%s", f_response.status_code)
+        b64 = _to_base64(f_response.content)
+        post_data["bijlagen"].append({"bestand": b64})
+
+    signaal_response = MeldingenService().signaal_aanmaken(
+        data=post_data,
+    )
+    logger.info("signaal aanmaken response=%s", signaal_response)
+    del request.session["msb_melding"]
+    return render(
+        request,
+        "msb/melding_importeren.html",
+        {
+            "msb_id": msb_id,
+        },
     )
