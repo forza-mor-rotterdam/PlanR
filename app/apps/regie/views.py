@@ -563,12 +563,11 @@ def msb_importeer_melding(request):
         huisnummer = None
 
     omschrijving_kort = (
-        (
-            msb_data.get("omschrijving")
-            if msb_data.get("omschrijving")
-            else msb_data.get("aanvullendeInformatie")
-        ),
+        msb_data.get("omschrijving")
+        if msb_data.get("omschrijving")
+        else msb_data.get("aanvullendeInformatie")
     )
+
     post_data = {
         "signaal_url": "https://regie.rotterdam.nl/melding/signaal/42",
         "melder": {
