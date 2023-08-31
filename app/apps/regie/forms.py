@@ -1,4 +1,13 @@
+import base64
+import logging
+
 from django import forms
+from django.core.files.storage import default_storage
+from django.utils import timezone
+from utils.rd_convert import rd_to_wgs
+
+logger = logging.getLogger(__name__)
+
 
 BEHANDEL_OPTIES = (
     (
@@ -230,3 +239,252 @@ class MeldingAfhandelenForm(forms.Form):
 
     # def terugsturen(self, data):
     #     if data.get("afhandel_reden") == ""
+
+
+class MeldingAanmakenForm(forms.Form):
+
+    straatnaam = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+            }
+        ),
+        label="Straat",
+        required=True,
+    )
+    huisnummer = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+            }
+        ),
+        label="Huisnummer",
+        required=False,
+    )
+    buurtnaam = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+            }
+        ),
+        label="Buurt",
+        required=True,
+    )
+    wijknaam = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+            }
+        ),
+        label="Wijk",
+        required=True,
+    )
+    rd_x = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+            }
+        ),
+        label="Rijksdriehoek x",
+        required=True,
+    )
+    rd_y = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+            }
+        ),
+        label="Rijksdriehoek y",
+        required=True,
+    )
+
+    onderwerp = forms.ChoiceField(
+        widget=forms.RadioSelect(
+            attrs={
+                "class": "list--form-radio-input",
+            }
+        ),
+        label="Onderwerp",
+        choices=(
+            (
+                "http://core.mor.local:8002/api/v1/onderwerp/grofvuil-op-straat/",
+                "Grofvuil",
+            ),
+        ),
+        required=True,
+    )
+
+    toelichting = forms.CharField(
+        widget=forms.Textarea(),
+        label="Toelichting",
+        required=True,
+    )
+
+    fotos = forms.FileField(
+        widget=forms.widgets.FileInput(
+            attrs={
+                "accept": ".jpg, .jpeg, .png, .heic",
+                "data-action": "change->request#updateImageDisplay",
+            }
+        ),
+        label="Foto's",
+        required=False,
+    )
+
+    naam_melder = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+            }
+        ),
+        label="Naam",
+        required=True,
+    )
+
+    telefoon_melder = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "type": "tel",
+                "class": "form-control",
+                "data-request-target": "phoneField",
+            }
+        ),
+        label="Telefoonnummer",
+        required=False,
+    )
+
+    email_melder = forms.EmailField(
+        widget=forms.TextInput(
+            attrs={
+                "type": "email",
+                "class": "form-control",
+                "data-request-target": "emailField",
+            }
+        ),
+        label="E-mailadres",
+        required=False,
+    )
+
+    terugkoppeling_gewenst = forms.ChoiceField(
+        widget=forms.RadioSelect(
+            attrs={
+                "class": "list--form-radio-input",
+            }
+        ),
+        label="Is terugkoppeling gewenst?",
+        choices=(
+            ("1", "Ja"),
+            ("0", "Nee"),
+        ),
+        required=True,
+    )
+
+    def get_categorie_choices(self):
+        return []
+
+    def get_verbose_value_from_field(self, fieldname, value):
+        if hasattr(self.fields.get(fieldname), "choices"):
+            choices_lookup = {c[0]: c[1] for c in self.fields[fieldname].choices}
+            if type(value) == list:
+                return [choices_lookup.get(v, v) for v in value]
+            return choices_lookup.get(value, value)
+        return value
+
+    def _to_base64(self, file):
+        binary_file = default_storage.open(file)
+        binary_file_data = binary_file.read()
+        base64_encoded_data = base64.b64encode(binary_file_data)
+        base64_message = base64_encoded_data.decode("utf-8")
+        return base64_message
+
+    def get_onderwerp_urls(self, onderwerp_ids):
+        return []
+
+    def signaal_data(self, files=[]):
+        now = timezone.localtime(timezone.now())
+        data = self.cleaned_data
+        data.pop("fotos")
+        labels = {
+            k: {
+                "label": v.label,
+                "choices": {c[0]: c[1] for c in v.choices}
+                if hasattr(v, "choices")
+                else None,
+            }
+            for k, v in self.fields.items()
+        }
+        choice_fields = ("terugkoppeling_gewenst",)
+        for cf in choice_fields:
+            data[cf] = self.get_verbose_value_from_field(cf, data[cf])
+
+        post_data = {
+            "signaal_url": "https://regie.rotterdam.nl/melding/signaal/42",
+            "melder": {
+                "naam": data.get("naam_melder"),
+                "email": data.get("email_melder"),
+                "telefoonnummer": data.get("telefoon_melder"),
+            },
+            "origineel_aangemaakt": now.isoformat(),
+            "onderwerpen": [data.get("onderwerp", [])],
+            "omschrijving_kort": data.get("toelichting", "")[:200],
+            "omschrijving": data.get("toelichting", ""),
+            "meta": data,
+            "meta_uitgebreid": labels,
+            "adressen": [
+                {
+                    "plaatsnaam": "Rotterdam",
+                    "straatnaam": data.get("straatnaam"),
+                    "huisnummer": data.get("huisnummer")
+                    if data.get("huisnummer")
+                    else 0,
+                    "buurtnaam": data.get("buurtnaam"),
+                    "wijknaam": data.get("wijknaam"),
+                    "geometrie": {
+                        "type": "Point",
+                        "coordinates": [4.43995901, 51.93254212],
+                    },
+                },
+            ],
+        }
+        try:
+            post_data["adressen"][0]["geometrie"] = rd_to_wgs(
+                data.get("rd_x"), data.get("rd_y")
+            )
+        except Exception:
+            logger.error(data.get("rd_x"))
+            logger.error(data.get("rd_y"))
+        post_data["bijlagen"] = [{"bestand": self._to_base64(file)} for file in files]
+        return post_data
+
+
+class MSBLoginForm(forms.Form):
+    gebruikersnummer = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+            }
+        ),
+        label="Gebruikernummer",
+        required=True,
+    )
+    wachtwoord = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+            }
+        ),
+        label="Wachtwoord",
+        required=True,
+    )
+
+
+class MSBMeldingZoekenForm(forms.Form):
+    msb_nummer = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+            }
+        ),
+        label="MSB nummer",
+        required=True,
+    )

@@ -30,4 +30,5 @@ def general_settings(context):
         "LOGOUT_URL": reverse("oidc_logout"),
         "LOGIN_URL": f"{reverse('oidc_authentication_init')}?next={absolute(context).get('FULL_URL')}",
         "TEMPLATE_BASIS": template_basis,
+        "ENVIRONMENT": settings.ENVIRONMENT,
     }

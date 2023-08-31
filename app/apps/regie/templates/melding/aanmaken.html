@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load rotterdam_formulier_html %}
+{% load json_encode from json_tags %}
+
+{% block body %}
+<h1>Nieuwe melding</h1>
+
+<turbo-frame id="melding_aanmaken">
+<form
+    action="{% url 'melding_aanmaken' %}"
+    class="form__request"
+    data-request-medewerkers-value="{{ begraafplaats_medewerkers|json_encode }}"
+    data-request-categorie_andere_oorzaak-value="{{ categorie_andere_oorzaak|json_encode }}"
+    data-request-specifiek_graf_categorieen-value="{{ specifiek_graf_categorieen|json_encode }}"
+    data-request-session_expiry_timestamp-value="{{ session_expiry_timestamp }}"
+    data-request-session_expiry_max_timestamp-value="{{ session_expiry_max_timestamp }}"
+    id="requestForm"
+    data-controller="bijlagen"
+    enctype="multipart/form-data"
+    method="post"
+    novalidate>
+    {% csrf_token %}
+    <script>
+    console.log({"env": "{{ENVIRONMENT}}"})
+    </script>
+    <fieldset>
+        {% include "snippets/legend.html" with title="Locatie" icon_name="pin_filled" only %}
+        {{ form.straatnaam|render_rotterdam_formulier }}
+        {{ form.huisnummer|render_rotterdam_formulier }}
+        {{ form.buurtnaam|render_rotterdam_formulier }}
+        {{ form.wijknaam|render_rotterdam_formulier }}
+        {{ form.rd_x|render_rotterdam_formulier }}
+        {{ form.rd_y|render_rotterdam_formulier }}
+    </fieldset>
+    <fieldset>
+        {% include "snippets/legend.html" with title="Verzoek" icon_name="list" only %}
+        {{ form.onderwerp|render_rotterdam_formulier }}
+        {{ form.toelichting|render_rotterdam_formulier }}
+        {{ form.fotos|render_rotterdam_formulier }}
+    </fieldset>
+    <fieldset>
+        {% include "snippets/legend.html" with title="Melder" icon_name="person" only %}
+        {{ form.naam_melder|render_rotterdam_formulier }}
+        {{ form.email_melder|render_rotterdam_formulier }}
+        {{ form.telefoon_melder|render_rotterdam_formulier }}
+        {{ form.terugkoppeling_gewenst|render_rotterdam_formulier }}
+    </fieldset>
+    <div class="form-row container__button">
+        <button
+            class="btn btn-action"
+            type="submit"
+        >
+            <span>Melding aanmaken</span>
+        </button>
+    </div>
+
+    <div class="modal" >
+        <div class="modal-backdrop modal-exit" id="modal-backdrop"data-action="click->request#closeModal"></div>
+
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1>
+                        <span>Je bent uitgelogd</span>
+                    </h1>
+                    <button
+                        type="button"
+                        class="btn-close"
+                        aria-label="Sluit"
+                        data-action="request#closeModal">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <section class="section--seperated">
+                        <div class="container__details">
+                            <p>Door de pagina opnieuw te laden, wordt je doorverwezen naar de login pagina.</p>
+                            <button type="button" class="btn btn-action" data-action="request#closeModal"><span>Herlaad pagina</span></button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</form>
+</turbo-frame>
+{% endblock %}
