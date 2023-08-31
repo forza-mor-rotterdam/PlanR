@@ -16,29 +16,17 @@
             </div>
             <div class="container__tools">
                 <div class="container__filter" data-filter-target="filterOverview">
+                    {{ form.ordering|render_rotterdam_formulier }}
+                    {{ form.limit|render_rotterdam_formulier }}
+                    {% for veld in form.filters %}
                     <div class="container__multiselect">
-                        <label class="visually-hidden">Locatie</label>
-                        <button class="toggle js-toggle" type="button">Selecteer locatie ({{locaties_geselecteerd}}/{{filter_options.begraafplaats|length}})</button>
+                        <label class="visually-hidden">{{ veld.naam }}</label>
+                        <button class="toggle js-toggle" type="button">{{ veld.label|capfirst }}</button>
                         <div class="wrapper">
-                            {{ form.begraafplaats|render_rotterdam_formulier }}
-                            {{ form.ordering|render_rotterdam_formulier }}
-                            {{ form.limit|render_rotterdam_formulier }}
+                            {{ veld|render_rotterdam_formulier }}
                         </div>
                     </div>
-                    <div class="container__multiselect">
-                        <label class="visually-hidden">Status</label>
-                        <button class="toggle js-toggle" type="button">Selecteer status ({{statussen_geselecteerd}}/{{filter_options.status|length}})</button>
-                        <div class="wrapper">
-                            {{ form.status|render_rotterdam_formulier }}
-                        </div>
-                    </div>
-                    <div class="container__multiselect">
-                        <label class="visually-hidden">Categorie</label>
-                        <button class="toggle js-toggle" type="button">Selecteer categorie ({{onderwerpen_geselecteerd}}/{{filter_options.onderwerp|length}})</button>
-                        <div class="wrapper">
-                            {{ form.onderwerp|render_rotterdam_formulier }}
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
                 <a href="{{ melding_aanmaken_url }}" class="btn btn-action">
                     <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -71,13 +59,13 @@
                         <tr>
                             <th></th>
                             <th class="sorting {{ GET|heeft_orden_oplopend:'id' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'id' }}" role="button">Melding</a></th>
-                            <th class="js-has-no-address">Locatie</th>
+                            <th class="js-has-no-address">Begraafplaats</th>
                             <th class="js-has-no-address sorting {{ GET|heeft_orden_oplopend:'locaties__grafnummer' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'locaties__grafnummer' }}" role="button">Grafnummer</a></th>
                             <th class="js-has-no-address sorting {{ GET|heeft_orden_oplopend:'locaties__vak' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'locaties__vak' }}" role="button">Vak</a></th>
                             <th class="js-has-address">Adres</th>
                             <th class="js-has-address">Wijk</th>
                             <th class="js-has-address">Buurt</th>
-                            <th>Categorie</th>
+                            <th>Onderwerp</th>
                             <th class="sorting {{ GET|heeft_orden_oplopend:'origineel_aangemaakt' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'origineel_aangemaakt' }}" role="button">Datum</a></th>
                             {% comment %} <th class="sorting {{ GET|heeft_orden_oplopend:'afgesloten_op' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'afgesloten_op' }}" role="button">Status</a></th> {% endcomment %}
                             <th>Status</th>
@@ -102,9 +90,9 @@
                             <td class="js-no-address">{% vind_in_dict filter_options.begraafplaats melding.locaties_voor_melding.0.begraafplaats %}</td>
                             <td class="js-no-address">{% if melding.locaties_voor_melding.0.grafnummer %}{{ melding.locaties_voor_melding.0.grafnummer }} {% else %}n.v.t.{% endif %}</td>
                             <td class="js-no-address">{% if melding.locaties_voor_melding.0.vak %}{{melding.locaties_voor_melding.0.vak}} {% else %}n.v.t.{% endif %}</td>
-                            <td class="js-has-address">{% if melding.locaties_voor_melding.0.adres.straatNaam %}{{melding.locaties_voor_melding.0.adres.straatNaam}} {{melding.locaties_voor_melding.0.adres.huisnummer}}{% else %}n.v.t.{% endif %}</td>
-                            <td class="js-has-address">{% if melding.locaties_voor_melding.0.wijk %}{{melding.locaties_voor_melding.0.wijk}}{% else %}n.v.t.{% endif %}</td>
-                            <td class="js-has-address">{% if melding.locaties_voor_melding.0.buurt %}{{melding.locaties_voor_melding.0.buurt}}{% else %}n.v.t.{% endif %}</td>
+                            <td class="js-has-address">{% if melding.locaties_voor_melding.0.straatnaam %}{{melding.locaties_voor_melding.0.straatnaam}} {{melding.locaties_voor_melding.0.huisnummer}}{% else %}n.v.t.{% endif %}</td>
+                            <td class="js-has-address">{% if melding.locaties_voor_melding.0.wijknaam %}{{melding.locaties_voor_melding.0.wijknaam}}{% else %}n.v.t.{% endif %}</td>
+                            <td class="js-has-address">{% if melding.locaties_voor_melding.0.buurtnaam %}{{melding.locaties_voor_melding.0.buurtnaam}}{% else %}n.v.t.{% endif %}</td>
                             <td>
                                 {% for onderwerp in melding.onderwerpen %}
                                     {% vind_in_dict filter_options.onderwerp onderwerp %}{% if not forloop.last %}, {% endif %}
