@@ -16,6 +16,7 @@
         {% include "snippets/legend.html" with title="Login" icon_name="person" only %}
         {{ form.gebruikersnummer|render_rotterdam_formulier }}
         {{ form.wachtwoord|render_rotterdam_formulier }}
+        {{ form.omgeving|render_rotterdam_formulier }}
     </fieldset>
     <div class="form-row container__button">
         <button

@@ -476,6 +476,20 @@ class MSBLoginForm(forms.Form):
         label="Wachtwoord",
         required=True,
     )
+    omgeving = forms.ChoiceField(
+        widget=forms.RadioSelect(
+            attrs={
+                "class": "list--form-radio-input",
+            }
+        ),
+        label="Op welke omgeving wil je inloggen",
+        choices=(
+            ("https://diensten-acc.rotterdam.nl", "Acceptatie"),
+            ("https://diensten.rotterdam.nl", "Productie"),
+        ),
+        initial="https://diensten-acc.rotterdam.nl",
+        required=True,
+    )
 
 
 class MSBMeldingZoekenForm(forms.Form):

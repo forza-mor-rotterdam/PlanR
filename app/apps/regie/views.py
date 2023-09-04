@@ -468,15 +468,13 @@ def melding_verzonden(request, signaal_uuid):
 
 @login_required
 def msb_login(request):
-    msb_base_url = "https://diensten-acc.rotterdam.nl"
-    if settings.MELDINGEN_URL == "https://mor-core.forzamor.nl":
-        msb_base_url = "https://diensten.rotterdam.nl"
     form = MSBLoginForm()
     errors = None
     if request.POST:
         form = MSBLoginForm(request.POST)
         is_valid = form.is_valid()
         if is_valid:
+            msb_base_url = form.cleaned_data.get("omgeving")
             url = f"{msb_base_url}/sbmob/api/login"
             login_data = {
                 "uid": form.cleaned_data["gebruikersnummer"],
@@ -486,6 +484,7 @@ def msb_login(request):
             logger.info("msb_login=%s", response.status_code)
             if response.status_code == 200:
                 request.session["msb_token"] = response.json().get("result")
+                request.session["msb_base_url"] = msb_base_url
                 return redirect(reverse("msb_melding_zoeken"))
             logger.error("msb_login error=%s", response.text)
             errors = [response.text]
@@ -495,9 +494,6 @@ def msb_login(request):
 
 @login_required
 def msb_melding_zoeken(request):
-    msb_base_url = "https://diensten-acc.rotterdam.nl"
-    if settings.MELDINGEN_URL == "https://mor-core.forzamor.nl":
-        msb_base_url = "https://diensten.rotterdam.nl"
     if not request.session.get("msb_token"):
         return redirect(reverse("msb_login"))
     form = MSBMeldingZoekenForm()
@@ -506,7 +502,8 @@ def msb_melding_zoeken(request):
         form = MSBMeldingZoekenForm(request.POST)
         is_valid = form.is_valid()
         if is_valid:
-            url = f"{msb_base_url}/sbmob/api/msb/melding/{form.cleaned_data.get('msb_nummer')}"
+
+            url = f"{request.session['msb_base_url']}/sbmob/api/msb/melding/{form.cleaned_data.get('msb_nummer')}"
             logger.info("msb melding url=%s", url)
             response = requests.get(
                 url,
@@ -538,13 +535,11 @@ def msb_melding_zoeken(request):
 
 @login_required
 def msb_importeer_melding(request):
-    msb_base_url = "https://diensten-acc.rotterdam.nl"
-    if settings.MELDINGEN_URL == "https://mor-core.forzamor.nl":
-        msb_base_url = "https://diensten.rotterdam.nl"
     if not request.session.get("msb_token"):
         return redirect(reverse("msb_login"))
     if not request.session.get("msb_melding"):
         return redirect(reverse("msb_melding_zoeken"))
+    msb_base_url = request.session["msb_base_url"]
 
     def _to_base64(binary_file_data):
         base64_encoded_data = base64.b64encode(binary_file_data)

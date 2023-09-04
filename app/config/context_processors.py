@@ -16,7 +16,12 @@ def general_settings(context):
         session_expiry_timestamp += settings.SESSION_EXPIRE_SECONDS
 
     template_basis = None
-    if context.user and context.user.profiel and context.user.profiel.context:
+    if (
+        hasattr(context, "user")
+        and hasattr(context.user, "profiel")
+        and hasattr(context.user.profiel, "context")
+        and hasattr(context.user.profiel.context, "template")
+    ):
         template_basis = context.user.profiel.context.template
 
     return {
