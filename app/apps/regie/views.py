@@ -5,7 +5,7 @@ import math
 
 import requests
 import weasyprint
-from apps.context.constanten import FILTER_NAMEN
+from apps.context.constanten import FILTER_NAMEN, KOLOMMEN
 from apps.meldingen.service import MeldingenService
 from apps.meldingen.utils import get_taaktypes
 from apps.regie.constanten import MSB_WIJKEN
@@ -82,12 +82,12 @@ def overview(request):
     )
     actieve_filters = FILTER_NAMEN
     if (
-        request.user
-        and request.user.profiel
-        and request.user.profiel.context
-        and request.user.profiel.context.filters
+        hasattr(request, "user")
+        and hasattr(request.user, "profiel")
+        and hasattr(request.user.profiel, "context")
+        and hasattr(request.user.profiel.context, "filters")
     ):
-        actieve_filters = request.user.profiel.context.filters.get("fields")
+        actieve_filters = request.user.profiel.context.filters.get("fields", [])
 
     actieve_filters = [f for f in actieve_filters if f in FILTER_NAMEN]
     filter_velden = [
@@ -143,6 +143,7 @@ def overview(request):
             "form": form,
             "filter_options": data.get("filter_options", {}),
             "melding_aanmaken_url": melding_aanmaken_url,
+            "kolommen": KOLOMMEN,
         },
     )
 
