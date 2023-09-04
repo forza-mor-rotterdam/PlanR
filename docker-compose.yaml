@@ -7,7 +7,7 @@ services:
       - ./nginx/nginx-default.development.conf:/etc/nginx/conf.d/default.conf
       - ./media:/media
     depends_on:
-      app:
+      regie_app:
         condition: service_started
     ports:
       - 8003:8003
@@ -15,8 +15,7 @@ services:
       mor_bridge_network:
     env_file:
       - .env.local
-  app:
-    container_name: regie.app
+  regie_app:
     build: ./app
     ports:
       - "8000"
@@ -54,17 +53,17 @@ services:
     networks:
       - regie_network
 
-  dex:
-    image: quay.io/dexidp/dex:v2.23.0
-    user: root
-    command: serve /config.yml
-    ports:
-      - "7003:5556"
-    volumes:
-      - ./dex.dev.yml:/config.yml
-      - dex-data:/data
-    networks:
-      - regie_network
+  # dex:
+  #   image: quay.io/dexidp/dex:v2.23.0
+  #   user: root
+  #   command: serve /config.yml
+  #   ports:
+  #     - "7003:5556"
+  #   volumes:
+  #     - ./dex.dev.yml:/config.yml
+  #     - dex-data:/data
+  #   networks:
+  #     - regie_network
 
 volumes:
   postgres-data:
