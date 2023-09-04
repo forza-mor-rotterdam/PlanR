@@ -427,9 +427,9 @@ def meldingen_bestand(request):
 def melding_aanmaken(request):
     if request.POST:
         form = MeldingAanmakenForm(request.POST, request.FILES)
-        fotos = request.FILES.getlist("fotos", [])
+        bijlagen = request.FILES.getlist("bijlagen", [])
         file_names = []
-        for f in fotos:
+        for f in bijlagen:
             file_name = default_storage.save(f.name, f)
             file_names.append(file_name)
         is_valid = form.is_valid()

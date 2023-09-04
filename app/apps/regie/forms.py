@@ -320,11 +320,12 @@ class MeldingAanmakenForm(forms.Form):
         required=True,
     )
 
-    fotos = forms.FileField(
+    bijlagen = forms.FileField(
         widget=forms.widgets.FileInput(
             attrs={
                 "accept": ".jpg, .jpeg, .png, .heic",
-                "data-action": "change->request#updateImageDisplay",
+                "data-action": "change->bijlagen#updateImageDisplay",
+                "data-bijlagen-target": "bijlagenNieuw",
             }
         ),
         label="Foto's",
@@ -403,7 +404,7 @@ class MeldingAanmakenForm(forms.Form):
     def signaal_data(self, files=[]):
         now = timezone.localtime(timezone.now())
         data = self.cleaned_data
-        data.pop("fotos")
+        data.pop("bijlagen")
         labels = {
             k: {
                 "label": v.label,

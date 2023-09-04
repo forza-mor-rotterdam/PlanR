@@ -233,7 +233,7 @@ export default class extends Controller {
     }
 
     updateImageDisplay(adding = true) {
-        const input = document.getElementById('id_fotos')
+        const input = document.getElementById('id_bijlagen')
         const preview = document.getElementById('imagesPreview');
         const newFiles = input.files; //contains only new file(s)
 
