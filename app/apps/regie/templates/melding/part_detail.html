@@ -209,6 +209,7 @@
                                 Locatie
                             </h2>
                             <div class="display--flex--md">
+                            {% if TEMPLATE_BASIS == "benc" %}
                                 <ul class="list-clean">
                                     <li>
                                         <h3 class="h5">Begraafplaats</h2>
@@ -253,6 +254,33 @@
                                         </p>
                                     </li>
                                 </ul>
+                            {% else %}
+                                <ul class="list-clean">
+                                    <li>
+                                        <h3 class="h5">Adres</h3>
+                                        <p>
+                                            {% if melding.locaties_voor_melding.0.straatnaam %}{{ melding.locaties_voor_melding.0.straatnaam }} {% else %}onbekend {% endif %}
+                                            {% if melding.locaties_voor_melding.0.huisnummer %}{{ melding.locaties_voor_melding.0.huisnummer }}{% else %}onbekend{% endif %}
+                                        </p>
+                                    </li>
+                                    <li>
+                                        <h3 class="h5">Wijk</h3>
+                                        <p>
+                                            {% if melding.locaties_voor_melding.0.wijknaam %}{{ melding.locaties_voor_melding.0.wijknaam }} {% else %}onbekend {% endif %}
+                                        </p>
+                                    </li>
+                                </ul>
+                                <ul class="list-clean">
+                                    <li>
+                                        <h3 class="h5">Buurt</h3>
+                                        <p>
+                                            {% if melding.locaties_voor_melding.0.buurtnaam %}{{ melding.locaties_voor_melding.0.buurtnaam }} {% else %}onbekend {% endif %}
+                                        </p>
+                                    </li>
+                                </ul>
+
+
+                            {% endif %}
                             </div>
                         </div>
                     </section>
