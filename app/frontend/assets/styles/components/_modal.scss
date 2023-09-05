@@ -6,6 +6,7 @@
 @mixin modalVisible {
     opacity: 1;
     visibility: visible;
+    backdrop-filter: blur(10px);
 
     &.modal-right {
         .modal-content {
