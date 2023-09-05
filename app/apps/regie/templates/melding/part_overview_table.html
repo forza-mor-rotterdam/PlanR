@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% load qs_ordenen heeft_orden_oplopend vind_in_dict qs_offset from querystring_tags %}
 {% load vertaal from vertaal_tags %}
+{% load kolom_inhoud from melding_tags %}
+{% load kolom_hoofd from melding_tags %}
 {% load rotterdam_formulier_html %}
 
 {% load to_date from date_tags %}
@@ -41,6 +43,9 @@
                         <tr>
                             <th></th>
                             <th class="sorting {{ GET|heeft_orden_oplopend:'id' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'id' }}" role="button">Melding</a></th>
+                            {% for kolom in kolommen %}
+                            <th>{% kolom_hoofd kolom %}</th>
+                            {% endfor %}
                             {% if not TEMPLATE_BASIS or TEMPLATE_BASIS == "benc" %}
                                 <th>Begraafplaats</th>
                                 <th class="sorting" {{ GET|heeft_orden_oplopend:'locaties__grafnummer' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'locaties__grafnummer' }}" role="button">Grafnummer</a></th>
@@ -71,6 +76,9 @@
                                 {% endif %}
                             </td>
                             <td>{{melding.id}}</td>
+                            {% for kolom in kolommen %}
+                            <td>{% kolom_inhoud kolom melding %}</td>
+                            {% endfor %}
                             {% if not TEMPLATE_BASIS or TEMPLATE_BASIS == "benc" %}
                                 <td>{% vind_in_dict filter_options.begraafplaats melding.locaties_voor_melding.0.begraafplaats %}</td>
                                 <td>{% if melding.locaties_voor_melding.0.grafnummer %}{{ melding.locaties_voor_melding.0.grafnummer }} {% else %}n.v.t.{% endif %}</td>

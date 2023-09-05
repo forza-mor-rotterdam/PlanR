@@ -392,7 +392,7 @@ if OPENID_CONFIG and OIDC_RP_CLIENT_ID:
         "apps.authenticatie.auth.OIDCAuthenticationBackend",
     ]
 
-    OIDC_OP_LOGOUT_URL_METHOD = "apps.authentication.views.provider_logout"
+    # OIDC_OP_LOGOUT_URL_METHOD = "apps.authenticatie.views.provider_logout"
     ALLOW_LOGOUT_GET_METHOD = True
     OIDC_STORE_ID_TOKEN = True
     OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = int(
