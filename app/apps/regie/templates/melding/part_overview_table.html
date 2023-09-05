@@ -42,13 +42,13 @@
                             <th></th>
                             <th class="sorting {{ GET|heeft_orden_oplopend:'id' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'id' }}" role="button">Melding</a></th>
                             {% if not TEMPLATE_BASIS or TEMPLATE_BASIS == "benc" %}
-                                <th class="js-has-no-address">Begraafplaats</th>
-                                <th class="js-has-no-address sorting {{ GET|heeft_orden_oplopend:'locaties__grafnummer' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'locaties__grafnummer' }}" role="button">Grafnummer</a></th>
-                                <th class="js-has-no-address sorting {{ GET|heeft_orden_oplopend:'locaties__vak' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'locaties__vak' }}" role="button">Vak</a></th>
+                                <th>Begraafplaats</th>
+                                <th class="sorting" {{ GET|heeft_orden_oplopend:'locaties__grafnummer' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'locaties__grafnummer' }}" role="button">Grafnummer</a></th>
+                                <th class="sorting" {{ GET|heeft_orden_oplopend:'locaties__vak' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'locaties__vak' }}" role="button">Vak</a></th>
                             {% elif TEMPLATE_BASIS and TEMPLATE_BASIS != "benc" %}
-                                <th class="js-has-address">Adres</th>
-                                <th class="js-has-address">Wijk</th>
-                                <th class="js-has-address">Buurt</th>
+                                <th>Adres</th>
+                                <th>Wijk</th>
+                                <th>Buurt</th>
                             {% endif %}
                             <th>Onderwerp</th>
                             <th class="sorting {{ GET|heeft_orden_oplopend:'origineel_aangemaakt' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'origineel_aangemaakt' }}" role="button">Datum</a></th>
@@ -72,13 +72,13 @@
                             </td>
                             <td>{{melding.id}}</td>
                             {% if not TEMPLATE_BASIS or TEMPLATE_BASIS == "benc" %}
-                                <td class="js-no-address">{% vind_in_dict filter_options.begraafplaats melding.locaties_voor_melding.0.begraafplaats %}</td>
-                                <td class="js-no-address">{% if melding.locaties_voor_melding.0.grafnummer %}{{ melding.locaties_voor_melding.0.grafnummer }} {% else %}n.v.t.{% endif %}</td>
-                                <td class="js-no-address">{% if melding.locaties_voor_melding.0.vak %}{{melding.locaties_voor_melding.0.vak}} {% else %}n.v.t.{% endif %}</td>
+                                <td>{% vind_in_dict filter_options.begraafplaats melding.locaties_voor_melding.0.begraafplaats %}</td>
+                                <td>{% if melding.locaties_voor_melding.0.grafnummer %}{{ melding.locaties_voor_melding.0.grafnummer }} {% else %}n.v.t.{% endif %}</td>
+                                <td>{% if melding.locaties_voor_melding.0.vak %}{{melding.locaties_voor_melding.0.vak}} {% else %}n.v.t.{% endif %}</td>
                             {% elif TEMPLATE_BASIS and TEMPLATE_BASIS != "benc" %}
-                                <td class="js-has-address">{% if melding.locaties_voor_melding.0.straatnaam %}{{melding.locaties_voor_melding.0.straatnaam}} {{melding.locaties_voor_melding.0.huisnummer}}{% else %}n.v.t.{% endif %}</td>
-                                <td class="js-has-address">{% if melding.locaties_voor_melding.0.wijknaam %}{{melding.locaties_voor_melding.0.wijknaam}}{% else %}n.v.t.{% endif %}</td>
-                                <td class="js-has-address">{% if melding.locaties_voor_melding.0.buurtnaam %}{{melding.locaties_voor_melding.0.buurtnaam}}{% else %}n.v.t.{% endif %}</td>
+                                <td>{% if melding.locaties_voor_melding.0.straatnaam %}{{melding.locaties_voor_melding.0.straatnaam}} {{melding.locaties_voor_melding.0.huisnummer}}{% else %}n.v.t.{% endif %}</td>
+                                <td>{% if melding.locaties_voor_melding.0.wijknaam %}{{melding.locaties_voor_melding.0.wijknaam}}{% else %}n.v.t.{% endif %}</td>
+                                <td>{% if melding.locaties_voor_melding.0.buurtnaam %}{{melding.locaties_voor_melding.0.buurtnaam}}{% else %}n.v.t.{% endif %}</td>
                             {% endif %}
                             <td>
                                 {% for onderwerp in melding.onderwerpen %}

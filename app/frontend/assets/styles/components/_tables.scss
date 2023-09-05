@@ -90,20 +90,6 @@
         }
     }
 
-    td,
-    th {
-        &.js-has-no-address {
-            &.show-no-address {
-                //display: table-cell;
-            }
-        }
-        &.js-has-address {
-            &.hide-address {
-                display: none;
-            }
-        }
-    }
-
     .btn-textlink {
         display: flex;
         padding: 6px 0;
