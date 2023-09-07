@@ -31,14 +31,12 @@ export default class extends Controller {
         const sessionExpiryMaxTimestamp = parseInt(this.sessionExpiryMaxTimestampValue) * 1000;
         var timer = setInterval(function(){
             const currentDate = new Date();
-            console.log({"sessionExpiryTimestamp": sessionExpiryTimestamp, "countdown": sessionExpiryTimestamp - parseInt((parseInt(currentDate.getTime())))})
-            console.log({"sessionExpiryMaxTimestamp": sessionExpiryMaxTimestamp, "countdownMax": sessionExpiryMaxTimestamp - parseInt((parseInt(currentDate.getTime())))})
             const timeIsUp = sessionExpiryTimestamp <= parseInt((parseInt(currentDate.getTime())))
             const timeIsUpMax = sessionExpiryMaxTimestamp <= parseInt((parseInt(currentDate.getTime())))
             if (timeIsUp || timeIsUpMax){
                 clearInterval(timer);
                 self.openModal()
             }
-        }, 1000 * 10);
+        }, 1000 * 60);
     }
 }

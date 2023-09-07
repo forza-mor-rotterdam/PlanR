@@ -9,6 +9,7 @@ class GebruikerAdmin(UserAdmin):
         "email",
         "is_staff",
         "is_active",
+        "profiel",
     )
     list_filter = (
         "email",
@@ -40,7 +41,11 @@ class GebruikerAdmin(UserAdmin):
 
 
 class ProfielAdmin(admin.ModelAdmin):
-    ...
+    list_display = (
+        "id",
+        "gebruiker",
+        "context",
+    )
 
 
 admin.site.register(Gebruiker, GebruikerAdmin)

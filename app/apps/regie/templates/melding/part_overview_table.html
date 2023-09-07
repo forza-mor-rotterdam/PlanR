@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load qs_ordenen heeft_orden_oplopend vind_in_dict qs_offset from querystring_tags %}
 {% load vertaal from vertaal_tags %}
-{% load kolom_inhoud from melding_tags %}
-{% load kolom_hoofd from melding_tags %}
+{% load render_th_tags from melding_tags %}
+{% load render_td_tags from melding_tags %}
 {% load rotterdam_formulier_html %}
 
 {% load to_date from date_tags %}
@@ -10,7 +10,7 @@
 {% block body %}
 <div data-controller="overview">
 
-    <turbo-frame id="overvieww" data-turbo-action="advance" >
+    <turbo-frame id="overview" >
         <form method="get" action="{% url 'overview' %}" id="filterForm" data-controller="filter">
             <div class="filter-header">
                 <h1 class="page-title">Meldingen</h1>
@@ -42,23 +42,7 @@
                     <thead>
                         <tr>
                             <th></th>
-                            <th class="sorting {{ GET|heeft_orden_oplopend:'id' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'id' }}" role="button">Melding</a></th>
-                            {% for kolom in kolommen %}
-                            <th>{% kolom_hoofd kolom %}</th>
-                            {% endfor %}
-                            {% if not TEMPLATE_BASIS or TEMPLATE_BASIS == "benc" %}
-                                <th>Begraafplaats</th>
-                                <th class="sorting" {{ GET|heeft_orden_oplopend:'locaties__grafnummer' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'locaties__grafnummer' }}" role="button">Grafnummer</a></th>
-                                <th class="sorting" {{ GET|heeft_orden_oplopend:'locaties__vak' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'locaties__vak' }}" role="button">Vak</a></th>
-                            {% elif TEMPLATE_BASIS and TEMPLATE_BASIS != "benc" %}
-                                <th>Adres</th>
-                                <th>Wijk</th>
-                                <th>Buurt</th>
-                            {% endif %}
-                            <th>Onderwerp</th>
-                            <th class="sorting {{ GET|heeft_orden_oplopend:'origineel_aangemaakt' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'origineel_aangemaakt' }}" role="button">Datum</a></th>
-                            {% comment %} <th class="sorting {{ GET|heeft_orden_oplopend:'afgesloten_op' }}"><a href="{% url 'overview' %}?{{ GET|qs_ordenen:'afgesloten_op' }}" role="button">Status</a></th> {% endcomment %}
-                            <th>Status</th>
+                            {% render_th_tags kolommen %}
                             <th></th>
                         </tr>
                     </thead>
@@ -75,32 +59,7 @@
                                 <div class="background-image"></div>
                                 {% endif %}
                             </td>
-                            <td>{{melding.id}}</td>
-                            {% for kolom in kolommen %}
-                            <td>{% kolom_inhoud kolom melding %}</td>
-                            {% endfor %}
-                            {% if not TEMPLATE_BASIS or TEMPLATE_BASIS == "benc" %}
-                                <td>{% vind_in_dict filter_options.begraafplaats melding.locaties_voor_melding.0.begraafplaats %}</td>
-                                <td>{% if melding.locaties_voor_melding.0.grafnummer %}{{ melding.locaties_voor_melding.0.grafnummer }} {% else %}n.v.t.{% endif %}</td>
-                                <td>{% if melding.locaties_voor_melding.0.vak %}{{melding.locaties_voor_melding.0.vak}} {% else %}n.v.t.{% endif %}</td>
-                            {% elif TEMPLATE_BASIS and TEMPLATE_BASIS != "benc" %}
-                                <td>{% if melding.locaties_voor_melding.0.straatnaam %}{{melding.locaties_voor_melding.0.straatnaam}} {{melding.locaties_voor_melding.0.huisnummer}}{% else %}n.v.t.{% endif %}</td>
-                                <td>{% if melding.locaties_voor_melding.0.wijknaam %}{{melding.locaties_voor_melding.0.wijknaam}}{% else %}n.v.t.{% endif %}</td>
-                                <td>{% if melding.locaties_voor_melding.0.buurtnaam %}{{melding.locaties_voor_melding.0.buurtnaam}}{% else %}n.v.t.{% endif %}</td>
-                            {% endif %}
-                            <td>
-                                {% for onderwerp in melding.onderwerpen %}
-                                    {% vind_in_dict filter_options.onderwerp onderwerp %}{% if not forloop.last %}, {% endif %}
-                                {% endfor %}
-
-                            </td>
-                            <td class="nowrap">{{melding.origineel_aangemaakt|to_date|date:"d-m-Y H:i"}}</td>
-                            <td class="nowrap">
-                                <span class="display--flex--center badge badge--{% if melding.status.naam == 'afgehandeld' %}green{% elif melding.status.naam == 'controle' %}yellow{% elif melding.status.naam == 'in_behandeling' %}darkblue{% else %}lightblue{% endif %}">
-                                    {{ melding.status.naam|vertaal }}
-                                    {% if melding.aantal_actieve_taken is not 0 %} ({{ melding.aantal_actieve_taken }}){% endif %}
-                                </span>
-                            </td>
+                            {% render_td_tags kolommen %}
                             <td>
                                 <a href="{% url 'melding_pdf_download' melding.uuid %}" target="_blank" role="button" class="btn btn-icon btn-textlink">
                                     <svg width="16" height="16" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" title="Exporteer pdf">

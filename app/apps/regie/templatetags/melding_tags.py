@@ -1,5 +1,5 @@
 from django import template
-from utils.diversen import string_based_lookup
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
@@ -13,14 +13,10 @@ def taakopdracht(melding, taakopdracht_id):
 
 
 @register.simple_tag(takes_context=True)
-def kolom_hoofd(context, kolom_data):
-    return kolom_data[1]
+def render_th_tags(context, kolommen):
+    return mark_safe("\n".join([k(context).th for k in kolommen]))
 
 
 @register.simple_tag(takes_context=True)
-def kolom_inhoud(context, kolom_data, lookup_object):
-    lookup_str = kolom_data[2]
-    result = string_based_lookup(
-        locals().get("context", {}), lookup_str=lookup_str, not_found_value="n.v.t"
-    )
-    return result
+def render_td_tags(context, kolommen):
+    return mark_safe("\n".join([k(context).td for k in kolommen]))
