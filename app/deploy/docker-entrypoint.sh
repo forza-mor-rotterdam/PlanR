@@ -11,6 +11,9 @@ set -x
 echo Apply migrations
 python manage.py migrate --noinput
 
+echo Load initial data
+python manage.py loaddata initial_data --ignorenonexistent
+
 echo Collecting static files
 python manage.py collectstatic --no-input
 

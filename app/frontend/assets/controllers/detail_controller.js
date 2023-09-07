@@ -37,7 +37,6 @@ export default class extends Controller {
     }
 
     selectImage(e) {
-        console.log("selectImage", e.params.imageIndex)
         this.imageSliderContainerTarget.scrollTo({left: (Number(e.params.imageIndex) - 1) * this.imageSliderContainerTarget.offsetWidth, top: 0})
         this.deselectThumbs(e.target.closest('ul'));
         e.target.closest('li').classList.add('selected');
@@ -55,7 +54,6 @@ export default class extends Controller {
     }
 
     cancelInformatieToevoegen(e) {
-        console.log("cancelInformatieToevoegen")
         const form = e.target.closest("form")
         // form.find(input["type=file"]).value=null
         form.reset();

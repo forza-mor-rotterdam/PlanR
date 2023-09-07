@@ -9,6 +9,20 @@ from utils.rd_convert import rd_to_wgs
 logger = logging.getLogger(__name__)
 
 
+class CheckboxSelectMultiple(forms.CheckboxSelectMultiple):
+    def create_option(self, *args, **kwargs):
+        args = list(args)
+        option_data = args[2]
+        args[2] = args[2].get("label")
+        option = super().create_option(*args, **kwargs)
+        option["attrs"].update({"item_count": option_data.get("item_count")})
+        return option
+
+
+class MultipleChoiceField(forms.MultipleChoiceField):
+    ...
+
+
 BEHANDEL_OPTIES = (
     (
         "ja",
@@ -88,9 +102,9 @@ class FilterForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.fields["offset"].choices = offset_options
         for v in velden:
-            self.fields[v.get("naam")] = forms.MultipleChoiceField(
+            self.fields[v.get("naam")] = MultipleChoiceField(
                 label=f"{v.get('naam')} ({v.get('aantal_actief')}/{len(v.get('opties', []))})",
-                widget=forms.CheckboxSelectMultiple(
+                widget=CheckboxSelectMultiple(
                     attrs={
                         "class": "list--form-check-input",
                         "hideLabel": True,
@@ -226,19 +240,6 @@ class MeldingAfhandelenForm(forms.Form):
         ),
         required=False,
     )
-
-    def __init__(self, *args, **kwargs):
-        # bijlagen = kwargs.pop("bijlagen", None)
-        super().__init__(*args, **kwargs)
-        # print("FORMS bijlagen = = = >")
-        # print(bijlagen)
-        # self.fields["bijlagen"].choices = bijlagen
-        # self.fields["bijlagen"].choices = [
-        #     (str(m.get("afbeelding")), m.get("afbeelding")) for m in bijlagen
-        # ]
-
-    # def terugsturen(self, data):
-    #     if data.get("afhandel_reden") == ""
 
 
 class MeldingAanmakenForm(forms.Form):

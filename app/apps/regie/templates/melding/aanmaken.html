@@ -20,9 +20,6 @@
     method="post"
     novalidate>
     {% csrf_token %}
-    <script>
-    console.log({"env": "{{ENVIRONMENT}}"})
-    </script>
     <fieldset>
         {% include "snippets/legend.html" with title="Locatie" icon_name="pin_filled" only %}
         {{ form.straatnaam|render_rotterdam_formulier }}

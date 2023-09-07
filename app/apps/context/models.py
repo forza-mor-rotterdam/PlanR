@@ -12,8 +12,10 @@ class Context(BasisModel):
         STANDAARD = "standaard", "Standaard"
         BENC = "benc", "Begraven & Cremeren"
 
-    naam = models.CharField(max_length=100)
+    naam = models.CharField(max_length=100, unique=True)
     filters = DictJSONField(default=dict)
+    kolommen = DictJSONField(default=dict)
+    standaard_filters = DictJSONField(default=dict)
 
     template = models.CharField(
         max_length=50,

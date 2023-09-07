@@ -5,10 +5,11 @@ import math
 
 import requests
 import weasyprint
-from apps.context.constanten import FILTER_NAMEN, KOLOMMEN
+from apps.context.constanten import FILTER_NAMEN, KOLOMMEN, KOLOMMEN_KEYS
+from apps.context.utils import get_gebruiker_context
 from apps.meldingen.service import MeldingenService
 from apps.meldingen.utils import get_taaktypes
-from apps.regie.constanten import MSB_WIJKEN
+from apps.regie.constanten import MSB_WIJKEN, VERTALINGEN
 from apps.regie.forms import (
     BEHANDEL_OPTIES,
     BEHANDEL_RESOLUTIE,
@@ -56,6 +57,7 @@ def http_500(request):
 
 @login_required
 def overview(request):
+    gebruiker_context = get_gebruiker_context(request)
     standaard_waardes = {
         "ordering": "-origineel_aangemaakt",
         "offset": "0",
@@ -68,7 +70,25 @@ def overview(request):
 
     request.session["overview_querystring"] = request.GET.urlencode()
 
-    data = MeldingenService().get_melding_lijst(query_string=query_dict.urlencode())
+    meldingen_qd = QueryDict("", mutable=True)
+    actieve_filters = FILTER_NAMEN
+    meldingen_qd.update(query_dict)
+    standaard_filters = []
+    kolommen = KOLOMMEN
+    if gebruiker_context:
+        actieve_filters = gebruiker_context.filters.get("fields", [])
+        standaard_filters = gebruiker_context.standaard_filters
+        for k, v in standaard_filters.items():
+            for vv in v:
+                meldingen_qd.update({k: vv})
+        kolommen = [
+            KOLOMMEN_KEYS.get(k)
+            for k in gebruiker_context.kolommen.get("sorted", [])
+            if KOLOMMEN_KEYS.get(k)
+        ]
+    actieve_filters = [f for f in actieve_filters if f in FILTER_NAMEN]
+
+    data = MeldingenService().get_melding_lijst(query_string=meldingen_qd.urlencode())
 
     pagina_aantal = math.ceil(data.get("count", 0) / int(query_dict.get("limit")))
     offset_options = [
@@ -80,21 +100,12 @@ def overview(request):
         if str(query_dict.get("offset")) in [str(oo[0]) for oo in offset_options]
         else 0
     )
-    actieve_filters = FILTER_NAMEN
-    if (
-        hasattr(request, "user")
-        and hasattr(request.user, "profiel")
-        and hasattr(request.user.profiel, "context")
-        and hasattr(request.user.profiel.context, "filters")
-    ):
-        actieve_filters = request.user.profiel.context.filters.get("fields", [])
 
-    actieve_filters = [f for f in actieve_filters if f in FILTER_NAMEN]
     filter_velden = [
         {
             "naam": f,
             "opties": [
-                [k, f"{v[0]}"]
+                [k, {"label": VERTALINGEN.get(v[0], v[0]), "item_count": v[1]}]
                 for k, v in data.get("filter_options", {}).get(f, {}).items()
             ],
             "aantal_actief": len(query_dict.getlist(f)),
@@ -143,7 +154,7 @@ def overview(request):
             "form": form,
             "filter_options": data.get("filter_options", {}),
             "melding_aanmaken_url": melding_aanmaken_url,
-            "kolommen": KOLOMMEN,
+            "kolommen": kolommen,
         },
     )
 
