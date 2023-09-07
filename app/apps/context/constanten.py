@@ -8,7 +8,7 @@ from utils.diversen import string_based_lookup
 
 
 class StandaardKolom:
-    _view_name = "overview"
+    _view_name = "melding_lijst"
     _ordering_key = "ordering"
     _key = None
     _kolom_hoofd = None

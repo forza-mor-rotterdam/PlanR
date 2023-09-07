@@ -56,7 +56,7 @@ def http_500(request):
 
 
 @login_required
-def overview(request):
+def melding_lijst(request):
     gebruiker_context = get_gebruiker_context(request)
     standaard_waardes = {
         "ordering": "-origineel_aangemaakt",
@@ -143,7 +143,7 @@ def overview(request):
 
     return render(
         request,
-        "melding/part_overview_table.html",
+        "melding/melding_lijst.html",
         {
             "meldingen": meldingen,
             "totaal": totaal,
@@ -160,7 +160,7 @@ def overview(request):
 
 
 @login_required
-def detail(request, id):
+def melding_detail(request, id):
     melding = MeldingenService().get_melding(id)
     taaktypes = get_taaktypes(melding)
     melding_bijlagen = [
@@ -193,7 +193,7 @@ def detail(request, id):
                 bijlagen=bijlagen_base64,
                 gebruiker=request.user.email,
             )
-            return redirect("detail", id=id)
+            return redirect("melding_detail", id=id)
     aantal_actieve_taken = len(
         [
             to
@@ -204,7 +204,7 @@ def detail(request, id):
 
     return render(
         request,
-        "melding/part_detail.html",
+        "melding/melding_detail.html",
         {
             "melding": melding,
             "form": form,
@@ -251,7 +251,7 @@ def melding_afhandelen(request, id):
                 status="afgehandeld",
                 resolutie="opgelost",
             )
-            return redirect("detail", id=id)
+            return redirect("melding_detail", id=id)
 
     return render(
         request,
@@ -283,7 +283,7 @@ def taak_starten(request, id):
                 bericht=data.get("bericht"),
                 gebruiker=request.user.email,
             )
-            return redirect("detail", id=id)
+            return redirect("melding_detail", id=id)
 
     return render(
         request,
@@ -320,7 +320,7 @@ def taak_afronden(request, melding_uuid, taakopdracht_uuid):
                 gebruiker=request.user.email,
             )
 
-            return redirect("detail", id=melding_uuid)
+            return redirect("melding_detail", id=melding_uuid)
 
     return render(
         request,
@@ -353,7 +353,7 @@ def informatie_toevoegen(request, id):
                 omschrijving_intern=form.cleaned_data.get("opmerking"),
                 gebruiker=request.user.email,
             )
-            return redirect("detail", id=id)
+            return redirect("melding_detail", id=id)
 
     return render(
         request,
@@ -368,18 +368,6 @@ def informatie_toevoegen(request, id):
 
 def root(request):
     return redirect(reverse("melding_lijst"))
-
-
-@login_required
-def melding_lijst(request):
-
-    return render(
-        request,
-        "melding/index.html",
-        {
-            # "meldingen": alle_meldingen,
-        },
-    )
 
 
 @login_required
