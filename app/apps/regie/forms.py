@@ -16,6 +16,7 @@ class CheckboxSelectMultiple(forms.CheckboxSelectMultiple):
         args[2] = args[2].get("label")
         option = super().create_option(*args, **kwargs)
         option["attrs"].update({"item_count": option_data.get("item_count")})
+        option["attrs"].update({"selected": args[3]})
         return option
 
 
