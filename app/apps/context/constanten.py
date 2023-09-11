@@ -117,7 +117,20 @@ class AdresKolom(StandaardKolom):
             "melding.locaties_voor_melding.0.huisnummer",
             not_found_value="",
         )
-        return f"{straatnaam} {huisnummer}" if straatnaam else default
+        buurt = string_based_lookup(
+            self.context,
+            "melding.locaties_voor_melding.0.buurtnaam",
+            not_found_value="",
+        )
+        wijk = string_based_lookup(
+            self.context,
+            "melding.locaties_voor_melding.0.wijknaam",
+            not_found_value="",
+        )
+
+        return (
+            f"{straatnaam} {huisnummer},<br> {buurt}, {wijk}" if straatnaam else default
+        )
 
 
 class WijkKolom(StandaardKolom):
