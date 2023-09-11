@@ -394,6 +394,7 @@ def melding_pdf_download(request, id):
         "melding": melding,
         "bijlagen_extra": bijlagen_flat,
         "base_url": f"{request.scheme}://{request.get_host()}",
+        "request": request,
     }
     context.update(general_settings(request))
 
