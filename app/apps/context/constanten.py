@@ -186,6 +186,12 @@ class MeldingIdKolom(StandaardKolom):
     _kolom_inhoud = "melding.id"
     _ordering_value = "id"
 
+    def td_inhoud(self):
+        uuid = string_based_lookup(self.context, "melding.uuid")
+        return mark_safe(
+            f"<a href='./{uuid}' data-turbo-action='advance'>{self.td_label()}</a>"
+        )
+
 
 class BegraafplaatsKolom(StandaardKolom):
     _key = "begraafplaats"

@@ -92,6 +92,11 @@
                             background-color: #E0EEE2;
                         }
                     }
+                    &:focus {
+                        &:before {
+                            @include focus-outline();
+                        }
+                    }
                 }
 
             }

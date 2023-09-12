@@ -1,3 +1,9 @@
+@mixin focus-outline {
+    outline-style: solid !important;
+    outline-width: medium !important;
+    outline-color: $gray-tint11 !important;
+}
+
 html,
 body {
     margin: 0;
@@ -35,6 +41,21 @@ header {
 
 main {
     margin-bottom: 100px;
+}
+
+.skiplink {
+    position: absolute;
+    left: -10000px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+
+    &:focus {
+        position: static;
+        width: auto;
+        height: auto;
+    }
 }
 
 .grid-container {
@@ -133,6 +154,12 @@ table {
     }
 }
 
+summary {
+    &:focus {
+        @include focus-outline();
+    }
+}
+
 a,
 .link {
     color: $primary;
@@ -142,6 +169,10 @@ a,
     &:hover,
     &:focus {
         text-decoration: none;
+    }
+
+    &:focus {
+        @include focus-outline();
     }
 
     &.link--location {

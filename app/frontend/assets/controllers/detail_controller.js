@@ -1,5 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 
+let lastFocussedItem = null
 export default class extends Controller {
 
     static targets = ['selectedImage', 'thumbList', 'imageSliderContainer', 'turboActionModal']
@@ -8,20 +9,28 @@ export default class extends Controller {
         if(this.hasThumbListTarget) {
             this.thumbListTarget.getElementsByTagName('li')[0].classList.add('selected')
         }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+              this.closeModal()
+            }
+        })
     }
 
     openModal(event) {
-        const modal = document.querySelector('.modal');
-        const modalBackdrop = document.querySelector('.modal-backdrop');
+        lastFocussedItem = event.target.closest('button')
+        const modal = document.querySelector('.modal')
+        const modalBackdrop = document.querySelector('.modal-backdrop')
 
         // NOT WORKING ?? this.turboActionModalTarget.setAttribute("src", event)
 
         const turboActionModal = document.querySelector('#melding_actie_form')
         turboActionModal.setAttribute("src", event.params.action)
 
-        modal.classList.add('show');
-        modalBackdrop.classList.add('show');
-        document.body.classList.add('show-modal');
+        modal.classList.add('show')
+        modalBackdrop.classList.add('show')
+        document.body.classList.add('show-modal')
+        setTimeout(function() {modal.querySelectorAll('.btn-close')[0].focus();}, 200)
     }
 
     closeModal() {
@@ -30,6 +39,7 @@ export default class extends Controller {
         modal.classList.remove('show');
         modalBackdrop.classList.remove('show');
         document.body.classList.remove('show-modal');
+        if(lastFocussedItem) { lastFocussedItem.focus() }
     }
 
     onScrollSlider(e) {
