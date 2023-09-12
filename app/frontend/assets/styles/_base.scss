@@ -43,6 +43,21 @@ main {
     margin-bottom: 100px;
 }
 
+.skiplink {
+    position: absolute;
+    left: -10000px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+
+    &:focus {
+        position: static;
+        width: auto;
+        height: auto;
+    }
+}
+
 .grid-container {
     display: grid;
     grid-auto-columns: minmax(0, 1fr);
@@ -136,6 +151,12 @@ table {
                 margin: 0;
             }
         }
+    }
+}
+
+summary {
+    &:focus {
+        @include focus-outline();
     }
 }
 
