@@ -6,8 +6,8 @@
         "naam": "Standaard",
         "aangemaakt_op": "2023-01-01 00:00:00.000000+00",
         "aangepast_op": "2023-01-01 00:00:00.000000+00",
-        "filters": {"fields": ["buurt", "wijk", "onderwerp", "status"]},
-        "kolommen": {"sorted": ["status", "wijk", "buurt", "onderwerp"]},
+        "filters": {"fields": ["adres", "onderwerp", "status"]},
+        "kolommen": {"sorted": ["melding_id", "onderwerp", "adres", "origineel_aangemaakt", "status"]},
         "template": "standaard"
       }
     },
@@ -19,7 +19,7 @@
         "aangemaakt_op": "2023-01-01 00:00:00.000000+00",
         "aangepast_op": "2023-01-01 00:00:00.000000+00",
         "filters": {"fields": ["buurt", "wijk", "onderwerp", "status"]},
-        "kolommen": {"sorted": ["melding_id", "origineel_aangemaakt", "adres", "buurt", "wijk", "onderwerp", "status"]},
+        "kolommen": {"sorted": ["melding_id", "onderwerp", "adres_buurt_wijk", "origineel_aangemaakt", "status"]},
         "template": "standaard"
       }
     },

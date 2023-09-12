@@ -1,3 +1,4 @@
+import string
 from datetime import datetime
 
 from apps.regie.constanten import VERTALINGEN
@@ -117,7 +118,50 @@ class AdresKolom(StandaardKolom):
             "melding.locaties_voor_melding.0.huisnummer",
             not_found_value="",
         )
-        return f"{straatnaam} {huisnummer}" if straatnaam else default
+
+        return f"{string.capwords(straatnaam)} {huisnummer}" if straatnaam else default
+
+
+class AdresBuurtWijkKolom(StandaardKolom):
+    _key = "adres_buurt_wijk"
+    _kolom_hoofd = "Adres"
+    _td_standaard_classes = "nowrap"
+    _ordering_value = "locaties_voor_melding__straatnaam"
+
+    def td_label(self):
+        default = "-"
+        straatnaam = string_based_lookup(
+            self.context,
+            "melding.locaties_voor_melding.0.straatnaam",
+            not_found_value="",
+        )
+        huisnummer = string_based_lookup(
+            self.context,
+            "melding.locaties_voor_melding.0.huisnummer",
+            not_found_value="",
+        )
+        buurt = string_based_lookup(
+            self.context,
+            "melding.locaties_voor_melding.0.buurtnaam",
+            not_found_value="",
+        )
+        wijk = string_based_lookup(
+            self.context,
+            "melding.locaties_voor_melding.0.wijknaam",
+            not_found_value="",
+        )
+
+        list = []
+        if len(buurt) > 0:
+            list.append(buurt)
+        if len(wijk) > 0:
+            list.append(wijk)
+
+        return (
+            f"{string.capwords(straatnaam)} {huisnummer}" + "<br>" + ", ".join(list)
+            if list
+            else default
+        )
 
 
 class WijkKolom(StandaardKolom):
@@ -254,6 +298,7 @@ KOLOMMEN = (
     MeldingIdKolom,
     MSBNummerKolom,
     AdresKolom,
+    AdresBuurtWijkKolom,
     WijkKolom,
     BuurtKolom,
     BegraafplaatsKolom,
