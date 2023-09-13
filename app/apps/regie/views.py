@@ -240,6 +240,12 @@ def melding_afhandelen(request, id):
         ]
         for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
     ]
+    taakopdrachten = {
+        to.get("uuid"): to for to in melding.get("taakopdrachten_voor_melding", [])
+    }
+    print("===== > taakopdrachten")
+    print(taakopdrachten)
+
     bijlagen_flat = [b for bl in melding_bijlagen for b in bl]
     form = MeldingAfhandelenForm()
     if request.POST:
@@ -262,6 +268,12 @@ def melding_afhandelen(request, id):
             )
             return redirect("melding_detail", id=id)
 
+    actieve_taken = [
+        to
+        for to in melding.get("taakopdrachten_voor_melding", [])
+        if to.get("status", {}).get("naam") != "voltooid"
+    ]
+
     return render(
         request,
         "melding/part_melding_afhandelen.html",
@@ -271,6 +283,8 @@ def melding_afhandelen(request, id):
             "afhandel_reden_opties": afhandel_reden_opties,
             "standaard_afhandel_teksten": {bo[0]: bo[2] for bo in BEHANDEL_OPTIES},
             "bijlagen": bijlagen_flat,
+            "actieve_taken": actieve_taken,
+            "aantal_actieve_taken": len(actieve_taken),
         },
     )
 
