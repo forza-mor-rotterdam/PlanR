@@ -202,6 +202,14 @@ def melding_detail(request, id):
         ]
     )
 
+    aantal_voltooide_taken = len(
+        [
+            to
+            for to in melding.get("taakopdrachten_voor_melding", [])
+            if to.get("status", {}).get("naam") == "voltooid"
+        ]
+    )
+
     return render(
         request,
         "melding/melding_detail.html",
@@ -212,6 +220,7 @@ def melding_detail(request, id):
             "bijlagen_extra": bijlagen_flat,
             "taaktypes": taaktypes,
             "aantal_actieve_taken": aantal_actieve_taken,
+            "aantal_voltooide_taken": aantal_voltooide_taken,
         },
     )
 

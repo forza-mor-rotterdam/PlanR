@@ -33,7 +33,14 @@
                     <span class="badge badge--{% if melding.status.naam == 'afgehandeld'%}green{% elif melding.status.naam == 'controle' %}yellow{% elif melding.status.naam == 'in_behandeling' %}darkblue{% else %}lightblue{% endif %}">{{melding.status.naam|vertaal}}{% if melding.status.naam is 'afgehandeld'%} ({{melding.resolutie}}){% endif %}</span>
                     {% endif %}
                     {% if aantal_actieve_taken %}
-                        <span class="badge badge--darkblue">{{aantal_actieve_taken}} {% if aantal_actieve_taken > 1 %}Taken{%else%}Taak{%endif%} actief</span>
+                        <span class="badge badge--darkblue">{{aantal_actieve_taken}} {% if aantal_actieve_taken > 1 %}taken{%else%}taak{%endif%} actief</span>
+                    {% else %}
+                        <span class="badge badge--darkblue">0 taken actief</span>
+                    {% endif %}
+                    {% if aantal_voltooide_taken %}
+                        <span class="badge badge--darkblue">{{aantal_voltooide_taken}} {% if aantal_voltooide_taken > 1 %}taken{%else%}taak{%endif%} voltooid</span>
+                    {% else %}
+                        <span class="badge badge--darkblue">0 taken voltooid</span>
                     {% endif %}
                 </div>
             </div>
