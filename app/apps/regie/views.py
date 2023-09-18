@@ -29,7 +29,7 @@ from apps.regie.forms import (
 from apps.regie.utils import melding_naar_tijdlijn, to_base64
 from config.context_processors import general_settings
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.core.files.storage import default_storage
 from django.http import HttpResponse, QueryDict, StreamingHttpResponse
 from django.shortcuts import redirect, render
@@ -55,7 +55,22 @@ def http_500(request):
     )
 
 
+def root(request):
+    if request.user.has_perms(["authorisatie.melding_lijst_bekijken"]):
+        return redirect(reverse("melding_lijst"))
+    return redirect(reverse("account"))
+
+
 @login_required
+def account(request):
+    return render(
+        request,
+        "auth/account.html",
+        {},
+    )
+
+
+@permission_required("authorisatie.melding_lijst_bekijken")
 def melding_lijst(request):
     gebruiker_context = get_gebruiker_context(request)
     standaard_waardes = {
@@ -159,7 +174,7 @@ def melding_lijst(request):
     )
 
 
-@login_required
+@permission_required("authorisatie.melding_bekijken")
 def melding_detail(request, id):
     melding = MeldingenService().get_melding(id)
     taaktypes = get_taaktypes(melding)
@@ -225,7 +240,7 @@ def melding_detail(request, id):
     )
 
 
-@login_required
+@permission_required("authorisatie.melding_afhandelen")
 def melding_afhandelen(request, id):
     melding = MeldingenService().get_melding(id)
     afhandel_reden_opties = [(s, s) for s in melding.get("volgende_statussen", ())]
@@ -289,7 +304,7 @@ def melding_afhandelen(request, id):
     )
 
 
-@login_required
+@permission_required("authorisatie.taak_aanmaken")
 def taak_starten(request, id):
     melding = MeldingenService().get_melding(id)
     taaktypes = get_taaktypes(melding)
@@ -318,7 +333,7 @@ def taak_starten(request, id):
     )
 
 
-@login_required
+@permission_required("authorisatie.taak_afronden")
 def taak_afronden(request, melding_uuid, taakopdracht_uuid):
     melding = MeldingenService().get_melding(melding_uuid)
     taakopdrachten = {
@@ -356,7 +371,7 @@ def taak_afronden(request, melding_uuid, taakopdracht_uuid):
     )
 
 
-@login_required
+@permission_required("authorisatie.melding_bekijken")
 def informatie_toevoegen(request, id):
     melding = MeldingenService().get_melding(id)
     tijdlijn_data = melding_naar_tijdlijn(melding)
@@ -389,11 +404,7 @@ def informatie_toevoegen(request, id):
     )
 
 
-def root(request):
-    return redirect(reverse("melding_lijst"))
-
-
-@login_required
+@permission_required("authorisatie.melding_bekijken")
 def melding_pdf_download(request, id):
     melding = MeldingenService().get_melding(id)
     base_url = request.build_absolute_uri()
@@ -447,7 +458,7 @@ def meldingen_bestand(request):
     )
 
 
-@login_required
+@permission_required("authorisatie.melding_aanmaken")
 def melding_aanmaken(request):
     if request.POST:
         form = MeldingAanmakenForm(request.POST, request.FILES)
@@ -490,7 +501,7 @@ def melding_verzonden(request, signaal_uuid):
     )
 
 
-@login_required
+@permission_required("authorisatie.msb_toegang")
 def msb_login(request):
     form = MSBLoginForm()
     errors = None
@@ -516,7 +527,7 @@ def msb_login(request):
     return render(request, "msb/login.html", {"form": form, "errors": errors})
 
 
-@login_required
+@permission_required("authorisatie.msb_toegang")
 def msb_melding_zoeken(request):
     if not request.session.get("msb_token"):
         return redirect(reverse("msb_login"))
@@ -557,7 +568,7 @@ def msb_melding_zoeken(request):
     )
 
 
-@login_required
+@permission_required("authorisatie.msb_toegang")
 def msb_importeer_melding(request):
     if not request.session.get("msb_token"):
         return redirect(reverse("msb_login"))
