@@ -1,4 +1,5 @@
 from apps.regie.views import (
+    account,
     http_404,
     http_500,
     informatie_toevoegen,
@@ -25,6 +26,7 @@ from rest_framework.authtoken import views
 
 urlpatterns = [
     path("", root, name="root"),
+    path("account/", account, name="account"),
     path("api-token-auth/", views.obtain_auth_token),
     path("admin/", admin.site.urls),
     path("oidc/", include("mozilla_django_oidc.urls")),
