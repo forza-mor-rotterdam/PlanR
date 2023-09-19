@@ -15,6 +15,7 @@ def get_taaktypes(melding):
             list(
                 to.get("taaktype")
                 for to in melding.get("taakopdrachten_voor_melding", [])
+                if not to.get("resolutie")
             )
         )
     ]
