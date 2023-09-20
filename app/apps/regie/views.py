@@ -177,6 +177,7 @@ def melding_lijst(request):
 @permission_required("authorisatie.melding_bekijken")
 def melding_detail(request, id):
     melding = MeldingenService().get_melding(id)
+    tijdlijn_data = melding_naar_tijdlijn(melding)
     taaktypes = get_taaktypes(melding)
     melding_bijlagen = [
         [bijlage for bijlage in meldinggebeurtenis.get("bijlagen", [])]
@@ -236,6 +237,7 @@ def melding_detail(request, id):
             "taaktypes": taaktypes,
             "aantal_actieve_taken": aantal_actieve_taken,
             "aantal_voltooide_taken": aantal_voltooide_taken,
+            "tijdlijn_data": tijdlijn_data,
         },
     )
 
