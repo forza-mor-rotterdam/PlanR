@@ -1,0 +1,61 @@
+{% load rotterdam_formulier_html %}
+{% load vind_in_dict from querystring_tags %}
+{% load to_date from date_tags %}
+{% load json_encode from json_tags %}
+
+<turbo-frame id="melding_actie_form">
+    <div class="modal-dialog modal-dialog--small">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1>
+                    <span>Taak annuleren</span>
+                </h1>
+                <p>
+                    {{ taakopdracht.titel }}
+                </p>
+                <button
+                    type="button"
+                    class="btn-close"
+                    aria-label="Sluit"
+                    data-action="detail#closeModal">
+                </button>
+            </div>
+            <div class="modal-body">
+                <form
+                    action="{% url 'taak_annuleren' melding.uuid taakopdracht.uuid %}"
+                    method="post"
+                    class="form--horizontal"
+                    data-controller=""
+                    data-turbo-frame="_top"
+                    enctype="multipart/form-data"
+                >
+
+                    {% csrf_token %}
+
+                    <div data-controller="bijlagen">
+                        {{ form.bijlagen|render_rotterdam_formulier }}
+                    </div>
+                    <div class="form-control__with-helptext">
+                        {{ form.omschrijving_intern|render_rotterdam_formulier }}
+                    </div>
+                    <div class="form-row btn-row">
+                        <button
+                            type="reset"
+                            class="btn btn-tertiary"
+                            data-controller="detail"
+                            data-action="detail#closeModal"
+                        >
+                            <span>Annuleren</span>
+                        </button>
+                        <button
+                            type="submit"
+                            class="btn btn-action"
+                        >
+                            <span>Taak annuleren</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</turbo-frame>

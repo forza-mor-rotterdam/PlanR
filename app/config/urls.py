@@ -15,6 +15,7 @@ from apps.regie.views import (
     msb_melding_zoeken,
     root,
     taak_afronden,
+    taak_annuleren,
     taak_starten,
 )
 from django.conf import settings
@@ -50,6 +51,11 @@ urlpatterns = [
         "part/melding/<uuid:melding_uuid>/taak-afronden/<uuid:taakopdracht_uuid>/",
         taak_afronden,
         name="taak_afronden",
+    ),
+    path(
+        "part/melding/<uuid:melding_uuid>/taak-annuleren/<uuid:taakopdracht_uuid>/",
+        taak_annuleren,
+        name="taak_annuleren",
     ),
     path(
         "part/melding/<uuid:id>/informatie-toevoegen/",

@@ -40,27 +40,31 @@ BEHANDEL_OPTIES = (
         None,
     ),
 )
+
+TAAK_STATUS_VOLTOOID = "voltooid"
+TAAK_RESOLUTIE_OPGELOST = "opgelost"
+TAAK_RESOLUTIE_NIET_OPGELOST = "niet_opgelost"
+TAAK_RESOLUTIE_GEANNULEERD = "geannuleerd"
+
 TAAK_BEHANDEL_OPTIES = (
     (
         "ja",
         "Ja",
         "We zijn met uw melding aan de slag gegaan en hebben het probleem opgelost.",
-        "voltooid",
-        "opgelost",
+        TAAK_STATUS_VOLTOOID,
+        TAAK_RESOLUTIE_OPGELOST,
     ),
     (
         "nee",
         "Nee, het probleem kan niet worden opgelost.",
         "We zijn met uw melding aan de slag gegaan, maar konden het probleem helaas niet oplossen. Want...",
-        "voltooid",
-        None,
+        TAAK_STATUS_VOLTOOID,
+        TAAK_RESOLUTIE_NIET_OPGELOST,
     ),
 )
 
 TAAK_BEHANDEL_STATUS = {bo[0]: bo[3] for bo in TAAK_BEHANDEL_OPTIES}
 TAAK_BEHANDEL_RESOLUTIE = {bo[0]: bo[4] for bo in TAAK_BEHANDEL_OPTIES}
-BEHANDEL_STATUS = {bo[0]: bo[3] for bo in BEHANDEL_OPTIES}
-BEHANDEL_RESOLUTIE = {bo[0]: bo[4] for bo in BEHANDEL_OPTIES}
 
 
 class CheckboxSelectMultipleThumb(forms.CheckboxSelectMultiple):
@@ -186,6 +190,34 @@ class TaakAfrondenForm(forms.Form):
         required=True,
     )
 
+    bijlagen = forms.FileField(
+        widget=forms.widgets.FileInput(
+            attrs={
+                "accept": ".jpg, .jpeg, .png, .heic",
+                "data-action": "change->bijlagen#updateImageDisplay",
+                "data-bijlagen-target": "bijlagenAfronden",
+            }
+        ),
+        label="Foto's",
+        required=False,
+    )
+
+    omschrijving_intern = forms.CharField(
+        label="Interne opmerking",
+        help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "data-testid": "information",
+                "rows": "4",
+                "data-meldingbehandelformulier-target": "internalText",
+            }
+        ),
+        required=False,
+    )
+
+
+class TaakAnnulerenForm(forms.Form):
     bijlagen = forms.FileField(
         widget=forms.widgets.FileInput(
             attrs={

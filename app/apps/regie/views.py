@@ -12,11 +12,10 @@ from apps.meldingen.utils import get_taaktypes
 from apps.regie.constanten import MSB_WIJKEN, VERTALINGEN
 from apps.regie.forms import (
     BEHANDEL_OPTIES,
-    BEHANDEL_RESOLUTIE,
-    BEHANDEL_STATUS,
-    TAAK_BEHANDEL_OPTIES,
     TAAK_BEHANDEL_RESOLUTIE,
     TAAK_BEHANDEL_STATUS,
+    TAAK_RESOLUTIE_GEANNULEERD,
+    TAAK_STATUS_VOLTOOID,
     FilterForm,
     InformatieToevoegenForm,
     MeldingAanmakenForm,
@@ -24,6 +23,7 @@ from apps.regie.forms import (
     MSBLoginForm,
     MSBMeldingZoekenForm,
     TaakAfrondenForm,
+    TaakAnnulerenForm,
     TaakStartenForm,
 )
 from apps.regie.utils import melding_naar_tijdlijn, to_base64
@@ -257,11 +257,6 @@ def melding_afhandelen(request, id):
         ]
         for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
     ]
-    taakopdrachten = {
-        to.get("uuid"): to for to in melding.get("taakopdrachten_voor_melding", [])
-    }
-    print("===== > taakopdrachten")
-    print(taakopdrachten)
 
     bijlagen_flat = [b for bl in melding_bijlagen for b in bl]
     form = MeldingAfhandelenForm()
@@ -365,6 +360,44 @@ def taak_afronden(request, melding_uuid, taakopdracht_uuid):
     return render(
         request,
         "melding/part_taak_afronden.html",
+        {
+            "form": form,
+            "melding": melding,
+            "taakopdracht": taakopdracht,
+        },
+    )
+
+
+@permission_required("authorisatie.taak_annuleren")
+def taak_annuleren(request, melding_uuid, taakopdracht_uuid):
+    melding = MeldingenService().get_melding(melding_uuid)
+    taakopdrachten = {
+        to.get("uuid"): to for to in melding.get("taakopdrachten_voor_melding", [])
+    }
+    taakopdracht = taakopdrachten.get(str(taakopdracht_uuid), {})
+    form = TaakAnnulerenForm()
+    if request.POST:
+        form = TaakAnnulerenForm(request.POST)
+        if form.is_valid():
+            bijlagen = request.FILES.getlist("bijlagen_extra", [])
+            bijlagen_base64 = []
+            for f in bijlagen:
+                file_name = default_storage.save(f.name, f)
+                bijlagen_base64.append({"bestand": to_base64(file_name)})
+            MeldingenService().taak_status_aanpassen(
+                taakopdracht_url=taakopdracht.get("_links", {}).get("self"),
+                status=TAAK_STATUS_VOLTOOID,
+                resolutie=TAAK_RESOLUTIE_GEANNULEERD,
+                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
+                bijlagen=bijlagen_base64,
+                gebruiker=request.user.email,
+            )
+
+            return redirect("melding_detail", id=melding_uuid)
+
+    return render(
+        request,
+        "melding/part_taak_annuleren.html",
         {
             "form": form,
             "melding": melding,

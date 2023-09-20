@@ -36,6 +36,11 @@ class TaakAfrondenPermissie(BasisPermissie):
     codenaam = "taak_afronden"
 
 
+class TaakAnnulerenPermissie(BasisPermissie):
+    naam = "Taak annuleren"
+    codenaam = "taak_annuleren"
+
+
 class GebruikerAanmakenPermissie(BasisPermissie):
     naam = "Gebruiker aanmaken"
     codenaam = "gebruiker_aanmaken"
