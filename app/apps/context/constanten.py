@@ -238,7 +238,7 @@ class OnderwerpKolom(StandaardKolom):
             return default
         onderwerpen_opties = self.context.get("filter_options", {}).get("onderwerp", {})
         begraafplaats_namen = [
-            v[0]
+            str(v[0])
             for k, v in onderwerpen_opties.items()
             if k in [str(o) for o in onderwerpen]
         ]
