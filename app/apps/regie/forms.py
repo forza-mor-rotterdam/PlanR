@@ -178,6 +178,33 @@ class TaakStartenForm(forms.Form):
         self.fields["taaktype"].choices = taaktypes
 
 
+class TaakVerwijderenForm(forms.Form):
+    taaktype = forms.ChoiceField(
+        widget=forms.Select(),
+        label="Taak",
+        choices=(
+            ("graf_ophogen", "Graf ophogen"),
+            ("steen_rechtzetten", "Steen rechtzetten"),
+            ("snoeien", "Snoeien"),
+        ),
+        required=True,
+    )
+
+    bericht = forms.CharField(
+        label="Interne opmerking",
+        help_text="Deze tekst wordt niet naar de melder verstuurd.",
+        widget=forms.Textarea(
+            attrs={"class": "form-control", "data-testid": "information", "rows": "4"}
+        ),
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        taaktypes = kwargs.pop("taaktypes", None)
+        super().__init__(*args, **kwargs)
+        self.fields["taaktype"].choices = taaktypes
+
+
 class TaakAfrondenForm(forms.Form):
     status = forms.ChoiceField(
         widget=RadioSelect(

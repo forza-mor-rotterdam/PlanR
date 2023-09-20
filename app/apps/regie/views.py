@@ -25,6 +25,7 @@ from apps.regie.forms import (
     TaakAfrondenForm,
     TaakAnnulerenForm,
     TaakStartenForm,
+    TaakVerwijderenForm,
 )
 from apps.regie.utils import melding_naar_tijdlijn, to_base64
 from config.context_processors import general_settings

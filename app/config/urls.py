@@ -23,6 +23,7 @@ from apps.regie.views import (
     taak_afronden,
     taak_annuleren,
     taak_starten,
+    taak_verwijderen,
 )
 from django.conf import settings
 from django.conf.urls.static import static
