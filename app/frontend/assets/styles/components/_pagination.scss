@@ -12,14 +12,19 @@
         button {
             border: 0;
             outline: none;
-            width: 32px;
             height: 32px;
             background-color: white;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding-left: 6px;
+            padding-right: 6px;
+            font-size: 16px;
+
+            svg {
+                padding-left: 6px;
+            }
             &:hover {
-                color: $green-tint01;
                 background-color: #E0EEE2;
             }
 
@@ -30,8 +35,8 @@
                 }
             }
             &.btn--previous {
-                transform: rotate(180deg);
                 svg{
+                    transform: rotate(180deg);
                     fill: $gray-tint11;
                 }
             }
@@ -85,6 +90,11 @@
                         &::before {
                             color: $green-tint01;
                             background-color: #E0EEE2;
+                        }
+                    }
+                    &:focus {
+                        &:before {
+                            @include focus-outline();
                         }
                     }
                 }

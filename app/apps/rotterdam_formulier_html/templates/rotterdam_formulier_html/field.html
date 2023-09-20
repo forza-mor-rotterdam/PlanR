@@ -96,7 +96,7 @@
                     <label class="control-label {{ classes.label }} {% if field.field.required %}{{ form.required_css_class }}{% endif %}" for="{{ field.auto_id }}">{{ field.label }}</label>
                 {% endif %}
                 <div>
-                    <select multiple name="{{ field.html_name }}" id="{{ field.auto_id }}" {% render_attrs field class="form-select" test="nog een test" %} {% if field.field.required %}required{% endif %} >
+                    <select multiple name="{{ field.html_name }}" id="{{ field.auto_id }}" {% render_attrs field class="form-select" %} {% if field.field.required %}required{% endif %} >
                         {% for choice in field %}
                             {{ choice.tag }}
                         {% endfor %}
@@ -186,8 +186,7 @@
                     <li class="{% if field.field.required and form.required_css_class %}{{ form.required_css_class }}{% endif %}">
                         <div class="form-check">
                             {{ choice.tag }}
-                            {% comment %} <input type="checkbox" class="form-check-input" id="{{ choice.id_for_label}}" name="{{ field.html_name }}" value="{{ choice.widget.value }}" {% render_attrs field %}{% if field.field.required %}required{% endif %}> {% endcomment %}
-                            <label class="form-check-label" for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                            <label class="form-check-label" for="{{ choice.id_for_label }}">{{ choice.choice_label }}{% if choice.data.attrs.selected == True %} ({{ choice.data.attrs.item_count }}){% endif %}</label>
                         </div>
                     </li>
 

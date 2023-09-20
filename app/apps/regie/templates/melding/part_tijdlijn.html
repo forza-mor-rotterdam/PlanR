@@ -3,6 +3,7 @@
 {% load taakopdracht from melding_tags %}
 {% load multiply previous next from list_tags %}
 {% load gebruiker_middels_email from gebruikers_tags %}
+{% load vertaal from vertaal_tags %}
 {% load rotterdam_formulier_html %}
 
                 <ul class="list__mutations">
@@ -31,16 +32,25 @@
                                 {% endfor %}
                                 {% endif %}
 
+                                {% if melding.afgesloten_op and forloop.counter0 == 1 %}
+                                {% for cel in next_row_data.row %}
+                                {% if cel == 1 or cel == 0 %}
+                                <span class="event {% if forloop.counter0 == 0 %}{% else %}event-taak{% endif %}" style="left: {{ forloop.counter|multiply:20 }}px"></span>
+                                {% endif %}
+                                {% endfor %}
+                                {% endif %}
+
                                 {% for cel in row_data.row %}
                                 {% if cel == 1 or cel == 2 %}
                                 <span class="event {% if forloop.counter0 == 0 %}event-melding{% else %}event-taak{% endif %}" style="left: {{ forloop.counter|multiply:20 }}px"></span>
                                 {% endif %}
                                 {% endfor %}
+
                                 {% if not forloop.first %}
                                 <strong>
                                 {% if row_data.mg.taakgebeurtenis %}
                                 {% with taakopdracht=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}
-                                {{taakopdracht.titel}}: {{row_data.mg.taakgebeurtenis.taakstatus.naam}}
+                                {{taakopdracht.titel}}{% if row_data.mg.taakgebeurtenis.taakstatus.naam != "nieuw" %}: {{taakopdracht.resolutie|vertaal}}{% endif %}
                                 {% endwith %}
                                 {% else %}
                                 melding: {% if row_data.mg.status %}{{row_data.mg.status.naam}}{% else %}communicatie{% endif %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load rotterdam_formulier_html %}
+{% load json_encode from json_tags %}
+
+{% block body %}
+<h1>MSB Melding zoeken</h1>
+
+{% if msb_data %}
+<a class="btn btn-action" href="{% url 'msb_importeer_melding' %}">Importeer</a>
+<div>
+    <dl>
+    {% for k, v in msb_data.items %}
+    <dt>{{k}}</dt>
+    <dd>{{v}}</dd>
+    {% endfor %}
+    </dl>
+</div>
+{% endif %}
+
+<form
+    action="{% url 'msb_melding_zoeken' %}"
+    class="form__request"
+    method="post"
+    novalidate>
+    {% csrf_token %}
+    <fieldset>
+        {% include "snippets/legend.html" with title="Melding" icon_name="pin_filled" only %}
+        {{ form.msb_nummer|render_rotterdam_formulier }}
+    </fieldset>
+    <div class="form-row container__button">
+        <button
+            class="btn btn-action"
+            type="submit"
+        >
+            <span>Zoek</span>
+        </button>
+    </div>
+</form>
+{% endblock %}

@@ -5,7 +5,7 @@ let temp_filesArr = []
 let input = null
 export default class extends Controller {
 
-    static targets = ['bijlagenExtra', 'bijlagenAfronden']
+    static targets = ['bijlagenExtra', 'bijlagenAfronden', 'bijlagenNieuw']
     connect() {
         //clear the filelist
         temp_files = {}
@@ -74,6 +74,9 @@ export default class extends Controller {
         }
         if(this.hasBijlagenAfrondenTarget) {
             input = this.bijlagenAfrondenTarget
+        }
+        if(this.hasBijlagenNieuwTarget) {
+            input = this.bijlagenNieuwTarget
         }
         const preview = input.nextElementSibling
         const newFiles = input.files; //contains only new file(s)

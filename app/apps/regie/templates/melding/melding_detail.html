@@ -3,31 +3,28 @@
 {% load to_date from date_tags %}
 {% load rotterdam_formulier_html %}
 {% load vertaal from vertaal_tags %}
-
+{% load context_template from context_tags %}
 
 {% block body %}
-<turbo-frame id="overview" data-turbo-action="advance">
+{% context_template "melding_detail_locaties.html" as locatie_template %}
+{% context_template "melding_detail_titel.html" as titel_template %}
+<turbo-frame id="overview">
 <div class="border-green print-only"></div>
 
 <div class="page__detail">
     <div>
-        <a href="{% url 'melding_lijst' %}?{{overview_querystring}}" class="link--back">
+        <a href="{% url 'melding_lijst' %}?{{overview_querystring}}" data-turbo-action='advance' class="link--back">
             <svg width="25" height="16" viewBox="0 0 25 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M9.15173 1.73256L7.73753 0.318359L1.44704 6.60885L1.4142 6.576L0 7.9902L1.4115 9.4017L1.37867 9.43453L7.67186 15.7277L9.08606 14.3135L3.7726 9.00006H24.0098V7.00006H3.88423L9.15173 1.73256Z" fill="#404B4F"/>
             </svg>
             Terug
         </a>
     </div>
-    <div data-controller="detail">
+    <div data-controller="detail" id="id_maincontent">
         <div class="grid-container">
             <div class="grid-item">
                 <div>
-                    {% with grafnummer=melding.locaties_voor_melding.0.grafnummer vak=melding.locaties_voor_melding.0.vak plaats=melding.meta.begraafplaats %}
-                    <h1>
-                        {% if grafnummer %} Grafnummer {{ grafnummer }}{% endif %}{% if vak %}, Vak {{ vak }}{% endif %}
-                        {% if not grafnummer and not vak and plaats %}{% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices plaats %}{% endif %}
-                    </h1>
-                    {% endwith %}
+                    {% include titel_template %}
                 </div>
             </div>
             <div class="grid-item bottom-left">
@@ -36,7 +33,14 @@
                     <span class="badge badge--{% if melding.status.naam == 'afgehandeld'%}green{% elif melding.status.naam == 'controle' %}yellow{% elif melding.status.naam == 'in_behandeling' %}darkblue{% else %}lightblue{% endif %}">{{melding.status.naam|vertaal}}{% if melding.status.naam is 'afgehandeld'%} ({{melding.resolutie}}){% endif %}</span>
                     {% endif %}
                     {% if aantal_actieve_taken %}
-                        <span class="badge badge--darkblue">{{aantal_actieve_taken}} {% if aantal_actieve_taken > 1 %}Taken{%else%}Taak{%endif%} actief</span>
+                        <span class="badge badge--darkblue">{{aantal_actieve_taken}} {% if aantal_actieve_taken > 1 %}taken{%else%}taak{%endif%} actief</span>
+                    {% else %}
+                        <span class="badge badge--darkblue">0 taken actief</span>
+                    {% endif %}
+                    {% if aantal_voltooide_taken %}
+                        <span class="badge badge--darkblue">{{aantal_voltooide_taken}} {% if aantal_voltooide_taken > 1 %}taken{%else%}taak{%endif%} voltooid</span>
+                    {% else %}
+                        <span class="badge badge--darkblue">0 taken voltooid</span>
                     {% endif %}
                 </div>
             </div>
@@ -200,62 +204,8 @@
                             </div>
                         </div>
                     </section>
-                    <section class="section--seperated" data-testid="detailLocatie">
-                        <div class="container__details">
-                            <h2>
-                                <svg width="20" height="26" viewBox="0 0 20 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M17.6348 3.61315C16.7089 2.48375 15.5439 1.57388 14.2239 0.949138C12.9038 0.324391 11.4616 0.000335693 10.0012 0.000335693C8.54072 0.000335693 7.09849 0.324391 5.77843 0.949138C4.45838 1.57388 3.2934 2.48375 2.36748 3.61315C0.837555 5.46872 0.000854492 7.79875 0.000854492 10.2037C0.000854492 12.6087 0.837555 14.9387 2.36748 16.7943L10.0012 26.0005L17.636 16.7943C19.1651 14.9383 20.0012 12.6083 20.001 10.2035C20.0008 7.79872 19.1643 5.46886 17.6348 3.61315ZM10 13.9991C9.11004 13.9991 8.24004 13.7352 7.50005 13.2407C6.76006 12.7463 6.18331 12.0435 5.84273 11.2213C5.50215 10.399 5.41303 9.49428 5.58666 8.6214C5.76029 7.74852 6.18885 6.94673 6.81817 6.31741C7.44748 5.6881 8.24927 5.25954 9.12215 5.08591C9.99503 4.91228 10.8998 5.00139 11.722 5.34198C12.5443 5.68256 13.247 6.25931 13.7415 6.9993C14.2359 7.73929 14.4998 8.60929 14.4998 9.49927C14.4998 10.6928 14.0258 11.8375 13.1819 12.6815C12.3381 13.5256 11.1936 13.9999 10 14.0002V13.9991Z" fill="#00811F"/>
-                                </svg>
-                                Locatie
-                            </h2>
-                            <div class="display--flex--md">
-                                <ul class="list-clean">
-                                    <li>
-                                        <h3 class="h5">Begraafplaats</h2>
-                                        <p>
-                                            {% if melding.meta.begraafplaats %}
-                                                {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices melding.meta.begraafplaats %}
-                                            {% else %}
-                                                -
-                                            {% endif %}
-                                        </p>
-                                    </li>
-                                    <li>
-                                        <h3 class="h5">Naam overledene</h3>
-                                        <p>
-                                            {% if melding.meta.naam_overledene %}
-                                                {{ melding.meta.naam_overledene }}
-                                            {% else %}
-                                                -
-                                            {% endif %}
-                                        </p>
-                                    </li>
-                                </ul>
-                                <ul class="list-clean">
-                                    <li>
-                                        <h3 class="h5">Grafnummer</h3>
-                                        <p>
-                                            {% if melding.locaties_voor_melding.0.grafnummer %}
-                                                {{ melding.locaties_voor_melding.0.grafnummer }}
-                                            {% else %}
-                                                n.v.t.
-                                            {% endif %}
-                                        </p>
-                                    </li>
-                                    <li>
-                                        <h3 class="h5">Vak</h3>
-                                        <p>
-                                            {% if melding.locaties_voor_melding.0.vak %}
-                                                {{ melding.locaties_voor_melding.0.vak }}
-                                            {% else %}
-                                                n.v.t.
-                                            {% endif %}
-                                        </p>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </section>
+
+                    {% include locatie_template %}
 
                     <section class="section--seperated" data-testid="detailMelder">
                         <div class="container__details">
@@ -342,23 +292,16 @@
                                 Download pdf
                             </a>
                         </p>
-                        {% comment %} <p>
-                            <a href="" role="button" class="btn btn-icon btn-textlink">
-                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M13.875 1.425H4.125L3.13577 5.25H5.25V3.075H12.75V5.25L14.8642 5.25L13.875 1.425ZM16.3816 5.25L15.375 1.425L15 0H14.25H3.75H3L2.625 1.425L2.625 1.425L1.61842 5.25H0.75V6.75H1.62805L3 18H3.75H14.25H15L16.3719 6.75H17.25V5.25H16.3816ZM13.6594 16.5L14.8781 6.75H3.12188L4.34063 16.5H13.6594Z" fill="#00811F"/>
-                                </svg>
-
-                                Verwijderen
-                            </a>
-                        </p> {% endcomment %}
-
-
                     </div>
-
-                    <section class="section--seperated" data-testid="detailTijdlijn">
+                    {% if melding.status.naam != "afgehandeld" %}
+                    <section class="section--seperated">
                         <turbo-frame id="informatie_toevoegen" src="{% url 'informatie_toevoegen' melding.uuid %}">
 
                         </turbo-frame>
+                    </section>
+                    {% endif %}
+                    <section class="section--seperated" data-testid="detailTijdlijn">
+                        {% include "melding/part_tijdlijn.html" %}
                     </section>
                 </div>
 

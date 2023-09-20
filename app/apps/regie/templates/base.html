@@ -42,8 +42,9 @@
         {% endblock %}
     </head>
     <body>
+        <a href="#id_maincontent" class="skiplink">Ga direct naar de content</a>
         {% block header %}{% include 'snippets/pageheader.html' %}{% endblock %}
-        <main>
+        <main data-controller="main">
             <div class="container">
                 {% block body %}{% endblock %}
             </div>

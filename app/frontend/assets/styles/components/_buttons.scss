@@ -84,6 +84,12 @@ button[class="icon"] {
   margin-left: -6px;                                          // Result in 8px distance between icon and label
 }
 
+button {
+    &:focus {
+        @include focus-outline();
+    }
+}
+
 .btn {
     border: 1px solid transparent;
 

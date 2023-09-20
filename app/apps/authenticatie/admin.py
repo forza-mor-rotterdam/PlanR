@@ -1,4 +1,4 @@
-from apps.authenticatie.models import Gebruiker
+from apps.authenticatie.models import Gebruiker, Profiel
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
@@ -9,6 +9,7 @@ class GebruikerAdmin(UserAdmin):
         "email",
         "is_staff",
         "is_active",
+        "profiel",
     )
     list_filter = (
         "email",
@@ -17,14 +18,22 @@ class GebruikerAdmin(UserAdmin):
     )
     fieldsets = (
         (None, {"fields": ("email", "password")}),
-        ("Permissions", {"fields": ("is_staff", "is_active")}),
+        ("MOR permissies", {"fields": ("groups", "user_permissions")}),
+        ("Permissions", {"fields": ("is_staff", "is_active", "is_superuser")}),
     )
     add_fieldsets = (
         (
             None,
             {
                 "classes": ("wide",),
-                "fields": ("email", "password1", "password2", "is_staff", "is_active"),
+                "fields": (
+                    "email",
+                    "password1",
+                    "password2",
+                    "is_staff",
+                    "is_active",
+                    "is_superuser",
+                ),
             },
         ),
     )
@@ -32,4 +41,13 @@ class GebruikerAdmin(UserAdmin):
     ordering = ("email",)
 
 
+class ProfielAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "gebruiker",
+        "context",
+    )
+
+
 admin.site.register(Gebruiker, GebruikerAdmin)
+admin.site.register(Profiel, ProfielAdmin)

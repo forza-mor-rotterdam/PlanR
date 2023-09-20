@@ -15,15 +15,25 @@ def general_settings(context):
     if session_expiry_timestamp:
         session_expiry_timestamp += settings.SESSION_EXPIRE_SECONDS
 
+    template_basis = None
+    if (
+        hasattr(context, "user")
+        and hasattr(context.user, "profiel")
+        and hasattr(context.user.profiel, "context")
+        and hasattr(context.user.profiel.context, "template")
+    ):
+        template_basis = context.user.profiel.context.template
+
     return {
         "MELDINGEN_URL": settings.MELDINGEN_URL,
         "DEBUG": settings.DEBUG,
         "DEV_SOCKET_PORT": settings.DEV_SOCKET_PORT,
-        "CHECK_SESSION_IFRAME": settings.CHECK_SESSION_IFRAME,
         "GET": context.GET,
         "ABSOLUTE_ROOT": absolute(context).get("ABSOLUTE_ROOT"),
         "SESSION_EXPIRY_MAX_TIMESTAMP": session_expiry_max_timestamp,
         "SESSION_EXPIRY_TIMESTAMP": session_expiry_timestamp,
         "LOGOUT_URL": reverse("oidc_logout"),
         "LOGIN_URL": f"{reverse('oidc_authentication_init')}?next={absolute(context).get('FULL_URL')}",
+        "TEMPLATE_BASIS": template_basis,
+        "ENVIRONMENT": settings.ENVIRONMENT,
     }

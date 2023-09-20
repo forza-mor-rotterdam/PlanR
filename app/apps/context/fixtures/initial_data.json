@@ -1,0 +1,38 @@
+[
+    {
+      "model": "context.context",
+      "pk": 1,
+      "fields": {
+        "naam": "Standaard",
+        "aangemaakt_op": "2023-01-01 00:00:00.000000+00",
+        "aangepast_op": "2023-01-01 00:00:00.000000+00",
+        "filters": {"fields": ["adres", "onderwerp", "status"]},
+        "kolommen": {"sorted": ["melding_id", "onderwerp", "adres", "origineel_aangemaakt", "status"]},
+        "template": "standaard"
+      }
+    },
+    {
+      "model": "context.context",
+      "pk": 2,
+      "fields": {
+        "naam": "Inzameling",
+        "aangemaakt_op": "2023-01-01 00:00:00.000000+00",
+        "aangepast_op": "2023-01-01 00:00:00.000000+00",
+        "filters": {"fields": ["buurt", "wijk", "onderwerp", "status"]},
+        "kolommen": {"sorted": ["melding_id", "onderwerp", "adres_buurt_wijk", "origineel_aangemaakt", "status"]},
+        "template": "standaard"
+      }
+    },
+    {
+      "model": "context.context",
+      "pk": 3,
+      "fields": {
+        "naam": "B&C",
+        "aangemaakt_op": "2023-01-01 00:00:00.000000+00",
+        "aangepast_op": "2023-01-01 00:00:00.000000+00",
+        "filters": {"fields": ["status", "begraafplaats", "onderwerp"]},
+        "kolommen": {"sorted": ["melding_id", "origineel_aangemaakt", "begraafplaats", "grafnummer", "vak", "onderwerp", "status"]},
+        "template": "benc"
+      }
+    }
+]

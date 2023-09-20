@@ -91,6 +91,11 @@
             font-size: $small-font-size;
             text-align: right;
 
+            &:focus {
+                outline-width: thin !important;
+                outline-color: $gray-tint02 !important;
+            }
+
             &::before {
                 // display: none;
                 right: 0;
@@ -121,7 +126,6 @@
             padding: 8px;
             background-color: $gray-tint02;
             margin-bottom: 20px;
-            margin-left: 5px;
             font-size: 16px;
             text-align: right;
         }

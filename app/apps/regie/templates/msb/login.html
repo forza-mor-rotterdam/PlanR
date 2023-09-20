@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load rotterdam_formulier_html %}
+{% load json_encode from json_tags %}
+
+{% block body %}
+<h1>MSB Login</h1>
+
+{% comment %} <turbo-frame id="melding_a/anmaken"> {% endcomment %}
+<form
+    action="{% url 'msb_login' %}"
+    class="form__request"
+    method="post"
+    novalidate>
+    {% csrf_token %}
+    <fieldset>
+        {% include "snippets/legend.html" with title="Login" icon_name="person" only %}
+        {{ form.gebruikersnummer|render_rotterdam_formulier }}
+        {{ form.wachtwoord|render_rotterdam_formulier }}
+        {{ form.omgeving|render_rotterdam_formulier }}
+    </fieldset>
+    <div class="form-row container__button">
+        <button
+            class="btn btn-action"
+            type="submit"
+        >
+            <span>Login</span>
+        </button>
+    </div>
+
+</form>
+{% if errors %}
+<div>
+{{errors}}
+</div>
+{% endif %}
+
+{% comment %} </turbo-frame> {% endcomment %}
+{% endblock %}
