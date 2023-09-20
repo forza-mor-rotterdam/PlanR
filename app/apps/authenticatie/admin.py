@@ -18,7 +18,7 @@ class GebruikerAdmin(UserAdmin):
     )
     fieldsets = (
         (None, {"fields": ("email", "password")}),
-        ("MOR permissies", {"fields": ("groups", "user_permissions")}),
+        ("MOR permissies", {"fields": ("groups",)}),
         ("Permissions", {"fields": ("is_staff", "is_active", "is_superuser")}),
     )
     add_fieldsets = (
