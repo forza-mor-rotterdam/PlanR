@@ -17,8 +17,6 @@ services:
       - .env.local
   regie_app:
     build: ./app
-    ports:
-      - "8000"
     env_file:
       - .env.local
     volumes:
@@ -45,7 +43,7 @@ services:
     image: postgis/postgis:11-3.3
     shm_size: '1024m'
     ports:
-      - "6003:5432"
+      - "7997:5432"
     env_file:
       - .env.local
     volumes:
@@ -53,21 +51,8 @@ services:
     networks:
       - regie_network
 
-  # dex:
-  #   image: quay.io/dexidp/dex:v2.23.0
-  #   user: root
-  #   command: serve /config.yml
-  #   ports:
-  #     - "7003:5556"
-  #   volumes:
-  #     - ./dex.dev.yml:/config.yml
-  #     - dex-data:/data
-  #   networks:
-  #     - regie_network
-
 volumes:
   postgres-data:
-  dex-data:
 
 networks:
   regie_network:
