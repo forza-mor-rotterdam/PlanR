@@ -25,6 +25,7 @@ from apps.regie.forms import (
     TaakAfrondenForm,
     TaakAnnulerenForm,
     TaakStartenForm,
+    TaakVerwijderenForm,
 )
 from apps.regie.utils import melding_naar_tijdlijn, to_base64
 from config.context_processors import general_settings
@@ -369,39 +370,40 @@ def taak_afronden(request, melding_uuid, taakopdracht_uuid):
 
 
 @permission_required("authorisatie.taak_annuleren")
-def taak_annuleren(request, melding_uuid, taakopdracht_uuid):
+def taak_annuleren(request, melding_uuid):
     melding = MeldingenService().get_melding(melding_uuid)
-    taakopdrachten = {
-        to.get("uuid"): to for to in melding.get("taakopdrachten_voor_melding", [])
+    taakopdracht_urls = {
+        to.get("uuid"): to.get("_links", {}).get("self")
+        for to in melding.get("taakopdrachten_voor_melding", [])
+        if not to.get("resolutie")
     }
-    taakopdracht = taakopdrachten.get(str(taakopdracht_uuid), {})
-    form = TaakAnnulerenForm()
+    taakopdracht_opties = [
+        (to.get("uuid"), to.get("titel"))
+        for to in melding.get("taakopdrachten_voor_melding", [])
+        if not to.get("resolutie")
+    ]
+    form = TaakAnnulerenForm(taakopdracht_opties=taakopdracht_opties)
     if request.POST:
-        form = TaakAnnulerenForm(request.POST)
+        form = TaakAnnulerenForm(request.POST, taakopdracht_opties=taakopdracht_opties)
         if form.is_valid():
-            bijlagen = request.FILES.getlist("bijlagen_extra", [])
-            bijlagen_base64 = []
-            for f in bijlagen:
-                file_name = default_storage.save(f.name, f)
-                bijlagen_base64.append({"bestand": to_base64(file_name)})
             MeldingenService().taak_status_aanpassen(
-                taakopdracht_url=taakopdracht.get("_links", {}).get("self"),
+                taakopdracht_url=taakopdracht_urls.get(
+                    form.cleaned_data.get("taakopdracht")
+                ),
                 status=TAAK_STATUS_VOLTOOID,
                 resolutie=TAAK_RESOLUTIE_GEANNULEERD,
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
-                bijlagen=bijlagen_base64,
                 gebruiker=request.user.email,
+                bijlagen=[],
             )
 
             return redirect("melding_detail", id=melding_uuid)
-
     return render(
         request,
         "melding/part_taak_annuleren.html",
         {
             "form": form,
             "melding": melding,
-            "taakopdracht": taakopdracht,
         },
     )
 

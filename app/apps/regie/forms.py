@@ -178,6 +178,33 @@ class TaakStartenForm(forms.Form):
         self.fields["taaktype"].choices = taaktypes
 
 
+class TaakVerwijderenForm(forms.Form):
+    taaktype = forms.ChoiceField(
+        widget=forms.Select(),
+        label="Taak",
+        choices=(
+            ("graf_ophogen", "Graf ophogen"),
+            ("steen_rechtzetten", "Steen rechtzetten"),
+            ("snoeien", "Snoeien"),
+        ),
+        required=True,
+    )
+
+    bericht = forms.CharField(
+        label="Interne opmerking",
+        help_text="Deze tekst wordt niet naar de melder verstuurd.",
+        widget=forms.Textarea(
+            attrs={"class": "form-control", "data-testid": "information", "rows": "4"}
+        ),
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        taaktypes = kwargs.pop("taaktypes", None)
+        super().__init__(*args, **kwargs)
+        self.fields["taaktype"].choices = taaktypes
+
+
 class TaakAfrondenForm(forms.Form):
     status = forms.ChoiceField(
         widget=RadioSelect(
@@ -218,31 +245,31 @@ class TaakAfrondenForm(forms.Form):
 
 
 class TaakAnnulerenForm(forms.Form):
-    bijlagen = forms.FileField(
-        widget=forms.widgets.FileInput(
-            attrs={
-                "accept": ".jpg, .jpeg, .png, .heic",
-                "data-action": "change->bijlagen#updateImageDisplay",
-                "data-bijlagen-target": "bijlagenAfronden",
-            }
-        ),
-        label="Foto's",
-        required=False,
-    )
+    def __init__(self, *args, **kwargs):
+        taakopdracht_opties = kwargs.pop("taakopdracht_opties", None)
+        super().__init__(*args, **kwargs)
 
-    omschrijving_intern = forms.CharField(
-        label="Interne opmerking",
-        help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",
-        widget=forms.Textarea(
-            attrs={
-                "class": "form-control",
-                "data-testid": "information",
-                "rows": "4",
-                "data-meldingbehandelformulier-target": "internalText",
-            }
-        ),
-        required=False,
-    )
+        if taakopdracht_opties:
+            self.fields["taakopdracht"] = forms.ChoiceField(
+                label="Taak",
+                widget=forms.Select(),
+                choices=taakopdracht_opties,
+                required=True,
+            )
+
+            self.fields["omschrijving_intern"] = forms.CharField(
+                label="Interne opmerking",
+                help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",
+                widget=forms.Textarea(
+                    attrs={
+                        "class": "form-control",
+                        "data-testid": "information",
+                        "rows": "4",
+                        "data-meldingbehandelformulier-target": "internalText",
+                    }
+                ),
+                required=False,
+            )
 
 
 class MeldingAfhandelenForm(forms.Form):
