@@ -1,0 +1,45 @@
+.page__beheer {
+        padding-top: 2rem;
+        h1 {
+
+        }
+
+    .container__flex {
+        margin: 32px 0;
+        display: flex;
+        justify-content: space-between;
+        >* {
+            flex: 1;
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+        .btn {
+            max-width: 200px;
+            height: 48px;
+        }
+    }
+
+    table tbody {
+        th, td {
+            text-align: left;
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+    }
+
+    form {
+        max-width: map-get($container-max-widths , md );
+        margin: 0 auto;
+    }
+    .btn-row {
+        display: flex;
+        justify-content: flex-end;
+
+        .btn {
+            flex: 0 1;
+            margin-left: 1rem;
+        }
+    }
+}
