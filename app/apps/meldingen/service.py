@@ -208,11 +208,16 @@ class MeldingenService:
             "bijlagen": bijlagen,
             "gebruiker": gebruiker,
         }
-        return self.do_request(
+        response = self.do_request(
             f"{taakopdracht_url}status-aanpassen/",
             method="patch",
             data=data,
-            raw_response=False,
+            raw_response=True,
+        )
+        if response.status_code == 200:
+            return response.json()
+        raise MeldingenService.DataOphalenFout(
+            f"taak_status_aanpassen: Verwacht status code 200, kreeg status code '{response.status_code}', tekst: {response.text}"
         )
 
     def signaal_aanmaken(self, data: {}):
