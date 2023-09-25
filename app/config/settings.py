@@ -59,6 +59,7 @@ INSTALLED_APPS = (
     "apps.authorisatie",
     "apps.authenticatie",
     "apps.context",
+    "apps.beheer",
 )
 
 MIDDLEWARE = (
