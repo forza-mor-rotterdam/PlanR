@@ -370,27 +370,24 @@ def taak_afronden(request, melding_uuid, taakopdracht_uuid):
 
 
 @permission_required("authorisatie.taak_annuleren")
-def taak_annuleren(request, melding_uuid, taakopdracht_uuid):
+def taak_annuleren(request, melding_uuid):
     melding = MeldingenService().get_melding(melding_uuid)
     taakopdrachten = {
         to.get("uuid"): to for to in melding.get("taakopdrachten_voor_melding", [])
     }
-    taakopdracht = taakopdrachten.get(str(taakopdracht_uuid), {})
+
     form = TaakAnnulerenForm()
     if request.POST:
         form = TaakAnnulerenForm(request.POST)
         if form.is_valid():
-            bijlagen = request.FILES.getlist("bijlagen_extra", [])
-            bijlagen_base64 = []
-            for f in bijlagen:
-                file_name = default_storage.save(f.name, f)
-                bijlagen_base64.append({"bestand": to_base64(file_name)})
+            taakopdracht = taakopdrachten.get(str("taakopdracht_uuid"), {})
+
             MeldingenService().taak_status_aanpassen(
                 taakopdracht_url=taakopdracht.get("_links", {}).get("self"),
                 status=TAAK_STATUS_VOLTOOID,
                 resolutie=TAAK_RESOLUTIE_GEANNULEERD,
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
-                bijlagen=bijlagen_base64,
+                taakopdracht_uuid=form.cleaned_data.get("taakopdracht_uuid"),
                 gebruiker=request.user.email,
             )
 

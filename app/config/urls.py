@@ -23,7 +23,6 @@ from apps.regie.views import (
     taak_afronden,
     taak_annuleren,
     taak_starten,
-    taak_verwijderen,
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -60,7 +59,7 @@ urlpatterns = [
         name="taak_afronden",
     ),
     path(
-        "part/melding/<uuid:melding_uuid>/taak-annuleren/<uuid:taakopdracht_uuid>/",
+        "part/melding/<uuid:melding_uuid>/taak-annuleren/",
         taak_annuleren,
         name="taak_annuleren",
     ),
