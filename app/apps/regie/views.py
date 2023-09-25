@@ -59,6 +59,8 @@ def http_500(request):
 def root(request):
     if request.user.has_perms(["authorisatie.melding_lijst_bekijken"]):
         return redirect(reverse("melding_lijst"))
+    if request.user.has_perms(["authorisatie.beheer_bekijken"]):
+        return redirect(reverse("beheer"))
     return redirect(reverse("account"))
 
 
