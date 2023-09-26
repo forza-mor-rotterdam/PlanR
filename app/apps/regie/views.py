@@ -239,6 +239,7 @@ def melding_detail(request, id):
             "aantal_actieve_taken": aantal_actieve_taken,
             "aantal_voltooide_taken": aantal_voltooide_taken,
             "tijdlijn_data": tijdlijn_data,
+            "spoed": True,  # TODO make dynamic
         },
     )
 

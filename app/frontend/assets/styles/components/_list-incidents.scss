@@ -262,3 +262,20 @@
         margin: 8px -6px 0 0;
     }
 }
+
+.warning-spoed {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    background-color: $alert-warning-background-color;
+    border: 1px solid $alert-warning-border-color;
+    text-align: center;
+    line-height: 58px;
+    box-sizing: border-box;
+
+    svg {
+        path {
+            fill: $alert-warning-color;
+        }
+    }
+}
