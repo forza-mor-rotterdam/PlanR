@@ -235,41 +235,6 @@ button {
         }
     }
 
-    &-spoed {
-        background-color: $white;
-        border: 1px solid $gray-tint11;
-        font-size: 16px;
-        font-weight: 400;
-        line-height: 48px;
-        color: $gray-tint11;
-        padding: 0 0.5rem;
-
-        &:hover,
-        &.btn-spoed--actief {
-            background-color: $alert-warning-background-color;
-            border-color: $alert-warning-border-color;
-            svg.warning {
-                path {
-                    fill: $alert-warning-color;
-                }
-            }
-        }
-
-        &.btn-spoed--actief {
-            &:hover {
-                background-color: $white;
-                border-color: $gray-tint11;
-
-            }
-        }
-
-        svg {
-            vertical-align: middle;
-        }
-
-    }
-
-
     &:not(:disabled) {
         cursor: pointer;
     }
