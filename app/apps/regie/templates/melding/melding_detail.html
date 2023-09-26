@@ -191,6 +191,16 @@
                                         </p>
                                     </li>
                                     <li>
+                                        <h3 class="h5">Toelichting kort</h3>
+                                        <p>
+                                            {% if melding.omschrijving_kort %}
+                                                {{ melding.omschrijving_kort }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </p>
+                                    </li>
+                                    <li>
                                         <h3 class="h5">Toelichting</h3>
                                         <p>
                                             {% if melding.omschrijving %}
