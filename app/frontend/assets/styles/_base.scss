@@ -282,6 +282,13 @@ ul {
             }
         }
     }
+
+    &.list-links {
+        @include list-clean();
+        li {
+            margin: 0.5rem 0;
+        }
+    }
 }
 
 dl {
