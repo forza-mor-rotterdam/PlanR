@@ -1,0 +1,6 @@
+{% load rotterdam_formulier_html %}
+{% if melding.meta.terugkoppeling_gewenst == "Ja" and melding.meta.email_melder %}
+    <div class="form-control__with-helptext js-validation">
+        {{ form.omschrijving_extern|render_rotterdam_formulier }}
+    </div>
+{% endif %}
