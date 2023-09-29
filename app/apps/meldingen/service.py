@@ -139,7 +139,9 @@ class MeldingenService:
     ):
         data = {
             "bijlagen": bijlagen,
-            "omschrijving_extern": omschrijving_extern,
+            "omschrijving_extern": omschrijving_extern
+            if omschrijving_extern
+            else "Deze melding is behandeld. Bedankt voor uw inzet om Rotterdam schoon, heel en veilig te houden.",
             "omschrijving_intern": omschrijving_intern,
             "gebruiker": gebruiker,
         }

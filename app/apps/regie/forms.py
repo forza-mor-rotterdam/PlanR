@@ -285,6 +285,7 @@ class MeldingAfhandelenForm(forms.Form):
                 "data-meldingbehandelformulier-target": "externalText",
             }
         ),
+        initial="Deze melding is behandeld. Bedankt voor uw inzet om Rotterdam schoon, heel en veilig te houden.",
         required=False,
     )
 
