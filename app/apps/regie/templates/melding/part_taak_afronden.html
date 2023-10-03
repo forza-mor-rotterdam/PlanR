@@ -10,9 +10,6 @@
                 <h1>
                     <span>Taak afronden</span>
                 </h1>
-                <p>
-                    {{ taakopdracht.titel }}
-                </p>
                 <button
                     type="button"
                     class="btn-close"
@@ -21,8 +18,9 @@
                 </button>
             </div>
             <div class="modal-body">
+                {% if form.taakopdracht %}
                 <form
-                    action="{% url 'taak_afronden' melding.uuid taakopdracht.uuid %}"
+                    action="{% url 'taak_afronden' melding.uuid %}"
                     method="post"
                     class="form--horizontal"
                     data-controller=""
@@ -32,7 +30,8 @@
 
                     {% csrf_token %}
 
-                    {{ form.status|render_rotterdam_formulier }}
+                    {{ form.taakopdracht|render_rotterdam_formulier }}
+                    {{ form.resolutie|render_rotterdam_formulier }}
 
                     <div data-controller="bijlagen">
                         {{ form.bijlagen|render_rotterdam_formulier }}
@@ -57,6 +56,9 @@
                         </button>
                     </div>
                 </form>
+                {% else %}
+                Alle taken zijn afgerond
+                {% endif %}
             </div>
         </div>
     </div>
