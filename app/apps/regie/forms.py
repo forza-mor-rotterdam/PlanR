@@ -178,45 +178,18 @@ class TaakStartenForm(forms.Form):
         self.fields["taaktype"].choices = taaktypes
 
 
-class TaakVerwijderenForm(forms.Form):
-    taaktype = forms.ChoiceField(
-        widget=forms.Select(),
-        label="Taak",
-        choices=(
-            ("graf_ophogen", "Graf ophogen"),
-            ("steen_rechtzetten", "Steen rechtzetten"),
-            ("snoeien", "Snoeien"),
-        ),
-        required=True,
-    )
-
-    bericht = forms.CharField(
-        label="Interne opmerking",
-        help_text="Deze tekst wordt niet naar de melder verstuurd.",
-        widget=forms.Textarea(
-            attrs={"class": "form-control", "data-testid": "information", "rows": "4"}
-        ),
-        required=False,
-    )
-
-    def __init__(self, *args, **kwargs):
-        taaktypes = kwargs.pop("taaktypes", None)
-        super().__init__(*args, **kwargs)
-        self.fields["taaktype"].choices = taaktypes
-
-
 class TaakAfrondenForm(forms.Form):
-    status = forms.ChoiceField(
+    resolutie = forms.ChoiceField(
         widget=RadioSelect(
             attrs={
                 "class": "list--form-radio-input",
+                "data-action": "change->bijlagen#updateImageDisplay",
             }
         ),
-        label="Is het probleem opgelost?",
-        choices=[[x[0], x[1]] for x in TAAK_BEHANDEL_OPTIES],
+        label="Is de taak afgehandeld?",
+        choices=[[x[4], x[1]] for x in TAAK_BEHANDEL_OPTIES],
         required=True,
     )
-
     bijlagen = forms.FileField(
         widget=forms.widgets.FileInput(
             attrs={
@@ -228,7 +201,6 @@ class TaakAfrondenForm(forms.Form):
         label="Foto's",
         required=False,
     )
-
     omschrijving_intern = forms.CharField(
         label="Interne opmerking",
         help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",
@@ -242,6 +214,18 @@ class TaakAfrondenForm(forms.Form):
         ),
         required=False,
     )
+
+    def __init__(self, *args, **kwargs):
+        taakopdracht_opties = kwargs.pop("taakopdracht_opties", None)
+        super().__init__(*args, **kwargs)
+
+        if taakopdracht_opties:
+            self.fields["taakopdracht"] = forms.ChoiceField(
+                label="Taak",
+                widget=forms.Select(),
+                choices=taakopdracht_opties,
+                required=True,
+            )
 
 
 class TaakAnnulerenForm(forms.Form):

@@ -54,7 +54,7 @@ urlpatterns = [
         name="taak_starten",
     ),
     path(
-        "part/melding/<uuid:melding_uuid>/taak-afronden/<uuid:taakopdracht_uuid>/",
+        "part/melding/<uuid:melding_uuid>/taak-afronden/",
         taak_afronden,
         name="taak_afronden",
     ),
