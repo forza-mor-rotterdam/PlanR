@@ -1,7 +1,5 @@
-#!/usr/bin/env bash
-set -u   # crash on missing env variables
-set -e   # stop on any error
-set -x
+#!/usr/bin/env python3
+set -euo pipefail
 
 echo Test python app
 python manage.py test
