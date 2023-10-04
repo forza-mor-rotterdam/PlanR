@@ -35,8 +35,9 @@ jobs:
         run: docker network create regie_network
       - name: Start image and run tests in Docker container
         run: |
-          docker-compose -f docker-compose.test.yaml up -d
-          docker-compose -f docker-compose.test.yaml exec -T app bash ./deploy/tests.sh
+          docker-compose -f docker-compose.test.yaml up -d --verbose
+          docker-compose -f docker-compose.test.yaml exec -T app bash ./deploy/tests.sh --verbose
+
 
   deploy-acc:
     name: Acceptance release
