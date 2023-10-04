@@ -8,7 +8,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h1>
-                    <span>Taak afronden</span>
+                    <span>Verwijder taak</span>
                 </h1>
                 <button
                     type="button"
@@ -18,9 +18,8 @@
                 </button>
             </div>
             <div class="modal-body">
-                {% if form.taakopdracht %}
                 <form
-                    action="{% url 'taak_afronden' melding.uuid %}"
+                    action="{% url 'taak_verwijderen' melding.uuid %}"
                     method="post"
                     class="form--horizontal"
                     data-controller=""
@@ -30,14 +29,9 @@
 
                     {% csrf_token %}
 
-                    {{ form.taakopdracht|render_rotterdam_formulier }}
-                    {{ form.resolutie|render_rotterdam_formulier }}
-
-                    <div data-controller="bijlagen">
-                        {{ form.bijlagen|render_rotterdam_formulier }}
-                    </div>
+                    {{ form.taaktype|render_rotterdam_formulier }}
                     <div class="form-control__with-helptext">
-                        {{ form.omschrijving_intern|render_rotterdam_formulier }}
+                        {{ form.bericht|render_rotterdam_formulier }}
                     </div>
                     <div class="form-row btn-row">
                         <button
@@ -52,13 +46,10 @@
                             type="submit"
                             class="btn btn-action"
                         >
-                            <span>Taak afronden</span>
+                            <span>Verwijder taak</span>
                         </button>
                     </div>
                 </form>
-                {% else %}
-                Alle taken zijn afgerond
-                {% endif %}
             </div>
         </div>
     </div>

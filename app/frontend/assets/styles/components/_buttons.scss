@@ -228,6 +228,12 @@ button {
         white-space: nowrap;
     }
 
+    &.btn-icon {
+        svg {
+            vertical-align: sub;
+            margin-right: 5px;
+        }
+    }
 
     &:not(:disabled) {
         cursor: pointer;

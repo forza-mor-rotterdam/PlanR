@@ -13,6 +13,14 @@ def snake_case(s: str) -> str:
     ).lower()
 
 
+def get_open_taakopdrachten(melding):
+    return [
+        to
+        for to in melding.get("taakopdrachten_voor_melding", [])
+        if not to.get("resolutie")
+    ]
+
+
 def dict_to_querystring(d: dict) -> str:
     return "&".join([f"{p}={v}" for p, l in d.items() for v in l])
 

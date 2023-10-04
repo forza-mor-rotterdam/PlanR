@@ -13,9 +13,6 @@ rm -rf /static/*
 echo Apply migrations
 python manage.py migrate --noinput
 
-echo Load initial data
-python manage.py loaddata initial_data --ignorenonexistent
-
 echo Create superuser
 python manage.py createsuperuser --noinput || true
 

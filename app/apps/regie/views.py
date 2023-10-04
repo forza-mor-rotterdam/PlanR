@@ -26,7 +26,7 @@ from apps.regie.forms import (
     TaakAnnulerenForm,
     TaakStartenForm,
 )
-from apps.regie.utils import melding_naar_tijdlijn, to_base64
+from apps.regie.utils import get_open_taakopdrachten, melding_naar_tijdlijn, to_base64
 from config.context_processors import general_settings
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
@@ -58,6 +58,8 @@ def http_500(request):
 def root(request):
     if request.user.has_perms(["authorisatie.melding_lijst_bekijken"]):
         return redirect(reverse("melding_lijst"))
+    if request.user.has_perms(["authorisatie.beheer_bekijken"]):
+        return redirect(reverse("beheer"))
     return redirect(reverse("account"))
 
 
@@ -177,6 +179,7 @@ def melding_lijst(request):
 @permission_required("authorisatie.melding_bekijken")
 def melding_detail(request, id):
     melding = MeldingenService().get_melding(id)
+    open_taakopdrachten = get_open_taakopdrachten(melding)
     tijdlijn_data = melding_naar_tijdlijn(melding)
     taaktypes = get_taaktypes(melding)
     melding_bijlagen = [
@@ -238,6 +241,7 @@ def melding_detail(request, id):
             "aantal_actieve_taken": aantal_actieve_taken,
             "aantal_voltooide_taken": aantal_voltooide_taken,
             "tijdlijn_data": tijdlijn_data,
+            "open_taakopdrachten": open_taakopdrachten,
         },
     )
 
@@ -331,28 +335,34 @@ def taak_starten(request, id):
 
 
 @permission_required("authorisatie.taak_afronden")
-def taak_afronden(request, melding_uuid, taakopdracht_uuid):
+def taak_afronden(request, melding_uuid):
     melding = MeldingenService().get_melding(melding_uuid)
-    taakopdrachten = {
-        to.get("uuid"): to for to in melding.get("taakopdrachten_voor_melding", [])
+    open_taakopdrachten = get_open_taakopdrachten(melding)
+    taakopdracht_urls = {
+        to.get("uuid"): to.get("_links", {}).get("self") for to in open_taakopdrachten
     }
-    taakopdracht = taakopdrachten.get(str(taakopdracht_uuid), {})
-    form = TaakAfrondenForm()
+    taakopdracht_opties = [
+        (to.get("uuid"), to.get("titel")) for to in open_taakopdrachten
+    ]
+    form = TaakAfrondenForm(taakopdracht_opties=taakopdracht_opties)
     if request.POST:
-        form = TaakAfrondenForm(request.POST)
+        form = TaakAfrondenForm(request.POST, taakopdracht_opties=taakopdracht_opties)
+
         if form.is_valid():
-            bijlagen = request.FILES.getlist("bijlagen_extra", [])
+            bijlagen = request.FILES.getlist("bijlagen", [])
             bijlagen_base64 = []
             for f in bijlagen:
                 file_name = default_storage.save(f.name, f)
                 bijlagen_base64.append({"bestand": to_base64(file_name)})
             MeldingenService().taak_status_aanpassen(
-                taakopdracht_url=taakopdracht.get("_links", {}).get("self"),
-                status=TAAK_BEHANDEL_STATUS.get(form.cleaned_data.get("status")),
-                resolutie=TAAK_BEHANDEL_RESOLUTIE.get(form.cleaned_data.get("status")),
+                taakopdracht_url=taakopdracht_urls.get(
+                    form.cleaned_data.get("taakopdracht")
+                ),
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
                 bijlagen=bijlagen_base64,
                 gebruiker=request.user.email,
+                status=TAAK_STATUS_VOLTOOID,
+                resolutie=form.cleaned_data.get("resolutie"),
             )
 
             return redirect("melding_detail", id=melding_uuid)
@@ -363,45 +373,42 @@ def taak_afronden(request, melding_uuid, taakopdracht_uuid):
         {
             "form": form,
             "melding": melding,
-            "taakopdracht": taakopdracht,
         },
     )
 
 
 @permission_required("authorisatie.taak_annuleren")
-def taak_annuleren(request, melding_uuid, taakopdracht_uuid):
+def taak_annuleren(request, melding_uuid):
     melding = MeldingenService().get_melding(melding_uuid)
-    taakopdrachten = {
-        to.get("uuid"): to for to in melding.get("taakopdrachten_voor_melding", [])
+    open_taakopdrachten = get_open_taakopdrachten(melding)
+    taakopdracht_urls = {
+        to.get("uuid"): to.get("_links", {}).get("self") for to in open_taakopdrachten
     }
-    taakopdracht = taakopdrachten.get(str(taakopdracht_uuid), {})
-    form = TaakAnnulerenForm()
+    taakopdracht_opties = [
+        (to.get("uuid"), to.get("titel")) for to in open_taakopdrachten
+    ]
+    form = TaakAnnulerenForm(taakopdracht_opties=taakopdracht_opties)
     if request.POST:
-        form = TaakAnnulerenForm(request.POST)
+        form = TaakAnnulerenForm(request.POST, taakopdracht_opties=taakopdracht_opties)
         if form.is_valid():
-            bijlagen = request.FILES.getlist("bijlagen_extra", [])
-            bijlagen_base64 = []
-            for f in bijlagen:
-                file_name = default_storage.save(f.name, f)
-                bijlagen_base64.append({"bestand": to_base64(file_name)})
             MeldingenService().taak_status_aanpassen(
-                taakopdracht_url=taakopdracht.get("_links", {}).get("self"),
+                taakopdracht_url=taakopdracht_urls.get(
+                    form.cleaned_data.get("taakopdracht")
+                ),
                 status=TAAK_STATUS_VOLTOOID,
                 resolutie=TAAK_RESOLUTIE_GEANNULEERD,
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
-                bijlagen=bijlagen_base64,
                 gebruiker=request.user.email,
+                bijlagen=[],
             )
 
             return redirect("melding_detail", id=melding_uuid)
-
     return render(
         request,
         "melding/part_taak_annuleren.html",
         {
             "form": form,
             "melding": melding,
-            "taakopdracht": taakopdracht,
         },
     )
 

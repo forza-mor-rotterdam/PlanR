@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load rotterdam_formulier_html %}
+{% load json_encode from json_tags %}
+
+{% block body %}
+<h1>PlanR: Beheer</h1>
+
+<ul>
+<li><a href="{% url 'gebruiker_lijst' %}">Gebruikers</a></li>
+</ul>
+
+{% endblock %}

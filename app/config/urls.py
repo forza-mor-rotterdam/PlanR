@@ -1,3 +1,9 @@
+from apps.beheer.views import (
+    GebruikerAanmakenView,
+    GebruikerAanpassenView,
+    GebruikerLijstView,
+    beheer,
+)
 from apps.regie.views import (
     account,
     http_404,
@@ -48,12 +54,12 @@ urlpatterns = [
         name="taak_starten",
     ),
     path(
-        "part/melding/<uuid:melding_uuid>/taak-afronden/<uuid:taakopdracht_uuid>/",
+        "part/melding/<uuid:melding_uuid>/taak-afronden/",
         taak_afronden,
         name="taak_afronden",
     ),
     path(
-        "part/melding/<uuid:melding_uuid>/taak-annuleren/<uuid:taakopdracht_uuid>/",
+        "part/melding/<uuid:melding_uuid>/taak-annuleren/",
         taak_annuleren,
         name="taak_annuleren",
     ),
@@ -72,6 +78,18 @@ urlpatterns = [
         "melding/verzonden/<uuid:signaal_uuid>/",
         melding_verzonden,
         name="melding_verzonden",
+    ),
+    path("beheer/", beheer, name="beheer"),
+    path("beheer/gebruiker/", GebruikerLijstView.as_view(), name="gebruiker_lijst"),
+    path(
+        "beheer/gebruiker/aanmaken/",
+        GebruikerAanmakenView.as_view(),
+        name="gebruiker_aanmaken",
+    ),
+    path(
+        "beheer/gebruiker/<int:pk>/aanpassen/",
+        GebruikerAanpassenView.as_view(),
+        name="gebruiker_aanpassen",
     ),
     re_path(r"media/", meldingen_bestand, name="meldingen_bestand"),
 ]

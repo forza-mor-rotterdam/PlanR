@@ -179,17 +179,17 @@ class TaakStartenForm(forms.Form):
 
 
 class TaakAfrondenForm(forms.Form):
-    status = forms.ChoiceField(
+    resolutie = forms.ChoiceField(
         widget=RadioSelect(
             attrs={
                 "class": "list--form-radio-input",
+                "data-action": "change->bijlagen#updateImageDisplay",
             }
         ),
-        label="Is het probleem opgelost?",
-        choices=[[x[0], x[1]] for x in TAAK_BEHANDEL_OPTIES],
+        label="Is de taak afgehandeld?",
+        choices=[[x[4], x[1]] for x in TAAK_BEHANDEL_OPTIES],
         required=True,
     )
-
     bijlagen = forms.FileField(
         widget=forms.widgets.FileInput(
             attrs={
@@ -201,7 +201,6 @@ class TaakAfrondenForm(forms.Form):
         label="Foto's",
         required=False,
     )
-
     omschrijving_intern = forms.CharField(
         label="Interne opmerking",
         help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",
@@ -215,34 +214,46 @@ class TaakAfrondenForm(forms.Form):
         ),
         required=False,
     )
+
+    def __init__(self, *args, **kwargs):
+        taakopdracht_opties = kwargs.pop("taakopdracht_opties", None)
+        super().__init__(*args, **kwargs)
+
+        if taakopdracht_opties:
+            self.fields["taakopdracht"] = forms.ChoiceField(
+                label="Taak",
+                widget=forms.Select(),
+                choices=taakopdracht_opties,
+                required=True,
+            )
 
 
 class TaakAnnulerenForm(forms.Form):
-    bijlagen = forms.FileField(
-        widget=forms.widgets.FileInput(
-            attrs={
-                "accept": ".jpg, .jpeg, .png, .heic",
-                "data-action": "change->bijlagen#updateImageDisplay",
-                "data-bijlagen-target": "bijlagenAfronden",
-            }
-        ),
-        label="Foto's",
-        required=False,
-    )
+    def __init__(self, *args, **kwargs):
+        taakopdracht_opties = kwargs.pop("taakopdracht_opties", None)
+        super().__init__(*args, **kwargs)
 
-    omschrijving_intern = forms.CharField(
-        label="Interne opmerking",
-        help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",
-        widget=forms.Textarea(
-            attrs={
-                "class": "form-control",
-                "data-testid": "information",
-                "rows": "4",
-                "data-meldingbehandelformulier-target": "internalText",
-            }
-        ),
-        required=False,
-    )
+        if taakopdracht_opties:
+            self.fields["taakopdracht"] = forms.ChoiceField(
+                label="Taak",
+                widget=forms.Select(),
+                choices=taakopdracht_opties,
+                required=True,
+            )
+
+            self.fields["omschrijving_intern"] = forms.CharField(
+                label="Interne opmerking",
+                help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",
+                widget=forms.Textarea(
+                    attrs={
+                        "class": "form-control",
+                        "data-testid": "information",
+                        "rows": "4",
+                        "data-meldingbehandelformulier-target": "internalText",
+                    }
+                ),
+                required=False,
+            )
 
 
 class MeldingAfhandelenForm(forms.Form):
@@ -258,6 +269,7 @@ class MeldingAfhandelenForm(forms.Form):
                 "data-meldingbehandelformulier-target": "externalText",
             }
         ),
+        initial="Deze melding is behandeld. Bedankt voor uw inzet om Rotterdam schoon, heel en veilig te houden.",
         required=False,
     )
 
