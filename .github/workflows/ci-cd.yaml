@@ -9,6 +9,7 @@ env:
 
 jobs:
   django-lint:
+    name: Django linting
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -21,7 +22,7 @@ jobs:
         run: bash bin/cleanup_pre_commit.sh
 
   docker-build-and-test:
-    name: Create Docker image and run tests
+    name: Create Docker image and test
     runs-on: ubuntu-latest
     needs: django-lint
     steps:
@@ -38,6 +39,7 @@ jobs:
           docker-compose -f docker-compose.test.yaml exec -T app bash ./deploy/tests.sh
 
   deploy-acc:
+    name: Acceptance release
     if: github.ref == 'refs/heads/develop'
     needs: docker-build-and-test
     runs-on: ubuntu-latest
