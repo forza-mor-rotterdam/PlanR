@@ -38,7 +38,7 @@ jobs:
 
       - name: Start Docker Containers
         run: |
-          docker-compose -f docker-compose.test.yaml up -d --verbose
+          docker-compose -f docker-compose.test.yaml up -d
           if [ $? -ne 0 ]; then
             echo "Failed to start Docker containers"
             exit 1
@@ -46,11 +46,13 @@ jobs:
 
       - name: Run Tests
         run: |
-          docker-compose -f docker-compose.test.yaml exec -T app bash ./deploy/tests.sh --verbose
+          docker-compose -f docker-compose.test.yaml exec -T app bash ./deploy/tests.sh
           if [ $? -ne 0 ]; then
             echo "Tests failed"
             exit 1
           fi
+
+
 
   deploy-acc:
     name: Acceptance release
