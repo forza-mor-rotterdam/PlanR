@@ -37,6 +37,7 @@ jobs:
 
       - name: Start Docker Containers
         run: docker-compose -f docker-compose.test.yaml up -d
+
       - name: Run Tests
         run: docker-compose -f docker-compose.test.yaml run app python manage.py test
 
