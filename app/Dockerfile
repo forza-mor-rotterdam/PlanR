@@ -22,9 +22,9 @@ ENV PYTHONUNBUFFERED 1
 WORKDIR /app/
 
 # Create the uWSGI log file and set permissions
-RUN touch /uwsgi.log \
-    && chown $APP_USER:$APP_USER /uwsgi.log \
-    && chmod 600 /uwsgi.log
+RUN touch /app/uwsgi.log \
+    && chown $APP_USER:$APP_USER /app/uwsgi.log \
+    && chmod 600 /app/uwsgi.log
 
 RUN apt-get update \
     && apt-get dist-upgrade -y \
