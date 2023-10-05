@@ -8,7 +8,7 @@ set -x
 # psql -h ${DATABASE_HOST_OVERRIDE} -p 5432 -d ${DATABASE_NAME} -U ${DATABASE_USER} -c "drop schema public cascade;"
 # psql -h ${DATABASE_HOST_OVERRIDE} -p 5432 -d ${DATABASE_NAME} -U ${DATABASE_USER} -c "create schema public;"
 
-UWSGI_LOG="/app/uwsgi.log"
+UWSGI_LOG="/uwsgi.log"
 touch "$UWSGI_LOG"
 chown $APP_USER:$APP_USER "$UWSGI_LOG"
 chmod 600 "$UWSGI_LOG"

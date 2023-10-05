@@ -321,7 +321,7 @@ LOGGING = {
         "file": {
             "level": "DEBUG",
             "class": "logging.FileHandler",
-            "filename": "/app/uwsgi.log",
+            "filename": "uwsgi.log",
             "formatter": "verbose",
         },
     },
