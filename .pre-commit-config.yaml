@@ -24,3 +24,8 @@ repos:
       rev: '6.0.0'
       hooks:
       - id: flake8
+  - repo: https://github.com/prettier/prettier
+    rev: "1.17.1"
+    hooks:
+      - id: prettier
+        files: '\.(js|ts|jsx|tsx|scss|css)$'

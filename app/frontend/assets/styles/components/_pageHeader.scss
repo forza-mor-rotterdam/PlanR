@@ -1,5 +1,4 @@
 header {
-
     .container {
         display: flex;
         flex-direction: column;
@@ -20,7 +19,7 @@ header {
             h1 {
                 order: 1;
             }
-            >a {
+            > a {
                 order: 2;
             }
         }

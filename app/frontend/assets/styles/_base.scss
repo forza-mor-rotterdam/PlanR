@@ -7,7 +7,7 @@
 html,
 body {
     margin: 0;
-    font-family: 'Bolder', sans-serif;
+    font-family: "Bolder", sans-serif;
     font-size: 16px;
     color: $gray-tint11;
 
@@ -29,7 +29,7 @@ header {
 
     > .container {
         display: block;
-        max-width: map-get($container-max-widths , xxl );
+        max-width: map-get($container-max-widths, xxl);
         margin: 0 auto;
     }
 }
@@ -69,13 +69,12 @@ main {
         }
 
         .grid-item {
-
             &.bottom-left {
                 display: flex;
                 flex-direction: column;
                 justify-content: flex-end;
 
-                >* {
+                > * {
                     align-self: flex-start;
                 }
             }
@@ -84,23 +83,29 @@ main {
 }
 
 // HEADINGS
-h1, .h1 {
+h1,
+.h1 {
     font-size: $h1-font-size;
 }
 
-h2, .h2 {
+h2,
+.h2 {
     font-size: $h2-font-size;
 }
-h3, .h3 {
+h3,
+.h3 {
     font-size: $h3-font-size;
 }
-h4, .h4 {
+h4,
+.h4 {
     font-size: $h4-font-size;
 }
-h5, .h5 {
+h5,
+.h5 {
     font-size: $h5-font-size;
 }
-h6, .h6 {
+h6,
+.h6 {
     font-size: $h6-font-size;
 }
 
@@ -128,17 +133,16 @@ table {
     tr:nth-child(even) {
         background-color: $gray-tint01;
     }
-    th, td {
+    th,
+    td {
         padding: 10px 5px 10px 0;
     }
     thead {
-
         th {
             text-align: left;
         }
     }
     tbody {
-
         td {
             vertical-align: middle;
 
@@ -246,12 +250,11 @@ p {
 
     &--warning {
         &:before {
-            content: url('../icons/warning.svg');
+            content: url("../icons/warning.svg");
             top: -1px;
         }
     }
 }
-
 
 // LISTS
 
@@ -292,12 +295,12 @@ ul {
 }
 
 dl {
-    div{
+    div {
         display: flex;
 
         dd,
         dt {
-            margin: 0 0 .5rem;
+            margin: 0 0 0.5rem;
         }
         dd {
             flex: 1 1 60%;
@@ -306,7 +309,7 @@ dl {
         dt {
             flex: 1 1 40%;
             box-sizing: border-box;
-            padding-right: .5rem;
+            padding-right: 0.5rem;
         }
     }
 }
@@ -320,7 +323,6 @@ dl {
         font-weight: 400;
     }
 }
-
 
 // SECTIONS
 section {

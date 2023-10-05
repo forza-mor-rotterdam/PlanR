@@ -25,17 +25,16 @@
                 padding-left: 6px;
             }
             &:hover {
-                background-color: #E0EEE2;
+                background-color: #e0eee2;
             }
 
             &.btn--next {
-
-                path{
+                path {
                     fill: $gray-tint11;
                 }
             }
             &.btn--previous {
-                svg{
+                svg {
                     transform: rotate(180deg);
                     fill: $gray-tint11;
                 }
@@ -43,13 +42,12 @@
         }
         span {
             color: $green-tint01;
-            background-color: #E0EEE2;
+            background-color: #e0eee2;
         }
     }
 
     .wrapper-horizontal {
         ul {
-
             li {
                 margin-right: 0;
                 width: 32px;
@@ -89,7 +87,7 @@
                         box-shadow: none;
                         &::before {
                             color: $green-tint01;
-                            background-color: #E0EEE2;
+                            background-color: #e0eee2;
                         }
                     }
                     &:focus {
@@ -98,7 +96,6 @@
                         }
                     }
                 }
-
             }
         }
     }

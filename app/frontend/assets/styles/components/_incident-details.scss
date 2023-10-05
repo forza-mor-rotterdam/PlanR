@@ -74,7 +74,6 @@
     ul {
         flex: 1 1 50%;
     }
-
 }
 
 .no-image {
@@ -84,7 +83,6 @@
     background-position: center;
     margin: 0 $container-padding-x;
 }
-
 
 .incident-meta-list {
     li {
@@ -96,13 +94,12 @@
 }
 
 .section--seperated {
-
     .full-width {
         margin: 0 (-(map-get($container-margin, md)));
     }
 }
 
-.section--location{
+.section--location {
     margin-bottom: 50px;
 }
 
