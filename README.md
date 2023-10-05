@@ -1,6 +1,6 @@
 # PlanR
 
-Description
+Applicatie voor midoffice medewerkers om regie uit te voeren op de MOR-keten
 
 ## Tech Stack
 
