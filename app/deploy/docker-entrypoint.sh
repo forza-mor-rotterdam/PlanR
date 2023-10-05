@@ -11,7 +11,7 @@ set -x
 UWSGI_LOG="/app/uwsgi.log"
 touch "$UWSGI_LOG"
 chown $APP_USER:$APP_USER "$UWSGI_LOG"
-chmod 600 "$UWSGI_LOG"
+chmod 744 "$UWSGI_LOG"
 
 echo Apply migrations
 python manage.py migrate --noinput
