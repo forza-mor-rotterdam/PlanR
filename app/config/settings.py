@@ -326,7 +326,7 @@ LOGGING = {
             "propagate": True,
         },
         "celery": {
-            "handlers": ["console", "file"],
+            "handlers": ["console"],
             "level": "INFO",
         },
     },
