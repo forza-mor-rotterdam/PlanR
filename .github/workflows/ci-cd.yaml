@@ -37,10 +37,8 @@ jobs:
 
       - name: Start Docker Containers
         run: docker-compose -f docker-compose.test.yaml up -d
-      - name: Run Alternate Tests
-        run: docker-compose -f docker-compose.test.yaml run app python manage.py test
       - name: Run Tests
-        run: docker-compose -f docker-compose.test.yaml exec -T app bash ./deploy/tests.sh
+        run: docker-compose -f docker-compose.test.yaml run app python manage.py test
 
   deploy-acc:
     name: Acceptance release

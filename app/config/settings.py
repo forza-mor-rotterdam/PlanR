@@ -318,16 +318,18 @@ LOGGING = {
             "stream": sys.stdout,
             "formatter": "verbose",
         },
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": "uwsgi.log",
+            "formatter": "verbose",
+        },
     },
     "loggers": {
         "": {
             "handlers": ["console"],
             "level": LOG_LEVEL,
             "propagate": True,
-        },
-        "celery": {
-            "handlers": ["console"],
-            "level": "INFO",
         },
     },
 }
