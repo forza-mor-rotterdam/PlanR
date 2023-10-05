@@ -27,7 +27,7 @@ export default class extends Controller {
     for (let i = 0; i < inputList.length; i++) {
       const input = inputList[i]
       const error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
-      input.addEventListener('input', event => {
+      input.addEventListener('input', (event) => {
         if (input.validity.valid) {
           input.closest('.form-row').classList.remove('is-invalid')
           error.textContent = ''
@@ -38,7 +38,7 @@ export default class extends Controller {
       })
     }
 
-    form.addEventListener('submit', event => {
+    form.addEventListener('submit', (event) => {
       const allFieldsValid = this.checkValids()
 
       if (!allFieldsValid) {

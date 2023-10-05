@@ -39,7 +39,7 @@ export default class extends Controller {
       const input = inputList[i]
       const error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
 
-      input.addEventListener('input', event => {
+      input.addEventListener('input', (event) => {
         if (input.validity.valid) {
           input.closest('.form-row').classList.remove('is-invalid')
           error.textContent = ''
@@ -58,7 +58,7 @@ export default class extends Controller {
       })
     }
 
-    form.addEventListener('submit', event => {
+    form.addEventListener('submit', (event) => {
       const allFieldsValid = this.checkValids()
       const checkBoxesValid = this.checkCheckBoxes()
 
@@ -137,7 +137,7 @@ export default class extends Controller {
 
   removeDuplicates(arr) {
     var unique = []
-    arr.forEach(element => {
+    arr.forEach((element) => {
       if (!unique.includes(element)) {
         unique.push(element)
       }
@@ -175,10 +175,7 @@ export default class extends Controller {
   }
 
   showField(field) {
-    document
-      .getElementById(field)
-      .closest('.form-row')
-      .classList.remove('hidden')
+    document.getElementById(field).closest('.form-row').classList.remove('hidden')
     document.getElementById(field).setAttribute('required', true)
   }
 
@@ -299,9 +296,7 @@ export default class extends Controller {
           listItem.appendChild(content)
           listItem.appendChild(remove)
         } else {
-          content.textContent = `Het bestand "${
-            file.name
-          }" is geen geldig bestandstype. Selecteer alleen bestanden van het type "jpg, jpeg of png"`
+          content.textContent = `Het bestand "${file.name}" is geen geldig bestandstype. Selecteer alleen bestanden van het type "jpg, jpeg of png"`
           listItem.appendChild(content)
         }
 

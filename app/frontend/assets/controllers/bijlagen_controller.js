@@ -13,7 +13,7 @@ export default class extends Controller {
 
   removeDuplicates(arr) {
     var unique = []
-    arr.forEach(element => {
+    arr.forEach((element) => {
       if (!unique.includes(element)) {
         unique.push(element)
       }
@@ -148,9 +148,7 @@ export default class extends Controller {
           listItem.appendChild(content)
           listItem.appendChild(remove)
         } else {
-          content.textContent = `Het bestand "${
-            file.name
-          }" is geen geldig bestandstype. Selecteer alleen bestanden van het type "jpg, jpeg of png"`
+          content.textContent = `Het bestand "${file.name}" is geen geldig bestandstype. Selecteer alleen bestanden van het type "jpg, jpeg of png"`
           listItem.appendChild(content)
         }
 

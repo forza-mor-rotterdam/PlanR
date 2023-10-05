@@ -89,7 +89,9 @@ fieldset {
 }
 
 .is-invalid:is(.form-control, .form-select):hover:not(:focus):not([disabled]) {
-    box-shadow: 0 1px 0 $invalid-color, 0 0 0 1px $green-tint01;
+    box-shadow:
+        0 1px 0 $invalid-color,
+        0 0 0 1px $green-tint01;
 }
 
 .form-control:hover:not(:focus):not([disabled]),

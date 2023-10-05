@@ -28,7 +28,7 @@ export default class extends Controller {
     const self = this
     const sessionExpiryTimestamp = parseInt(this.sessionExpiryTimestampValue) * 1000
     const sessionExpiryMaxTimestamp = parseInt(this.sessionExpiryMaxTimestampValue) * 1000
-    var timer = setInterval(function() {
+    var timer = setInterval(function () {
       const currentDate = new Date()
       const timeIsUp = sessionExpiryTimestamp <= parseInt(parseInt(currentDate.getTime()))
       const timeIsUpMax = sessionExpiryMaxTimestamp <= parseInt(parseInt(currentDate.getTime()))

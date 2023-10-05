@@ -9,7 +9,7 @@ export default class extends Controller {
       this.thumbListTarget.getElementsByTagName('li')[0].classList.add('selected')
     }
 
-    document.addEventListener('keydown', event => {
+    document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
         this.closeModal()
       }
@@ -30,7 +30,7 @@ export default class extends Controller {
     modal.classList.add('show')
     modalBackdrop.classList.add('show')
     document.body.classList.add('show-modal')
-    setTimeout(function() {
+    setTimeout(function () {
       modal.querySelectorAll('.btn-close')[0].focus()
     }, 200)
   }

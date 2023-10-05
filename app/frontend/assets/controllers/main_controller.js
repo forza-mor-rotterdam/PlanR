@@ -1,7 +1,7 @@
 import { Controller } from '@hotwired/stimulus'
 export default class extends Controller {
   connect() {
-    window.addEventListener('popstate', event => {
+    window.addEventListener('popstate', (event) => {
       const overviewElement = document.querySelector('#overview')
       if (overviewElement) {
         const overviewSrcAttr = overviewElement.getAttribute('src')

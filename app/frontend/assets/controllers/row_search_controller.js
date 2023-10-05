@@ -18,7 +18,7 @@ export default class extends Controller {
       let newContent = td.dataset.value
       if (re.test(td.dataset.value)) {
         td.parentElement.style.display = 'table-row'
-        newContent = newContent.replace(re, function(match) {
+        newContent = newContent.replace(re, function (match) {
           return '<mark>' + match + '</mark>'
         })
       }

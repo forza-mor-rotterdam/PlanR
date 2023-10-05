@@ -35,14 +35,14 @@ export default class extends Controller {
       container.classList.toggle('show')
 
       const elementsToHide = document.querySelectorAll('.show')
-      elementsToHide.forEach(element => {
+      elementsToHide.forEach((element) => {
         if (element !== container) {
           element.classList.remove('show')
         }
       })
     } else {
       const elementsToHide = document.querySelectorAll('.show')
-      elementsToHide.forEach(element => {
+      elementsToHide.forEach((element) => {
         element.classList.remove('show')
       })
     }
