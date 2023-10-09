@@ -331,10 +331,6 @@ LOGGING = {
             "level": LOG_LEVEL,
             "propagate": True,
         },
-        "celery": {
-            "handlers": ["console", "file"],
-            "level": "INFO",
-        },
     },
 }
 
