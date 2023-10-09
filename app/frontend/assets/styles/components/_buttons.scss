@@ -1,87 +1,87 @@
 $buttons: (
-  "action": (
-    "text-decoration": none,
-    "background": $action,
-    "border": $action,
-    "color": $white,
-    "hover-background": $action-active,
-    "hover-border": $action-active,
-    "hover-color": $white,
-    "active-background": $action-active,
-    "active-border": $action-active,
-    "active-color": $white,
-    "disabled-background": $gray-tint04,
-    "disabled-border": $gray-tint04,
-    "disabled-color": $gray-tint09
-  ),
-  "primary": (
-    "text-decoration": none,
-    "background": $primary,
-    "border": $primary,
-    "color": $white,
-    "hover-background": $primary-active,
-    "hover-border": $primary-active,
-    "hover-color": $white,
-    "active-background": $primary-active,
-    "active-border": $primary-active,
-    "active-color": $white,
-    "disabled-background": $gray-tint04,
-    "disabled-border": $gray-tint04,
-    "disabled-color": $gray-tint09
-  ),
-  "secondary": (
-    "text-decoration": none,
-    "background": $secondary,
-    "border": $secondary,
-    "color": $white,
-    "hover-background": $gray-tint11,
-    "hover-border": $gray-tint11,
-    "hover-color": $white,
-    "active-background": $gray-tint11,
-    "active-border": $gray-tint11,
-    "active-color": $white,
-    "disabled-background": $gray-tint04,
-    "disabled-border": $gray-tint04,
-    "disabled-color": $gray-tint09
-  ),
-  "tertiary": (
-    "text-decoration": none,
-    "background": $white,
-    "border": $gray-tint08,
-    "color": $gray-tint11,
-    "hover-background": $white,
-    "hover-border": $primary,
-    "hover-color": $primary,
-    "active-background": $white,
-    "active-border": $primary,
-    "active-color": $primary,
-    "disabled-background": $gray-tint01,
-    "disabled-border": $gray-tint05,
-    "disabled-color": $gray-tint07
-  ),
-  "text": (
-    "text-decoration": underline,
-    "background": $white,
-    "border": $white,
-    "color": $primary,
-    "hover-background": $white,
-    "hover-border": $white,
-    "hover-color": $gray-tint11,
-    "active-background": $white,
-    "active-border": $white,
-    "active-color": $gray-tint11,
-    "disabled-background": $white,
-    "disabled-border": $white,
-    "disabled-color": $gray-tint08
-  ),
+    "action": (
+        "text-decoration": none,
+        "background": $action,
+        "border": $action,
+        "color": $white,
+        "hover-background": $action-active,
+        "hover-border": $action-active,
+        "hover-color": $white,
+        "active-background": $action-active,
+        "active-border": $action-active,
+        "active-color": $white,
+        "disabled-background": $gray-tint04,
+        "disabled-border": $gray-tint04,
+        "disabled-color": $gray-tint09,
+    ),
+    "primary": (
+        "text-decoration": none,
+        "background": $primary,
+        "border": $primary,
+        "color": $white,
+        "hover-background": $primary-active,
+        "hover-border": $primary-active,
+        "hover-color": $white,
+        "active-background": $primary-active,
+        "active-border": $primary-active,
+        "active-color": $white,
+        "disabled-background": $gray-tint04,
+        "disabled-border": $gray-tint04,
+        "disabled-color": $gray-tint09,
+    ),
+    "secondary": (
+        "text-decoration": none,
+        "background": $secondary,
+        "border": $secondary,
+        "color": $white,
+        "hover-background": $gray-tint11,
+        "hover-border": $gray-tint11,
+        "hover-color": $white,
+        "active-background": $gray-tint11,
+        "active-border": $gray-tint11,
+        "active-color": $white,
+        "disabled-background": $gray-tint04,
+        "disabled-border": $gray-tint04,
+        "disabled-color": $gray-tint09,
+    ),
+    "tertiary": (
+        "text-decoration": none,
+        "background": $white,
+        "border": $gray-tint08,
+        "color": $gray-tint11,
+        "hover-background": $white,
+        "hover-border": $primary,
+        "hover-color": $primary,
+        "active-background": $white,
+        "active-border": $primary,
+        "active-color": $primary,
+        "disabled-background": $gray-tint01,
+        "disabled-border": $gray-tint05,
+        "disabled-color": $gray-tint07,
+    ),
+    "text": (
+        "text-decoration": underline,
+        "background": $white,
+        "border": $white,
+        "color": $primary,
+        "hover-background": $white,
+        "hover-border": $white,
+        "hover-color": $gray-tint11,
+        "active-background": $white,
+        "active-border": $white,
+        "active-color": $gray-tint11,
+        "disabled-background": $white,
+        "disabled-border": $white,
+        "disabled-color": $gray-tint08,
+    ),
 ) !default;
 
 // Buttons with only an icon intended for fields with extra information
 button[class="icon"] {
-  border: none;
-  background-color: transparent;
-  font-size: 1.3rem;                                          // Result in icon size of 24x24px
-  margin-left: -6px;                                          // Result in 8px distance between icon and label
+    border: none;
+    background-color: transparent;
+    font-size: 1.3rem; // Result in icon size of 24x24px
+    margin-left: -6px; // Result in 8px distance between icon and label
 }
 
 button {
@@ -99,11 +99,10 @@ button {
     width: 100%;
     min-height: 48px;
     line-height: 24px;
-    font-family: 'Bolder', sans-serif;
+    font-family: "Bolder", sans-serif;
     font-size: 1rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
-
 
     span {
         padding: 0 16px;
@@ -137,7 +136,6 @@ button {
             background-color: $white;
             border-color: $primary;
         }
-
     }
 
     &-secondary {
@@ -165,7 +163,9 @@ button {
         min-width: 32px;
         min-height: 32px;
         color: white;
-        background: $black url("data:image/svg+xml,%3csvg width=%2732%27 height=%2732%27 viewBox=%270 0 32 32%27 fill=%27black%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath fill-rule=%27evenodd%27 clip-rule=%27evenodd%27 d=%27M26.6077 6.80752L25.1935 5.39331L16.0011 14.5857L6.80875 5.39331L5.39453 6.80752L14.5869 15.9999L5.39453 25.1923L6.80874 26.6065L16.0011 17.4141L25.1935 26.6065L26.6077 25.1923L17.4153 15.9999L26.6077 6.80752Z%27 fill=%27white%27/%3e%3c/svg%3e") center/32px auto no-repeat;
+        background: $black
+            url("data:image/svg+xml,%3csvg width=%2732%27 height=%2732%27 viewBox=%270 0 32 32%27 fill=%27black%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath fill-rule=%27evenodd%27 clip-rule=%27evenodd%27 d=%27M26.6077 6.80752L25.1935 5.39331L16.0011 14.5857L6.80875 5.39331L5.39453 6.80752L14.5869 15.9999L5.39453 25.1923L6.80874 26.6065L16.0011 17.4141L25.1935 26.6065L26.6077 25.1923L17.4153 15.9999L26.6077 6.80752Z%27 fill=%27white%27/%3e%3c/svg%3e")
+            center/32px auto no-repeat;
         border: 0;
         border-radius: 0;
         opacity: 1;
@@ -186,7 +186,9 @@ button {
             min-height: 0;
             padding: 6px 40px 6px 8px;
             text-align: left;
-            background: $primary url("data:image/svg+xml,%3csvg width=%2732%27 height=%2732%27 viewBox=%270 0 32 32%27 fill=%27black%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath fill-rule=%27evenodd%27 clip-rule=%27evenodd%27 d=%27M26.6077 6.80752L25.1935 5.39331L16.0011 14.5857L6.80875 5.39331L5.39453 6.80752L14.5869 15.9999L5.39453 25.1923L6.80874 26.6065L16.0011 17.4141L25.1935 26.6065L26.6077 25.1923L17.4153 15.9999L26.6077 6.80752Z%27 fill=%27white%27/%3e%3c/svg%3e") calc(100% - 8px)/28px auto no-repeat;
+            background: $primary
+                url("data:image/svg+xml,%3csvg width=%2732%27 height=%2732%27 viewBox=%270 0 32 32%27 fill=%27black%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath fill-rule=%27evenodd%27 clip-rule=%27evenodd%27 d=%27M26.6077 6.80752L25.1935 5.39331L16.0011 14.5857L6.80875 5.39331L5.39453 6.80752L14.5869 15.9999L5.39453 25.1923L6.80874 26.6065L16.0011 17.4141L25.1935 26.6065L26.6077 25.1923L17.4153 15.9999L26.6077 6.80752Z%27 fill=%27white%27/%3e%3c/svg%3e")
+                calc(100% - 8px) / 28px auto no-repeat;
 
             &:hover,
             &:active {

@@ -1,14 +1,13 @@
 .page__beheer {
-        padding-top: 2rem;
-        h1 {
-
-        }
+    padding-top: 2rem;
+    h1 {
+    }
 
     .container__flex {
         margin: 32px 0;
         display: flex;
         justify-content: space-between;
-        >* {
+        > * {
             flex: 1;
         }
 
@@ -22,7 +21,8 @@
     }
 
     table tbody {
-        th, td {
+        th,
+        td {
             text-align: left;
             padding-left: 0.5rem;
             padding-right: 0.5rem;
@@ -30,7 +30,7 @@
     }
 
     form {
-        max-width: map-get($container-max-widths , md );
+        max-width: map-get($container-max-widths, md);
         margin: 0 auto;
     }
     .btn-row {

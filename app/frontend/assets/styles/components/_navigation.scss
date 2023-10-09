@@ -1,11 +1,10 @@
 .container__nav--tertiary {
     margin: 0 auto;
     width: 100%;
-    max-width: map-get($container-max-widths , xxl );
+    max-width: map-get($container-max-widths, xxl);
     display: flex;
     justify-content: flex-end;
 }
-
 
 .list-nav--tertiary {
     @include list-clean();

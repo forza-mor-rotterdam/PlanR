@@ -1,5 +1,4 @@
 .container__table {
-
     @media (max-width: map-get($grid-breakpoints, lg)) {
         overflow-x: scroll;
     }
@@ -36,7 +35,6 @@
             transform: rotate(-90deg);
         }
     }
-
 }
 
 .table--overview {
