@@ -103,6 +103,7 @@ gebruikersgroep_permissies = (
     MeldingenLijstBekijkenPermissie,
     TaakAanmakenPermissie,
     TaakAfrondenPermissie,
+    TaakAnnulerenPermissie,
     GebruikerLijstBekijkenPermissie,
     GebruikerAanmakenPermissie,
     GebruikerBekijkenPermissie,
