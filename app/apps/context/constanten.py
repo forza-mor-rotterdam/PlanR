@@ -2,7 +2,9 @@ import string
 from datetime import datetime
 
 from apps.regie.constanten import VERTALINGEN
+from apps.services.onderwerpen import OnderwerpenService
 from django.http import QueryDict
+from django.template.loader import get_template
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from utils.diversen import string_based_lookup
@@ -233,16 +235,25 @@ class OnderwerpKolom(StandaardKolom):
 
     def td_label(self):
         default = "-"
-        onderwerpen = string_based_lookup(self.context, "melding.onderwerpen")
-        if not onderwerpen:
+        onderwerpen_urls = string_based_lookup(self.context, "melding.onderwerpen")
+        if not onderwerpen_urls:
             return default
-        onderwerpen_opties = self.context.get("filter_options", {}).get("onderwerp", {})
-        begraafplaats_namen = [
-            str(v[0])
-            for k, v in onderwerpen_opties.items()
-            if k in [str(o) for o in onderwerpen]
-        ]
-        return ", ".join(begraafplaats_namen) if begraafplaats_namen else default
+        # print("onderwerpen")
+        # print(onderwerpen_urls)
+        onderwerp_namen = []
+        for onderwerp_url in onderwerpen_urls:
+            onderwerp = OnderwerpenService().get_onderwerp(onderwerp_url)
+            # print(onderwerp)
+            standaard_naam = onderwerp.get("name", "Niet gevonden!")
+            if onderwerp.get("priority") == "high":
+                spoed_badge = get_template("badges/spoed.html")
+                onderwerp_namen.append(
+                    mark_safe(f"{standaard_naam}{spoed_badge.render()}")
+                )
+            else:
+                onderwerp_namen.append(standaard_naam)
+
+        return ", ".join(onderwerp_namen) if onderwerp_namen else default
 
 
 class OrigineelAangemaaktKolom(StandaardKolom):
@@ -297,8 +308,67 @@ class StatusKolom(StandaardKolom):
         )
 
 
-FILTERS = (("status",), ("begraafplaats",), ("onderwerp",), ("wijk",), ("buurt",))
-FILTER_NAMEN = [f[0] for f in FILTERS]
+class StandaardFilter:
+    _key = None
+
+    def __init__(self, context):
+        self.context = context
+
+    @classmethod
+    def key(cls):
+        return cls._key
+
+    def optie_label(self, optie_data):
+        return f"{VERTALINGEN.get(optie_data[0], optie_data[0])}"
+
+    def opties(self):
+        return [
+            [k, {"label": self.optie_label(v), "item_count": v[1]}]
+            for k, v in self.context.items()
+        ]
+
+
+class StatusFilter(StandaardFilter):
+    _key = "status"
+
+
+class BegraafplaatsFilter(StandaardFilter):
+    _key = "begraafplaats"
+
+
+class OnderwerpFilter(StandaardFilter):
+    _key = "onderwerp"
+
+    def optie_label(self, optie_data):
+        if len(optie_data) < 2:
+            return optie_data
+        standaard_label = optie_data[1]
+        onderwerp = OnderwerpenService().get_onderwerp(optie_data[0])
+        standaard_label = onderwerp.get("name", standaard_label)
+        if onderwerp.get("priority") == "high":
+            spoed_badge = get_template("badges/spoed.html")
+            return mark_safe(f"{standaard_label}{spoed_badge.render()}")
+        return standaard_label
+
+
+class WijkFilter(StandaardFilter):
+    _key = "wijk"
+
+
+class BuurtFilter(StandaardFilter):
+    _key = "buurt"
+
+
+FILTERS = (
+    StatusFilter,
+    BegraafplaatsFilter,
+    OnderwerpFilter,
+    WijkFilter,
+    BuurtFilter,
+)
+
+FILTER_NAMEN = [f.key() for f in FILTERS]
+FILTER_KEYS = {f.key(): f for f in FILTERS}
 
 KOLOMMEN = (
     MeldingIdKolom,
