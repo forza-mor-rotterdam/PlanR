@@ -256,6 +256,26 @@ p {
     }
 }
 
+.spoed-warning {
+    svg {
+        vertical-align: bottom;
+        width: 24px;
+        height: 24px;
+        path {
+            fill: #DB5F06;
+        }
+    }
+
+    .form-check-label & {
+        svg {
+            vertical-align: top;
+            path {
+                fill: #DB5F06;
+            }
+        }
+    }
+}
+
 // LISTS
 
 @mixin list-clean {
