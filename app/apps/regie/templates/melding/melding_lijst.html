@@ -42,7 +42,6 @@
                             <tr>
                                 <th></th>
                                 {% render_th_tags kolommen %}
-                                <th></th>
                             </tr>
                         </thead>
                         <tbody id="id_maincontent">
@@ -59,15 +58,6 @@
                                     {% endif %}
                                 </td>
                                 {% render_td_tags kolommen %}
-                                <td>
-                                    <a href="{% url 'melding_pdf_download' melding.uuid %}" target="_blank" role="button" class="btn btn-icon btn-textlink">
-                                        <svg width="16" height="16" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" title="Exporteer pdf">
-                                            <path d="M37.0008 9.99962V-0.000244141H7.00118V9.99962H0.00195312V34.0002H7.00118V44H38.001V34.0002H44V9.99962H37.0008ZM35.0003 40.9994H9.99956V23.0001H35.0003V40.9994ZM9.99956 3.00039H34.0001V9.99962H9.99956V3.00039Z" fill="#00811F"/>
-                                            <path d="M31.9997 36.0006H13.0002V39.0012H31.9997V36.0006Z" fill="#00811F"/>
-                                            <path d="M31.9997 30.0016H13.0002V33.0022H31.9997V30.0016Z" fill="#00811F"/>
-                                        </svg>
-                                    </a>
-                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
