@@ -262,7 +262,7 @@ p {
         width: 24px;
         height: 24px;
         path {
-            fill: #DB5F06;
+            fill: #db5f06;
         }
     }
 
@@ -270,7 +270,27 @@ p {
         svg {
             vertical-align: top;
             path {
-                fill: #DB5F06;
+                fill: #db5f06;
+            }
+        }
+    }
+}
+
+.warning-spoed {
+    svg {
+        vertical-align: sub;
+        width: 24px;
+        height: 24px;
+        path {
+            fill: #db5f06;
+        }
+    }
+
+    .form-check-label & {
+        svg {
+            vertical-align: top;
+            path {
+                fill: #db5f06;
             }
         }
     }

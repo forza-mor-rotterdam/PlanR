@@ -1,5 +1,5 @@
 {% load vind_in_dict from querystring_tags %}
-{% load to_date from date_tags %}
+{% load to_datetime from date_tags %}
 {% load taakopdracht from melding_tags %}
 {% load multiply previous next from list_tags %}
 {% load gebruiker_middels_email from gebruikers_tags %}
@@ -64,7 +64,7 @@
                                     <dt>Status</dt>
                                     <dd>{{ row_data.mg.taakgebeurtenis.taakstatus.naam }}</dd>
                                     <dt>Datum</dt>
-                                    <dd>{{ row_data.mg.taakgebeurtenis.aangemaakt_op|to_date }}</dd>
+                                    <dd>{{ row_data.mg.taakgebeurtenis.aangemaakt_op|to_datetime }}</dd>
                                     {% if row_data.mg.taakgebeurtenis.gebruiker %}
                                     <dt>Gebruiker</dt>
                                     <dd>{{ row_data.mg.taakgebeurtenis.gebruiker|gebruiker_middels_email }}</dd>
@@ -79,7 +79,7 @@
                                     <dd>{{ row_data.mg.gebruiker|gebruiker_middels_email }}</dd>
                                     {% endif %}
                                     <dt>Datum</dt>
-                                    <dd>{{ row_data.mg.aangemaakt_op|to_date }}</dd>
+                                    <dd>{{ row_data.mg.aangemaakt_op|to_datetime }}</dd>
                                     {% if row_data.mg.omschrijving_extern %}
                                     <dt>Bericht voor de melder</dt>
                                     <dd>{{ row_data.mg.omschrijving_extern }}</dd>
