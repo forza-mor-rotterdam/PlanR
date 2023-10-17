@@ -1,12 +1,11 @@
 import string
-from utils.datetime import stringdatetime_naar_datetime
 
 from apps.regie.constanten import VERTALINGEN
-from apps.services.onderwerpen import OnderwerpenService, render_onderwerp
+from apps.services.onderwerpen import render_onderwerp
 from django.http import QueryDict
-from django.template.loader import get_template
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from utils.datetime import stringdatetime_naar_datetime
 from utils.diversen import string_based_lookup
 
 
@@ -238,7 +237,9 @@ class OnderwerpKolom(StandaardKolom):
         onderwerpen_urls = string_based_lookup(self.context, "melding.onderwerpen")
         if not onderwerpen_urls:
             return default
-        onderwerp_namen = [render_onderwerp(onderwerp_url) for onderwerp_url in onderwerpen_urls]
+        onderwerp_namen = [
+            render_onderwerp(onderwerp_url) for onderwerp_url in onderwerpen_urls
+        ]
         return ", ".join(onderwerp_namen) if onderwerp_namen else default
 
 
@@ -256,7 +257,9 @@ class OrigineelAangemaaktKolom(StandaardKolom):
         )
         if not origineel_aangemaakt:
             return default
-        return stringdatetime_naar_datetime(origineel_aangemaakt).strftime("%Y-%m-%d %H:%M")
+        return stringdatetime_naar_datetime(origineel_aangemaakt).strftime(
+            "%Y-%m-%d %H:%M"
+        )
 
 
 class StatusKolom(StandaardKolom):

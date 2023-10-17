@@ -1,6 +1,5 @@
-from utils.datetime import stringdatetime_naar_datetime
-
 from django import template
+from utils.datetime import stringdatetime_naar_datetime
 
 register = template.Library()
 
