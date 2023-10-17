@@ -1,8 +1,8 @@
 import string
-from datetime import datetime
+from utils.datetime import stringdatetime_naar_datetime
 
 from apps.regie.constanten import VERTALINGEN
-from apps.services.onderwerpen import OnderwerpenService
+from apps.services.onderwerpen import OnderwerpenService, render_onderwerp
 from django.http import QueryDict
 from django.template.loader import get_template
 from django.urls import reverse
@@ -238,21 +238,7 @@ class OnderwerpKolom(StandaardKolom):
         onderwerpen_urls = string_based_lookup(self.context, "melding.onderwerpen")
         if not onderwerpen_urls:
             return default
-        # print("onderwerpen")
-        # print(onderwerpen_urls)
-        onderwerp_namen = []
-        for onderwerp_url in onderwerpen_urls:
-            onderwerp = OnderwerpenService().get_onderwerp(onderwerp_url)
-            # print(onderwerp)
-            standaard_naam = onderwerp.get("name", "Niet gevonden!")
-            if onderwerp.get("priority") == "high":
-                spoed_badge = get_template("badges/spoed.html")
-                onderwerp_namen.append(
-                    mark_safe(f"{standaard_naam}{spoed_badge.render()}")
-                )
-            else:
-                onderwerp_namen.append(standaard_naam)
-
+        onderwerp_namen = [render_onderwerp(onderwerp_url) for onderwerp_url in onderwerpen_urls]
         return ", ".join(onderwerp_namen) if onderwerp_namen else default
 
 
@@ -270,16 +256,7 @@ class OrigineelAangemaaktKolom(StandaardKolom):
         )
         if not origineel_aangemaakt:
             return default
-        try:
-            return datetime.strptime(
-                origineel_aangemaakt, "%Y-%m-%dT%H:%M:%S.%f%z"
-            ).strftime("%Y-%m-%d %H:%M")
-        except Exception as e:
-            print(e)
-
-        return datetime.strptime(origineel_aangemaakt, "%Y-%m-%dT%H:%M:%S%z").strftime(
-            "%Y-%m-%d %H:%M"
-        )
+        return stringdatetime_naar_datetime(origineel_aangemaakt).strftime("%Y-%m-%d %H:%M")
 
 
 class StatusKolom(StandaardKolom):
@@ -342,13 +319,7 @@ class OnderwerpFilter(StandaardFilter):
     def optie_label(self, optie_data):
         if len(optie_data) < 2:
             return optie_data
-        standaard_label = optie_data[1]
-        onderwerp = OnderwerpenService().get_onderwerp(optie_data[0])
-        standaard_label = onderwerp.get("name", standaard_label)
-        if onderwerp.get("priority") == "high":
-            spoed_badge = get_template("badges/spoed.html")
-            return mark_safe(f"{standaard_label}{spoed_badge.render()}")
-        return standaard_label
+        return render_onderwerp(optie_data[0], optie_data[1])
 
 
 class WijkFilter(StandaardFilter):

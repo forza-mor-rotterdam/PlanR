@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 {% load vind_in_dict from querystring_tags %}
-{% load to_date from date_tags %}
+{% load to_datetime from date_tags %}
 {% load rotterdam_formulier_html %}
 {% load vertaal from vertaal_tags %}
 {% load context_template from context_tags %}
+{% load render_onderwerp from melding_tags %}
 
 {% block body %}
 {% context_template "melding_detail_locaties.html" as locatie_template %}
@@ -165,7 +166,7 @@
                                         <h3 class="h5">Ingediend</h3>
                                         <p>
                                             {% if melding.origineel_aangemaakt %}
-                                                {{ melding.origineel_aangemaakt|to_date|date:"d-m-Y H:i" }}
+                                                {{ melding.origineel_aangemaakt|to_datetime|date:"d-m-Y H:i" }}
                                             {% else %}
                                                 -
                                             {% endif %}
@@ -187,7 +188,7 @@
                                         <h3 class="h5">Onderwerp</h3>
                                         <p>
                                             {% for onderwerp in melding.onderwerpen %}
-                                                {{ onderwerp.naam }}{% if not forloop.last %}, {% endif %}
+                                            {% render_onderwerp onderwerp %}{% if not forloop.last %}, {% endif %}
                                             {% endfor %}
                                         </p>
                                     </li>

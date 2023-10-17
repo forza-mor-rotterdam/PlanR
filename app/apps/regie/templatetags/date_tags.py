@@ -1,4 +1,4 @@
-from datetime import datetime
+from utils.datetime import stringdatetime_naar_datetime
 
 from django import template
 
@@ -6,11 +6,7 @@ register = template.Library()
 
 
 @register.filter
-def to_date(value):
+def to_datetime(value):
     if not value:
         return
-    try:
-        return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f%z")
-    except Exception as e:
-        print(e)
-    return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S%z")
+    return stringdatetime_naar_datetime(value)

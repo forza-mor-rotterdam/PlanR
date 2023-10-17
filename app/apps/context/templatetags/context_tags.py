@@ -18,6 +18,5 @@ def context_template(context, template_name):
     try:
         get_template(f"{context_instance.template}/{template_name}")
     except Exception as e:
-        print(e)
         return default_template
     return f"{context_instance.template}/{template_name}"

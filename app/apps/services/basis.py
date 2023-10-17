@@ -53,16 +53,11 @@ class BasisService:
         }
 
         if cache_timeout and method == "get":
-            print("FROM CACHE")
-            print(url)
             cache_key = f"{url}?{urlencode(params)}"
-            print(cache_key)
             response = cache.get(cache_key)
             if not response:
-                print("NO CACHE OR OUTDATED")
                 response: Response = action(**action_params)
                 if int(response.status_code) == 200:
-                    print("UPDATE CACHE")
                     cache.set(cache_key, response, cache_timeout)
         else:
             response: Response = action(**action_params)
