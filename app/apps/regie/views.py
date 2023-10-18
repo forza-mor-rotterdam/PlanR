@@ -576,7 +576,6 @@ def msb_melding_zoeken(request):
         form = MSBMeldingZoekenForm(request.POST)
         is_valid = form.is_valid()
         if is_valid:
-
             url = f"{request.session['msb_base_url']}/sbmob/api/msb/melding/{form.cleaned_data.get('msb_nummer')}"
             logger.info("msb melding url=%s", url)
             response = requests.get(
