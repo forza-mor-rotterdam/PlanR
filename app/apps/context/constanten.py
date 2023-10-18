@@ -1,10 +1,11 @@
 import string
-from datetime import datetime
 
 from apps.regie.constanten import VERTALINGEN
+from apps.services.onderwerpen import render_onderwerp
 from django.http import QueryDict
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from utils.datetime import stringdatetime_naar_datetime
 from utils.diversen import string_based_lookup
 
 
@@ -233,16 +234,13 @@ class OnderwerpKolom(StandaardKolom):
 
     def td_label(self):
         default = "-"
-        onderwerpen = string_based_lookup(self.context, "melding.onderwerpen")
-        if not onderwerpen:
+        onderwerpen_urls = string_based_lookup(self.context, "melding.onderwerpen")
+        if not onderwerpen_urls:
             return default
-        onderwerpen_opties = self.context.get("filter_options", {}).get("onderwerp", {})
-        begraafplaats_namen = [
-            str(v[0])
-            for k, v in onderwerpen_opties.items()
-            if k in [str(o) for o in onderwerpen]
+        onderwerp_namen = [
+            render_onderwerp(onderwerp_url) for onderwerp_url in onderwerpen_urls
         ]
-        return ", ".join(begraafplaats_namen) if begraafplaats_namen else default
+        return ", ".join(onderwerp_namen) if onderwerp_namen else default
 
 
 class OrigineelAangemaaktKolom(StandaardKolom):
@@ -259,14 +257,7 @@ class OrigineelAangemaaktKolom(StandaardKolom):
         )
         if not origineel_aangemaakt:
             return default
-        try:
-            return datetime.strptime(
-                origineel_aangemaakt, "%Y-%m-%dT%H:%M:%S.%f%z"
-            ).strftime("%Y-%m-%d %H:%M")
-        except Exception as e:
-            print(e)
-
-        return datetime.strptime(origineel_aangemaakt, "%Y-%m-%dT%H:%M:%S%z").strftime(
+        return stringdatetime_naar_datetime(origineel_aangemaakt).strftime(
             "%Y-%m-%d %H:%M"
         )
 
@@ -297,8 +288,61 @@ class StatusKolom(StandaardKolom):
         )
 
 
-FILTERS = (("status",), ("begraafplaats",), ("onderwerp",), ("wijk",), ("buurt",))
-FILTER_NAMEN = [f[0] for f in FILTERS]
+class StandaardFilter:
+    _key = None
+
+    def __init__(self, context):
+        self.context = context
+
+    @classmethod
+    def key(cls):
+        return cls._key
+
+    def optie_label(self, optie_data):
+        return f"{VERTALINGEN.get(optie_data[0], optie_data[0])}"
+
+    def opties(self):
+        return [
+            [k, {"label": self.optie_label(v), "item_count": v[1]}]
+            for k, v in self.context.items()
+        ]
+
+
+class StatusFilter(StandaardFilter):
+    _key = "status"
+
+
+class BegraafplaatsFilter(StandaardFilter):
+    _key = "begraafplaats"
+
+
+class OnderwerpFilter(StandaardFilter):
+    _key = "onderwerp"
+
+    def optie_label(self, optie_data):
+        if len(optie_data) < 2:
+            return optie_data
+        return render_onderwerp(optie_data[0], optie_data[1])
+
+
+class WijkFilter(StandaardFilter):
+    _key = "wijk"
+
+
+class BuurtFilter(StandaardFilter):
+    _key = "buurt"
+
+
+FILTERS = (
+    StatusFilter,
+    BegraafplaatsFilter,
+    OnderwerpFilter,
+    WijkFilter,
+    BuurtFilter,
+)
+
+FILTER_NAMEN = [f.key() for f in FILTERS]
+FILTER_KEYS = {f.key(): f for f in FILTERS}
 
 KOLOMMEN = (
     MeldingIdKolom,

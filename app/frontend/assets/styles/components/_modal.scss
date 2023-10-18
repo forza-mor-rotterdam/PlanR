@@ -24,13 +24,13 @@ body.show-modal {
     @include bodyModal();
 
     .modal.show {
-        @include modalVisible()
+        @include modalVisible();
     }
 }
 
 body.show-modal--first-filter {
     .modal--first-filter {
-        @include modalVisible()
+        @include modalVisible();
     }
 }
 
@@ -59,11 +59,11 @@ body.show-modal--first-filter {
         min-height: calc(100% - 3rem);
         position: relative;
         width: 90%;
-        max-width: map-get($container-max-widths , lg );
+        max-width: map-get($container-max-widths, lg);
         margin: 1.5rem auto;
 
         &--small {
-            max-width: map-get($container-max-widths , md );
+            max-width: map-get($container-max-widths, md);
         }
     }
 
@@ -120,5 +120,4 @@ body.show-modal--first-filter {
         opacity: 0;
         display: none;
     }
-
 }

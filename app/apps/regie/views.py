@@ -5,11 +5,9 @@ import math
 
 import requests
 import weasyprint
-from apps.context.constanten import FILTER_NAMEN, KOLOMMEN, KOLOMMEN_KEYS
+from apps.context.constanten import FILTER_KEYS, FILTER_NAMEN, KOLOMMEN, KOLOMMEN_KEYS
 from apps.context.utils import get_gebruiker_context
-from apps.meldingen.service import MeldingenService
-from apps.meldingen.utils import get_taaktypes
-from apps.regie.constanten import MSB_WIJKEN, VERTALINGEN
+from apps.regie.constanten import MSB_WIJKEN
 from apps.regie.forms import (
     BEHANDEL_OPTIES,
     TAAK_BEHANDEL_RESOLUTIE,
@@ -27,6 +25,7 @@ from apps.regie.forms import (
     TaakStartenForm,
 )
 from apps.regie.utils import get_open_taakopdrachten, melding_naar_tijdlijn, to_base64
+from apps.services.meldingen import MeldingenService, get_taaktypes
 from config.context_processors import general_settings
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
@@ -117,14 +116,12 @@ def melding_lijst(request):
         if str(query_dict.get("offset")) in [str(oo[0]) for oo in offset_options]
         else 0
     )
-
     filter_velden = [
         {
             "naam": f,
-            "opties": [
-                [k, {"label": VERTALINGEN.get(v[0], v[0]), "item_count": v[1]}]
-                for k, v in data.get("filter_options", {}).get(f, {}).items()
-            ],
+            "opties": FILTER_KEYS[f](
+                data.get("filter_options", {}).get(f, {})
+            ).opties(),
             "aantal_actief": len(query_dict.getlist(f)),
         }
         for f in actieve_filters
@@ -579,7 +576,6 @@ def msb_melding_zoeken(request):
         form = MSBMeldingZoekenForm(request.POST)
         is_valid = form.is_valid()
         if is_valid:
-
             url = f"{request.session['msb_base_url']}/sbmob/api/msb/melding/{form.cleaned_data.get('msb_nummer')}"
             logger.info("msb melding url=%s", url)
             response = requests.get(

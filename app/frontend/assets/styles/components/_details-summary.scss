@@ -18,16 +18,15 @@ details {
         border-top: 1px solid $gray-tint04;
         list-style: none;
         &::-webkit-details-marker {
-            display:none;
+            display: none;
         }
         &::before {
-            content: url('../icons/arrow-right.svg');
+            content: url("../icons/arrow-right.svg");
             position: absolute;
             top: calc(50% - 10px);
             left: 16px;
             transform: rotate(90deg);
         }
-
     }
 
     &[open] {
@@ -46,7 +45,7 @@ details {
             text-decoration: underline;
 
             &::before {
-                content: url('../icons/plus.svg');
+                content: url("../icons/plus.svg");
                 top: calc(50% - 12px);
                 left: -5px;
             }
@@ -60,6 +59,5 @@ details {
                 }
             }
         }
-
     }
 }

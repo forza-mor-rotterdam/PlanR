@@ -110,7 +110,6 @@ def wgs_to_rd(phi, lam):
 
 
 if __name__ == "__main__":
-
     coord_rd = [
         [121687, 487484],  # Amsterdam
         [92565, 437428],  # Rotterdam

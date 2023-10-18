@@ -257,7 +257,6 @@ class TaakAnnulerenForm(forms.Form):
 
 
 class MeldingAfhandelenForm(forms.Form):
-
     omschrijving_extern = forms.CharField(
         label="Bericht voor de melder",
         help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",
@@ -288,7 +287,6 @@ class MeldingAfhandelenForm(forms.Form):
 
 
 class MeldingAanmakenForm(forms.Form):
-
     straatnaam = forms.CharField(
         widget=forms.TextInput(
             attrs={
@@ -432,7 +430,7 @@ class MeldingAanmakenForm(forms.Form):
     def get_verbose_value_from_field(self, fieldname, value):
         if hasattr(self.fields.get(fieldname), "choices"):
             choices_lookup = {c[0]: c[1] for c in self.fields[fieldname].choices}
-            if type(value) == list:
+            if isinstance(value, list):
                 return [choices_lookup.get(v, v) for v in value]
             return choices_lookup.get(value, value)
         return value

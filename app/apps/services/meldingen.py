@@ -2,29 +2,41 @@ import logging
 from urllib.parse import urlparse
 
 import requests
+from apps.services.basis import BasisService
 from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
-from requests import Request, Response
 
 logger = logging.getLogger(__name__)
 
 
-class MeldingenService:
-    _api_base_url = None
-    _timeout: tuple[int, ...] = (5, 10)
-    _api_path: str = "/api/v1"
+def get_taaktypes(melding):
+    from apps.services.meldingen import MeldingenService
 
-    class BasisUrlFout(Exception):
-        ...
+    taakapplicaties = MeldingenService().taakapplicaties()
+    taaktypes = [
+        [
+            tt.get("_links", {}).get("self"),
+            f"{tt.get('omschrijving')}",
+        ]
+        for ta in taakapplicaties.get("results", [])
+        for tt in ta.get("taaktypes", [])
+    ]
+    gebruikte_taaktypes = [
+        *set(
+            list(
+                to.get("taaktype")
+                for to in melding.get("taakopdrachten_voor_melding", [])
+                if not to.get("resolutie")
+            )
+        )
+    ]
+    taaktypes = [tt for tt in taaktypes if tt[0] not in gebruikte_taaktypes]
+    return taaktypes
 
-    class AntwoordFout(Exception):
-        ...
 
-    class DataOphalenFout(Exception):
-        ...
-
+class MeldingenService(BasisService):
     def __init__(self, *args, **kwargs: dict):
         self._api_base_url = settings.MELDINGEN_URL
         super().__init__(*args, **kwargs)
@@ -70,33 +82,13 @@ class MeldingenService:
         headers = {"Authorization": f"Token {self.haal_token()}"}
         return headers
 
-    def do_request(self, url, method="get", data={}, raw_response=True):
-
-        action: Request = getattr(requests, method)
-        action_params: dict = {
-            "url": self.get_url(url),
-            "headers": self.get_headers(),
-            "json": data,
-            "timeout": self._timeout,
-        }
-        response: Response = action(**action_params)
-
-        if raw_response:
-            return response
-        try:
-            return response.json()
-        except Exception:
-            raise MeldingenService.AntwoordFout(
-                f"url: {self.get_url(url)}, status code: {response.status_code}, tekst: {response.text}"
-            )
-
     def get_melding_lijst(self, query_string=""):
         return self.do_request(
             f"{self._api_path}/melding/?{query_string}",
             raw_response=False,
         )
 
-    def get_melding(self, id, query_string="") -> dict:
+    def get_melding(self, id, query_string=""):
         return self.do_request(
             f"{self._api_path}/melding/{id}/?{query_string}",
             raw_response=False,

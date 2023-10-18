@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 {% load vind_in_dict from querystring_tags %}
-{% load to_date from date_tags %}
+{% load to_datetime from date_tags %}
 {% load rotterdam_formulier_html %}
 {% load vertaal from vertaal_tags %}
 {% load context_template from context_tags %}
+{% load render_onderwerp from melding_tags %}
 
 {% block body %}
 {% context_template "melding_detail_locaties.html" as locatie_template %}
@@ -165,7 +166,7 @@
                                         <h3 class="h5">Ingediend</h3>
                                         <p>
                                             {% if melding.origineel_aangemaakt %}
-                                                {{ melding.origineel_aangemaakt|to_date|date:"d-m-Y H:i" }}
+                                                {{ melding.origineel_aangemaakt|to_datetime|date:"d-m-Y H:i" }}
                                             {% else %}
                                                 -
                                             {% endif %}
@@ -187,7 +188,7 @@
                                         <h3 class="h5">Onderwerp</h3>
                                         <p>
                                             {% for onderwerp in melding.onderwerpen %}
-                                                {{ onderwerp.naam }}{% if not forloop.last %}, {% endif %}
+                                            {% render_onderwerp onderwerp %}{% if not forloop.last %}, {% endif %}
                                             {% endfor %}
                                         </p>
                                     </li>
@@ -250,14 +251,6 @@
                                     </svg>Annuleer taak</button>
                             </li>
                             {% endif %}
-                            <li>
-                                <a href="{% url 'melding_pdf_download' melding.uuid %}" target="_blank" role="button" class="btn btn-icon btn-textlink">
-                                    <svg width="16" height="16" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" title="">
-                                        <path d="M37.0008 9.99962V-0.000244141H7.00118V9.99962H0.00195312V34.0002H7.00118V44H38.001V34.0002H44V9.99962H37.0008ZM35.0003 40.9994H9.99956V23.0001H35.0003V40.9994ZM9.99956 3.00039H34.0001V9.99962H9.99956V3.00039Z" fill="#00811F"/>
-                                        <path d="M31.9997 36.0006H13.0002V39.0012H31.9997V36.0006Z" fill="#00811F"/>
-                                        <path d="M31.9997 30.0016H13.0002V33.0022H31.9997V30.0016Z" fill="#00811F"/>
-                                    </svg>Download pdf</a>
-                            </li>
                         </ul>
                     </div>
                     {% if melding.status.naam != "afgehandeld" %}

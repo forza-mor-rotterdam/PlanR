@@ -19,11 +19,9 @@ def qs_ordenen(request_get, orden_param):
 def heeft_orden_oplopend(request_get, orden_param):
     qs_huidige_dict = dict(request_get)
     if f"-{orden_param}" in qs_huidige_dict.get("ordering", []):
-
         return "sorting--down"
 
     if orden_param in qs_huidige_dict.get("ordering", []):
-
         return "sorting--up"
 
     # show sorting icon on default
@@ -43,7 +41,7 @@ def qs_offset(request_get, offset_param):
 
 @register.simple_tag
 def vind_in_dict(op_zoek_dict, key):
-    if type(op_zoek_dict) != dict:
+    if not isinstance(op_zoek_dict, dict):
         return key
     result = op_zoek_dict.get(key, op_zoek_dict.get(str(key), key))
     if isinstance(result, (list, tuple)):

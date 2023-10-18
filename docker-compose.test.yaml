@@ -6,8 +6,6 @@ services:
       - "8003:8000"
     env_file:
       - .env.test
-    volumes:
-      - ./app:/app
     depends_on:
       database:
         condition: service_healthy

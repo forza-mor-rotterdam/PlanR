@@ -3,7 +3,6 @@
 }
 
 @media print {
-
     .print-only {
         display: block;
     }
@@ -44,10 +43,10 @@
             font-size: 14px;
         }
 
-        >div {
+        > div {
             display: flex;
             .h5,
-            .h5+p {
+            .h5 + p {
                 flex: 1 0 50%;
                 margin: 0;
                 line-height: 175%;
@@ -59,10 +58,10 @@
         display: block;
         ul {
             &:after {
-                content:"";
-                display:block;
-                clear:both;
-               }
+                content: "";
+                display: block;
+                clear: both;
+            }
         }
         li {
             float: left;
@@ -98,4 +97,4 @@
             }
         }
     }
- }
+}

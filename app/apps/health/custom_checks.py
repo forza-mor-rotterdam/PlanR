@@ -1,4 +1,4 @@
-from apps.meldingen.service import MeldingenService
+from apps.services.meldingen import MeldingenService
 from health_check.backends import BaseHealthCheckBackend
 from health_check.exceptions import HealthCheckException
 
