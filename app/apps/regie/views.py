@@ -640,9 +640,9 @@ def msb_importeer_melding(request):
         huisnummer = None
 
     omschrijving_kort = (
-        msb_data.get("omschrijving")
+        msb_data.get("omschrijving", "")
         if msb_data.get("omschrijving")
-        else msb_data.get("aanvullendeInformatie")
+        else "- geen korte omschrijving beschikbaar -"
     )
 
     post_data = {
