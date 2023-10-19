@@ -43,7 +43,12 @@
     </head>
     <body>
         <a href="#id_maincontent" class="skiplink">Ga direct naar de content</a>
-        {% block header %}{% include 'snippets/pageheader.html' %}{% endblock %}
+        {% block header %}
+        {% with pageTitle="PlanR" %}
+        {% include 'snippets/pageheader.html' %}
+        {% endwith %}
+        {% endblock %}
+
         <main data-controller="main">
             <div class="container">
                 {% block body %}{% endblock %}
