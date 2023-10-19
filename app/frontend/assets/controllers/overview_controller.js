@@ -5,6 +5,7 @@ export default class extends Controller {
 
   navigate(e) {
     if (!e.target.closest('a')) {
+      // eslint-disable-next-line no-undef
       Turbo.visit(e.params.targeturl)
     }
   }

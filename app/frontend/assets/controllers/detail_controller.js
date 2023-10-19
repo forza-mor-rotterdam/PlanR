@@ -2,7 +2,13 @@ import { Controller } from '@hotwired/stimulus'
 
 let lastFocussedItem = null
 export default class extends Controller {
-  static targets = ['selectedImage', 'thumbList', 'imageSliderContainer', 'turboActionModal']
+  static targets = [
+    'selectedImage',
+    'thumbList',
+    'imageSliderContainer',
+    'turboActionModal',
+    'modalAfhandelen',
+  ]
 
   initialize() {
     if (this.hasThumbListTarget) {
@@ -19,7 +25,7 @@ export default class extends Controller {
   openModal(event) {
     console.log('openModal, src: ', event.params.action)
     lastFocussedItem = event.target.closest('button')
-    const modal = document.querySelector('.modal')
+    const modal = this.modalAfhandelenTarget
     const modalBackdrop = document.querySelector('.modal-backdrop')
 
     // NOT WORKING ?? this.turboActionModalTarget.setAttribute("src", event)
@@ -36,17 +42,17 @@ export default class extends Controller {
   }
 
   closeModal() {
-    const modal = document.querySelector('.modal')
     const modalBackdrop = document.querySelector('.modal-backdrop')
-    modal.classList.remove('show')
+    this.modalAfhandelenTarget.classList.remove('show')
     modalBackdrop.classList.remove('show')
     document.body.classList.remove('show-modal')
     if (lastFocussedItem) {
       lastFocussedItem.focus()
     }
+    this.turboActionModalTarget.innerHTML = ''
   }
 
-  onScrollSlider(e) {
+  onScrollSlider() {
     this.highlightThumb(
       Math.floor(
         this.imageSliderContainerTarget.scrollLeft / this.imageSliderContainerTarget.offsetWidth
