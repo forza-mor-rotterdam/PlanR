@@ -23,7 +23,6 @@ export default class extends Controller {
   }
 
   openModal(event) {
-    console.log('openModal, src: ', event.params.action)
     lastFocussedItem = event.target.closest('button')
     const modal = this.modalAfhandelenTarget
     const modalBackdrop = document.querySelector('.modal-backdrop')
