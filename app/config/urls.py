@@ -1,8 +1,14 @@
-from apps.beheer.views import (
+from apps.authenticatie.views import (
     GebruikerAanmakenView,
     GebruikerAanpassenView,
     GebruikerLijstView,
-    beheer,
+)
+from apps.beheer.views import beheer
+from apps.context.views import (
+    ContextAanmakenView,
+    ContextAanpassenView,
+    ContextLijstView,
+    ContextVerwijderenView,
 )
 from apps.regie.views import (
     account,
@@ -90,6 +96,22 @@ urlpatterns = [
         "beheer/gebruiker/<int:pk>/aanpassen/",
         GebruikerAanpassenView.as_view(),
         name="gebruiker_aanpassen",
+    ),
+    path("beheer/context/", ContextLijstView.as_view(), name="context_lijst"),
+    path(
+        "beheer/context/aanmaken/",
+        ContextAanmakenView.as_view(),
+        name="context_aanmaken",
+    ),
+    path(
+        "beheer/context/<int:pk>/aanpassen/",
+        ContextAanpassenView.as_view(),
+        name="context_aanpassen",
+    ),
+    path(
+        "beheer/context/<int:pk>/verwijderen/",
+        ContextVerwijderenView.as_view(),
+        name="context_verwijderen",
     ),
     re_path(r"media/", meldingen_bestand, name="meldingen_bestand"),
 ]
