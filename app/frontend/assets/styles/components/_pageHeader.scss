@@ -1,4 +1,35 @@
 header {
+    .container__logo {
+        flex: 1;
+        > a {
+            display: inline-block;
+        }
+        .logo {
+            max-height: 40px;
+            margin: 10px 0 0 10px;
+            display: block;
+
+            &--large {
+                display: none;
+            }
+        }
+
+        @media (min-width: map-get($grid-breakpoints, sm)) {
+            .logo--large {
+                display: flex;
+            }
+            .logo--small {
+                display: none;
+            }
+        }
+
+        .pagetitle {
+            display: inline-block;
+            margin: 0 16px;
+            color: $green-tint01;
+            vertical-align: super;
+        }
+    }
     .container {
         display: flex;
         flex-direction: column;
