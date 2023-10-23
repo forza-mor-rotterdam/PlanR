@@ -180,19 +180,36 @@
             <h3 class="label">{{ field.label }}{{field.field.widget.attrs.hideLabel}}</h3>
         {% endif %}
         <div id="{{field.auto_id}}">
-            <ul class="list--form-check-input">
+            <div data-controller="multipleInputSortable">
+                <h6>Geselecteerde items</h6>
+                <ul class="list--form-check-input" data-multipleInputSortable-target="selectedItems">
 
-                {% for choice in field %}
-                    <li class="{% if field.field.required and form.required_css_class %}{{ form.required_css_class }}{% endif %}">
+                    {% for choice in field %}
+                    {% if choice.data.selected == True %}
+                    <li draggable="true" data-id="{{ choice.id_for_label }}" class="{% if field.field.required and form.required_css_class %}{{ form.required_css_class }}{% endif %}">
                         <div class="form-check">
                             {{ choice.tag }}
                             <label class="form-check-label" for="{{ choice.id_for_label }}">{{ choice.choice_label }}{% if choice.data.attrs.selected == True %} ({{ choice.data.attrs.item_count }}){% endif %}</label>
                         </div>
                     </li>
+                    {% endif %}
+                    {% endfor %}
 
-                {% endfor %}
-
-            </ul>
+                </ul>
+                <h6>Niet geselecteerde items</h6>
+                <ul class="list--form-check-input" data-multipleInputSortable-target="unSelectedItems">
+                    {% for choice in field %}
+                    {% if choice.data.selected == False %}
+                    <li draggable="true" data-id="{{ choice.id_for_label }}" class="{% if field.field.required and form.required_css_class %}{{ form.required_css_class }}{% endif %}">
+                        <div class="form-check">
+                            {{ choice.tag }}
+                            <label data-action="click->multipleInputSortable#checkboxClickEventHandler" class="form-check-label" for="{{ choice.id_for_label }}">{{ choice.choice_label }}{% if choice.data.attrs.selected == True %} ({{ choice.data.attrs.item_count }}){% endif %}</label>
+                        </div>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
             {% for error in field.errors %}
                 <span class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</span>
             {% endfor %}

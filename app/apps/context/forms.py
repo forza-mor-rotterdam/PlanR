@@ -6,6 +6,11 @@ from django import forms
 from utils.forms import RadioSelect
 
 
+class CheckboxSelectMultiple(forms.CheckboxSelectMultiple):
+    template_name = "widgets/multiple_input_sortable.html"
+    # option_template_name = ""
+
+
 class ContextAanpassenForm(forms.ModelForm):
     template = forms.ChoiceField(
         widget=RadioSelect(
@@ -18,9 +23,10 @@ class ContextAanpassenForm(forms.ModelForm):
         choices=Context.TemplateOpties.choices,
     )
     filters = forms.MultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple(
+        widget=CheckboxSelectMultiple(
             attrs={
                 "class": "form-check-input",
+                # "data-controlle": "multipleInputSortable",
             }
         ),
         label="Filters",
@@ -55,11 +61,19 @@ class ContextAanpassenForm(forms.ModelForm):
         fields = ("naam", "filters", "kolommen", "standaard_filters", "template")
 
     def __init__(self, *args, **kwargs):
-        kwargs.get("instance")
+        print(args)
+        print(kwargs)
+        initial_kolommen = kwargs.get("initial", {}).get("kolommen", [])
         super().__init__(*args, **kwargs)
         onderwerp_alias_list = (
             MeldingenService().onderwerp_alias_list().get("results", [])
         )
+        print(dir(self.fields["standaard_filters"]))
+        alle_kolommen = [(f, f) for f in initial_kolommen] + [
+            (f, f) for f in KOLOM_NAMEN if f not in initial_kolommen
+        ]
+
+        self.fields["kolommen"].choices = alle_kolommen
         self.fields["standaard_filters"].choices = [
             (
                 onderwerp_alias.get("pk"),

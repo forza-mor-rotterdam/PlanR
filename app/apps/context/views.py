@@ -24,6 +24,8 @@ class ContextLijstView(ContextView, ListView):
 class ContextAanmakenAanpassenView(ContextView):
     def form_valid(self, form):
         form.instance.filters = {"fields": form.cleaned_data.get("filters")}
+        print('form.cleaned_data.get("kolommen")')
+        print(form.cleaned_data.get("kolommen"))
         form.instance.kolommen = {"sorted": form.cleaned_data.get("kolommen")}
         form.instance.standaard_filters = {
             "pre_onderwerp": form.cleaned_data.get("standaard_filters", [])
