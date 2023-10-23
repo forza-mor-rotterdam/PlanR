@@ -47,7 +47,7 @@
                 <td data-row-search-target="searchable">{{object.template}}</td>
                 <td data-row-search-target="searchable">{{object.profielen_voor_context.all|length}}</td>
                 <td><a href="{% url 'context_aanpassen' object.pk %}">Aanpassen</a></td>
-                <td>{% if object.naam != "Standaard" and not object.profielen_voor_context.all %}<a href="{% url 'context_verwijderen' object.pk %}"  onclick="return confirm('Weet je zeker dat je dez UI-groep wil verwijderen?')">Verwijderen</a>{% endif %}</td>
+                <td>{% if object.naam != "Standaard" and not object.profielen_voor_context.all %}<a href="{% url 'context_verwijderen' object.pk %}"  onclick="return confirm('Weet je zeker dat je deze UI-groep wilt verwijderen?')">Verwijderen</a>{% endif %}</td>
             </tr>
             {% endfor %}
         </tbody>
