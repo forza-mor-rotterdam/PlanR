@@ -309,6 +309,12 @@ ul {
         @include list-clean();
     }
 
+    &.list--readable {
+        li {
+            margin-bottom: 0.25rem;
+        }
+    }
+
     &.list-horizontal {
         @include list-clean();
         margin: 0;
