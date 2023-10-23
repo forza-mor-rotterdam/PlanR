@@ -17,7 +17,7 @@
 
         {% if object.profielen_voor_context.all %}
         <h2>Gebruikers die gebruikmaken van deze UI-groep</h2>
-        <ul>
+        <ul class="list--readable">
             {% for profiel in object.profielen_voor_context.all %}
             <li>
                 <strong>{{profiel.gebruiker.email}}</strong>
