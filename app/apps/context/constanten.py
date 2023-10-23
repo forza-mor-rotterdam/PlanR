@@ -358,4 +358,5 @@ KOLOMMEN = (
     OrigineelAangemaaktKolom,
     StatusKolom,
 )
+KOLOM_NAMEN = [f.key() for f in KOLOMMEN]
 KOLOMMEN_KEYS = {k.key(): k for k in KOLOMMEN}

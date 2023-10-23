@@ -226,3 +226,13 @@ class MeldingenService(BasisService):
         raise MeldingenService.DataOphalenFout(
             f"signaal_aanmaken: Verwacht status code 201, kreeg status code '{response.status_code}'"
         )
+
+    def onderwerp_alias_list(self):
+        return self.do_request(
+            f"{self._api_path}/onderwerp-alias/",
+            cache_timeout=60,
+            params={
+                "limit": 200,
+            },
+            raw_response=False,
+        )

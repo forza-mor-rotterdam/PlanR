@@ -96,6 +96,31 @@ class MSBPermissie(BasisPermissie):
     codenaam = "msb_toegang"
 
 
+class ContextLijstBekijkenPermissie(BasisPermissie):
+    naam = "Context lijst bekijken"
+    codenaam = "context_lijst_bekijken"
+
+
+class ContextAanmakenPermissie(BasisPermissie):
+    naam = "Context aanmaken"
+    codenaam = "context_aanmaken"
+
+
+class ContextBekijkenPermissie(BasisPermissie):
+    naam = "Context bekijken"
+    codenaam = "context_bekijken"
+
+
+class ContextAanpassenPermissie(BasisPermissie):
+    naam = "Context aanpassen"
+    codenaam = "context_aanpassen"
+
+
+class ContextVerwijderenPermissie(BasisPermissie):
+    naam = "Context verwijderen"
+    codenaam = "context_verwijderen"
+
+
 gebruikersgroep_permissies = (
     MeldingAfhandelenPermissie,
     MeldingAanmakenPermissie,
@@ -114,6 +139,11 @@ gebruikersgroep_permissies = (
     GebruikersgroepVerwijderenPermissie,
     BeheerBekijkenPermissie,
     MSBPermissie,
+    ContextLijstBekijkenPermissie,
+    ContextAanmakenPermissie,
+    ContextBekijkenPermissie,
+    ContextAanpassenPermissie,
+    ContextVerwijderenPermissie,
 )
 
 gebruikersgroep_permissie_opties = [
