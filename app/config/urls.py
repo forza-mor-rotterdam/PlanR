@@ -3,6 +3,12 @@ from apps.authenticatie.views import (
     GebruikerAanpassenView,
     GebruikerLijstView,
 )
+from apps.authorisatie.views import (
+    RechtengroepAanmakenView,
+    RechtengroepAanpassenView,
+    RechtengroepLijstView,
+    RechtengroepVerwijderenView,
+)
 from apps.beheer.views import beheer
 from apps.context.views import (
     ContextAanmakenView,
@@ -112,6 +118,26 @@ urlpatterns = [
         "beheer/context/<int:pk>/verwijderen/",
         ContextVerwijderenView.as_view(),
         name="context_verwijderen",
+    ),
+    path(
+        "beheer/rechtengroep/",
+        RechtengroepLijstView.as_view(),
+        name="rechtengroep_lijst",
+    ),
+    path(
+        "beheer/rechtengroep/aanmaken/",
+        RechtengroepAanmakenView.as_view(),
+        name="rechtengroep_aanmaken",
+    ),
+    path(
+        "beheer/rechtengroep/<int:pk>/aanpassen/",
+        RechtengroepAanpassenView.as_view(),
+        name="rechtengroep_aanpassen",
+    ),
+    path(
+        "beheer/rechtengroep/<int:pk>/verwijderen/",
+        RechtengroepVerwijderenView.as_view(),
+        name="rechtengroep_verwijderen",
     ),
     re_path(r"media/", meldingen_bestand, name="meldingen_bestand"),
 ]
