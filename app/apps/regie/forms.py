@@ -266,10 +266,12 @@ class MeldingAfhandelenForm(forms.Form):
                 "data-testid": "message",
                 "rows": "4",
                 "data-meldingbehandelformulier-target": "externalText",
+                "name": "omschrijving_extern",
             }
         ),
         initial="Deze melding is behandeld. Bedankt voor uw inzet om Rotterdam schoon, heel en veilig te houden.",
         required=False,
+        max_length=2000,
     )
 
     omschrijving_intern = forms.CharField(

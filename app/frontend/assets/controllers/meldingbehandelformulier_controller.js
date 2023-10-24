@@ -24,8 +24,8 @@ export default class extends Controller {
     inputList = document.querySelectorAll('.js-validation textarea')
     formData = new FormData(form)
 
-    for (let i = 0; i < inputList.length; i++) {
-      const input = inputList[i]
+    for (const element of inputList) {
+      const input = element
       const error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
       input.addEventListener('input', (event) => {
         if (input.validity.valid) {
