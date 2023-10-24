@@ -18,7 +18,11 @@ https://github.com/forza-mor-rotterdam/mor-core
 
 ### Create local dns entry
 
-Add '127.0.0.1 regie.mor.local' to your hosts file
+Add '127.0.0.1 planr.mor.local' to your hosts file
+```
+sudo nano /etc/hosts
+
+```
 
 ### create docker networks
 
@@ -31,7 +35,7 @@ Use the Makefile command:
 or:
 
 ```bash
-    docker network create regie_network
+    docker network create planr_network
     docker network create mor_bridge_network
 ```
 
@@ -57,11 +61,11 @@ To only run the docker container use:
 ```
 
 This will start a webserver.
-Authorize via the Django admin: http://regie.mor.local:8003/admin/
+Authorize via the Django admin: http://planr.mor.local:8003/admin/
 You can login with the following credentials:
   - Email: admin@admin.com
   - Password: insecure
-You can view the website on http://regie.mor.local:8003
+You can view the website on http://planr.mor.local:8003
 
 ### Frontend
 

@@ -10,12 +10,12 @@ services:
       database:
         condition: service_healthy
     networks:
-      - regie_network
+      - planr_network
 
   redis:
     image: redis
     networks:
-      - regie_network
+      - planr_network
     ports:
       - "6379"
 
@@ -32,8 +32,8 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - regie_network
+      - planr_network
 
 networks:
-  regie_network:
+  planr_network:
     external: true
