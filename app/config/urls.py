@@ -16,7 +16,7 @@ from apps.context.views import (
     ContextLijstView,
     ContextVerwijderenView,
 )
-from apps.regie.views import (
+from apps.main.views import (
     account,
     http_404,
     http_500,

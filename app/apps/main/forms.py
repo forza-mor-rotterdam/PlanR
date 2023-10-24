@@ -463,7 +463,7 @@ class MeldingAanmakenForm(forms.Form):
             data[cf] = self.get_verbose_value_from_field(cf, data[cf])
 
         post_data = {
-            "signaal_url": "https://regie.rotterdam.nl/melding/signaal/42",
+            "signaal_url": "https://planr.rotterdam.nl/melding/signaal/42",  # Changed from regie.rotterdam.nl
             "melder": {
                 "naam": data.get("naam_melder"),
                 "email": data.get("email_melder"),
