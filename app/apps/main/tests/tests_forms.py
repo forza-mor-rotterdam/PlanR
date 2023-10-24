@@ -1,4 +1,4 @@
-from apps.regie.forms import MeldingAfhandelenForm
+from apps.main.forms import MeldingAfhandelenForm
 from django.test import TestCase
 
 

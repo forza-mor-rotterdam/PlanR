@@ -1,4 +1,4 @@
-from apps.regie.forms import CheckboxSelectMultipleThumb
+from apps.main.forms import CheckboxSelectMultipleThumb
 from django import forms, template
 from django.forms.fields import DateField, DateTimeField
 from django.http import QueryDict

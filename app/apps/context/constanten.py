@@ -1,6 +1,6 @@
 import string
 
-from apps.regie.constanten import VERTALINGEN
+from apps.main.constanten import VERTALINGEN
 from apps.services.onderwerpen import render_onderwerp
 from django.http import QueryDict
 from django.urls import reverse

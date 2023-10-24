@@ -55,7 +55,7 @@ INSTALLED_APPS = (
     # Apps
     "apps.health",
     "apps.rotterdam_formulier_html",
-    "apps.regie",
+    "apps.main",
     "apps.authorisatie",
     "apps.authenticatie",
     "apps.context",
@@ -141,7 +141,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 AUTH_USER_MODEL = "authenticatie.Gebruiker"
 
 SITE_ID = 1
-SITE_NAME = os.getenv("SITE_NAME", "Regie")
+SITE_NAME = os.getenv("SITE_NAME", "PlanR")
 SITE_DOMAIN = os.getenv("SITE_DOMAIN", "localhost")
 
 WEBPACK_LOADER = {
