@@ -646,7 +646,7 @@ def msb_importeer_melding(request):
     )
 
     post_data = {
-        "signaal_url": "https://planr.rotterdam.nl/melding/signaal/42",  # Changed from regie.rotterdam.nl
+        "signaal_url": "https://planr.rotterdam.nl/melding/signaal/42",
         "melder": {
             "naam": msb_data.get("melder", {}).get("naam"),
             "email": msb_data.get("melder", {}).get("email"),
