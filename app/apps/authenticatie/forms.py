@@ -9,12 +9,12 @@ Gebruiker = get_user_model()
 class GebruikerAanpassenForm(forms.ModelForm):
     context = forms.ModelChoiceField(
         queryset=Context.objects.all(),
-        label="UI groep",
+        label="Rol",
         required=True,
     )
     group = forms.ModelChoiceField(
         queryset=Group.objects.all(),
-        label="Rechten groep",
+        label="Rechtengroep",
         required=False,
     )
 
