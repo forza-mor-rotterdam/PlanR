@@ -21,7 +21,6 @@ https://github.com/forza-mor-rotterdam/mor-core
 Add '127.0.0.1 planr.mor.local' to your hosts file
 ```
 sudo nano /etc/hosts
-
 ```
 
 ### create docker networks

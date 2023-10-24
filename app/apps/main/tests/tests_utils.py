@@ -1,4 +1,4 @@
-from apps.regie.utils import snake_case
+from apps.main.utils import snake_case
 from django.test import SimpleTestCase
 
 

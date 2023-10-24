@@ -55,7 +55,7 @@ INSTALLED_APPS = (
     # Apps
     "apps.health",
     "apps.rotterdam_formulier_html",
-    "apps.regie",
+    "apps.main",
     "apps.authorisatie",
     "apps.authenticatie",
     "apps.context",
