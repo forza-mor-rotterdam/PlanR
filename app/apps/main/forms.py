@@ -266,6 +266,7 @@ class MeldingAfhandelenForm(forms.Form):
                 "data-testid": "message",
                 "rows": "4",
                 "data-meldingbehandelformulier-target": "externalText",
+                "data-action": "meldingbehandelformulier#onChangeExternalText",
                 "name": "omschrijving_extern",
             }
         ),

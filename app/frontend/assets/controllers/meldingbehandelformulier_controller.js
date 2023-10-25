@@ -4,6 +4,8 @@ let form = null
 let inputList = null
 let formData = null
 const defaultErrorMessage = 'Vul a.u.b. dit veld in.'
+let externalTextMaxCharacter = null
+const externalTextMaxCharacterPrefix = 'Aantal karakters: '
 
 export default class extends Controller {
   static values = {
@@ -15,6 +17,14 @@ export default class extends Controller {
 
   connect() {
     if (this.hasExternalTextTarget) {
+      externalTextMaxCharacter = document.createElement('small')
+      this.externalTextTarget.parentNode.insertBefore(
+        externalTextMaxCharacter,
+        this.externalTextTarget.nextSibling
+      )
+      externalTextMaxCharacter.classList.add('help-block', 'no-margins')
+      externalTextMaxCharacter.innerHTML = `${externalTextMaxCharacterPrefix}${this.externalTextTarget.value.length}/${this.externalTextTarget.maxLength}`
+
       if (this.externalTextTarget.textContent.length > 0) {
         this.externalMessage = this.externalTextTarget.textContent
       }
@@ -27,7 +37,7 @@ export default class extends Controller {
     for (const element of inputList) {
       const input = element
       const error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
-      input.addEventListener('input', (event) => {
+      input.addEventListener('input', () => {
         if (input.validity.valid) {
           input.closest('.form-row').classList.remove('is-invalid')
           error.textContent = ''
@@ -47,6 +57,10 @@ export default class extends Controller {
         event.preventDefault()
       }
     })
+  }
+
+  onChangeExternalText(e) {
+    externalTextMaxCharacter.innerHTML = `${externalTextMaxCharacterPrefix}${e.target.value.length}/${e.target.maxLength}`
   }
 
   checkValids() {
