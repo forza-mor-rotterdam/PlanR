@@ -47,7 +47,6 @@ urlpatterns = [
     path("", root, name="root"),
     path("account/", account, name="account"),
     path("api-token-auth/", views.obtain_auth_token),
-    path("admin/", admin.site.urls),
     path("oidc/", include("mozilla_django_oidc.urls")),
     path("melding/", melding_lijst, name="melding_lijst"),
     path("melding/<uuid:id>", melding_detail, name="melding_detail"),
@@ -142,8 +141,9 @@ urlpatterns = [
     re_path(r"media/", meldingen_bestand, name="meldingen_bestand"),
 ]
 
-if settings.OPENID_CONFIG and settings.OIDC_RP_CLIENT_ID:
+if settings.OIDC_ENABLED:
     urlpatterns += [
+        path("oidc/", include("mozilla_django_oidc.urls")),
         path(
             "admin/login/",
             RedirectView.as_view(
@@ -160,7 +160,13 @@ if settings.OPENID_CONFIG and settings.OIDC_RP_CLIENT_ID:
             ),
             name="admin_logout",
         ),
+        path("admin/", admin.site.urls),
     ]
+else:
+    urlpatterns += [
+        path("admin/", admin.site.urls),
+    ]
+
 
 if settings.DEBUG:
     urlpatterns += [
