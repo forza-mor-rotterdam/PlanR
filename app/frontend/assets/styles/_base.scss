@@ -63,20 +63,18 @@ main {
     grid-auto-columns: minmax(0, 1fr);
     gap: 32px;
 
-    .page__detail & {
-        @media (min-width: map-get($grid-breakpoints, md)) {
-            grid-template-columns: 66fr 34fr;
-        }
+    @media (min-width: map-get($grid-breakpoints, md)) {
+        grid-template-columns: 66fr 34fr;
+    }
 
-        .grid-item {
-            &.bottom-left {
-                display: flex;
-                flex-direction: column;
-                justify-content: flex-end;
+    .grid-item {
+        &.bottom-left {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
 
-                > * {
-                    align-self: flex-start;
-                }
+            > * {
+                align-self: flex-start;
             }
         }
     }

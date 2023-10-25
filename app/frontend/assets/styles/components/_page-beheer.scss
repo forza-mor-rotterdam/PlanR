@@ -43,3 +43,12 @@
         }
     }
 }
+
+.container__userlist {
+    background-color: $gray-tint02;
+    padding: $alert-padding-x;
+
+    h2 {
+        margin-top: 0;
+    }
+}

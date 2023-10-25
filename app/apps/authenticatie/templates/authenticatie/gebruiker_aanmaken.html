@@ -14,28 +14,32 @@
             </a>
         </div>
         <h1> Gebruiker aanmaken</h1>
-
-        <form action="." method="post">
-        {{ form.non_field_errors }}
-            {% csrf_token %}
-            <fieldset>
-            {{ form.email|render_rotterdam_formulier }}
-            {{ form.telefoonnummer|render_rotterdam_formulier }}
-            {{ form.first_name|render_rotterdam_formulier }}
-            {{ form.last_name|render_rotterdam_formulier }}
-            {{ form.context|render_rotterdam_formulier }}
-            {{ form.group|render_rotterdam_formulier }}
-            </fieldset>
-            <div class="form-row btn-row">
-                <button type="reset" class="btn btn-tertiary" data-controller="detail" data-action="detail#closeModal">
-                    <span>Annuleren</span>
-                </button>
-                <button type="submit" class="btn btn-action">
-                    <span>Aanmaken</span>
-                </button>
+        <div class="grid-container">
+            <div class="grid-item">
+                <form action="." method="post">
+                {{ form.non_field_errors }}
+                    {% csrf_token %}
+                    <fieldset>
+                    {{ form.email|render_rotterdam_formulier }}
+                    {{ form.telefoonnummer|render_rotterdam_formulier }}
+                    {{ form.first_name|render_rotterdam_formulier }}
+                    {{ form.last_name|render_rotterdam_formulier }}
+                    {{ form.context|render_rotterdam_formulier }}
+                    {{ form.group|render_rotterdam_formulier }}
+                    </fieldset>
+                    <div class="form-row btn-row">
+                        <button type="reset" class="btn btn-tertiary" data-controller="detail" data-action="detail#closeModal">
+                            <span>Annuleren</span>
+                        </button>
+                        <button type="submit" class="btn btn-action">
+                            <span>Aanmaken</span>
+                        </button>
+                    </div>
+                </form>
             </div>
-        </form>
-    </div>
+            <div class="grid-item"></div>
 
+        </div>
+    </div>
 </turbo-frame>
 {% endblock %}

@@ -15,29 +15,31 @@
         </div>
 
         <h1> Gebruiker {{object.email}}</h1>
+        <div class="grid-container">
+            <div class="grid-item">
+                <form action="." method="post">
+                    {% csrf_token %}
+                    <fieldset>
+                    {{ form.telefoonnummer|render_rotterdam_formulier }}
+                    {{ form.first_name|render_rotterdam_formulier }}
+                    {{ form.last_name|render_rotterdam_formulier }}
+                    {{ form.context|render_rotterdam_formulier }}
+                    {{ form.group|render_rotterdam_formulier }}
+                    </fieldset>
 
-
-        <form action="." method="post">
-            {% csrf_token %}
-            <fieldset>
-            {{ form.telefoonnummer|render_rotterdam_formulier }}
-            {{ form.first_name|render_rotterdam_formulier }}
-            {{ form.last_name|render_rotterdam_formulier }}
-            {{ form.context|render_rotterdam_formulier }}
-            {{ form.group|render_rotterdam_formulier }}
-            </fieldset>
-
-            <div class="form-row container__button">
-                <div class="form-row btn-row">
-                <button type="reset" class="btn btn-tertiary" data-controller="detail" data-action="detail#closeModal">
-                    <span>Annuleren</span>
-                </button>
-                <button type="submit" class="btn btn-action">
-                    <span>Aanpassen</span>
-                </button>
+                    <div class="form-row container__button">
+                        <div class="form-row btn-row">
+                        <button type="reset" class="btn btn-tertiary" data-controller="detail" data-action="detail#closeModal">
+                            <span>Annuleren</span>
+                        </button>
+                        <button type="submit" class="btn btn-action">
+                            <span>Aanpassen</span>
+                        </button>
+                    </div>
+                    </div>
+                </form>
             </div>
-            </div>
-        </form>
-    </div>
+            <div></div>
+        <div>
 </turbo-frame>
 {% endblock %}
