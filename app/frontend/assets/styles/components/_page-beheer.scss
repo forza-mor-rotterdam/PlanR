@@ -42,6 +42,14 @@
             margin-left: 1rem;
         }
     }
+
+    .form-row {
+        input + p,
+        select + p,
+        .list--form-check-input + p {
+            margin-top: -16px;
+        }
+    }
 }
 
 .container__userlist {

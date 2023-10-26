@@ -46,3 +46,11 @@ class RechtengroepAanmakenForm(RechtengroepAanpassenForm):
             "name",
             "permissions",
         )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields[
+            "permissions"
+        ].help_text = (
+            "Selecteer de rechten die onderdeel zullen zijn van de rechtengroep."
+        )

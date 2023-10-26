@@ -14,11 +14,15 @@
             </a>
         </div>
 
-        <h1> Gebruiker {{object.email}}</h1>
+        <h1>Wijzig gebruiker</h1>
         <div class="grid-container">
             <div class="grid-item">
                 <form action="." method="post">
                     {% csrf_token %}
+                    <div class="">
+                        <h2 class="h5 no-margin-bottom">E-mailadres</h2>
+                        <p class="no-margin-top">{{object.email}}</p>
+                    </div>
                     <fieldset>
                     {{ form.telefoonnummer|render_rotterdam_formulier }}
                     {{ form.first_name|render_rotterdam_formulier }}
