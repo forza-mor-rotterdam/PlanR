@@ -414,6 +414,9 @@ section {
 
 // HELPER-CLASSES
 
+.no-margins {
+    margin: 0 !important;
+}
 .foldout {
     height: auto;
     overflow: hidden;
