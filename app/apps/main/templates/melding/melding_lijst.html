@@ -15,7 +15,6 @@
             </div>
             <div class="container__tools">
                 <div class="container__filter" data-filter-target="filterOverview">
-                    {{ form.ordering|render_rotterdam_formulier }}
                     {{ form.limit|render_rotterdam_formulier }}
                     {% for veld in form.filters %}
                     <div class="container__multiselect">
@@ -37,10 +36,7 @@
             <div class="container__table">
                 <table class="table--overview">
                     <thead>
-                        <tr>
-                            <th></th>
-                            {% render_th_tags kolommen %}
-                        </tr>
+                        {{ form.ordering }}
                     </thead>
                     <tbody id="id_maincontent">
                         {% for melding in meldingen %}

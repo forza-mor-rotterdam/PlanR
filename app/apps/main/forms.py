@@ -1,6 +1,7 @@
 import base64
 import logging
 
+from apps.context.constanten import KOLOMMEN, KOLOMMEN_KEYS
 from django import forms
 from django.core.files.storage import default_storage
 from django.utils import timezone
@@ -71,13 +72,12 @@ class CheckboxSelectMultipleThumb(forms.CheckboxSelectMultiple):
     ...
 
 
+class KolommenRadioSelect(forms.RadioSelect):
+    template_name = "widgets/kolommen_multiple_input.html"
+
+
 class FilterForm(forms.Form):
     filter_velden = []
-    ordering = forms.CharField(
-        widget=forms.HiddenInput(),
-        initial="aangemaakt_op",
-        required=False,
-    )
 
     offset = forms.ChoiceField(
         widget=forms.RadioSelect(
@@ -86,6 +86,7 @@ class FilterForm(forms.Form):
                 "hideLabel": True,
             }
         ),
+        initial="0",
         required=False,
     )
 
@@ -102,10 +103,53 @@ class FilterForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         velden = kwargs.pop("filter_velden", None)
+        gebruiker_context = kwargs.pop("gebruiker_context", None)
         self.filter_velden = [v.get("naam") for v in velden]
+
+        kolommen = KOLOMMEN
+        if gebruiker_context:
+            kolommen = [
+                k
+                for k in gebruiker_context.kolommen.get("sorted", [])
+                if KOLOMMEN_KEYS.get(k)
+            ]
+
+        self.kolommen = [
+            {
+                "instance": KOLOMMEN_KEYS.get(k)({}),
+                "opties": [
+                    KOLOMMEN_KEYS.get(k)({"ordering": "up"}),
+                    KOLOMMEN_KEYS.get(k)({"ordering": "down"}),
+                ],
+            }
+            for k in kolommen
+        ]
+
         offset_options = kwargs.pop("offset_options", None)
         super().__init__(*args, **kwargs)
-        self.fields["offset"].choices = offset_options
+
+        self.fields["ordering"] = forms.ChoiceField(
+            label="Ordering",
+            widget=KolommenRadioSelect(attrs={}),
+            choices=[
+                [
+                    k.get("instance"),
+                    [
+                        [
+                            o.ordering(),
+                            o,
+                        ]
+                        for o in k.get("opties", [])
+                    ],
+                ]
+                for k in self.kolommen
+            ],
+            required=False,
+        )
+
+        self.fields["offset"].choices = (
+            offset_options if offset_options else [("0", "0")]
+        )
         for v in velden:
             self.fields[v.get("naam")] = MultipleChoiceField(
                 label=f"{v.get('naam')} ({v.get('aantal_actief')}/{len(v.get('opties', []))})",
