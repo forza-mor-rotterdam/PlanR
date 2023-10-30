@@ -8,7 +8,7 @@
 {% block body %}
 <turbo-frame id="overview" >
     <div data-controller="overview">
-        <form method="get" action="{% url 'melding_lijst' %}" id="filterForm" data-controller="filter">
+        <form method="get" action="{% url 'melding_lijst' %}" id="filterForm" data-controller="filter" data-turbo-action="advance">
             <div class="filter-header">
                 <h1 class="page-title">Meldingen</h1>
                 <span class="help-text">{{ startNum }} - {{ endNum }} van {{ totaal }} resultaten</span>
