@@ -13,7 +13,7 @@
         <link rel="manifest" href="{{base_url}}{%webpack_static 'manifest.json' %}"/>
         <link rel="shortcut icon" href="{{base_url}}{%webpack_static 'images/favicon.ico' %}"/>
         <link rel="icon" href="{{base_url}}{%webpack_static 'images/favicon.ico' %}"/>
-
+        <meta name="turbo-cache-control" content="no-cache">
         {% block stylesheets %}
             {% render_bundle 'app' 'css' %}
         {% endblock %}
