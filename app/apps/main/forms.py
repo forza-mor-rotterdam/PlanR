@@ -78,6 +78,8 @@ class FilterForm(forms.Form):
             attrs={
                 "class": "list--form-text-input",
                 "hideLabel": True,
+                "type": "search",
+                "placeHolder": "MeldR nummer",
             }
         ),
         label="Zoeken",
