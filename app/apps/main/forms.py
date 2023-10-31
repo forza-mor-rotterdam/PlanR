@@ -73,6 +73,18 @@ class CheckboxSelectMultipleThumb(forms.CheckboxSelectMultiple):
 
 class FilterForm(forms.Form):
     filter_velden = []
+    q = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "list--form-text-input",
+                "hideLabel": True,
+                "type": "search",
+                "placeHolder": "MeldR nummer",
+            }
+        ),
+        label="Zoeken",
+        required=False,
+    )
     ordering = forms.CharField(
         widget=forms.HiddenInput(),
         initial="aangemaakt_op",
