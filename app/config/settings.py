@@ -372,9 +372,6 @@ if OPENID_CONFIG and OIDC_RP_CLIENT_ID:
     OIDC_OP_JWKS_ENDPOINT = os.getenv(
         "OIDC_OP_JWKS_ENDPOINT", OPENID_CONFIG.get("jwks_uri")
     )
-    CHECK_SESSION_IFRAME = os.getenv(
-        "CHECK_SESSION_IFRAME", OPENID_CONFIG.get("check_session_iframe")
-    )
     OIDC_RP_SCOPES = os.getenv(
         "OIDC_RP_SCOPES",
         " ".join(OPENID_CONFIG.get("scopes_supported", ["openid", "email", "profile"])),

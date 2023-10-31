@@ -81,3 +81,24 @@ class ContextAanmakenForm(ContextAanpassenForm):
             "standaard_filters",
             "template",
         )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields[
+            "naam"
+        ].help_text = "Omschrijf de rol zo concreet mogelijk, bijvoorbeeld ‘Teamleider Inzameling Noord’."
+        self.fields[
+            "filters"
+        ].help_text = (
+            "De hier geselecteerde opties worden getoond in het Filter-menu van PlanR."
+        )
+        self.fields[
+            "kolommen"
+        ].help_text = "De hier geselecteerde opties worden getoond in PlanR."
+        self.fields[
+            "standaard_filters"
+        ].help_text = "De hier geselecteerde opties worden getoond in PlanR."
+        self.fields[
+            "template"
+        ].help_text = "Ieder sjabloon toont andere informatie. Het ‘Standaard’ sjabloon voldoet voor de meeste afdelingen."
+        self.fields["filters"].label = "Welke filters zijn relevant voor deze rol?"
