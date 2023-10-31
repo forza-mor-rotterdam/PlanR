@@ -15,7 +15,9 @@
             </div>
             <div class="container__tools">
                 <div class="container__filter" data-filter-target="filterOverview">
-                    {{ form.q|render_rotterdam_formulier }}
+                    <div class="container__search">
+                        {{ form.q|render_rotterdam_formulier }}
+                        </div>
                     {{ form.ordering|render_rotterdam_formulier }}
                     {{ form.limit|render_rotterdam_formulier }}
                     {% for veld in form.filters %}
@@ -28,12 +30,6 @@
                     </div>
                     {% endfor %}
                 </div>
-                <a href="{{ melding_aanmaken_url }}" class="btn btn-action">
-                    <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#ffffff"/>
-                    </svg>
-                    Nieuw
-                </a>
             </div>
             <div class="container__table">
                 <table class="table--overview">

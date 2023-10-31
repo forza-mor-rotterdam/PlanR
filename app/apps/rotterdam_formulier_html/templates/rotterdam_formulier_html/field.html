@@ -259,11 +259,11 @@
     {{ field }}
     {% else %}
 
-        <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }} {% if field.field.show_hidden_initial %} hidden{% endif %}">
+        <div class="form-row {{ field.field.widget.attrs.class }} {{ classes.label }} {{ classes.value }} {{ classes.single_value }} {% if field.field.show_hidden_initial %} hidden{% endif %}">
             {% if classes.icon %}
                 {% include 'rotterdam_formulier_html/field_icon.html' %}
             {% endif %}
-            {% if field.auto_id %}
+            {% if field.auto_id and not field.field.widget.attrs.hideLabel %}
                 <label class="{% if field.field.required %}{{ form.required_css_class }}{% endif %}" for="{{ field.auto_id }}">{{ field.field.label }}{% if not field.field.required %} <small>(Niet verplicht)</small>{% endif %}</label>
             {% endif %}
             <div>

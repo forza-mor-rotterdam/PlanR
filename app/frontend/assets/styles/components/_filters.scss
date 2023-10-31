@@ -31,6 +31,14 @@
             width: auto;
         }
     }
+
+    .container__search {
+        padding: 0 12px 0 0;
+        input {
+            margin: 0;
+            border: 1px solid $gray-tint04;
+        }
+    }
 }
 
 .filter-header {
