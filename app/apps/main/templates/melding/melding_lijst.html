@@ -15,7 +15,6 @@
             </div>
             <div class="container__tools">
                 <div class="container__filter" data-filter-target="filterOverview">
-                    {{ form.q|render_rotterdam_formulier }}
                     {{ form.ordering|render_rotterdam_formulier }}
                     {{ form.limit|render_rotterdam_formulier }}
                     {% for veld in form.filters %}
