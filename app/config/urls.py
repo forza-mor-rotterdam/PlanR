@@ -1,10 +1,22 @@
-from apps.beheer.views import (
+from apps.authenticatie.views import (
     GebruikerAanmakenView,
     GebruikerAanpassenView,
     GebruikerLijstView,
-    beheer,
 )
-from apps.regie.views import (
+from apps.authorisatie.views import (
+    RechtengroepAanmakenView,
+    RechtengroepAanpassenView,
+    RechtengroepLijstView,
+    RechtengroepVerwijderenView,
+)
+from apps.beheer.views import beheer
+from apps.context.views import (
+    ContextAanmakenView,
+    ContextAanpassenView,
+    ContextLijstView,
+    ContextVerwijderenView,
+)
+from apps.main.views import (
     account,
     http_404,
     http_500,
@@ -35,7 +47,6 @@ urlpatterns = [
     path("", root, name="root"),
     path("account/", account, name="account"),
     path("api-token-auth/", views.obtain_auth_token),
-    path("admin/", admin.site.urls),
     path("oidc/", include("mozilla_django_oidc.urls")),
     path("melding/", melding_lijst, name="melding_lijst"),
     path("melding/<uuid:id>", melding_detail, name="melding_detail"),
@@ -91,11 +102,48 @@ urlpatterns = [
         GebruikerAanpassenView.as_view(),
         name="gebruiker_aanpassen",
     ),
+    path("beheer/context/", ContextLijstView.as_view(), name="context_lijst"),
+    path(
+        "beheer/context/aanmaken/",
+        ContextAanmakenView.as_view(),
+        name="context_aanmaken",
+    ),
+    path(
+        "beheer/context/<int:pk>/aanpassen/",
+        ContextAanpassenView.as_view(),
+        name="context_aanpassen",
+    ),
+    path(
+        "beheer/context/<int:pk>/verwijderen/",
+        ContextVerwijderenView.as_view(),
+        name="context_verwijderen",
+    ),
+    path(
+        "beheer/rechtengroep/",
+        RechtengroepLijstView.as_view(),
+        name="rechtengroep_lijst",
+    ),
+    path(
+        "beheer/rechtengroep/aanmaken/",
+        RechtengroepAanmakenView.as_view(),
+        name="rechtengroep_aanmaken",
+    ),
+    path(
+        "beheer/rechtengroep/<int:pk>/aanpassen/",
+        RechtengroepAanpassenView.as_view(),
+        name="rechtengroep_aanpassen",
+    ),
+    path(
+        "beheer/rechtengroep/<int:pk>/verwijderen/",
+        RechtengroepVerwijderenView.as_view(),
+        name="rechtengroep_verwijderen",
+    ),
     re_path(r"media/", meldingen_bestand, name="meldingen_bestand"),
 ]
 
-if settings.OPENID_CONFIG and settings.OIDC_RP_CLIENT_ID:
+if settings.OIDC_ENABLED:
     urlpatterns += [
+        path("oidc/", include("mozilla_django_oidc.urls")),
         path(
             "admin/login/",
             RedirectView.as_view(
@@ -112,7 +160,13 @@ if settings.OPENID_CONFIG and settings.OIDC_RP_CLIENT_ID:
             ),
             name="admin_logout",
         ),
+        path("admin/", admin.site.urls),
     ]
+else:
+    urlpatterns += [
+        path("admin/", admin.site.urls),
+    ]
+
 
 if settings.DEBUG:
     urlpatterns += [

@@ -266,10 +266,13 @@ class MeldingAfhandelenForm(forms.Form):
                 "data-testid": "message",
                 "rows": "4",
                 "data-meldingbehandelformulier-target": "externalText",
+                "data-action": "meldingbehandelformulier#onChangeExternalText",
+                "name": "omschrijving_extern",
             }
         ),
         initial="Deze melding is behandeld. Bedankt voor uw inzet om Rotterdam schoon, heel en veilig te houden.",
         required=False,
+        max_length=2000,
     )
 
     omschrijving_intern = forms.CharField(
@@ -463,7 +466,7 @@ class MeldingAanmakenForm(forms.Form):
             data[cf] = self.get_verbose_value_from_field(cf, data[cf])
 
         post_data = {
-            "signaal_url": "https://regie.rotterdam.nl/melding/signaal/42",
+            "signaal_url": "https://planr.rotterdam.nl/melding/signaal/42",
             "melder": {
                 "naam": data.get("naam_melder"),
                 "email": data.get("email_melder"),

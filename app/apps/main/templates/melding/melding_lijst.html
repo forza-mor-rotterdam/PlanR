@@ -6,10 +6,9 @@
 {% load rotterdam_formulier_html %}
 
 {% block body %}
-<div data-controller="overview">
-
-    <turbo-frame id="overview" >
-        <form method="get" action="{% url 'overview' %}" id="filterForm" data-controller="filter">
+<turbo-frame id="overview" >
+    <div data-controller="overview">
+        <form method="get" action="{% url 'melding_lijst' %}" id="filterForm" data-controller="filter" data-turbo-action="advance">
             <div class="filter-header">
                 <h1 class="page-title">Meldingen</h1>
                 <span class="help-text">{{ startNum }} - {{ endNum }} van {{ totaal }} resultaten</span>
@@ -43,10 +42,10 @@
                             {% render_th_tags kolommen %}
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="id_maincontent">
                         {% for melding in meldingen %}
 
-                        <tr data-action="click->overview#navigate" data-overview-targeturl-param="{% url 'detail' melding.uuid %}">
+                        <tr data-action="click->overview#navigate" data-overview-targeturl-param="{% url 'melding_detail' melding.uuid %}">
                             <td width="80">
                                 {% if melding.bijlagen.0.afbeelding_verkleind_relative_url %}
                                 <div class="container__thumbnail" style="background-image: url('{{melding.bijlagen.0.afbeelding_verkleind_relative_url}}')"></div>
@@ -68,7 +67,7 @@
                 <div class="pagination">
                     <div class="wrapper-horizontal">
                         {% if vorige %}
-                        <button type="button" class="btn--previous" data-action="overview#navigatePrevious" aria-label="Vorige">
+                        <button type="button" class="btn--previous has-text" data-action="overview#navigatePrevious">
                             <svg width="9" height="14" viewBox="0 0 9 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M5.99275 6.99995L0.689453 1.69665L1.75011 0.635986L8.11407 6.99995L1.75011 13.3639L0.689453 12.3032L5.99275 6.99995Z" />
                             </svg>
@@ -77,7 +76,7 @@
                         {% endif %}
                         {{ form.offset|render_rotterdam_formulier }}
                         {% if volgende %}
-                        <button type="button" class="btn--next" data-action="overview#navigateNext" aria-label="Volgende">
+                        <button type="button" class="btn--next has-text" data-action="overview#navigateNext">
                             Volgende
                             <svg width="9" height="14" viewBox="0 0 9 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M5.99275 6.99995L0.689453 1.69665L1.75011 0.635986L8.11407 6.99995L1.75011 13.3639L0.689453 12.3032L5.99275 6.99995Z" />
@@ -89,30 +88,7 @@
             </div>
             {% endif %}
         </form>
-    </turbo-frame>
-    <div class="modal modal-right" >
-        {% comment %} <div class="modal"> {% endcomment %}
-            <div class="modal-backdrop modal-exit" id="modal-backdrop"data-action="click->overview#closeModal"></div>
-            <div class="modal-content">
-                <div class="modal-header">
-                <button
-                    type="button"
-                    class="btn-close"
-                    aria-label="Sluit"
-                    data-action="overview#closeModal">
-                </button>
-                </div>
-                <div class="modal-body">
-                <turbo-frame
-                    id="detail_modal"
-                    data-src=""
-                    src=""
-                    laoding="lazy"
-                >
-                </turbo-frame>
-                </div>
-            {% comment %} </div> {% endcomment %}
-        </div>
+
     </div>
-</div>
+</turbo-frame>
 {% endblock%}

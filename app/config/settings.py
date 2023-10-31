@@ -55,7 +55,7 @@ INSTALLED_APPS = (
     # Apps
     "apps.health",
     "apps.rotterdam_formulier_html",
-    "apps.regie",
+    "apps.main",
     "apps.authorisatie",
     "apps.authenticatie",
     "apps.context",
@@ -141,7 +141,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 AUTH_USER_MODEL = "authenticatie.Gebruiker"
 
 SITE_ID = 1
-SITE_NAME = os.getenv("SITE_NAME", "Regie")
+SITE_NAME = os.getenv("SITE_NAME", "PlanR")
 SITE_DOMAIN = os.getenv("SITE_DOMAIN", "localhost")
 
 WEBPACK_LOADER = {
@@ -354,7 +354,9 @@ try:
 except Exception as e:
     logger.error(f"OPENID_CONFIG FOUT, url: {OPENID_CONFIG_URI}, error: {e}")
 
+OIDC_ENABLED = False
 if OPENID_CONFIG and OIDC_RP_CLIENT_ID:
+    OIDC_ENABLED = True
     OIDC_VERIFY_SSL = os.getenv("OIDC_VERIFY_SSL", True) in TRUE_VALUES
     OIDC_USE_NONCE = os.getenv("OIDC_USE_NONCE", True) in TRUE_VALUES
 
@@ -369,9 +371,6 @@ if OPENID_CONFIG and OIDC_RP_CLIENT_ID:
     )
     OIDC_OP_JWKS_ENDPOINT = os.getenv(
         "OIDC_OP_JWKS_ENDPOINT", OPENID_CONFIG.get("jwks_uri")
-    )
-    CHECK_SESSION_IFRAME = os.getenv(
-        "CHECK_SESSION_IFRAME", OPENID_CONFIG.get("check_session_iframe")
     )
     OIDC_RP_SCOPES = os.getenv(
         "OIDC_RP_SCOPES",

@@ -13,8 +13,13 @@
         </a>
     </div>
     <div class="container__flex">
-        <h1>PlanR: Gebruikerslijst</h1>
-        <a class="btn btn-action" href="{% url 'gebruiker_aanmaken' %}">Nieuwe gebruiker</a>
+        <h1> Gebruikerslijst</h1>
+        <a class="btn btn-action" href="{% url 'gebruiker_aanmaken' %}">
+            <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#ffffff"></path>
+            </svg>
+            Nieuwe gebruiker
+        </a>
     </div>
 
     <form>
@@ -29,26 +34,30 @@
     {% if ongeauthoriseerde_gebruikers %}
     <h2>Niet geauthoriseerde gebruikers</h2>
     <table>
-        <tr>
-            <th>E-mailadres</th>
-            <th>Telefoonnummer</th>
-            <th>Voornaam</th>
-            <th>Achternaam</th>
-            <th>UI groep</th>
-            <th>Rechten groep</th>
-            <th></th>
-        </tr>
-        {% for object in ongeauthoriseerde_gebruikers %}
-        <tr data-row-search-target="row">
-            <td data-row-search-target="searchable">{{object.email}}</td>
-            <td data-row-search-target="searchable">{% if object.telefoonnummer %}{{object.telefoonnummer}}{% else %}-{% endif %}</td>
-            <td data-row-search-target="searchable">{% if object.first_name %}{{object.first_name}}{% else %}-{% endif %}</td>
-            <td data-row-search-target="searchable">{% if object.last_name %}{{object.last_name}}{% else %}-{% endif %}</td>
-            <td data-row-search-target="searchable">{% if object.profiel.context %}{{object.profiel.context}}{% else %}-{% endif %}</td>
-            <td data-row-search-target="searchable">{% if object.groups.all %}{{object.groups.all.0}}{% else %}-{% endif %}</td>
-            <td><a href="{% url 'gebruiker_aanpassen' object.pk %}">Aanpassen</a></td>
-        </tr>
-        {% endfor %}
+        <thead>
+            <tr>
+                <th>E-mailadres</th>
+                <th>Telefoonnummer</th>
+                <th>Voornaam</th>
+                <th>Achternaam</th>
+                <th>Rol</th>
+                <th>Rechtengroep</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for object in ongeauthoriseerde_gebruikers %}
+            <tr data-row-search-target="row">
+                <td data-row-search-target="searchable">{{object.email}}</td>
+                <td data-row-search-target="searchable">{% if object.telefoonnummer %}{{object.telefoonnummer}}{% else %}-{% endif %}</td>
+                <td data-row-search-target="searchable">{% if object.first_name %}{{object.first_name}}{% else %}-{% endif %}</td>
+                <td data-row-search-target="searchable">{% if object.last_name %}{{object.last_name}}{% else %}-{% endif %}</td>
+                <td data-row-search-target="searchable">{% if object.profiel.context %}{{object.profiel.context}}{% else %}-{% endif %}</td>
+                <td data-row-search-target="searchable">{% if object.groups.all %}{{object.groups.all.0}}{% else %}-{% endif %}</td>
+                <td><a href="{% url 'gebruiker_aanpassen' object.pk %}">Aanpassen</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
     <br>
     <br>
@@ -60,26 +69,30 @@
 
     <h2>Geauthoriseerde gebruikers</h2>
     <table>
-        <tr>
-            <th>E-mailadres</th>
-            <th>Telefoonnummer</th>
-            <th>Voornaam</th>
-            <th>Achternaam</th>
-            <th>UI groep</th>
-            <th>Rechten groep</th>
-            <th></th>
-        </tr>
-        {% for object in geauthoriseerde_gebruikers %}
-        <tr data-row-search-target="row">
-            <td data-row-search-target="searchable">{{object.email}}</td>
-            <td data-row-search-target="searchable">{% if object.telefoonnummer %}{{object.telefoonnummer}}{% else %}-{% endif %}</td>
-            <td data-row-search-target="searchable">{% if object.first_name %}{{object.first_name}}{% else %}-{% endif %}</td>
-            <td data-row-search-target="searchable">{% if object.last_name %}{{object.last_name}}{% else %}-{% endif %}</td>
-            <td data-row-search-target="searchable">{% if object.profiel.context %}{{object.profiel.context}}{% else %}-{% endif %}</td>
-            <td data-row-search-target="searchable">{% if object.groups.all %}{{object.groups.all.0}}{% else %}-{% endif %}</td>
-            <td><a href="{% url 'gebruiker_aanpassen' object.pk %}">Aanpassen</a></td>
-        </tr>
-        {% endfor %}
+        <thead>
+            <tr>
+                <th>E-mailadres</th>
+                <th>Telefoonnummer</th>
+                <th>Voornaam</th>
+                <th>Achternaam</th>
+                <th>Rol</th>
+                <th>Rechtengroep</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for object in geauthoriseerde_gebruikers %}
+            <tr data-row-search-target="row">
+                <td data-row-search-target="searchable">{{object.email}}</td>
+                <td data-row-search-target="searchable">{% if object.telefoonnummer %}{{object.telefoonnummer}}{% else %}-{% endif %}</td>
+                <td data-row-search-target="searchable">{% if object.first_name %}{{object.first_name}}{% else %}-{% endif %}</td>
+                <td data-row-search-target="searchable">{% if object.last_name %}{{object.last_name}}{% else %}-{% endif %}</td>
+                <td data-row-search-target="searchable">{% if object.profiel.context %}{{object.profiel.context}}{% else %}-{% endif %}</td>
+                <td data-row-search-target="searchable">{% if object.groups.all %}{{object.groups.all.0}}{% else %}-{% endif %}</td>
+                <td><a href="{% url 'gebruiker_aanpassen' object.pk %}">Aanpassen</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
 </div>
 {% endblock %}

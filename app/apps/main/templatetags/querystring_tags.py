@@ -1,4 +1,4 @@
-from apps.regie.utils import dict_to_querystring
+from apps.main.utils import dict_to_querystring
 from django import template
 
 register = template.Library()

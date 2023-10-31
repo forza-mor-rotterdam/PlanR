@@ -1,8 +1,8 @@
 # Build scripts to run commands within the Docker container or create local environments
 
 # Docker variables
-RUN_IN_NEW_WEBCONTEXT = docker-compose run -it regie_app
-EXEC_IN_WEB = docker-compose run regie_app
+RUN_IN_NEW_WEBCONTEXT = docker-compose run -it planr_app
+EXEC_IN_WEB = docker-compose run planr_app
 EXEC_IN_WEB_CMD = $(EXEC_IN_WEB) python manage.py
 
 #  General
@@ -41,7 +41,7 @@ format: ## Use pre-commit config to format files
 	pre-commit run --all-files
 
 create_docker_networks:
-	docker network create regie_network && \
+	docker network create planr_network && \
     docker network create mor_bridge_network
 
 # Static files

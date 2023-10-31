@@ -33,7 +33,7 @@ jobs:
         run: docker-compose -f docker-compose.test.yaml build
 
       - name: Create Docker network
-        run: docker network create regie_network
+        run: docker network create planr_network
 
       - name: Start Docker Containers
         run: docker-compose -f docker-compose.test.yaml up -d
@@ -67,7 +67,7 @@ jobs:
         id: meta_app
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-app-develop
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-app
 
       - name: Build and push app Docker image
         uses: docker/build-push-action@v3

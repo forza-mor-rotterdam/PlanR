@@ -63,20 +63,18 @@ main {
     grid-auto-columns: minmax(0, 1fr);
     gap: 32px;
 
-    .page__detail & {
-        @media (min-width: map-get($grid-breakpoints, md)) {
-            grid-template-columns: 66fr 34fr;
-        }
+    @media (min-width: map-get($grid-breakpoints, md)) {
+        grid-template-columns: 66fr 34fr;
+    }
 
-        .grid-item {
-            &.bottom-left {
-                display: flex;
-                flex-direction: column;
-                justify-content: flex-end;
+    .grid-item {
+        &.bottom-left {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
 
-                > * {
-                    align-self: flex-start;
-                }
+            > * {
+                align-self: flex-start;
             }
         }
     }
@@ -140,6 +138,7 @@ table {
     thead {
         th {
             text-align: left;
+            border-bottom: 2px solid $gray-tint11;
         }
     }
     tbody {
@@ -256,9 +255,9 @@ p {
     }
 }
 
-.spoed-warning {
+.warning-spoed {
     svg {
-        vertical-align: bottom;
+        vertical-align: sub;
         width: 24px;
         height: 24px;
         path {
@@ -306,6 +305,12 @@ p {
 ul {
     &.list-clean {
         @include list-clean();
+    }
+
+    &.list--readable {
+        li {
+            margin-bottom: 0.25rem;
+        }
     }
 
     &.list-horizontal {
@@ -364,6 +369,18 @@ dl {
     }
 }
 
+.list--blocks-horizontal {
+    @include list-clean();
+    display: flex;
+    margin-bottom: 100px;
+    li {
+        margin: 0 0 0 0.25rem;
+        padding: $input-padding-x;
+        border: 1px solid $gray-tint04;
+        position: relative;
+    }
+}
+
 // SECTIONS
 section {
     &.section--seperated {
@@ -395,6 +412,9 @@ section {
 
 // HELPER-CLASSES
 
+.no-margins {
+    margin: 0 !important;
+}
 .foldout {
     height: auto;
     overflow: hidden;
@@ -448,6 +468,18 @@ section {
 
 .nowrap {
     white-space: nowrap;
+}
+
+.no-margin {
+    margin: 0 !important;
+}
+
+.no-margin-top {
+    margin-top: 0 !important;
+}
+
+.no-margin-bottom {
+    margin-bottom: 0 !important;
 }
 
 .display--flex {

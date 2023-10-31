@@ -9,12 +9,12 @@ Gebruiker = get_user_model()
 class GebruikerAanpassenForm(forms.ModelForm):
     context = forms.ModelChoiceField(
         queryset=Context.objects.all(),
-        label="UI groep",
+        label="Rol",
         required=True,
     )
     group = forms.ModelChoiceField(
         queryset=Group.objects.all(),
-        label="Rechten groep",
+        label="Rechtengroep",
         required=False,
     )
 
@@ -34,3 +34,17 @@ class GebruikerAanmakenForm(GebruikerAanpassenForm):
             "group",
             "context",
         )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields[
+            "email"
+        ].help_text = "Gebruik altijd het e-mailadres van de gemeente."
+        self.fields[
+            "context"
+        ].help_text = (
+            "Bestaat de juiste rol voor deze gebruiker niet, maak deze eerst aan."
+        )
+        self.fields[
+            "group"
+        ].help_text = "Bestaat de juiste rechtengroep voor deze gebruiker niet, maak deze eerst aan."

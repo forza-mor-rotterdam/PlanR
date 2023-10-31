@@ -1,9 +1,9 @@
 import { Controller } from '@hotwired/stimulus'
 
-let specifiek_graf = 1
 let form = null
 let inputList = null
 let checkboxList = null
+// eslint-disable-next-line no-unused-vars
 let formData = null
 const defaultErrorMessage = 'Vul a.u.b. dit veld in.'
 let temp_files = {}
@@ -39,7 +39,7 @@ export default class extends Controller {
       const input = inputList[i]
       const error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
 
-      input.addEventListener('input', (event) => {
+      input.addEventListener('input', () => {
         if (input.validity.valid) {
           input.closest('.form-row').classList.remove('is-invalid')
           error.textContent = ''
@@ -73,7 +73,7 @@ export default class extends Controller {
     })
   }
 
-  openModal(event) {
+  openModal() {
     const modal = document.querySelector('.modal')
     const modalBackdrop = document.querySelector('.modal-backdrop')
 
@@ -145,8 +145,8 @@ export default class extends Controller {
     return unique
   }
 
-  toggleInputNoEmail(e) {}
-  onSpecifiekGrafChange(e) {}
+  toggleInputNoEmail() {}
+  onSpecifiekGrafChange() {}
 
   hideCheckbox(cbToHide) {
     cbToHide.checked = false
@@ -179,7 +179,7 @@ export default class extends Controller {
     document.getElementById(field).setAttribute('required', true)
   }
 
-  onBegraafplaatsChange(e) {}
+  onBegraafplaatsChange() {}
 
   showFileInput() {
     const inputContainer = document.getElementById('id_fotos').parentElement

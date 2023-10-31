@@ -8,15 +8,6 @@ export default class extends Controller {
       inputList[i].addEventListener('change', this.onInputChange)
     }
 
-    const overviewSrcAttr = document.querySelector('#overview').getAttribute('src')
-    if (overviewSrcAttr) {
-      const qs = overviewSrcAttr.split('?') ? overviewSrcAttr.split('?')[1] : ''
-      if (qs && window.location.search != '?' + qs) {
-        const urlPath = window.location.href.split('?')[0] + '?' + qs
-        window.history.pushState(urlPath, '', urlPath)
-      }
-    }
-
     //hide dropdowns on click anywhere
     document.addEventListener('click', this.toggleFilterElements)
   }

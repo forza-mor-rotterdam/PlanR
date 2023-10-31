@@ -7,8 +7,8 @@ import requests
 import weasyprint
 from apps.context.constanten import FILTER_KEYS, FILTER_NAMEN, KOLOMMEN, KOLOMMEN_KEYS
 from apps.context.utils import get_gebruiker_context
-from apps.regie.constanten import MSB_WIJKEN
-from apps.regie.forms import (
+from apps.main.constanten import MSB_WIJKEN
+from apps.main.forms import (
     BEHANDEL_OPTIES,
     TAAK_BEHANDEL_RESOLUTIE,
     TAAK_BEHANDEL_STATUS,
@@ -24,7 +24,7 @@ from apps.regie.forms import (
     TaakAnnulerenForm,
     TaakStartenForm,
 )
-from apps.regie.utils import get_open_taakopdrachten, melding_naar_tijdlijn, to_base64
+from apps.main.utils import get_open_taakopdrachten, melding_naar_tijdlijn, to_base64
 from apps.services.meldingen import MeldingenService, get_taaktypes
 from config.context_processors import general_settings
 from django.conf import settings
@@ -640,13 +640,13 @@ def msb_importeer_melding(request):
         huisnummer = None
 
     omschrijving_kort = (
-        msb_data.get("omschrijving")
+        msb_data.get("omschrijving", "")
         if msb_data.get("omschrijving")
-        else msb_data.get("aanvullendeInformatie")
+        else "- geen korte omschrijving beschikbaar -"
     )
 
     post_data = {
-        "signaal_url": "https://regie.rotterdam.nl/melding/signaal/42",
+        "signaal_url": "https://planr.rotterdam.nl/melding/signaal/42",
         "melder": {
             "naam": msb_data.get("melder", {}).get("naam"),
             "email": msb_data.get("melder", {}).get("email"),

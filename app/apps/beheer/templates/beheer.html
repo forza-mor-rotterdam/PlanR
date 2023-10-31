@@ -3,10 +3,18 @@
 {% load json_encode from json_tags %}
 
 {% block body %}
-<h1>PlanR: Beheer</h1>
+<h1> Beheer</h1>
 
-<ul>
-<li><a href="{% url 'gebruiker_lijst' %}">Gebruikers</a></li>
+<ul class="list--blocks-horizontal">
+    <li><a href="{% url 'gebruiker_lijst' %}">Gebruikers</a></li>
+    <li><a href="{% url 'context_lijst' %}">Rollen</a></li>
+    <li><a href="{% url 'rechtengroep_lijst' %}">Rechtengroepen</a></li>
 </ul>
 
+
+<h2>Andere Forzamor beheer productie omgevingen</h2>
+<ul class="list--blocks-horizontal">
+    <li><a href="https://fixer.forzamor.nl/beheer">FixeR</a></li>
+    <li><a href="https://onderwerpen.forzamor.nl/beheer">Onderwerpen</a></li>
+</ul>
 {% endblock %}
