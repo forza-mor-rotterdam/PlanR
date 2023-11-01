@@ -267,7 +267,7 @@
                 <label class="{% if field.field.required %}{{ form.required_css_class }}{% endif %}" for="{{ field.auto_id }}">{{ field.field.label }}{% if not field.field.required %} <small>(Niet verplicht)</small>{% endif %}</label>
             {% endif %}
             <div>
-                <input type="text" id="{{ field.auto_id }}" name="{{field.html_name}}" {% if field.value != None %} value="{{ field.value|stringformat:'s' }}"{% endif %} class="form-control {% if field.errors %}is-invalid{% endif %}" {% render_attrs field %}{% if field.field.required %}required{% endif %}>
+                <input type="{% if field.field.widget.attrs.typeOfInput %}{{ field.field.widget.attrs.typeOfInput }}{% else %}text{% endif %}" id="{{ field.auto_id }}" name="{{field.html_name}}" {% if field.value != None %} value="{{ field.value|stringformat:'s' }}"{% endif %} class="form-control {% if field.errors %}is-invalid{% endif %}" {% render_attrs field %}{% if field.field.required %}required{% endif %}>
 
                 {% for error in field.errors %}
                     <p class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</p>
