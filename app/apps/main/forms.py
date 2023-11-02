@@ -78,7 +78,7 @@ class FilterForm(forms.Form):
             attrs={
                 "class": "list--form-text-input",
                 "hideLabel": True,
-                "type": "search",
+                "typeOfInput": "search",
                 "placeHolder": "MeldR nummer",
             }
         ),

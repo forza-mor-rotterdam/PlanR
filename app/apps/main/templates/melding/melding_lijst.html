@@ -10,8 +10,13 @@
     <div data-controller="overview">
         <form method="get" action="{% url 'melding_lijst' %}" id="filterForm" data-controller="filter" data-turbo-action="advance">
             <div class="filter-header">
-                <h1 class="page-title">Meldingen</h1>
-                <span class="help-text">{{ startNum }} - {{ endNum }} van {{ totaal }} resultaten</span>
+                <div class="container__flex">
+                    <h1 class="page-title">Meldingen</h1>
+                    <span class="help-text">{{ startNum }} - {{ endNum }} van {{ totaal }} resultaten</span>
+                </div>
+                <div class="container__search">
+                    {{ form.q|render_rotterdam_formulier }}
+                </div>
             </div>
             <div class="container__tools">
                 <div class="container__filter" data-filter-target="filterOverview">
@@ -19,16 +24,14 @@
                     {{ form.limit|render_rotterdam_formulier }}
                     {% for veld in form.filters %}
                     <div class="container__multiselect">
-                        <label class="visually-hidden">{{ veld.naam }}</label>
+                        <label class="visually-hidden">{{ veld.label }}</label>
                         <button class="toggle js-toggle" type="button">{{ veld.label|capfirst }}</button>
                         <div class="wrapper">
                             {{ veld|render_rotterdam_formulier }}
                         </div>
                     </div>
                     {% endfor %}
-                    <div class="container__search">
-                        {{ form.q|render_rotterdam_formulier }}
-                    </div>
+
                 </div>
             </div>
             <div class="container__table">
