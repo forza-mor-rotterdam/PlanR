@@ -13,7 +13,7 @@ export default class extends Controller {
     parentContext: String,
     standaardafhandelteksten: String,
   }
-  static targets = ['externalText', 'internalText']
+  static targets = ['externalText', 'internalText', 'standardTextChoice']
 
   connect() {
     if (this.hasExternalTextTarget) {
@@ -57,10 +57,32 @@ export default class extends Controller {
         event.preventDefault()
       }
     })
+    this.updateExternalTextValue()
   }
 
   onChangeExternalText(e) {
-    externalTextMaxCharacter.innerHTML = `${externalTextMaxCharacterPrefix}${e.target.value.length}/${e.target.maxLength}`
+    this.updateCharacterCount(e.target.value.length)
+  }
+
+  onChangeStandardTextChoice() {
+    this.updateExternalTextValue()
+  }
+
+  updateExternalTextValue() {
+    if (this.hasExternalTextTarget && this.hasStandardTextChoiceTarget) {
+      const selectedOption =
+        this.standardTextChoiceTarget.options[this.standardTextChoiceTarget.selectedIndex]
+      if (selectedOption) {
+        this.externalTextTarget.value = selectedOption.value
+        this.updateCharacterCount(selectedOption.value.length)
+      }
+    }
+  }
+
+  updateCharacterCount(count) {
+    if (externalTextMaxCharacter) {
+      externalTextMaxCharacter.innerHTML = `${externalTextMaxCharacterPrefix}${count}/${this.externalTextTarget.maxLength}`
+    }
   }
 
   checkValids() {
@@ -68,8 +90,7 @@ export default class extends Controller {
     // if 1 or more fields is invalid, don't send the form (return false)
     inputList = document.querySelectorAll('textarea')
     let count = 0
-    for (let i = 0; i < inputList.length; i++) {
-      const input = inputList[i]
+    for (const input of inputList) {
       const error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
       if (input.validity.valid) {
         error.textContent = ''
@@ -80,11 +101,7 @@ export default class extends Controller {
         count++
       }
     }
-    if (count > 0) {
-      return false
-    } else {
-      return true
-    }
+    return count === 0
   }
 
   cancelHandle() {

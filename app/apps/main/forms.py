@@ -1,6 +1,7 @@
 import base64
 import logging
 
+from apps.main.models import StandaardExterneOmschrijving
 from django import forms
 from django.core.files.storage import default_storage
 from django.utils import timezone
@@ -151,7 +152,11 @@ class InformatieToevoegenForm(forms.Form):
     opmerking = forms.CharField(
         label="Voeg een opmerking toe",
         widget=forms.Textarea(
-            attrs={"class": "form-control", "data-testid": "information", "rows": "4"}
+            attrs={
+                "class": "form-control",
+                "data-testid": "information",
+                "rows": "4",
+            }
         ),
         required=False,
     )
@@ -185,7 +190,11 @@ class TaakStartenForm(forms.Form):
         label="Interne opmerking",
         help_text="Deze tekst wordt niet naar de melder verstuurd.",
         widget=forms.Textarea(
-            attrs={"class": "form-control", "data-testid": "information", "rows": "4"}
+            attrs={
+                "class": "form-control",
+                "data-testid": "information",
+                "rows": "4",
+            }
         ),
         required=False,
     )
@@ -275,6 +284,20 @@ class TaakAnnulerenForm(forms.Form):
 
 
 class MeldingAfhandelenForm(forms.Form):
+    standaard_omschrijvingen = forms.ModelChoiceField(
+        queryset=StandaardExterneOmschrijving.objects.all(),
+        label="Selecteer een standaard bericht voor de melder",
+        help_text="Je kan de tekst hieronder aanpassen.",
+        to_field_name="tekst",
+        widget=forms.Select(
+            attrs={
+                "class": "form-control",
+                "data-testid": "testid",
+                "data-meldingbehandelformulier-target": "standardTextChoice",
+                "data-action": "meldingbehandelformulier#onChangeStandardTextChoice",
+            }
+        ),
+    )
     omschrijving_extern = forms.CharField(
         label="Bericht voor de melder",
         help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",
@@ -567,4 +590,46 @@ class MSBMeldingZoekenForm(forms.Form):
         ),
         label="MSB nummer",
         required=True,
+    )
+
+
+# Standaard externe omschrijving forms
+
+
+class StandaardExterneOmschrijvingAanpassenForm(forms.ModelForm):
+    tekst = forms.CharField(
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "rows": 10,
+                "cols": 38,
+                "style": "resize: none;",
+            }
+        ),
+        max_length=2000,
+    )
+
+    class Meta:
+        model = StandaardExterneOmschrijving
+        fields = ["titel", "tekst"]
+
+
+class StandaardExterneOmschrijvingAanmakenForm(
+    StandaardExterneOmschrijvingAanpassenForm
+):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # self.fields[
+        #     "titel"
+        # ].help_text = "Geef een titel op voor de standaard tekst."
+        # self.fields[
+        #     "tekst"
+        # ].help_text = "Geef een standaard tekst op van maximaal 2000 tekens. Deze tekst kan bij het afhandelen van een melding aangepast worden."
+
+
+class StandaardExterneOmschrijvingSearchForm(forms.Form):
+    search = forms.CharField(
+        label="Zoeken",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "Zoek standaard tekst"}),
     )
