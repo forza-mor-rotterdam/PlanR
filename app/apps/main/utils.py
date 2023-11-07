@@ -8,7 +8,9 @@ from django.http import QueryDict
 def snake_case(s: str) -> str:
     return "_".join(
         sub(
-            "([A-Z][a-z]+)", r" \1", sub("([A-Z]+)", r" \1", s.replace("-", " "))
+            "([A-Z][a-z]+)",
+            r" \1",
+            sub("([A-Z]+)", r" \1", s.replace("-", " ")),
         ).split()
     ).lower()
 
@@ -96,3 +98,9 @@ def update_qd_met_standaard_meldingen_filter_qd(qd, gebruiker_context=None):
             for vv in v:
                 meldingen_filter_qd.update({k: vv})
     return meldingen_filter_qd
+
+
+def truncate_tekst(text, length=200):
+    if len(text) > length:
+        return f"{text[:length]}..."
+    return text

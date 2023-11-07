@@ -1,13 +1,12 @@
 from apps.main import models
 from apps.main.forms import StandaardExterneOmschrijvingAanpassenForm
+from apps.main.utils import truncate_tekst
 from django.contrib import admin
 
 
 class StandaardExterneOmschrijvingAdmin(admin.ModelAdmin):
     def korte_tekst(self, obj):
-        if len(obj.tekst) > 200:
-            return f"{obj.tekst[:200]}..."
-        return obj.tekst
+        return truncate_tekst(obj.tekst)
 
     list_display = ["titel", "korte_tekst"]
     form = StandaardExterneOmschrijvingAanpassenForm

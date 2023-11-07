@@ -46,7 +46,7 @@
             <tr data-row-search-target="row">
                 <td data-row-search-target="searchable">{{ object.id }}</td>
                 <td data-row-search-target="searchable">{{ object.titel }}</td>
-                <td data-row-search-target="searchable">{{ object.tekst }}</td>
+                <td data-row-search-target="searchable">{{ object.tekst|truncate_text:400 }}</td>
                 <td><a href="{% url 'standaard_externe_omschrijving_aanpassen' object.pk %}">Aanpassen</a></td>
                 <td><a href="{% url 'standaard_externe_omschrijving_verwijderen' object.pk %}"  onclick="return confirm('Weet je zeker dat je deze standaard tekst wil verwijderen?')">Verwijderen</a></td>
             </tr>
