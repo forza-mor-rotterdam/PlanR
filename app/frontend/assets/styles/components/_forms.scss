@@ -74,7 +74,9 @@ fieldset {
         border-color: $hover-border-color;
         box-shadow: 0 0 0 1px $hover-border-color;
     }
-    &:focus {
+    &:focus,
+    &:focus-visible {
+        outline: 0;
         border-color: $focus-border-color;
         box-shadow: 0 0 0 1px $focus-border-color;
     }
