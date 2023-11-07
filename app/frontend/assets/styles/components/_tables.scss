@@ -5,8 +5,11 @@
 }
 
 .sorting {
-    cursor: pointer;
     white-space: nowrap;
+
+    label {
+        cursor: pointer;
+    }
     &::after {
         content: "";
         display: inline-block;
@@ -22,7 +25,7 @@
             background-size: 16px 12px;
             width: 16px;
             height: 13px;
-            transform: rotate(90deg);
+            transform: rotate(-90deg);
         }
     }
 
@@ -32,8 +35,11 @@
             background-size: 16px 12px;
             width: 16px;
             height: 13px;
-            transform: rotate(-90deg);
+            transform: rotate(90deg);
         }
+    }
+    input {
+        @extend .visually-hidden;
     }
 }
 
@@ -68,7 +74,7 @@
         background-position: center;
     }
 
-    tr {
+    tbody tr {
         &:hover {
             cursor: pointer;
             background-color: $gray-tint02;

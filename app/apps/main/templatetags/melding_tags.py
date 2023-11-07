@@ -26,3 +26,22 @@ def render_td_tags(context, kolommen):
 @register.simple_tag
 def render_onderwerp(onderwerp_url):
     return render_onderwerp_service(onderwerp_url)
+
+
+@register.simple_tag
+def enhance_ordering_options(options):
+    return [
+        {
+            **o,
+            "hide": i == 1
+            and len([oo for oo in options if not oo.get("selected")]) == 2
+            or options[i].get("selected"),
+        }
+        for i, o in enumerate(options)
+    ]
+
+
+@register.simple_tag
+def get_selected_ordering_option(options):
+    selected_options = [o for o in options if o.get("selected")]
+    return selected_options[0] if selected_options else None
