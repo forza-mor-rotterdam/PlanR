@@ -107,6 +107,12 @@ class FilterForm(forms.Form):
         required=False,
     )
 
+    def geselecteerde_filters(self):
+        return [
+            {f.name: [label for value, label in f.field.choices if value in f.value()]}
+            for f in self.filters()
+        ]
+
     def filters(self):
         for field_name in self.fields:
             if field_name in self.filter_velden:
