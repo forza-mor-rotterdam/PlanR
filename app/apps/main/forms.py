@@ -339,6 +339,7 @@ class MeldingAfhandelenForm(forms.Form):
         label="Selecteer een standaard bericht voor de melder",
         help_text="Je kan de tekst hieronder aanpassen.",
         to_field_name="tekst",
+        required=False,
         widget=forms.Select(
             attrs={
                 "class": "form-control",
