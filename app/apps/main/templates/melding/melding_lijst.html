@@ -25,7 +25,7 @@
                     {% for veld in form.filters %}
                     <div class="container__multiselect">
                         <label class="visually-hidden">{{ veld.label }}</label>
-                        <button class="toggle js-toggle" type="button">{{ veld.label|capfirst }}</button>
+                        <button class="toggle js-toggle{% if veld.data|length > 0%} active {% endif %}" type="button">{{ veld.label|capfirst }}</button>
                         <div class="wrapper">
                             {{ veld|render_rotterdam_formulier }}
                         </div>
