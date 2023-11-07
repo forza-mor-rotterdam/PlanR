@@ -27,6 +27,18 @@ class StandaardKolom:
     def key(cls):
         return cls._key
 
+    def has_ordering(self):
+        return bool(self._ordering_value)
+
+    def ordering_up(self):
+        return self.context.get("ordering") == "up"
+
+    def ordering(self):
+        up = self.ordering_up()
+        if not self.has_ordering():
+            return False
+        return f'{"" if up else "-"}{self._ordering_value}'
+
     def th_label(self):
         return self._kolom_hoofd
 

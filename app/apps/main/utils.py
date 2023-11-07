@@ -86,3 +86,13 @@ def melding_naar_tijdlijn(melding: dict):
     tijdlijn_data.append(row_dict)
     tijdlijn_data = [t for t in reversed(tijdlijn_data)]
     return tijdlijn_data
+
+
+def update_qd_met_standaard_meldingen_filter_qd(qd, gebruiker_context=None):
+    meldingen_filter_qd = QueryDict("", mutable=True)
+    meldingen_filter_qd.update(qd)
+    if gebruiker_context:
+        for k, v in gebruiker_context.standaard_filters.items():
+            for vv in v:
+                meldingen_filter_qd.update({k: vv})
+    return meldingen_filter_qd

@@ -34,7 +34,12 @@ from apps.main.forms import (
     TaakStartenForm,
 )
 from apps.main.models import StandaardExterneOmschrijving
-from apps.main.utils import get_open_taakopdrachten, melding_naar_tijdlijn, to_base64
+from apps.main.utils import (
+    get_open_taakopdrachten,
+    melding_naar_tijdlijn,
+    to_base64,
+    update_qd_met_standaard_meldingen_filter_qd,
+)
 from apps.services.meldingen import MeldingenService, get_taaktypes
 from config.context_processors import general_settings
 from django.conf import settings
@@ -96,20 +101,16 @@ def melding_lijst(request):
     query_dict = QueryDict("", mutable=True)
     query_dict.update(standaard_waardes)
     query_dict.update(request.GET)
+    for k in query_dict.keys():
+        query_dict.setlist(k, list(dict.fromkeys(query_dict.getlist(k))))
 
     request.session["overview_querystring"] = request.GET.urlencode()
 
-    meldingen_qd = QueryDict("", mutable=True)
     actieve_filters = FILTER_NAMEN
-    meldingen_qd.update(query_dict)
-    standaard_filters = []
     kolommen = KOLOMMEN
     if gebruiker_context:
         actieve_filters = gebruiker_context.filters.get("fields", [])
-        standaard_filters = gebruiker_context.standaard_filters
-        for k, v in standaard_filters.items():
-            for vv in v:
-                meldingen_qd.update({k: vv})
+
         kolommen = [
             KOLOMMEN_KEYS.get(k)
             for k in gebruiker_context.kolommen.get("sorted", [])
@@ -117,7 +118,12 @@ def melding_lijst(request):
         ]
     actieve_filters = [f for f in actieve_filters if f in FILTER_NAMEN]
 
-    data = MeldingenService().get_melding_lijst(query_string=meldingen_qd.urlencode())
+    meldingen_filter_query_dict = update_qd_met_standaard_meldingen_filter_qd(
+        query_dict, gebruiker_context
+    )
+    data = MeldingenService().get_melding_lijst(
+        query_string=meldingen_filter_query_dict.urlencode()
+    )
 
     pagina_aantal = math.ceil(data.get("count", 0) / int(query_dict.get("limit")))
     offset_options = [
@@ -127,8 +133,10 @@ def melding_lijst(request):
     query_dict["offset"] = (
         query_dict.get("offset")
         if str(query_dict.get("offset")) in [str(oo[0]) for oo in offset_options]
-        else 0
+        else "0"
     )
+    if not offset_options:
+        del query_dict["offset"]
     filter_velden = [
         {
             "naam": f,
@@ -144,23 +152,21 @@ def melding_lijst(request):
         query_dict,
         filter_velden=filter_velden,
         offset_options=offset_options,
+        gebruiker_context=gebruiker_context,
     )
 
     filter_form_data = copy.deepcopy(standaard_waardes)
     if form.is_valid():
         filter_form_data = copy.deepcopy(form.cleaned_data)
     limit = int(filter_form_data.get("limit", "10"))
-    offset = int(filter_form_data.get("offset", "0"))
-    ordering = filter_form_data.get("ordering")
+    offset = int(
+        filter_form_data.get("offset", "0") if filter_form_data.get("offset") else "0"
+    )
+    filter_form_data.get("ordering")
 
     meldingen = data.get("results", [])
     totaal = data.get("count", 0)
-    pageNumTotal = int(
-        (totaal - (totaal % limit)) / limit + (1 if totaal % limit > 0 else 0)
-    )
-    pages = []
-    for pageNum in range(pageNumTotal):
-        pages.append(f"limit={limit}&offset={pageNum * limit}&ordering={ordering}")
+
     currentPage = offset / limit + 1
     volgende = data.get("next")
     vorige = data.get("previous")
