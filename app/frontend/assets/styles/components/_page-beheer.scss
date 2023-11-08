@@ -17,6 +17,10 @@
         .btn {
             max-width: 200px;
             height: 48px;
+
+            &.btn-240 {
+                max-width: 240px;
+            }
         }
     }
 

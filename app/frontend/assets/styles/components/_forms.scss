@@ -462,6 +462,7 @@ textarea {
         display: flex;
         flex-direction: row;
         margin-top: 1rem;
+        column-gap: 1rem;
 
         > .label,
         > label {

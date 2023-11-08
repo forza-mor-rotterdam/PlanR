@@ -1,4 +1,5 @@
 from apps.main.forms import CheckboxSelectMultipleThumb
+from apps.main.utils import truncate_tekst
 from django import forms, template
 from django.forms.fields import DateField, DateTimeField
 from django.http import QueryDict
@@ -190,3 +191,8 @@ def is_select_multiple(field):
 @register.filter
 def is_hidden(field):
     return isinstance(field.field.widget, forms.HiddenInput)
+
+
+@register.filter(name="truncate_text")
+def truncate_text(value, length=200):
+    return truncate_tekst(value, length)

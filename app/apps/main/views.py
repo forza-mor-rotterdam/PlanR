@@ -5,13 +5,16 @@ import math
 
 import requests
 import weasyprint
+from apps.authorisatie.models import (
+    StandaardExterneOmschrijvingAanmakenPermissie,
+    StandaardExterneOmschrijvingAanpassenPermissie,
+    StandaardExterneOmschrijvingLijstBekijkenPermissie,
+    StandaardExterneOmschrijvingVerwijderenPermissie,
+)
 from apps.context.constanten import FILTER_KEYS, FILTER_NAMEN, KOLOMMEN, KOLOMMEN_KEYS
 from apps.context.utils import get_gebruiker_context
 from apps.main.constanten import MSB_WIJKEN
 from apps.main.forms import (
-    BEHANDEL_OPTIES,
-    TAAK_BEHANDEL_RESOLUTIE,
-    TAAK_BEHANDEL_STATUS,
     TAAK_RESOLUTIE_GEANNULEERD,
     TAAK_STATUS_VOLTOOID,
     FilterForm,
@@ -20,10 +23,14 @@ from apps.main.forms import (
     MeldingAfhandelenForm,
     MSBLoginForm,
     MSBMeldingZoekenForm,
+    StandaardExterneOmschrijvingAanmakenForm,
+    StandaardExterneOmschrijvingAanpassenForm,
+    StandaardExterneOmschrijvingSearchForm,
     TaakAfrondenForm,
     TaakAnnulerenForm,
     TaakStartenForm,
 )
+from apps.main.models import StandaardExterneOmschrijving
 from apps.main.utils import (
     get_open_taakopdrachten,
     melding_naar_tijdlijn,
@@ -34,12 +41,15 @@ from apps.services.meldingen import MeldingenService, get_taaktypes
 from config.context_processors import general_settings
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.files.storage import default_storage
+from django.db.models import Q
 from django.http import HttpResponse, QueryDict, StreamingHttpResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView, View
 from utils.rd_convert import rd_to_wgs
 
 logger = logging.getLogger(__name__)
@@ -300,7 +310,6 @@ def melding_afhandelen(request, id):
             "form": form,
             "melding": melding,
             "afhandel_reden_opties": afhandel_reden_opties,
-            "standaard_afhandel_teksten": {bo[0]: bo[2] for bo in BEHANDEL_OPTIES},
             "bijlagen": bijlagen_flat,
             "actieve_taken": actieve_taken,
             "aantal_actieve_taken": len(actieve_taken),
@@ -591,7 +600,8 @@ def msb_melding_zoeken(request):
                 },
             )
             logger.info(
-                "msb melding zoeken response.status_code=%s", response.status_code
+                "msb melding zoeken response.status_code=%s",
+                response.status_code,
             )
             if response.status_code == 200:
                 msb_data = response.json().get("result", {"test": "test"})
@@ -725,3 +735,58 @@ def msb_importeer_melding(request):
             "msb_id": msb_id,
         },
     )
+
+
+# Standaard externe omschrijving views
+class StandaardExterneOmschrijvingView(View):
+    model = StandaardExterneOmschrijving
+    success_url = reverse_lazy("standaard_externe_omschrijving_lijst")
+
+
+class StandaardExterneOmschrijvingLijstView(
+    PermissionRequiredMixin, StandaardExterneOmschrijvingView, ListView
+):
+    context_object_name = "standaardteksten"
+    permission_required = StandaardExterneOmschrijvingLijstBekijkenPermissie.codenaam
+    form_class = StandaardExterneOmschrijvingSearchForm
+    template_name = (
+        "standaard_externe_omschrijving/standaard_externe_omschrijving_lijst.html"
+    )
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.GET.get("search", "")
+        if search:
+            queryset = queryset.filter(
+                Q(titel__icontains=search) | Q(tekst__icontains=search)
+            )
+        return queryset
+
+
+class StandaardExterneOmschrijvingAanmakenView(
+    PermissionRequiredMixin, StandaardExterneOmschrijvingView, CreateView
+):
+    form_class = StandaardExterneOmschrijvingAanmakenForm
+    template_name = (
+        "standaard_externe_omschrijving/standaard_externe_omschrijving_aanmaken.html"
+    )
+    permission_required = StandaardExterneOmschrijvingAanmakenPermissie.codenaam
+
+
+class StandaardExterneOmschrijvingAanpassenView(
+    PermissionRequiredMixin, StandaardExterneOmschrijvingView, UpdateView
+):
+    form_class = StandaardExterneOmschrijvingAanpassenForm
+    template_name = (
+        "standaard_externe_omschrijving/standaard_externe_omschrijving_aanpassen.html"
+    )
+    permission_required = StandaardExterneOmschrijvingAanpassenPermissie.codenaam
+
+
+class StandaardExterneOmschrijvingVerwijderenView(
+    PermissionRequiredMixin, StandaardExterneOmschrijvingView, DeleteView
+):
+    permission_required = StandaardExterneOmschrijvingVerwijderenPermissie.codenaam
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
