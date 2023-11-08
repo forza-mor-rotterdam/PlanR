@@ -15,7 +15,6 @@ from apps.context.constanten import FILTER_KEYS, FILTER_NAMEN, KOLOMMEN, KOLOMME
 from apps.context.utils import get_gebruiker_context
 from apps.main.constanten import MSB_WIJKEN
 from apps.main.forms import (
-    BEHANDEL_OPTIES,
     TAAK_BEHANDEL_RESOLUTIE,
     TAAK_BEHANDEL_STATUS,
     TAAK_RESOLUTIE_GEANNULEERD,
@@ -313,7 +312,6 @@ def melding_afhandelen(request, id):
             "form": form,
             "melding": melding,
             "afhandel_reden_opties": afhandel_reden_opties,
-            "standaard_afhandel_teksten": {bo[0]: bo[2] for bo in BEHANDEL_OPTIES},
             "bijlagen": bijlagen_flat,
             "actieve_taken": actieve_taken,
             "aantal_actieve_taken": len(actieve_taken),

@@ -13,7 +13,7 @@ export default class extends Controller {
     parentContext: String,
     standaardafhandelteksten: String,
   }
-  static targets = ['externalText', 'internalText', 'standardTextChoice']
+  static targets = ['externalText', 'internalText']
 
   connect() {
     if (this.hasExternalTextTarget) {

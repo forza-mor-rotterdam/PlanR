@@ -26,23 +26,6 @@ class MultipleChoiceField(forms.MultipleChoiceField):
     ...
 
 
-BEHANDEL_OPTIES = (
-    (
-        "ja",
-        "Ja",
-        "We zijn met uw melding aan de slag gegaan en hebben het probleem opgelost.",
-        "afgehandeld",
-        "opgelost",
-    ),
-    (
-        "nee",
-        "Nee",
-        "We zijn met uw melding aan de slag gegaan maar deze kan niet direct worden opgelost. Want...",
-        "afgehandeld",
-        None,
-    ),
-)
-
 TAAK_STATUS_VOLTOOID = "voltooid"
 TAAK_RESOLUTIE_OPGELOST = "opgelost"
 TAAK_RESOLUTIE_NIET_OPGELOST = "niet_opgelost"
@@ -343,8 +326,6 @@ class MeldingAfhandelenForm(forms.Form):
             attrs={
                 "class": "form-control",
                 "data-testid": "testid",
-                "data-meldingbehandelformulier-target": "standardTextChoice",
-                "data-action": "meldingbehandelformulier#onChangeStandardTextChoice",
             }
         ),
     )
