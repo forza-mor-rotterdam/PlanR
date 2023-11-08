@@ -336,8 +336,7 @@ class TaakAnnulerenForm(forms.Form):
 class MeldingAfhandelenForm(forms.Form):
     standaard_omschrijvingen = forms.ModelChoiceField(
         queryset=StandaardExterneOmschrijving.objects.all(),
-        label="Selecteer een standaard bericht voor de melder",
-        help_text="Je kan de tekst hieronder aanpassen.",
+        label="Selecteer een afhandelreden",
         to_field_name="tekst",
         required=False,
         widget=forms.Select(
@@ -648,6 +647,11 @@ class MSBMeldingZoekenForm(forms.Form):
 
 
 class StandaardExterneOmschrijvingAanpassenForm(forms.ModelForm):
+    titel = forms.CharField(
+        widget=forms.TextInput(),
+        label="Afhandelreden",
+        help_text="Deze tekst wordt gebruikt om de juiste standaard externe omschrijving te selecteren.",
+    )
     tekst = forms.CharField(
         widget=forms.Textarea(
             attrs={
@@ -657,6 +661,7 @@ class StandaardExterneOmschrijvingAanpassenForm(forms.ModelForm):
                 "style": "resize: none;",
             }
         ),
+        label="Bericht naar melder",
         max_length=2000,
     )
 
