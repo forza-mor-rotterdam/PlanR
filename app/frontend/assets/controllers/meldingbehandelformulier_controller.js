@@ -2,7 +2,6 @@ import { Controller } from '@hotwired/stimulus'
 
 let form = null
 let inputList = null
-let formData = null
 const defaultErrorMessage = 'Vul a.u.b. dit veld in.'
 let externalTextMaxCharacter = null
 const externalTextMaxCharacterPrefix = 'Aantal karakters: '
@@ -13,7 +12,7 @@ export default class extends Controller {
     parentContext: String,
     standaardafhandelteksten: String,
   }
-  static targets = ['externalText', 'internalText']
+  static targets = ['externalText', 'internalText', 'standardTextChoice']
 
   connect() {
     if (this.hasExternalTextTarget) {
@@ -32,7 +31,6 @@ export default class extends Controller {
 
     form = document.querySelector('#afhandelForm')
     inputList = document.querySelectorAll('.js-validation textarea')
-    formData = new FormData(form)
 
     for (const element of inputList) {
       const input = element
@@ -57,7 +55,6 @@ export default class extends Controller {
         event.preventDefault()
       }
     })
-    // this.updateExternalTextValue()
   }
 
   onChangeExternalText(e) {

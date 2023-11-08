@@ -15,8 +15,6 @@ from apps.context.constanten import FILTER_KEYS, FILTER_NAMEN, KOLOMMEN, KOLOMME
 from apps.context.utils import get_gebruiker_context
 from apps.main.constanten import MSB_WIJKEN
 from apps.main.forms import (
-    TAAK_BEHANDEL_RESOLUTIE,
-    TAAK_BEHANDEL_STATUS,
     TAAK_RESOLUTIE_GEANNULEERD,
     TAAK_STATUS_VOLTOOID,
     FilterForm,

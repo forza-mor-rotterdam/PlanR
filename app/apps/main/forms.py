@@ -48,9 +48,6 @@ TAAK_BEHANDEL_OPTIES = (
     ),
 )
 
-TAAK_BEHANDEL_STATUS = {bo[0]: bo[3] for bo in TAAK_BEHANDEL_OPTIES}
-TAAK_BEHANDEL_RESOLUTIE = {bo[0]: bo[4] for bo in TAAK_BEHANDEL_OPTIES}
-
 
 class CheckboxSelectMultipleThumb(forms.CheckboxSelectMultiple):
     ...
@@ -326,6 +323,8 @@ class MeldingAfhandelenForm(forms.Form):
             attrs={
                 "class": "form-control",
                 "data-testid": "testid",
+                "data-meldingbehandelformulier-target": "standardTextChoice",
+                "data-action": "meldingbehandelformulier#onChangeStandardTextChoice",
             }
         ),
     )
