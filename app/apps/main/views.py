@@ -317,6 +317,61 @@ def melding_afhandelen(request, id):
     )
 
 
+@permission_required("authorisatie.melding_annuleren")
+def melding_annuleren(request, id):
+    melding = MeldingenService().get_melding(id)
+    afhandel_reden_opties = [(s, s) for s in melding.get("volgende_statussen", ())]
+    melding_bijlagen = [
+        [
+            b
+            for b in (
+                meldinggebeurtenis.get("taakgebeurtenis", {}).get("bijlagen", [])
+                if meldinggebeurtenis.get("taakgebeurtenis")
+                else []
+            )
+        ]
+        for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
+    ]
+
+    bijlagen_flat = [b for bl in melding_bijlagen for b in bl]
+    form = MeldingAfhandelenForm()
+    if request.POST:
+        form = MeldingAfhandelenForm(request.POST)
+        if form.is_valid():
+            bijlagen = request.FILES.getlist("bijlagen", [])
+            bijlagen_base64 = []
+            for f in bijlagen:
+                file_name = default_storage.save(f.name, f)
+                bijlagen_base64.append({"bestand": to_base64(file_name)})
+
+            MeldingenService().melding_annuleren(
+                id,
+                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
+                bijlagen=bijlagen_base64,
+                gebruiker=request.user.email,
+            )
+            return redirect("melding_detail", id=id)
+
+    actieve_taken = [
+        to
+        for to in melding.get("taakopdrachten_voor_melding", [])
+        if to.get("status", {}).get("naam") != "voltooid"
+    ]
+
+    return render(
+        request,
+        "melding/part_melding_annuleren.html",
+        {
+            "form": form,
+            "melding": melding,
+            "afhandel_reden_opties": afhandel_reden_opties,
+            "bijlagen": bijlagen_flat,
+            "actieve_taken": actieve_taken,
+            "aantal_actieve_taken": len(actieve_taken),
+        },
+    )
+
+
 @permission_required("authorisatie.taak_aanmaken")
 def taak_starten(request, id):
     melding = MeldingenService().get_melding(id)

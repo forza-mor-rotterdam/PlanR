@@ -286,6 +286,7 @@ class StatusKolom(StandaardKolom):
             "afgehandeld": "green",
             "controle": "yellow",
             "in_behandeling": "darkblue",
+            "geannuleerd": "red",
         }
         aantal_actieve_taken = string_based_lookup(
             self.context, "melding.aantal_actieve_taken", not_found_value=""

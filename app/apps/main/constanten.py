@@ -14,6 +14,7 @@ VERTALINGEN = {
     "openstaand": "Openstaand",
     "controle": "Controle",
     "afgehandeld": "Afgehandeld",
+    "geannuleerd": "Geannuleerd",
     "nieuw": "Nieuw",
     "bezig": "Bezig",
     "voltooid": "Voltooid",

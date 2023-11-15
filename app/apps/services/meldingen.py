@@ -155,6 +155,33 @@ class MeldingenService(BasisService):
             raw_response=False,
         )
 
+    def melding_annuleren(
+        self,
+        id,
+        bijlagen=[],
+        omschrijving_intern=None,
+        gebruiker=None,
+    ):
+        data = {
+            "bijlagen": bijlagen,
+            "omschrijving_intern": omschrijving_intern,
+            "gebruiker": gebruiker,
+        }
+        data.update(
+            {
+                "status": {
+                    "naam": "geannuleerd",
+                },
+                "resolutie": "opgelost",
+            }
+        )
+        return self.do_request(
+            f"{self._api_path}/melding/{id}/status-aanpassen/",
+            method="patch",
+            data=data,
+            raw_response=False,
+        )
+
     def taakapplicaties(self):
         return self.do_request(
             f"{self._api_path}/taakapplicatie/",
