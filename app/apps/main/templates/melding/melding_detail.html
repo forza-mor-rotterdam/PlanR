@@ -33,7 +33,7 @@
                 <div class="grid-item bottom-left">
                     <div class="">
                         {% if melding.status %}
-                        <span class="badge badge--{% if melding.status.naam == 'afgehandeld'%}green{% elif melding.status.naam == 'controle' %}yellow{% elif melding.status.naam == 'in_behandeling' %}darkblue{% elif melding.status.naam == 'geannuleerd' %}red{% else %}lightblue{% endif %}">{{melding.status.naam|vertaal}}{% if melding.status.naam is 'afgehandeld' or melding.status.naam is 'geannuleerd' %} ({{melding.resolutie}}){% endif %}</span>
+                        <span class="badge badge--{% if melding.status.naam == 'afgehandeld'%}green{% elif melding.status.naam == 'controle' %}yellow{% elif melding.status.naam == 'in_behandeling' %}darkblue{% elif melding.status.naam == 'geannuleerd' %}red{% else %}lightblue{% endif %}">{{melding.status.naam|vertaal}}{% if melding.status.naam == 'afgehandeld' or melding.status.naam == 'geannuleerd' %} ({{melding.resolutie}}){% endif %}</span>
                         {% endif %}
                         {% if aantal_actieve_taken %}
                             <span class="badge badge--darkblue">{{aantal_actieve_taken}} {% if aantal_actieve_taken > 1 %}taken{%else%}taak{%endif%} actief</span>
