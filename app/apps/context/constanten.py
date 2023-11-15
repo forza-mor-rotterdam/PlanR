@@ -27,6 +27,18 @@ class StandaardKolom:
     def key(cls):
         return cls._key
 
+    def has_ordering(self):
+        return bool(self._ordering_value)
+
+    def ordering_up(self):
+        return self.context.get("ordering") == "up"
+
+    def ordering(self):
+        up = self.ordering_up()
+        if not self.has_ordering():
+            return False
+        return f'{"" if up else "-"}{self._ordering_value}'
+
     def th_label(self):
         return self._kolom_hoofd
 
@@ -288,6 +300,24 @@ class StatusKolom(StandaardKolom):
         )
 
 
+class MeldRNummerKolom(StandaardKolom):
+    _key = "meldr_nummer"
+    _kolom_hoofd = "MeldR nummer"
+    _kolom_inhoud = "melding.meta.meldingsnummerField"
+    _ordering_value = "meta__meldingsnummerField"
+    _td_standaard_classes = "nowrap"
+
+    def td_label(self):
+        meldr_nummer = string_based_lookup(
+            self.context, "melding.meta.meldingsnummerField", not_found_value=""
+        )
+        if not meldr_nummer:
+            meldr_nummer = string_based_lookup(
+                self.context, "melding.meta.morId", not_found_value=""
+            )
+        return meldr_nummer
+
+
 class StandaardFilter:
     _key = None
 
@@ -347,6 +377,7 @@ FILTER_KEYS = {f.key(): f for f in FILTERS}
 KOLOMMEN = (
     MeldingIdKolom,
     MSBNummerKolom,
+    MeldRNummerKolom,
     AdresKolom,
     AdresBuurtWijkKolom,
     WijkKolom,
