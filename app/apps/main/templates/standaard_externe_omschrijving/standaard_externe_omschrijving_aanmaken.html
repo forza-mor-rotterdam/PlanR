@@ -22,9 +22,9 @@
                     method="post"
                     class=""
                     data-controller="externeomschrijvingformulier"
-                    data-turbo-frame="_top"
                     enctype="multipart/form-data"
                     id="externeOmschrijvingForm"
+                    novalidate
                 >
                     {{ form.non_field_errors }}
                     {% csrf_token %}
@@ -38,12 +38,13 @@
                     </fieldset>
                     <div class="form-row container__button">
                         <div class="form-row btn-row">
-                            <button type="reset" class="btn btn-tertiary" data-controller="detail" data-action="detail#closeModal">
+                            <button type="reset" class="btn btn-tertiary">
                                 <span>Annuleren</span>
                             </button>
                             <button type="submit" class="btn btn-action">
                                 <span>Aanmaken</span>
                             </button>
+
                         </div>
                     </div>
                 </form>
