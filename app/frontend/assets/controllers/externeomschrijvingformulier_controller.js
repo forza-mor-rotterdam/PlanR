@@ -3,33 +3,33 @@ import { Controller } from '@hotwired/stimulus'
 let form = null
 let inputList = null
 const defaultErrorMessage = 'Vul a.u.b. dit veld in.'
-let externeOmschrijvingTextMaxCharacter = null
-const externeOmschrijvingTextMaxCharacterPrefix = 'Aantal karakters: '
+let externeOmschrijvingTekstMaxCharacter = null
+const externeOmschrijvingTekstMaxCharacterPrefix = 'Aantal karakters: '
 
 export default class extends Controller {
   static values = {
     formIsSubmitted: Boolean,
     parentContext: String,
   }
-  static targets = ['externeOmschrijvingText']
+  static targets = ['externeOmschrijvingTekst', 'externeOmschrijvingTitel']
 
   connect() {
-    if (this.hasExterneOmschrijvingTextTarget) {
-      externeOmschrijvingTextMaxCharacter = document.createElement('small')
-      this.externeOmschrijvingTextTarget.parentNode.insertBefore(
-        externeOmschrijvingTextMaxCharacter,
-        this.externeOmschrijvingTextTarget.nextSibling
+    if (this.hasExterneOmschrijvingTekstTarget) {
+      externeOmschrijvingTekstMaxCharacter = document.createElement('small')
+      this.externeOmschrijvingTekstTarget.parentNode.insertBefore(
+        externeOmschrijvingTekstMaxCharacter,
+        this.externeOmschrijvingTekstTarget.nextSibling
       )
-      externeOmschrijvingTextMaxCharacter.classList.add('help-block', 'no-margins')
-      externeOmschrijvingTextMaxCharacter.innerHTML = `${externeOmschrijvingTextMaxCharacterPrefix}${this.externeOmschrijvingTextTarget.value.length}/${this.externeOmschrijvingTextTarget.maxLength}`
+      externeOmschrijvingTekstMaxCharacter.classList.add('help-block', 'no-margins')
+      externeOmschrijvingTekstMaxCharacter.innerHTML = `${externeOmschrijvingTekstMaxCharacterPrefix}${this.externeOmschrijvingTekstTarget.value.length}/${this.externeOmschrijvingTekstTarget.maxLength}`
 
-      if (this.externeOmschrijvingTextTarget.textContent.length > 0) {
-        this.externalMessage = this.externeOmschrijvingTextTarget.textContent
+      if (this.externeOmschrijvingTekstTarget.textContent.length > 0) {
+        this.externalMessage = this.externeOmschrijvingTekstTarget.textContent
       }
     }
 
     form = document.querySelector('#externeOmschrijvingForm')
-    inputList = document.querySelectorAll('.js-validation textarea')
+    inputList = document.querySelectorAll('[type="text"], textarea')
 
     for (const element of inputList) {
       const input = element
@@ -56,20 +56,20 @@ export default class extends Controller {
     })
   }
 
-  onChangeExterneOmschrijvingText(e) {
+  onChangeExterneOmschrijvingTekst(e) {
     this.updateCharacterCount(e.target.value.length)
   }
 
   updateCharacterCount(count) {
-    if (externeOmschrijvingTextMaxCharacter) {
-      externeOmschrijvingTextMaxCharacter.innerHTML = `${externeOmschrijvingTextMaxCharacterPrefix}${count}/${this.externeOmschrijvingTextTarget.maxLength}`
+    if (externeOmschrijvingTekstMaxCharacter) {
+      externeOmschrijvingTekstMaxCharacter.innerHTML = `${externeOmschrijvingTekstMaxCharacterPrefix}${count}/${this.externeOmschrijvingTekstTarget.maxLength}`
     }
   }
 
   checkValids() {
     //check all inputfields (except checkboxes) for validity
     // if 1 or more fields is invalid, don't send the form (return false)
-    inputList = document.querySelectorAll('textarea')
+    inputList = document.querySelectorAll('[type="text"], textarea')
     let count = 0
     for (const input of inputList) {
       const error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
@@ -95,20 +95,20 @@ export default class extends Controller {
   }
 
   setExternalMessage(evt) {
-    if (this.hasExterneOmschrijvingTextTarget) {
+    if (this.hasExterneOmschrijvingTekstTarget) {
       this.choice = evt.params.index
       this.externalMessage = JSON.parse(this.standaardafhandeltekstenValue)[evt.target.value]
-      this.externeOmschrijvingTextTarget.value = this.externalMessage
+      this.externeOmschrijvingTekstTarget.value = this.externalMessage
     }
   }
 
   defaultExternalMessage() {
     if (this.externalMessage.length === 0) return
 
-    this.externeOmschrijvingTextTarget.value = this.externalMessage
+    this.externeOmschrijvingTekstTarget.value = this.externalMessage
   }
 
   clearExternalMessage() {
-    this.externeOmschrijvingTextTarget.value = ''
+    this.externeOmschrijvingTekstTarget.value = ''
   }
 }

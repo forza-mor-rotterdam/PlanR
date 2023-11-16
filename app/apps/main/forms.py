@@ -638,9 +638,15 @@ class MSBMeldingZoekenForm(forms.Form):
 
 class StandaardExterneOmschrijvingAanpassenForm(forms.ModelForm):
     titel = forms.CharField(
-        widget=forms.TextInput(),
         label="Afhandelreden",
         help_text="Deze tekst wordt gebruikt om de juiste standaard externe omschrijving te selecteren.",
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "data-externeomschrijvingformulier-target": "externeOmschrijvingTitel",
+                "name": "titel",
+            }
+        ),
     )
     tekst = forms.CharField(
         widget=forms.Textarea(
@@ -649,8 +655,8 @@ class StandaardExterneOmschrijvingAanpassenForm(forms.ModelForm):
                 "rows": 10,
                 "cols": 38,
                 "style": "resize: none;",
-                "data-externeomschrijvingformulier-target": "externeOmschrijvingText",
-                "data-action": "externeomschrijvingformulier#onChangeExterneOmschrijvingText",
+                "data-externeomschrijvingformulier-target": "externeOmschrijvingTekst",
+                "data-action": "externeomschrijvingformulier#onChangeExterneOmschrijvingTekst",
                 "name": "tekst",
             }
         ),

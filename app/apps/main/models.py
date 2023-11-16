@@ -6,7 +6,6 @@ class StandaardExterneOmschrijving(BasisModel):
     titel = models.CharField(max_length=100, unique=True)
     tekst = models.CharField(
         max_length=2000,
-        unique=True,
     )
 
     # def onderwerpen(self):
