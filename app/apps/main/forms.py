@@ -649,6 +649,9 @@ class StandaardExterneOmschrijvingAanpassenForm(forms.ModelForm):
                 "rows": 10,
                 "cols": 38,
                 "style": "resize: none;",
+                "data-externeomschrijvingformulier-target": "externeOmschrijvingText",
+                "data-action": "externeomschrijvingformulier#onChangeExterneOmschrijvingText",
+                "name": "tekst",
             }
         ),
         label="Bericht naar melder",

@@ -17,29 +17,24 @@
         <h1>Standaard Externe Omschrijving Aanmaken</h1>
         <div class="grid-container">
             <div class="grid-item">
-                <form action="." method="post">
+                <form
+                    action="."
+                    method="post"
+                    class=""
+                    data-controller="externeomschrijvingformulier"
+                    data-turbo-frame="_top"
+                    enctype="multipart/form-data"
+                    id="externeOmschrijvingForm"
+                >
                     {{ form.non_field_errors }}
                     {% csrf_token %}
                     <fieldset>
-                        {{ form.titel|render_rotterdam_formulier }}
-                        {{ form.tekst|render_rotterdam_formulier }}
-                        <small id="character-counter" class="no-margin-bottom counter">Aantal karakters: <span id="count">2000</span>/2000</small>
-                        <script>
-                            document.addEventListener("turbo:load", () => {
-                                const textarea = document.querySelector('[name="tekst"]');
-                                const characterCount = document.querySelector("#count");
-                                const characterCounter = document.querySelector("#character-counter");
-                                const currentCount = textarea.value.length;
-                                characterCounter.style.color = currentCount >= 1800 ?  "#e3614d" : "#404b4f";
-                                characterCount.textContent = currentCount;
-
-                                textarea.addEventListener("input", () => {
-                                    const currentCount = textarea.value.length;
-                                    characterCount.textContent = currentCount;
-                                    characterCounter.style.color = currentCount >= 1800 ?  "#e3614d" : "#404b4f";
-                                });
-                            });
-                        </script>
+                        <div class="js-validation">
+                            {{ form.titel|render_rotterdam_formulier }}
+                        </div>
+                        <div class="form-control__with-helptext js-validation">
+                            {{ form.tekst|render_rotterdam_formulier }}
+                        </div>
                     </fieldset>
                     <div class="form-row container__button">
                         <div class="form-row btn-row">
