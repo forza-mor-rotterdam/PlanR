@@ -642,7 +642,6 @@ class StandaardExterneOmschrijvingAanpassenForm(forms.ModelForm):
         help_text="Deze tekst wordt gebruikt om de juiste standaard externe omschrijving te selecteren.",
         widget=forms.TextInput(
             attrs={
-                "class": "form-control",
                 "data-externeomschrijvingformulier-target": "externeOmschrijvingTitel",
                 "name": "titel",
             }
@@ -651,7 +650,6 @@ class StandaardExterneOmschrijvingAanpassenForm(forms.ModelForm):
     tekst = forms.CharField(
         widget=forms.Textarea(
             attrs={
-                "class": "form-control",
                 "rows": 10,
                 "cols": 38,
                 "style": "resize: none;",

@@ -38,7 +38,9 @@
                 <form action="." method="post">
                     {% csrf_token %}
                     <fieldset>
-                    {{ form.naam|render_rotterdam_formulier }}
+                    <div class="form-control__with-helptext js-validation">
+                        {{ form.naam|render_rotterdam_formulier }}
+                    </div>
                     {{ form.filters|render_rotterdam_formulier }}
                     {{ form.kolommen|render_rotterdam_formulier }}
                     {{ form.standaard_filters|render_rotterdam_formulier }}
