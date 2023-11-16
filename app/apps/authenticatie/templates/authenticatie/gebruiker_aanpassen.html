@@ -3,7 +3,7 @@
 {% load json_encode from json_tags %}
 
 {% block body %}
-<turbo-frame id="gebruiker_aanmaken">
+<turbo-frame id="beheer" data-turbo-action="advance">
     <div class="page__beheer">
         <div>
             <a href="{% url 'gebruiker_lijst' %}" data-turbo-action='advance' class="link--back">

@@ -2,7 +2,7 @@
 {% load rotterdam_formulier_html %}
 
 {% block body %}
-<turbo-frame id="context_aanmaken">
+<turbo-frame id="beheer" data-turbo-action="advance">
     <div class="page__beheer">
         <div>
             <a href="{% url 'context_lijst' %}" data-turbo-action='advance' class="link--back">

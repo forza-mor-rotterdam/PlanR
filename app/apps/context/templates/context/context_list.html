@@ -1,61 +1,63 @@
 {% extends "base.html" %}
 
 {% block body %}
-<div class="page__beheer" data-controller="row-search">
-    <div>
-        <a href="{% url 'beheer' %}" class="link--back">
-            <svg width="25" height="16" viewBox="0 0 25 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9.15173 1.73256L7.73753 0.318359L1.44704 6.60885L1.4142 6.576L0 7.9902L1.4115 9.4017L1.37867 9.43453L7.67186 15.7277L9.08606 14.3135L3.7726 9.00006H24.0098V7.00006H3.88423L9.15173 1.73256Z" fill="#404B4F"/>
-            </svg>
-            Beheer
-        </a>
-    </div>
-    <div class="container__flex">
-        <h1>Rollen</h1>
-        <a class="btn btn-action" href="{% url 'context_aanmaken' %}">
-            <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#ffffff"></path>
-            </svg>
-            Nieuwe rol
-        </a>
-    </div>
-
-    <!-- <form>
-        <div class="form-row">
-            <label class="" for="id_zoeken">Zoeken</label>
-            <div>
-                <input type="text" id="id_zoeken" name="zoeken" class="form-control " data-action="row-search#search">
-            </div>
+<turbo-frame id="beheer" data-turbo-action="advance">
+    <div class="page__beheer" data-controller="row-search">
+        <div>
+            <a href="{% url 'beheer' %}" class="link--back">
+                <svg width="25" height="16" viewBox="0 0 25 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.15173 1.73256L7.73753 0.318359L1.44704 6.60885L1.4142 6.576L0 7.9902L1.4115 9.4017L1.37867 9.43453L7.67186 15.7277L9.08606 14.3135L3.7726 9.00006H24.0098V7.00006H3.88423L9.15173 1.73256Z" fill="#404B4F"/>
+                </svg>
+                Beheer
+            </a>
         </div>
-    </form> -->
+        <div class="container__flex">
+            <h1>Rollen</h1>
+            <a class="btn btn-action" href="{% url 'context_aanmaken' %}">
+                <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#ffffff"></path>
+                </svg>
+                Nieuwe rol
+            </a>
+        </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Naam</th>
-                <th>Filters</th>
-                <th>Kolommen</th>
-                <th>Onderwerpen</th>
-                <th>Sjabloon</th>
-                <th>Aantal gebruikers</th>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for object in object_list %}
-            <tr data-row-search-target="row">
-                <td data-row-search-target="searchable">{{object.naam}}</td>
-                <td data-row-search-target="searchable">{% if object.filters.fields %}{% for filter in object.filters.fields %}{{filter}}{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}-{% endif %}</td>
-                <td data-row-search-target="searchable">{% if object.kolommen.sorted %}{% for kolom in object.kolommen.sorted %}{{kolom}}{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}-{% endif %}</td>
-                <td data-row-search-target="searchable">{% if object.standaard_filters %}{% for onderwerp in object.onderwerpen %}{{onderwerp}}{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}-{% endif %}</td>
-                <td data-row-search-target="searchable">{{object.template}}</td>
-                <td data-row-search-target="searchable">{{object.profielen_voor_context.all|length}}</td>
-                <td><a href="{% url 'context_aanpassen' object.pk %}">Aanpassen</a></td>
-                <td>{% if object.naam != "Standaard" and not object.profielen_voor_context.all %}<a href="{% url 'context_verwijderen' object.pk %}"  onclick="return confirm('Weet je zeker dat je deze rol wilt verwijderen?')">Verwijderen</a>{% endif %}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+        <!-- <form>
+            <div class="form-row">
+                <label class="" for="id_zoeken">Zoeken</label>
+                <div>
+                    <input type="text" id="id_zoeken" name="zoeken" class="form-control " data-action="row-search#search">
+                </div>
+            </div>
+        </form> -->
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Naam</th>
+                    <th>Filters</th>
+                    <th>Kolommen</th>
+                    <th>Onderwerpen</th>
+                    <th>Sjabloon</th>
+                    <th>Aantal gebruikers</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in object_list %}
+                <tr data-row-search-target="row">
+                    <td data-row-search-target="searchable">{{object.naam}}</td>
+                    <td data-row-search-target="searchable">{% if object.filters.fields %}{% for filter in object.filters.fields %}{{filter}}{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}-{% endif %}</td>
+                    <td data-row-search-target="searchable">{% if object.kolommen.sorted %}{% for kolom in object.kolommen.sorted %}{{kolom}}{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}-{% endif %}</td>
+                    <td data-row-search-target="searchable">{% if object.standaard_filters %}{% for onderwerp in object.onderwerpen %}{{onderwerp}}{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}-{% endif %}</td>
+                    <td data-row-search-target="searchable">{{object.template}}</td>
+                    <td data-row-search-target="searchable">{{object.profielen_voor_context.all|length}}</td>
+                    <td><a href="{% url 'context_aanpassen' object.pk %}">Aanpassen</a></td>
+                    <td>{% if object.naam != "Standaard" and not object.profielen_voor_context.all %}<a href="{% url 'context_verwijderen' object.pk %}"  onclick="return confirm('Weet je zeker dat je deze rol wilt verwijderen?')">Verwijderen</a>{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</turbo-frame>
 {% endblock %}
