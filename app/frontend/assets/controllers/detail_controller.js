@@ -31,7 +31,6 @@ export default class extends Controller {
 
     const turboActionModal = document.querySelector('#melding_actie_form')
     turboActionModal.setAttribute('src', event.params.action)
-
     modal.classList.add('show')
     modalBackdrop.classList.add('show')
     document.body.classList.add('show-modal')
@@ -48,7 +47,9 @@ export default class extends Controller {
     if (lastFocussedItem) {
       lastFocussedItem.focus()
     }
-    this.turboActionModalTarget.innerHTML = ''
+    if (this.hasTurboActionModalTarget) {
+      this.turboActionModalTarget.innerHTML = ''
+    }
   }
 
   onScrollSlider() {
