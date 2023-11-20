@@ -282,7 +282,7 @@
 
         <div class="modal" data-detail-target="modalAfhandelen">
             <div class="modal-backdrop modal-exit" id="modal-backdrop" data-action="click->detail#closeModal"></div>
-            <turbo-frame id="melding_actie_form" class="turboframe-container" data-detail-target="turboActionModal" src="{% url 'melding_afhandelen' melding.uuid %}" loading="lazy">
+            <turbo-frame id="melding_actie_form" class="turboframe-container" data-detail-target="turboActionModal">
 
             </turbo-frame>
         </div>
