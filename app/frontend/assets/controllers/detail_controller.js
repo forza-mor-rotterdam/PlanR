@@ -26,18 +26,13 @@ export default class extends Controller {
     lastFocussedItem = event.target.closest('button')
     const modal = this.modalAfhandelenTarget
     const modalBackdrop = document.querySelector('.modal-backdrop')
-
-    // NOT WORKING ?? this.turboActionModalTarget.setAttribute("src", event)
-
-    const turboActionModal = document.querySelector('#melding_actie_form')
-    turboActionModal.setAttribute('src', event.params.action)
-
+    this.turboActionModalTarget.setAttribute('src', event.params.action)
     modal.classList.add('show')
     modalBackdrop.classList.add('show')
     document.body.classList.add('show-modal')
     setTimeout(function () {
       modal.querySelectorAll('.btn-close')[0].focus()
-    }, 200)
+    }, 1000)
   }
 
   closeModal() {
@@ -45,10 +40,13 @@ export default class extends Controller {
     this.modalAfhandelenTarget.classList.remove('show')
     modalBackdrop.classList.remove('show')
     document.body.classList.remove('show-modal')
+    // console.log()
     if (lastFocussedItem) {
       lastFocussedItem.focus()
     }
-    this.turboActionModalTarget.innerHTML = ''
+    if (this.hasTurboActionModalTarget) {
+      this.turboActionModalTarget.innerHTML = ''
+    }
   }
 
   onScrollSlider() {
