@@ -5,6 +5,7 @@
 {% load vertaal from vertaal_tags %}
 {% load context_template from context_tags %}
 {% load render_onderwerp from melding_tags %}
+{% load json_encode from json_tags %}
 
 {% block body %}
 {% context_template "melding_detail_locaties.html" as locatie_template %}
@@ -12,8 +13,8 @@
 {% context_template "melding_detail_melder.html" as melder_template %}
 <turbo-frame id="overview">
     <div
-        data-detail-controller="detail"
-        data-detail-taak-object-value="{{ melding }}"
+        data-controller="detail"
+        data-detail-incident-object-value="{{ melding|json_encode }}"
         data-detail-incident-y-value="{{ melding.locaties_voor_melding.0.geometrie.coordinates.0 }}"
         data-detail-incident-x-value="{{ melding.locaties_voor_melding.0.geometrie.coordinates.1 }}"
     >
@@ -35,9 +36,6 @@
                         {% include titel_template %}
                     </div>
                 </div>
-                ===== {{ melding.locaties_voor_melding }} ======
-                ===== {{ melding.locaties_voor_melding.0.geometrie.coordinates.0 }}  {{ melding.locaties_voor_melding.0.geometrie.coordinates.1 }}=====
-
 
                 <div class="grid-item bottom-left">
                     <div class="">
@@ -243,9 +241,6 @@
                                 </div>
                             </div>
                         </div>
-
-
-
 
                         <div class="border-green print-only"></div>
                     </div>

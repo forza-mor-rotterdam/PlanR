@@ -31,9 +31,9 @@ export default class extends Controller {
 
     const mapDiv = document.getElementById('incidentMap')
     console.log({ mapDiv })
-    console.log(this.incidentX)
-    console.log(this.incidentY)
-    console.log(this.incidentObject)
+    console.log(this.incidentXValue)
+    console.log(this.incidentYValue)
+    console.log(this.incidentObjectValue)
     if (mapDiv) {
       markerIcon = L.Icon.extend({
         options: {
