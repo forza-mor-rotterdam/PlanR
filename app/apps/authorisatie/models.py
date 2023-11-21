@@ -11,6 +11,11 @@ class MeldingAfhandelenPermissie(BasisPermissie):
     codenaam = "melding_afhandelen"
 
 
+class MeldingAnnulerenPermissie(BasisPermissie):
+    naam = "Melding annuleren"
+    codenaam = "melding_annuleren"
+
+
 class MeldingAanmakenPermissie(BasisPermissie):
     naam = "Melding aanmaken"
     codenaam = "melding_aanmaken"
@@ -126,8 +131,37 @@ class RechtengroepVerwijderenPermissie(BasisPermissie):
     codenaam = "rechtengroep_verwijderen"
 
 
+# Rechten voor Standaard Externe Omschrijvingen
+
+
+class StandaardExterneOmschrijvingLijstBekijkenPermissie(BasisPermissie):
+    naam = "Standaard externe omschrijving lijst bekijken"
+    codenaam = "standaard_externe_omschrijving_lijst"
+
+
+class StandaardExterneOmschrijvingAanmakenPermissie(BasisPermissie):
+    naam = "Standaard externe omschrijving aanmaken"
+    codenaam = "standaard_externe_omschrijving_aanmaken"
+
+
+class StandaardExterneOmschrijvingBekijkenPermissie(BasisPermissie):
+    naam = "Standaard externe omschrijving bekijken"
+    codenaam = "standaard_externe_omschrijving_bekijken"
+
+
+class StandaardExterneOmschrijvingAanpassenPermissie(BasisPermissie):
+    naam = "Standaard externe omschrijving aanpassen"
+    codenaam = "standaard_externe_omschrijving_aanpassen"
+
+
+class StandaardExterneOmschrijvingVerwijderenPermissie(BasisPermissie):
+    naam = "Standaard externe omschrijving verwijderen"
+    codenaam = "standaard_externe_omschrijving_verwijderen"
+
+
 gebruikersgroep_permissies = (
     MeldingAfhandelenPermissie,
+    MeldingAnnulerenPermissie,
     MeldingAanmakenPermissie,
     MeldingBekijkenPermissie,
     MeldingenLijstBekijkenPermissie,
@@ -151,6 +185,11 @@ gebruikersgroep_permissies = (
     RechtengroepBekijkenPermissie,
     RechtengroepAanpassenPermissie,
     RechtengroepVerwijderenPermissie,
+    StandaardExterneOmschrijvingLijstBekijkenPermissie,
+    StandaardExterneOmschrijvingAanmakenPermissie,
+    StandaardExterneOmschrijvingBekijkenPermissie,
+    StandaardExterneOmschrijvingAanpassenPermissie,
+    StandaardExterneOmschrijvingVerwijderenPermissie,
 )
 
 gebruikersgroep_permissie_opties = [

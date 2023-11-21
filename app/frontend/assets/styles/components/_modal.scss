@@ -94,6 +94,12 @@ body.show-modal--first-filter {
                 margin-top: 0.5rem;
             }
         }
+
+        .btn-close {
+            &:focus {
+                outline-width: thin !important;
+            }
+        }
     }
 
     &-body {

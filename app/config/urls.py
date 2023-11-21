@@ -17,12 +17,17 @@ from apps.context.views import (
     ContextVerwijderenView,
 )
 from apps.main.views import (
+    StandaardExterneOmschrijvingAanmakenView,
+    StandaardExterneOmschrijvingAanpassenView,
+    StandaardExterneOmschrijvingLijstView,
+    StandaardExterneOmschrijvingVerwijderenView,
     account,
     http_404,
     http_500,
     informatie_toevoegen,
     melding_aanmaken,
     melding_afhandelen,
+    melding_annuleren,
     melding_detail,
     melding_lijst,
     melding_pdf_download,
@@ -60,6 +65,11 @@ urlpatterns = [
         name="melding_afhandelen",
     ),
     path(
+        "part/melding/<uuid:id>/annuleren/",
+        melding_annuleren,
+        name="melding_annuleren",
+    ),
+    path(
         "part/melding/<uuid:id>/taakstarten/",
         taak_starten,
         name="taak_starten",
@@ -91,7 +101,11 @@ urlpatterns = [
         name="melding_verzonden",
     ),
     path("beheer/", beheer, name="beheer"),
-    path("beheer/gebruiker/", GebruikerLijstView.as_view(), name="gebruiker_lijst"),
+    path(
+        "beheer/gebruiker/",
+        GebruikerLijstView.as_view(),
+        name="gebruiker_lijst",
+    ),
     path(
         "beheer/gebruiker/aanmaken/",
         GebruikerAanmakenView.as_view(),
@@ -138,6 +152,28 @@ urlpatterns = [
         RechtengroepVerwijderenView.as_view(),
         name="rechtengroep_verwijderen",
     ),
+    # Standaard externe omschrijving
+    path(
+        "beheer/standaardtekst/",
+        StandaardExterneOmschrijvingLijstView.as_view(),
+        name="standaard_externe_omschrijving_lijst",
+    ),
+    path(
+        "beheer/standaardtekst/aanmaken/",
+        StandaardExterneOmschrijvingAanmakenView.as_view(),
+        name="standaard_externe_omschrijving_aanmaken",
+    ),
+    path(
+        "beheer/standaardtekst/<int:pk>/aanpassen/",
+        StandaardExterneOmschrijvingAanpassenView.as_view(),
+        name="standaard_externe_omschrijving_aanpassen",
+    ),
+    path(
+        "beheer/standaardtekst/<int:pk>/verwijderen/",
+        StandaardExterneOmschrijvingVerwijderenView.as_view(),
+        name="standaard_externe_omschrijving_verwijderen",
+    ),
+    ###
     re_path(r"media/", meldingen_bestand, name="meldingen_bestand"),
 ]
 

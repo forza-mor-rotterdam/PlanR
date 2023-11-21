@@ -503,6 +503,7 @@ section {
 
 .invalid-text {
     color: $invalid-color !important;
+    margin: 0.25rem 0 !important;
 }
 
 .border-green {
@@ -515,4 +516,11 @@ section {
         height: 48px;
         width: 100%;
     }
+}
+
+.counter {
+    display: block;
+    margin-top: -1.5em;
+    margin-left: 1em;
+    font-size: 0.75rem;
 }

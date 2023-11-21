@@ -17,6 +17,10 @@
         .btn {
             max-width: 200px;
             height: 48px;
+
+            &.btn-240 {
+                max-width: 240px;
+            }
         }
     }
 
@@ -44,7 +48,6 @@
     }
 
     .form-row {
-        input + p,
         select + p,
         .list--form-check-input + p {
             margin-top: -16px;

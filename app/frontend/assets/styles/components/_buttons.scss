@@ -84,7 +84,9 @@ button[class="icon"] {
     margin-left: -6px; // Result in 8px distance between icon and label
 }
 
-button {
+button,
+input[type="text"],
+textarea {
     &:focus {
         @include focus-outline();
     }

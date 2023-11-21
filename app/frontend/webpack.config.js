@@ -107,7 +107,7 @@ module.exports = (env, argv) => {
   }
 
   config.plugins = [
-    new MiniCssExtractPlugin(),
+    new MiniCssExtractPlugin({ filename: '[name]-[hash].css' }),
     new StylelintPlugin({
       context: path.resolve(__dirname, 'scss'),
       customSyntax: 'postcss-scss',

@@ -5,13 +5,16 @@ import math
 
 import requests
 import weasyprint
+from apps.authorisatie.models import (
+    StandaardExterneOmschrijvingAanmakenPermissie,
+    StandaardExterneOmschrijvingAanpassenPermissie,
+    StandaardExterneOmschrijvingLijstBekijkenPermissie,
+    StandaardExterneOmschrijvingVerwijderenPermissie,
+)
 from apps.context.constanten import FILTER_KEYS, FILTER_NAMEN, KOLOMMEN, KOLOMMEN_KEYS
 from apps.context.utils import get_gebruiker_context
 from apps.main.constanten import MSB_WIJKEN
 from apps.main.forms import (
-    BEHANDEL_OPTIES,
-    TAAK_BEHANDEL_RESOLUTIE,
-    TAAK_BEHANDEL_STATUS,
     TAAK_RESOLUTIE_GEANNULEERD,
     TAAK_STATUS_VOLTOOID,
     FilterForm,
@@ -20,21 +23,33 @@ from apps.main.forms import (
     MeldingAfhandelenForm,
     MSBLoginForm,
     MSBMeldingZoekenForm,
+    StandaardExterneOmschrijvingAanmakenForm,
+    StandaardExterneOmschrijvingAanpassenForm,
+    StandaardExterneOmschrijvingSearchForm,
     TaakAfrondenForm,
     TaakAnnulerenForm,
     TaakStartenForm,
 )
-from apps.main.utils import get_open_taakopdrachten, melding_naar_tijdlijn, to_base64
+from apps.main.models import StandaardExterneOmschrijving
+from apps.main.utils import (
+    get_open_taakopdrachten,
+    melding_naar_tijdlijn,
+    to_base64,
+    update_qd_met_standaard_meldingen_filter_qd,
+)
 from apps.services.meldingen import MeldingenService, get_taaktypes
 from config.context_processors import general_settings
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.files.storage import default_storage
+from django.db.models import Q
 from django.http import HttpResponse, QueryDict, StreamingHttpResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView, View
 from utils.rd_convert import rd_to_wgs
 
 logger = logging.getLogger(__name__)
@@ -83,20 +98,16 @@ def melding_lijst(request):
     query_dict = QueryDict("", mutable=True)
     query_dict.update(standaard_waardes)
     query_dict.update(request.GET)
+    for k in query_dict.keys():
+        query_dict.setlist(k, list(dict.fromkeys(query_dict.getlist(k))))
 
     request.session["overview_querystring"] = request.GET.urlencode()
 
-    meldingen_qd = QueryDict("", mutable=True)
     actieve_filters = FILTER_NAMEN
-    meldingen_qd.update(query_dict)
-    standaard_filters = []
     kolommen = KOLOMMEN
     if gebruiker_context:
         actieve_filters = gebruiker_context.filters.get("fields", [])
-        standaard_filters = gebruiker_context.standaard_filters
-        for k, v in standaard_filters.items():
-            for vv in v:
-                meldingen_qd.update({k: vv})
+
         kolommen = [
             KOLOMMEN_KEYS.get(k)
             for k in gebruiker_context.kolommen.get("sorted", [])
@@ -104,7 +115,12 @@ def melding_lijst(request):
         ]
     actieve_filters = [f for f in actieve_filters if f in FILTER_NAMEN]
 
-    data = MeldingenService().get_melding_lijst(query_string=meldingen_qd.urlencode())
+    meldingen_filter_query_dict = update_qd_met_standaard_meldingen_filter_qd(
+        query_dict, gebruiker_context
+    )
+    data = MeldingenService().get_melding_lijst(
+        query_string=meldingen_filter_query_dict.urlencode()
+    )
 
     pagina_aantal = math.ceil(data.get("count", 0) / int(query_dict.get("limit")))
     offset_options = [
@@ -114,8 +130,10 @@ def melding_lijst(request):
     query_dict["offset"] = (
         query_dict.get("offset")
         if str(query_dict.get("offset")) in [str(oo[0]) for oo in offset_options]
-        else 0
+        else "0"
     )
+    if not offset_options:
+        del query_dict["offset"]
     filter_velden = [
         {
             "naam": f,
@@ -131,23 +149,21 @@ def melding_lijst(request):
         query_dict,
         filter_velden=filter_velden,
         offset_options=offset_options,
+        gebruiker_context=gebruiker_context,
     )
 
     filter_form_data = copy.deepcopy(standaard_waardes)
     if form.is_valid():
         filter_form_data = copy.deepcopy(form.cleaned_data)
     limit = int(filter_form_data.get("limit", "10"))
-    offset = int(filter_form_data.get("offset", "0"))
-    ordering = filter_form_data.get("ordering")
+    offset = int(
+        filter_form_data.get("offset", "0") if filter_form_data.get("offset") else "0"
+    )
+    filter_form_data.get("ordering")
 
     meldingen = data.get("results", [])
     totaal = data.get("count", 0)
-    pageNumTotal = int(
-        (totaal - (totaal % limit)) / limit + (1 if totaal % limit > 0 else 0)
-    )
-    pages = []
-    for pageNum in range(pageNumTotal):
-        pages.append(f"limit={limit}&offset={pageNum * limit}&ordering={ordering}")
+
     currentPage = offset / limit + 1
     volgende = data.get("next")
     vorige = data.get("previous")
@@ -294,7 +310,61 @@ def melding_afhandelen(request, id):
             "form": form,
             "melding": melding,
             "afhandel_reden_opties": afhandel_reden_opties,
-            "standaard_afhandel_teksten": {bo[0]: bo[2] for bo in BEHANDEL_OPTIES},
+            "bijlagen": bijlagen_flat,
+            "actieve_taken": actieve_taken,
+            "aantal_actieve_taken": len(actieve_taken),
+        },
+    )
+
+
+@permission_required("authorisatie.melding_annuleren")
+def melding_annuleren(request, id):
+    melding = MeldingenService().get_melding(id)
+    afhandel_reden_opties = [(s, s) for s in melding.get("volgende_statussen", ())]
+    melding_bijlagen = [
+        [
+            b
+            for b in (
+                meldinggebeurtenis.get("taakgebeurtenis", {}).get("bijlagen", [])
+                if meldinggebeurtenis.get("taakgebeurtenis")
+                else []
+            )
+        ]
+        for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
+    ]
+
+    bijlagen_flat = [b for bl in melding_bijlagen for b in bl]
+    form = MeldingAfhandelenForm()
+    if request.POST:
+        form = MeldingAfhandelenForm(request.POST)
+        if form.is_valid():
+            bijlagen = request.FILES.getlist("bijlagen", [])
+            bijlagen_base64 = []
+            for f in bijlagen:
+                file_name = default_storage.save(f.name, f)
+                bijlagen_base64.append({"bestand": to_base64(file_name)})
+
+            MeldingenService().melding_annuleren(
+                id,
+                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
+                bijlagen=bijlagen_base64,
+                gebruiker=request.user.email,
+            )
+            return redirect("melding_detail", id=id)
+
+    actieve_taken = [
+        to
+        for to in melding.get("taakopdrachten_voor_melding", [])
+        if to.get("status", {}).get("naam") != "voltooid"
+    ]
+
+    return render(
+        request,
+        "melding/part_melding_annuleren.html",
+        {
+            "form": form,
+            "melding": melding,
+            "afhandel_reden_opties": afhandel_reden_opties,
             "bijlagen": bijlagen_flat,
             "actieve_taken": actieve_taken,
             "aantal_actieve_taken": len(actieve_taken),
@@ -585,7 +655,8 @@ def msb_melding_zoeken(request):
                 },
             )
             logger.info(
-                "msb melding zoeken response.status_code=%s", response.status_code
+                "msb melding zoeken response.status_code=%s",
+                response.status_code,
             )
             if response.status_code == 200:
                 msb_data = response.json().get("result", {"test": "test"})
@@ -719,3 +790,58 @@ def msb_importeer_melding(request):
             "msb_id": msb_id,
         },
     )
+
+
+# Standaard externe omschrijving views
+class StandaardExterneOmschrijvingView(View):
+    model = StandaardExterneOmschrijving
+    success_url = reverse_lazy("standaard_externe_omschrijving_lijst")
+
+
+class StandaardExterneOmschrijvingLijstView(
+    PermissionRequiredMixin, StandaardExterneOmschrijvingView, ListView
+):
+    context_object_name = "standaardteksten"
+    permission_required = StandaardExterneOmschrijvingLijstBekijkenPermissie.codenaam
+    form_class = StandaardExterneOmschrijvingSearchForm
+    template_name = (
+        "standaard_externe_omschrijving/standaard_externe_omschrijving_lijst.html"
+    )
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.GET.get("search", "")
+        if search:
+            queryset = queryset.filter(
+                Q(titel__icontains=search) | Q(tekst__icontains=search)
+            )
+        return queryset
+
+
+class StandaardExterneOmschrijvingAanmakenView(
+    PermissionRequiredMixin, StandaardExterneOmschrijvingView, CreateView
+):
+    form_class = StandaardExterneOmschrijvingAanmakenForm
+    template_name = (
+        "standaard_externe_omschrijving/standaard_externe_omschrijving_aanmaken.html"
+    )
+    permission_required = StandaardExterneOmschrijvingAanmakenPermissie.codenaam
+
+
+class StandaardExterneOmschrijvingAanpassenView(
+    PermissionRequiredMixin, StandaardExterneOmschrijvingView, UpdateView
+):
+    form_class = StandaardExterneOmschrijvingAanpassenForm
+    template_name = (
+        "standaard_externe_omschrijving/standaard_externe_omschrijving_aanpassen.html"
+    )
+    permission_required = StandaardExterneOmschrijvingAanpassenPermissie.codenaam
+
+
+class StandaardExterneOmschrijvingVerwijderenView(
+    PermissionRequiredMixin, StandaardExterneOmschrijvingView, DeleteView
+):
+    permission_required = StandaardExterneOmschrijvingVerwijderenPermissie.codenaam
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)

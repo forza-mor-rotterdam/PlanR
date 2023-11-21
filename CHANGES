@@ -1,0 +1,33 @@
+# Changelog
+
+2023.10.30
+=========
+*Updated*
+- Linting and formatting errors fixed
+- Name change from "Regie" to "PlanR"
+- Removed print button
+
+*Added*
+- 2000 character limit added to omschrijving_extern field.
+- Test branch and deployment added.
+- Added ability to add "Spoed" onderwerp/tag to melding
+- Added beheer interface
+
+
+2023.10.16
+=========
+*Updated*
+- Updated CI-CD pipelines
+- Fixed tests
+- Updated Readme
+
+*Added*
+- Added Makefile
+- Added Prettier and eslint for the frontend.
+- Added link to onderwerpen service.
+
+
+2023.9.1
+=========
+*Added*
+- Initial release.

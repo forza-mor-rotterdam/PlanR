@@ -1,12 +1,18 @@
 import base64
 import logging
 
+from apps.context.constanten import KOLOMMEN, KOLOMMEN_KEYS
+from apps.main.models import StandaardExterneOmschrijving
 from django import forms
 from django.core.files.storage import default_storage
 from django.utils import timezone
 from utils.rd_convert import rd_to_wgs
 
 logger = logging.getLogger(__name__)
+
+
+def is_valid_callable(key):
+    return key is not None and callable(key)
 
 
 class CheckboxSelectMultiple(forms.CheckboxSelectMultiple):
@@ -23,23 +29,6 @@ class CheckboxSelectMultiple(forms.CheckboxSelectMultiple):
 class MultipleChoiceField(forms.MultipleChoiceField):
     ...
 
-
-BEHANDEL_OPTIES = (
-    (
-        "ja",
-        "Ja",
-        "We zijn met uw melding aan de slag gegaan en hebben het probleem opgelost.",
-        "afgehandeld",
-        "opgelost",
-    ),
-    (
-        "nee",
-        "Nee",
-        "We zijn met uw melding aan de slag gegaan maar deze kan niet direct worden opgelost. Want...",
-        "afgehandeld",
-        None,
-    ),
-)
 
 TAAK_STATUS_VOLTOOID = "voltooid"
 TAAK_RESOLUTIE_OPGELOST = "opgelost"
@@ -63,16 +52,30 @@ TAAK_BEHANDEL_OPTIES = (
     ),
 )
 
-TAAK_BEHANDEL_STATUS = {bo[0]: bo[3] for bo in TAAK_BEHANDEL_OPTIES}
-TAAK_BEHANDEL_RESOLUTIE = {bo[0]: bo[4] for bo in TAAK_BEHANDEL_OPTIES}
-
 
 class CheckboxSelectMultipleThumb(forms.CheckboxSelectMultiple):
     ...
 
 
+class KolommenRadioSelect(forms.RadioSelect):
+    template_name = "widgets/kolommen_multiple_input.html"
+
+
 class FilterForm(forms.Form):
     filter_velden = []
+
+    q = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "list--form-text-input",
+                "hideLabel": True,
+                "typeOfInput": "search",
+                "placeHolder": "MeldR nummer",
+            }
+        ),
+        label="Zoeken",
+        required=False,
+    )
     ordering = forms.CharField(
         widget=forms.HiddenInput(),
         initial="aangemaakt_op",
@@ -86,6 +89,7 @@ class FilterForm(forms.Form):
                 "hideLabel": True,
             }
         ),
+        initial="0",
         required=False,
     )
 
@@ -95,6 +99,12 @@ class FilterForm(forms.Form):
         required=False,
     )
 
+    def geselecteerde_filters(self):
+        return [
+            {f.name: [label for value, label in f.field.choices if value in f.value()]}
+            for f in self.filters()
+        ]
+
     def filters(self):
         for field_name in self.fields:
             if field_name in self.filter_velden:
@@ -102,10 +112,59 @@ class FilterForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         velden = kwargs.pop("filter_velden", None)
+        gebruiker_context = kwargs.pop("gebruiker_context", None)
         self.filter_velden = [v.get("naam") for v in velden]
+
+        kolommen = KOLOMMEN
+        if gebruiker_context:
+            kolommen = [
+                k
+                for k in gebruiker_context.kolommen.get("sorted", [])
+                if is_valid_callable(KOLOMMEN_KEYS.get(k))
+            ]
+
+        self.kolommen = [
+            {
+                "instance": KOLOMMEN_KEYS.get(k)({})
+                if is_valid_callable(KOLOMMEN_KEYS.get(k))
+                else None,
+                "opties": [
+                    KOLOMMEN_KEYS.get(k)({"ordering": "up"})
+                    if is_valid_callable(KOLOMMEN_KEYS.get(k))
+                    else None,
+                    KOLOMMEN_KEYS.get(k)({"ordering": "down"})
+                    if is_valid_callable(KOLOMMEN_KEYS.get(k))
+                    else None,
+                ],
+            }
+            for k in kolommen
+        ]
+
         offset_options = kwargs.pop("offset_options", None)
         super().__init__(*args, **kwargs)
-        self.fields["offset"].choices = offset_options
+
+        choices = [
+            (
+                k.get("instance"),
+                [
+                    (o.ordering(), o) if is_valid_callable(o) else (None, None)
+                    for o in k.get("opties", [])
+                ],
+            )
+            for k in self.kolommen
+        ]
+
+        self.fields["ordering"] = forms.ChoiceField(
+            label="Ordering",
+            widget=KolommenRadioSelect(attrs={}),
+            choices=choices,
+            required=False,
+        )
+
+        self.fields["offset"].choices = (
+            offset_options if offset_options else [("0", "0")]
+        )
+
         for v in velden:
             self.fields[v.get("naam")] = MultipleChoiceField(
                 label=f"{v.get('naam')} ({v.get('aantal_actief')}/{len(v.get('opties', []))})",
@@ -133,7 +192,11 @@ class InformatieToevoegenForm(forms.Form):
     opmerking = forms.CharField(
         label="Voeg een opmerking toe",
         widget=forms.Textarea(
-            attrs={"class": "form-control", "data-testid": "information", "rows": "4"}
+            attrs={
+                "class": "form-control",
+                "data-testid": "information",
+                "rows": "4",
+            }
         ),
         required=False,
     )
@@ -167,7 +230,11 @@ class TaakStartenForm(forms.Form):
         label="Interne opmerking",
         help_text="Deze tekst wordt niet naar de melder verstuurd.",
         widget=forms.Textarea(
-            attrs={"class": "form-control", "data-testid": "information", "rows": "4"}
+            attrs={
+                "class": "form-control",
+                "data-testid": "information",
+                "rows": "4",
+            }
         ),
         required=False,
     )
@@ -257,6 +324,20 @@ class TaakAnnulerenForm(forms.Form):
 
 
 class MeldingAfhandelenForm(forms.Form):
+    standaard_omschrijvingen = forms.ModelChoiceField(
+        queryset=StandaardExterneOmschrijving.objects.all(),
+        label="Selecteer een afhandelreden",
+        to_field_name="tekst",
+        required=False,
+        widget=forms.Select(
+            attrs={
+                "class": "form-control",
+                "data-testid": "testid",
+                "data-meldingbehandelformulier-target": "standardTextChoice",
+                "data-action": "meldingbehandelformulier#onChangeStandardTextChoice",
+            }
+        ),
+    )
     omschrijving_extern = forms.CharField(
         label="Bericht voor de melder",
         help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",
@@ -549,4 +630,59 @@ class MSBMeldingZoekenForm(forms.Form):
         ),
         label="MSB nummer",
         required=True,
+    )
+
+
+# Standaard externe omschrijving forms
+
+
+class StandaardExterneOmschrijvingAanpassenForm(forms.ModelForm):
+    titel = forms.CharField(
+        label="Afhandelreden",
+        help_text="Deze tekst wordt gebruikt om de juiste standaard externe omschrijving te selecteren.",
+        widget=forms.TextInput(
+            attrs={
+                "data-externeomschrijvingformulier-target": "externeOmschrijvingTitel",
+                "name": "titel",
+            }
+        ),
+    )
+    tekst = forms.CharField(
+        widget=forms.Textarea(
+            attrs={
+                "rows": 10,
+                "cols": 38,
+                "style": "resize: none;",
+                "data-externeomschrijvingformulier-target": "externeOmschrijvingTekst",
+                "data-action": "externeomschrijvingformulier#onChangeExterneOmschrijvingTekst",
+                "name": "tekst",
+            }
+        ),
+        label="Bericht naar melder",
+        max_length=2000,
+    )
+
+    class Meta:
+        model = StandaardExterneOmschrijving
+        fields = ["titel", "tekst"]
+
+
+class StandaardExterneOmschrijvingAanmakenForm(
+    StandaardExterneOmschrijvingAanpassenForm
+):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # self.fields[
+        #     "titel"
+        # ].help_text = "Geef een titel op voor de standaard tekst."
+        # self.fields[
+        #     "tekst"
+        # ].help_text = "Geef een standaard tekst op van maximaal 2000 tekens. Deze tekst kan bij het afhandelen van een melding aangepast worden."
+
+
+class StandaardExterneOmschrijvingSearchForm(forms.Form):
+    search = forms.CharField(
+        label="Zoeken",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "Zoek standaard tekst"}),
     )

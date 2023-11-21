@@ -10,37 +10,33 @@
     <div data-controller="overview">
         <form method="get" action="{% url 'melding_lijst' %}" id="filterForm" data-controller="filter" data-turbo-action="advance">
             <div class="filter-header">
-                <h1 class="page-title">Meldingen</h1>
-                <span class="help-text">{{ startNum }} - {{ endNum }} van {{ totaal }} resultaten</span>
+                <div class="container__flex">
+                    <h1 class="page-title">Meldingen</h1>
+                    <span class="help-text">{{ startNum }} - {{ endNum }} van {{ totaal }} resultaten</span>
+                </div>
+                <div class="container__search">
+                    {{ form.q|render_rotterdam_formulier }}
+                </div>
             </div>
             <div class="container__tools">
                 <div class="container__filter" data-filter-target="filterOverview">
-                    {{ form.ordering|render_rotterdam_formulier }}
                     {{ form.limit|render_rotterdam_formulier }}
                     {% for veld in form.filters %}
                     <div class="container__multiselect">
-                        <label class="visually-hidden">{{ veld.naam }}</label>
-                        <button class="toggle js-toggle" type="button">{{ veld.label|capfirst }}</button>
+                        <label class="visually-hidden">{{ veld.label }}</label>
+                        <button class="toggle js-toggle{% if veld.data|length > 0%} active {% endif %}" type="button">{{ veld.label|capfirst }}</button>
                         <div class="wrapper">
                             {{ veld|render_rotterdam_formulier }}
                         </div>
                     </div>
                     {% endfor %}
+
                 </div>
-                <a href="{{ melding_aanmaken_url }}" class="btn btn-action">
-                    <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#ffffff"/>
-                    </svg>
-                    Nieuw
-                </a>
             </div>
             <div class="container__table">
                 <table class="table--overview">
                     <thead>
-                        <tr>
-                            <th></th>
-                            {% render_th_tags kolommen %}
-                        </tr>
+                        {{ form.ordering }}
                     </thead>
                     <tbody id="id_maincontent">
                         {% for melding in meldingen %}
