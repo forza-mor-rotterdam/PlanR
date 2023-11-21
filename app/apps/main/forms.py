@@ -11,6 +11,10 @@ from utils.rd_convert import rd_to_wgs
 logger = logging.getLogger(__name__)
 
 
+def is_valid_callable(key):
+    return key is not None and callable(key)
+
+
 class CheckboxSelectMultiple(forms.CheckboxSelectMultiple):
     def create_option(self, *args, **kwargs):
         args = list(args)
@@ -116,15 +120,21 @@ class FilterForm(forms.Form):
             kolommen = [
                 k
                 for k in gebruiker_context.kolommen.get("sorted", [])
-                if KOLOMMEN_KEYS.get(k)
+                if is_valid_callable(KOLOMMEN_KEYS.get(k))
             ]
 
         self.kolommen = [
             {
-                "instance": KOLOMMEN_KEYS.get(k)({}),
+                "instance": KOLOMMEN_KEYS.get(k)({})
+                if is_valid_callable(KOLOMMEN_KEYS.get(k))
+                else None,
                 "opties": [
-                    KOLOMMEN_KEYS.get(k)({"ordering": "up"}),
-                    KOLOMMEN_KEYS.get(k)({"ordering": "down"}),
+                    KOLOMMEN_KEYS.get(k)({"ordering": "up"})
+                    if is_valid_callable(KOLOMMEN_KEYS.get(k))
+                    else None,
+                    KOLOMMEN_KEYS.get(k)({"ordering": "down"})
+                    if is_valid_callable(KOLOMMEN_KEYS.get(k))
+                    else None,
                 ],
             }
             for k in kolommen
@@ -133,28 +143,28 @@ class FilterForm(forms.Form):
         offset_options = kwargs.pop("offset_options", None)
         super().__init__(*args, **kwargs)
 
+        choices = [
+            (
+                k.get("instance"),
+                [
+                    (o.ordering(), o) if is_valid_callable(o) else (None, None)
+                    for o in k.get("opties", [])
+                ],
+            )
+            for k in self.kolommen
+        ]
+
         self.fields["ordering"] = forms.ChoiceField(
             label="Ordering",
             widget=KolommenRadioSelect(attrs={}),
-            choices=[
-                [
-                    k.get("instance"),
-                    [
-                        [
-                            o.ordering(),
-                            o,
-                        ]
-                        for o in k.get("opties", [])
-                    ],
-                ]
-                for k in self.kolommen
-            ],
+            choices=choices,
             required=False,
         )
 
         self.fields["offset"].choices = (
             offset_options if offset_options else [("0", "0")]
         )
+
         for v in velden:
             self.fields[v.get("naam")] = MultipleChoiceField(
                 label=f"{v.get('naam')} ({v.get('aantal_actief')}/{len(v.get('opties', []))})",
@@ -628,17 +638,24 @@ class MSBMeldingZoekenForm(forms.Form):
 
 class StandaardExterneOmschrijvingAanpassenForm(forms.ModelForm):
     titel = forms.CharField(
-        widget=forms.TextInput(),
         label="Afhandelreden",
         help_text="Deze tekst wordt gebruikt om de juiste standaard externe omschrijving te selecteren.",
+        widget=forms.TextInput(
+            attrs={
+                "data-externeomschrijvingformulier-target": "externeOmschrijvingTitel",
+                "name": "titel",
+            }
+        ),
     )
     tekst = forms.CharField(
         widget=forms.Textarea(
             attrs={
-                "class": "form-control",
                 "rows": 10,
                 "cols": 38,
                 "style": "resize: none;",
+                "data-externeomschrijvingformulier-target": "externeOmschrijvingTekst",
+                "data-action": "externeomschrijvingformulier#onChangeExterneOmschrijvingTekst",
+                "name": "tekst",
             }
         ),
         label="Bericht naar melder",

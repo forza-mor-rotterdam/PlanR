@@ -27,6 +27,7 @@ from apps.main.views import (
     informatie_toevoegen,
     melding_aanmaken,
     melding_afhandelen,
+    melding_annuleren,
     melding_detail,
     melding_lijst,
     melding_pdf_download,
@@ -62,6 +63,11 @@ urlpatterns = [
         "part/melding/<uuid:id>/afhandelen/",
         melding_afhandelen,
         name="melding_afhandelen",
+    ),
+    path(
+        "part/melding/<uuid:id>/annuleren/",
+        melding_annuleren,
+        name="melding_annuleren",
     ),
     path(
         "part/melding/<uuid:id>/taakstarten/",

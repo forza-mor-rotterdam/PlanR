@@ -3,7 +3,7 @@
 {% load json_encode from json_tags %}
 
 {% block body %}
-<turbo-frame id="standaard_externe_omschrijving_aanpassen">
+<turbo-frame id="beheer" data-turbo-action="advance">
     <div class="page__beheer">
         <div>
             <a href="{% url 'standaard_externe_omschrijving_lijst' %}" data-turbo-action="advance" class="link--back">
@@ -17,32 +17,27 @@
         <h1>Wijzig Standaard Externe Omschrijving</h1>
         <div class="grid-container">
             <div class="grid-item">
-                <form action="." method="post">
+                <form
+                    action="."
+                    method="post"
+                    class=""
+                    data-controller="externeomschrijvingformulier"
+                    enctype="multipart/form-data"
+                    id="externeOmschrijvingForm"
+                    novalidate
+                >
                     {% csrf_token %}
                     <fieldset>
-                        {{ form.titel|render_rotterdam_formulier }}
-                        {{ form.tekst|render_rotterdam_formulier }}
-                        <small id="character-counter" class="no-margin-bottom counter">Aantal karakters: <span id="count">2000</span>/2000</small>
-                        <script>
-                            document.addEventListener("turbo:load", () => {
-                                const textarea = document.querySelector('[name="tekst"]');
-                                const characterCount = document.querySelector("#count");
-                                const characterCounter = document.querySelector("#character-counter");
-                                const currentCount = textarea.value.length;
-                                characterCounter.style.color = currentCount >= 1800 ?  "#e3614d" : "#404b4f";
-                                characterCount.textContent = currentCount;
-
-                                textarea.addEventListener("input", () => {
-                                    const currentCount = textarea.value.length;
-                                    characterCount.textContent = currentCount;
-                                    characterCounter.style.color = currentCount >= 1800 ?  "#e3614d" : "#404b4f";
-                                });
-                            });
-                        </script>
+                        <div class="form-control__with-helptext js-validation">
+                            {{ form.titel|render_rotterdam_formulier }}
+                        </div>
+                        <div class="form-control__with-helptext js-validation">
+                            {{ form.tekst|render_rotterdam_formulier }}
+                        </div>
                     </fieldset>
                     <div class="form-row container__button">
                         <div class="form-row btn-row">
-                            <button type="reset" class="btn btn-tertiary" data-controller="detail" data-action="detail#closeModal">
+                            <button type="reset" class="btn btn-tertiary">
                                 <span>Annuleren</span>
                             </button>
                             <button type="submit" class="btn btn-action">

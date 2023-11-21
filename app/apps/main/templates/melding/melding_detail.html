@@ -33,7 +33,7 @@
                 <div class="grid-item bottom-left">
                     <div class="">
                         {% if melding.status %}
-                        <span class="badge badge--{% if melding.status.naam == 'afgehandeld'%}green{% elif melding.status.naam == 'controle' %}yellow{% elif melding.status.naam == 'in_behandeling' %}darkblue{% else %}lightblue{% endif %}">{{melding.status.naam|vertaal}}{% if melding.status.naam is 'afgehandeld'%} ({{melding.resolutie}}){% endif %}</span>
+                        <span class="badge badge--{% if melding.status.naam == 'afgehandeld'%}green{% elif melding.status.naam == 'controle' %}yellow{% elif melding.status.naam == 'in_behandeling' %}darkblue{% elif melding.status.naam == 'geannuleerd' %}red{% else %}lightblue{% endif %}">{{melding.status.naam|vertaal}}{% if melding.status.naam == 'afgehandeld' or melding.status.naam == 'geannuleerd' %} ({{melding.resolutie}}){% endif %}</span>
                         {% endif %}
                         {% if aantal_actieve_taken %}
                             <span class="badge badge--darkblue">{{aantal_actieve_taken}} {% if aantal_actieve_taken > 1 %}taken{%else%}taak{%endif%} actief</span>
@@ -230,7 +230,7 @@
 
                         <div class="container__actions">
                             <p>
-                                {% if taaktypes and melding.status.naam != 'afgehandeld' %}
+                                {% if taaktypes and melding.status.naam != 'afgehandeld' and melding.status.naam != 'geannuleerd' %}
                                 <button type="button" class="btn btn-{% if melding.status.naam == 'controle' %}tertiary{%else%}action{%endif%}" data-action="detail#openModal" data-detail-action-param="{% url 'taak_starten' melding.uuid %}"><span>Start taak</span></button>
                                 {% endif %}
                                 {% if not melding.afgesloten_op %}
@@ -241,20 +241,30 @@
                                 {% if open_taakopdrachten %}
                                 <li>
                                     <button type="button" class="btn btn-icon btn-textlink" data-action="detail#openModal" data-detail-action-param="{% url 'taak_afronden' melding.uuid %}">
-                                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M13.7021 14.7627C12.425 15.8035 10.7902 16.425 9 16.425C4.875 16.425 1.575 13.125 1.575 9C1.575 7.20983 2.19652 5.57503 3.23727 4.29792L13.7021 14.7627ZM14.7627 13.7021L4.29793 3.23726C5.57504 2.19652 7.20983 1.575 9 1.575C13.125 1.575 16.425 4.875 16.425 9C16.425 10.7902 15.8035 12.425 14.7627 13.7021ZM0 9C0 13.95 4.05 18 9 18C13.95 18 18 13.95 18 9C18 4.05 13.95 0 9 0C4.05 0 0 4.05 0 9Z" fill="#00811F"/>
+                                        <svg width="18" height="18" viewBox="0 0 55 43" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M49.6439 0.0427246L23.0468 33.2845L4.96397 11.2844L0.317383 15.0798L23.0965 42.8261L54.3288 3.79295L49.6439 0.0427246Z" fill="#00811F"/>
                                         </svg>Afhandelen taak</button>
                                 </li>
                                 <li>
                                     <button type="button" class="btn btn-icon btn-textlink" data-action="detail#openModal" data-detail-action-param="{% url 'taak_annuleren' melding.uuid %}">
                                         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M13.7021 14.7627C12.425 15.8035 10.7902 16.425 9 16.425C4.875 16.425 1.575 13.125 1.575 9C1.575 7.20983 2.19652 5.57503 3.23727 4.29792L13.7021 14.7627ZM14.7627 13.7021L4.29793 3.23726C5.57504 2.19652 7.20983 1.575 9 1.575C13.125 1.575 16.425 4.875 16.425 9C16.425 10.7902 15.8035 12.425 14.7627 13.7021ZM0 9C0 13.95 4.05 18 9 18C13.95 18 18 13.95 18 9C18 4.05 13.95 0 9 0C4.05 0 0 4.05 0 9Z" fill="#00811F"/>
+                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M13.7021 14.7627C12.425 15.8035 10.7902 16.425 9 16.425C4.875 16.425 1.575 13.125 1.575 9C1.575 7.20983 2.19652 5.57503 3.23727 4.29792L13.7021 14.7627ZM14.7627 13.7021L4.29793 3.23726C5.57504 2.19652 7.20983 1.575 9 1.575C13.125 1.575 16.425 4.875 16.425 9C16.425 10.7902 15.8035 12.425 14.7627 13.7021ZM0 9C0 13.95 4.05 18 9 18C13.95 18 18 13.95 18 9C18 4.05 13.95 0 9 0C4.05 0 0 4.05 0 9Z" fill="#00811F"/>
                                         </svg>Annuleer taak</button>
+                                </li>
+                                {% endif %}
+                                {% if not melding.afgesloten_op %}
+                                <li>
+                                    <button type="button" class="btn btn-icon btn-textlink" data-action="detail#openModal" data-detail-action-param="{% url 'melding_annuleren' melding.uuid %}">
+                                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M13.7021 14.7627C12.425 15.8035 10.7902 16.425 9 16.425C4.875 16.425 1.575 13.125 1.575 9C1.575 7.20983 2.19652 5.57503 3.23727 4.29792L13.7021 14.7627ZM14.7627 13.7021L4.29793 3.23726C5.57504 2.19652 7.20983 1.575 9 1.575C13.125 1.575 16.425 4.875 16.425 9C16.425 10.7902 15.8035 12.425 14.7627 13.7021ZM0 9C0 13.95 4.05 18 9 18C13.95 18 18 13.95 18 9C18 4.05 13.95 0 9 0C4.05 0 0 4.05 0 9Z" fill="#00811F"/>
+                                        </svg>
+                                        Melding annuleren
+                                    </button>
                                 </li>
                                 {% endif %}
                             </ul>
                         </div>
-                        {% if melding.status.naam != "afgehandeld" %}
+                        {% if melding.status.naam != "afgehandeld" and melding.status.naam != "geannuleerd" %}
                         <section class="section--seperated">
                             <turbo-frame id="informatie_toevoegen" src="{% url 'informatie_toevoegen' melding.uuid %}">
 
@@ -272,7 +282,7 @@
 
         <div class="modal" data-detail-target="modalAfhandelen">
             <div class="modal-backdrop modal-exit" id="modal-backdrop" data-action="click->detail#closeModal"></div>
-            <turbo-frame id="melding_actie_form" class="turboframe-container" data-detail-target="turboActionModal" src="{% url 'melding_afhandelen' melding.uuid %}" loading="lazy">
+            <turbo-frame id="melding_actie_form" class="turboframe-container" data-detail-target="turboActionModal">
 
             </turbo-frame>
         </div>
