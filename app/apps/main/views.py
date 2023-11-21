@@ -845,3 +845,47 @@ class StandaardExterneOmschrijvingVerwijderenView(
 
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
+
+
+# Locatie views
+
+
+@permission_required("authorisatie.locatie_aanpassen")
+def locatie_aanpassen(request, id):
+    melding = MeldingenService().get_melding(id)
+    afhandel_reden_opties = [(s, s) for s in melding.get("volgende_statussen", ())]
+
+    form = MeldingAfhandelenForm()
+    if request.POST:
+        form = MeldingAfhandelenForm(request.POST)
+        if form.is_valid():
+            bijlagen = request.FILES.getlist("bijlagen", [])
+            bijlagen_base64 = []
+            for f in bijlagen:
+                file_name = default_storage.save(f.name, f)
+                bijlagen_base64.append({"bestand": to_base64(file_name)})
+
+            MeldingenService().locatie_aanpassen(
+                id,
+                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
+                gebruiker=request.user.email,
+            )
+            return redirect("melding_detail", id=id)
+
+    actieve_taken = [
+        to
+        for to in melding.get("taakopdrachten_voor_melding", [])
+        if to.get("status", {}).get("naam") != "voltooid"
+    ]
+
+    return render(
+        request,
+        "melding/part_locatie_aanpassen.html",
+        {
+            "form": form,
+            "melding": melding,
+            "afhandel_reden_opties": afhandel_reden_opties,
+            "actieve_taken": actieve_taken,
+            "aantal_actieve_taken": len(actieve_taken),
+        },
+    )

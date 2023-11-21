@@ -182,6 +182,30 @@ class MeldingenService(BasisService):
             raw_response=False,
         )
 
+    def locatie_aanpassen(
+        self,
+        id,
+        locatie=[],
+        gebruiker=None,
+    ):
+        data = {
+            "gebruiker": gebruiker,
+        }
+        data.update(
+            {
+                "status": {
+                    "naam": "geannuleerd",
+                },
+                "resolutie": "opgelost",
+            }
+        )
+        return self.do_request(
+            f"{self._api_path}/melding/{id}/locatie-aanpassen/",
+            method="patch",
+            data=data,
+            raw_response=False,
+        )
+
     def taakapplicaties(self):
         return self.do_request(
             f"{self._api_path}/taakapplicatie/",
