@@ -6,7 +6,7 @@
 {% load rotterdam_formulier_html %}
 
 {% block body %}
-<turbo-frame id="overview" >
+<turbo-frame id="overview" data-turbo-action="advance">
     <div data-controller="overview">
         <form method="get" action="{% url 'melding_lijst' %}" id="filterForm" data-controller="filter" data-turbo-action="advance">
             <div class="filter-header">
@@ -41,7 +41,7 @@
                     <tbody id="id_maincontent">
                         {% for melding in meldingen %}
 
-                        <tr data-action="click->overview#navigate" data-overview-targeturl-param="{% url 'melding_detail' melding.uuid %}">
+                        <tr class="row-overview" data-action="click->overview#navigate" data-meldinguuid="{{ melding.uuid }}" data-overview-targeturl-param="{% url 'melding_detail' melding.uuid %}">
                             <td width="80">
                                 {% if melding.bijlagen.0.afbeelding_verkleind_relative_url %}
                                 <div class="container__thumbnail" style="background-image: url('{{melding.bijlagen.0.afbeelding_verkleind_relative_url}}')"></div>
