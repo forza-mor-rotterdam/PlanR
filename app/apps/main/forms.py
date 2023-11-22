@@ -116,40 +116,34 @@ class FilterForm(forms.Form):
         self.filter_velden = [v.get("naam") for v in velden]
 
         kolommen = KOLOMMEN
-        if gebruiker_context:
-            kolommen = [
+
+        kolommen = (
+            [
                 k
                 for k in gebruiker_context.kolommen.get("sorted", [])
                 if is_valid_callable(KOLOMMEN_KEYS.get(k))
             ]
+            if gebruiker_context
+            else []
+        )
 
         self.kolommen = [
             {
-                "instance": KOLOMMEN_KEYS.get(k)({})
-                if is_valid_callable(KOLOMMEN_KEYS.get(k))
-                else None,
+                "instance": KOLOMMEN_KEYS.get(k)({}),
                 "opties": [
-                    KOLOMMEN_KEYS.get(k)({"ordering": "up"})
-                    if is_valid_callable(KOLOMMEN_KEYS.get(k))
-                    else None,
-                    KOLOMMEN_KEYS.get(k)({"ordering": "down"})
-                    if is_valid_callable(KOLOMMEN_KEYS.get(k))
-                    else None,
+                    KOLOMMEN_KEYS.get(k)({"ordering": "up"}),
+                    KOLOMMEN_KEYS.get(k)({"ordering": "down"}),
                 ],
             }
             for k in kolommen
         ]
-
         offset_options = kwargs.pop("offset_options", None)
         super().__init__(*args, **kwargs)
 
         choices = [
             (
                 k.get("instance"),
-                [
-                    (o.ordering(), o) if is_valid_callable(o) else (None, None)
-                    for o in k.get("opties", [])
-                ],
+                [(o.ordering(), o) for o in k.get("opties", [])],
             )
             for k in self.kolommen
         ]
