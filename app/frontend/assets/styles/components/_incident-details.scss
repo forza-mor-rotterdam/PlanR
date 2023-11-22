@@ -130,3 +130,76 @@
         margin: 0 $container-padding-x 0 0;
     }
 }
+
+.container__meldingnavigatie {
+    position: absolute;
+    right: 0;
+    top: 13px;
+    height: 48px;
+
+    span {
+        display: none;
+        font-size: 16px;
+        color: $gray-tint08;
+        padding-right: 16px;
+        transform: translateY(-10px);
+
+        @media (min-width: map-get($grid-breakpoints, sm)) {
+            display: inline-block;
+        }
+    }
+}
+
+.list__incident-navigation {
+    display: inline;
+    @include list-clean();
+    margin: 0;
+    flex: 1;
+
+    li {
+        display: inline;
+
+        &:first-of-type {
+            margin-right: 5px;
+        }
+
+        a {
+            display: inline-block;
+            width: 48px;
+            height: 48px;
+            border: 1px solid $gray-tint08;
+            background-color: transparent;
+            position: relative;
+
+            svg {
+                position: absolute;
+                top: calc(50% - 12px);
+                left: 12px;
+                width: 24px;
+                height: 24px;
+                path {
+                    fill: $gray-tint11;
+                }
+            }
+
+            &.previous {
+                svg {
+                    transform: rotate(180deg);
+                }
+            }
+
+            &.disabled {
+                cursor: default;
+                text-decoration: none;
+                background-color: $gray-tint04;
+                border-color: $gray-tint04;
+
+                svg {
+                    path {
+                        fill: $gray-tint07;
+                    }
+                }
+            }
+        }
+    }
+}

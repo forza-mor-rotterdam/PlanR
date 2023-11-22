@@ -10,18 +10,43 @@
 {% context_template "melding_detail_locaties.html" as locatie_template %}
 {% context_template "melding_detail_titel.html" as titel_template %}
 {% context_template "melding_detail_melder.html" as melder_template %}
-<turbo-frame id="overview">
+<turbo-frame id="overview" data-turbo-action="advance">
     <div data-controller="detail">
     <div class="border-green print-only"></div>
 
     <div class="page__detail">
-        <div>
+        <div class="container__header-meldingnavigatie">
             <a href="{% url 'melding_lijst' %}?{{overview_querystring}}" data-turbo-action='advance' class="link--back">
                 <svg width="25" height="16" viewBox="0 0 25 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M9.15173 1.73256L7.73753 0.318359L1.44704 6.60885L1.4142 6.576L0 7.9902L1.4115 9.4017L1.37867 9.43453L7.67186 15.7277L9.08606 14.3135L3.7726 9.00006H24.0098V7.00006H3.88423L9.15173 1.73256Z" fill="#404B4F"/>
                 </svg>
                 Terug
             </a>
+
+            <div
+                class="container__meldingnavigatie"
+                data-controller="meldingNavigatie"
+                data-meldingNavigatie-melding-uuid-value="{{ melding.uuid }}"
+                data-meldingNavigatie-url-value="/melding/"
+            >
+                <span data-meldingNavigatie-target="teller" ></span>
+                <ul class="list__incident-navigation">
+                    <li>
+                        <a class="previous" data-meldingNavigatie-target="vorige">
+                            <svg width="9" height="14" viewBox="0 0 9 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M5.99275 6.99995L0.689453 1.69665L1.75011 0.635986L8.11407 6.99995L1.75011 13.3639L0.689453 12.3032L5.99275 6.99995Z" fill="#00811F"/>
+                            </svg>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="" data-meldingNavigatie-target="volgende">
+                            <svg width="9" height="14" viewBox="0 0 9 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M5.99275 6.99995L0.689453 1.69665L1.75011 0.635986L8.11407 6.99995L1.75011 13.3639L0.689453 12.3032L5.99275 6.99995Z" fill="#00811F"/>
+                            </svg>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
         <div id="id_maincontent">
             <div class="grid-container">
