@@ -6,7 +6,7 @@ export default class extends Controller {
     url: String,
   }
 
-  static targets = ['teller', 'vorige', 'volgende']
+  static targets = ['navigatie', 'teller', 'vorige', 'volgende']
 
   initialize() {
     const meldingIdList = sessionStorage.getItem('meldingIdList').split(',')
@@ -22,6 +22,9 @@ export default class extends Controller {
     previousId = meldingIdList[index - 1]
     nextId = meldingIdList[index + 1]
 
+    if (meldingIdList.length < 2) {
+      this.navigatieTarget.classList.add('hidden')
+    }
     if (previousId) {
       this.vorigeTarget.setAttribute('href', `${url}${previousId}`)
       this.vorigeTarget.classList.remove('disabled')
