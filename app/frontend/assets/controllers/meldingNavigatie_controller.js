@@ -1,8 +1,5 @@
 import { Controller } from '@hotwired/stimulus'
 
-// let meldingIdList = []
-// let previousId = 0
-// let nextId = 0
 export default class extends Controller {
   static values = {
     meldingUuid: String,
