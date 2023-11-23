@@ -185,11 +185,14 @@ class MeldingenService(BasisService):
     def locatie_aanpassen(
         self,
         id,
-        locatie=[],
+        omschrijving_intern=None,
+        locatie={},
         gebruiker=None,
     ):
         data = {
             "gebruiker": gebruiker,
+            "omschrijving_intern": omschrijving_intern,
+            "locatie": locatie,
         }
         data.update(
             {

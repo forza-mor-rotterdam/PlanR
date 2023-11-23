@@ -210,10 +210,11 @@ CSP_FRAME_SRC = (
     "iam.forzamor.nl",
 )
 CSP_SCRIPT_SRC = (
-    ("'self'", "'unsafe-eval'", "unpkg.com")
+    ("'self'", "'unsafe-eval'", "unpkg.com", "cdn.jsdelivr.net")
     if not DEBUG
-    else ("'self'", "'unsafe-eval'", "unpkg.com", "'unsafe-inline'")
+    else ("'self'", "'unsafe-eval'", "unpkg.com", "'unsafe-inline'", "cdn.jsdelivr.net")
 )
+
 CSP_IMG_SRC = [
     "'self'",
     "blob:",
@@ -224,10 +225,29 @@ CSP_IMG_SRC = [
     "www.placeholder.com",
     "via.placeholder.com",
     "mor-core-acc.forzamor.nl",
+    "cdn.jsdelivr.net",
+    "service.pdok.nl",
 ]
 
-CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "data:", "unpkg.com")
-CSP_CONNECT_SRC = ("'self'",) if not DEBUG else ("'self'", "ws:")
+CSP_STYLE_SRC = (
+    "'self'",
+    "'unsafe-inline'",
+    "data:",
+    "unpkg.com",
+    "cdn.jsdelivr.net",
+)
+CSP_CONNECT_SRC = (
+    (
+        "'self'",
+        "api.pdok.nl",
+    )
+    if not DEBUG
+    else (
+        "'self'",
+        "ws:",
+        "api.pdok.nl",
+    )
+)
 
 TEMPLATES = [
     {

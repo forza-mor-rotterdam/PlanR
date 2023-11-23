@@ -23,8 +23,8 @@
                         </svg>
                     </span>
                     <div>
-                        Door de locatie aan te passen zal de locatie van taken ook wijzigen.</div>
-                </div>
+                        Sleep de pin naar de juiste plek of klik op de kaart. Je kunt het adres ook handmatig invoeren.</div>
+                    </div>
             </div>
             <div class="modal-body">
                 <section class="section--seperated" data-testid="detailReporter">
@@ -43,15 +43,16 @@
                                         <li>{{taak.titel}}</li>
                                         {% endfor %}
                                     </ul>
-                                    Als de melding wordt geannuleerd wordt de status van deze {% if aantal_actieve_taken == 1 %}taak{% else %}taken{% endif %} aangepast naar ‘Voltooid’.
+                                    Als de locatie wordt aangepaat wordt de locatie van deze {% if aantal_actieve_taken == 1 %}taak{% else %}taken{% endif %} ook bijgewerkt.
                                 </div>
                             </div>
                         {% endif %}
                         <form
-                            action="{% url 'melding_annuleren' melding.uuid %}"
+                            action="{% url 'locatie_aanpassen' melding.uuid %}"
                             method="post"
                             class="form--horizontal"
-                            data-controller="meldingbehandelformulier"
+                            data-controller="locatieaanpassenformulier"
+                            data-locatieaanpassenformulier-locatie-value="{{ melding.locaties_voor_melding|dictsort:'gewicht'|last|json_encode }}"
                             data-turbo-frame="_top"
                             enctype="multipart/form-data"
                             id="afhandelForm"
@@ -59,7 +60,35 @@
                         >
 
                             {% csrf_token %}
-
+                            <div class="container__map">
+                                <div
+                                    class="map"
+                                    id="aanpassenMap"
+                                    data-action="touchstart->detail#onTwoFingerDrag touchend->detail#onTwoFingerDrag"
+                                    data-locatieaanpassenformulier-target="map"
+                                >
+                                    <div class="map__overlay">
+                                        <span>
+                                            Gebruik twee vingers om de kaart te verplaatsen
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-control__with-helptext js-validation">
+                                {{ form.geometrie|render_rotterdam_formulier }}
+                            </div>
+                            <div class="form-control__with-helptext js-validation">
+                                {{ form.plaatsnaam|render_rotterdam_formulier }}
+                            </div>
+                            <div class="form-control__with-helptext js-validation">
+                                {{ form.straatnaam|render_rotterdam_formulier }}
+                            </div>
+                            <div class="form-control__with-helptext js-validation">
+                                {{ form.huisnummer|render_rotterdam_formulier }}
+                            </div>
+                            <div class="form-control__with-helptext js-validation">
+                                {{ form.postcode|render_rotterdam_formulier }}
+                            </div>
                             <div class="form-control__with-helptext js-validation">
                                 {{ form.omschrijving_intern|render_rotterdam_formulier }}
                             </div>

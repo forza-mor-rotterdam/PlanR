@@ -19,6 +19,7 @@ from apps.main.forms import (
     TAAK_STATUS_VOLTOOID,
     FilterForm,
     InformatieToevoegenForm,
+    LocatieAanpassenForm,
     MeldingAanmakenForm,
     MeldingAfhandelenForm,
     MSBLoginForm,
@@ -855,19 +856,29 @@ def locatie_aanpassen(request, id):
     melding = MeldingenService().get_melding(id)
     afhandel_reden_opties = [(s, s) for s in melding.get("volgende_statussen", ())]
 
-    form = MeldingAfhandelenForm()
+    form = LocatieAanpassenForm()
     if request.POST:
-        form = MeldingAfhandelenForm(request.POST)
+        form = LocatieAanpassenForm(request.POST)
         if form.is_valid():
-            bijlagen = request.FILES.getlist("bijlagen", [])
-            bijlagen_base64 = []
-            for f in bijlagen:
-                file_name = default_storage.save(f.name, f)
-                bijlagen_base64.append({"bestand": to_base64(file_name)})
+            locatie_data = {
+                "locatie_type": "adres",
+                "geometrie": form.cleaned_data.get("geometrie"),
+                "straatnaam": form.cleaned_data.get("straatnaam"),
+                "postcode": form.cleaned_data.get("postcode"),
+                "huisnummer": form.cleaned_data.get("huisnummer"),
+                "huisletter": form.cleaned_data.get("huisletter"),
+                "toevoeging": form.cleaned_data.get("toevoeging"),
+                "buurtnaam": form.cleaned_data.get("buurtnaam"),
+                "wijknaam": form.cleaned_data.get("wijknaam"),
+                "plaatsnaam": form.cleaned_data.get("plaatsnaam"),
+                "gewicht": form.cleaned_data.get("gewicht", 0.3),
+            }
+            print(f"locatie_data: {locatie_data}")
 
             MeldingenService().locatie_aanpassen(
                 id,
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
+                locatie=locatie_data,
                 gebruiker=request.user.email,
             )
             return redirect("melding_detail", id=id)

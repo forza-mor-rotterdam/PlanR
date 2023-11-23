@@ -370,6 +370,118 @@ class MeldingAfhandelenForm(forms.Form):
     )
 
 
+class LocatieAanpassenForm(forms.Form):
+    locatie = forms.CharField(
+        label="Locatie",
+        help_text="Voer een geldige locatie in.",
+        widget=forms.TextInput(
+            attrs={
+                "data-locatieaanpassenformulier-target": "locatieText",
+            }
+        ),
+        required=False,
+    )
+
+    omschrijving_intern = forms.CharField(
+        label="Interne opmerking",
+        help_text="Deze tekst wordt niet naar de melder verstuurd.",
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "rows": "4",
+                "data-locatieaanpassenformulier-target": "internalText",
+            }
+        ),
+        required=False,
+    )
+    geometrie = forms.CharField(
+        label="Geometrie",
+        widget=forms.TextInput(
+            # Change to widget=forms.HiddenInput(),
+            attrs={
+                "data-locatieaanpassenformulier-target": "geometrie",
+            }
+        ),
+        required=False,
+    )
+    #     "geometrie": {
+    #     "type": "Point",
+    #     "coordinates": [4.43995901, 51.93254212],
+    # },
+    plaatsnaam = forms.CharField(
+        label="Plaatsnaam",
+        widget=forms.TextInput(
+            attrs={
+                "data-locatieaanpassenformulier-target": "plaatsnaam",
+            }
+        ),
+        required=False,
+    )
+    straatnaam = forms.CharField(
+        label="Straatnaam",
+        widget=forms.TextInput(
+            attrs={
+                "data-locatieaanpassenformulier-target": "straatnaam",
+            }
+        ),
+        required=False,
+    )
+    huisnummer = forms.IntegerField(
+        label="Huisnummer",
+        widget=forms.TextInput(
+            attrs={
+                "data-locatieaanpassenformulier-target": "huisnummer",
+            }
+        ),
+        required=False,
+    )
+    huisletter = forms.CharField(
+        label="Huisletter",
+        widget=forms.TextInput(
+            attrs={
+                "data-locatieaanpassenformulier-target": "huisletter",
+            }
+        ),
+        required=False,
+    )
+    toevoeging = forms.CharField(
+        label="Toevoeging",
+        widget=forms.TextInput(
+            attrs={
+                "data-locatieaanpassenformulier-target": "toevoeging",
+            }
+        ),
+        required=False,
+    )
+    postcode = forms.CharField(
+        label="Postcode",
+        widget=forms.TextInput(
+            attrs={
+                "data-locatieaanpassenformulier-target": "postcode",
+            }
+        ),
+        required=False,
+    )
+    buurtnaam = forms.CharField(
+        label="Buurtnaam",
+        widget=forms.TextInput(
+            attrs={
+                "data-locatieaanpassenformulier-target": "buurtnaam",
+            }
+        ),
+        required=False,
+    )
+    wijknaam = forms.CharField(
+        label="Wijknaam",
+        widget=forms.TextInput(
+            attrs={
+                "data-locatieaanpassenformulier-target": "wijknaam",
+            }
+        ),
+        required=False,
+    )
+
+
 class MeldingAanmakenForm(forms.Form):
     straatnaam = forms.CharField(
         widget=forms.TextInput(

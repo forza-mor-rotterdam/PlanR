@@ -27,14 +27,9 @@ export default class extends Controller {
 
     const incidentXValue = this.incidentXValue
     const incidentYValue = this.incidentYValue
-    console.log(`Incident X: ${incidentXValue}, Incident Y: ${incidentYValue}`)
-
     const mapDiv = document.getElementById('incidentMap')
-    console.log({ mapDiv })
-    console.log(this.incidentXValue)
-    console.log(this.incidentYValue)
-    console.log(this.incidentObjectValue)
-    if (mapDiv) {
+
+    if (mapDiv && incidentXValue && incidentYValue) {
       markerIcon = L.Icon.extend({
         options: {
           iconSize: [26, 26],
@@ -65,7 +60,6 @@ export default class extends Controller {
         parseFloat(this.incidentXValue.replace(/,/g, '.')),
         parseFloat(this.incidentYValue.replace(/,/g, '.')),
       ]
-      console.log({ incidentCoordinates })
       const map = L.map('incidentMap').setView(incidentCoordinates, 16)
       L.tileLayer(url, config).addTo(map)
       const marker = L.marker(incidentCoordinates, { icon: markerGreen }).addTo(map)
