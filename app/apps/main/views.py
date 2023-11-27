@@ -799,10 +799,10 @@ class StandaardExterneOmschrijvingView(View):
 
 
 class StandaardExterneOmschrijvingLijstView(
-    PermissionRequiredMixin, StandaardExterneOmschrijvingView, ListView
+    StandaardExterneOmschrijvingView, PermissionRequiredMixin, ListView
 ):
     context_object_name = "standaardteksten"
-    permission_required = StandaardExterneOmschrijvingLijstBekijkenPermissie.codenaam
+    permission_required = "authorisatie.standaard_externe_omschrijving_lijst_bekijken"
     form_class = StandaardExterneOmschrijvingSearchForm
     template_name = (
         "standaard_externe_omschrijving/standaard_externe_omschrijving_lijst.html"
@@ -819,29 +819,29 @@ class StandaardExterneOmschrijvingLijstView(
 
 
 class StandaardExterneOmschrijvingAanmakenView(
-    PermissionRequiredMixin, StandaardExterneOmschrijvingView, CreateView
+    StandaardExterneOmschrijvingView, PermissionRequiredMixin, CreateView
 ):
     form_class = StandaardExterneOmschrijvingAanmakenForm
     template_name = (
         "standaard_externe_omschrijving/standaard_externe_omschrijving_aanmaken.html"
     )
-    permission_required = StandaardExterneOmschrijvingAanmakenPermissie.codenaam
+    permission_required = "authorisatie.standaard_externe_omschrijving_aanmaken"
 
 
 class StandaardExterneOmschrijvingAanpassenView(
-    PermissionRequiredMixin, StandaardExterneOmschrijvingView, UpdateView
+    StandaardExterneOmschrijvingView, PermissionRequiredMixin, UpdateView
 ):
     form_class = StandaardExterneOmschrijvingAanpassenForm
     template_name = (
         "standaard_externe_omschrijving/standaard_externe_omschrijving_aanpassen.html"
     )
-    permission_required = StandaardExterneOmschrijvingAanpassenPermissie.codenaam
+    permission_required = "authorisatie.standaard_externe_omschrijving_aanpassen"
 
 
 class StandaardExterneOmschrijvingVerwijderenView(
-    PermissionRequiredMixin, StandaardExterneOmschrijvingView, DeleteView
+    StandaardExterneOmschrijvingView, PermissionRequiredMixin, DeleteView
 ):
-    permission_required = StandaardExterneOmschrijvingVerwijderenPermissie.codenaam
+    permission_required = "authorisatie.standaard_externe_omschrijving_verwijderen"
 
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)

@@ -136,7 +136,7 @@ class RechtengroepVerwijderenPermissie(BasisPermissie):
 
 class StandaardExterneOmschrijvingLijstBekijkenPermissie(BasisPermissie):
     naam = "Standaard externe omschrijving lijst bekijken"
-    codenaam = "standaard_externe_omschrijving_lijst"
+    codenaam = "standaard_externe_omschrijving_lijst_bekijken"
 
 
 class StandaardExterneOmschrijvingAanmakenPermissie(BasisPermissie):
