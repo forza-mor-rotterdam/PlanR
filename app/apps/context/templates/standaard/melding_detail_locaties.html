@@ -6,34 +6,38 @@
             </svg>
             {% if melding.locaties_voor_melding|length > 1 %}Locaties{% else %}Locatie{% endif %}
         </h2>
-        <div class="display--flex--md">
-            <ul class="list-clean">
+        <div>
+            {% comment %} <ul class="list-clean"> {% endcomment %}
                 {% with hoogste_gewicht_locatie=melding.locaties_voor_melding|dictsort:"gewicht"|last %}
-                    <li>
+                    {% comment %} <li> {% endcomment %}
                         {% if hoogste_gewicht_locatie %}
-                            <h4 class="current-locatie">Huidige Locatie</h4>
-                            <div class="display--flex--md locatie-container">
-                                <ul class="list-clean">
-                                    <li>
-                                        <h3 class="h5">Adres</h3>
-                                        <p>
-                                            {% if hoogste_gewicht_locatie.straatnaam %}{{ hoogste_gewicht_locatie.straatnaam }} {% else %}onbekend {% endif %}
-                                            {% if hoogste_gewicht_locatie.huisnummer %}{{ hoogste_gewicht_locatie.huisnummer }}{% else %}onbekend{% endif %}
-                                        </p>
-                                    </li>
-                                    <li>
-                                        <h3 class="h5">Wijk</h3>
-                                        <p>
-                                            {% if hoogste_gewicht_locatie.wijknaam %}{{ hoogste_gewicht_locatie.wijknaam }} {% else %}onbekend {% endif %}
-                                        </p>
-                                    </li>
-                                    <li>
-                                        <h3 class="h5">Buurt</h3>
-                                        <p>
-                                            {% if hoogste_gewicht_locatie.buurtnaam %}{{ hoogste_gewicht_locatie.buurtnaam }} {% else %}onbekend {% endif %}
-                                        </p>
-                                    </li>
-                                </ul>
+                            <h4>Huidige Locatie</h4>
+                            <div class="locatie-container">
+                                <div class="display--flex--md">
+                                    <ul class="list-clean">
+                                        <li>
+                                            <h3 class="h5">Adres</h3>
+                                            <p>
+                                                {% if hoogste_gewicht_locatie.straatnaam %}{{ hoogste_gewicht_locatie.straatnaam }} {% else %}onbekend {% endif %}
+                                                {% if hoogste_gewicht_locatie.huisnummer %}{{ hoogste_gewicht_locatie.huisnummer }}{% else %}onbekend{% endif %}
+                                            </p>
+                                        </li>
+                                        <li>
+                                            <h3 class="h5">Wijk</h3>
+                                            <p>
+                                                {% if hoogste_gewicht_locatie.wijknaam %}{{ hoogste_gewicht_locatie.wijknaam }} {% else %}onbekend {% endif %}
+                                            </p>
+                                        </li>
+                                    </ul>
+                                    <ul class="list-clean">
+                                        <li>
+                                            <h3 class="h5">Buurt</h3>
+                                            <p>
+                                                {% if hoogste_gewicht_locatie.buurtnaam %}{{ hoogste_gewicht_locatie.buurtnaam }} {% else %}onbekend {% endif %}
+                                            </p>
+                                        </li>
+                                    </ul>
+                                </div>
                                 {% if hoogste_gewicht_locatie.geometrie.coordinates %}
                                     <div class="container__map full-width">
                                         <div
@@ -51,15 +55,18 @@
                                 {% endif %}
                             </div>
                         {% endif %}
-                    </li>
+                    {% comment %} </li> {% endcomment %}
+                    <details>
                     {% for locatie in melding.locaties_voor_melding %}
                         {% if forloop.first and forloop.first != forloop.last %}
-                            <hr class="divider">
-                            <h4 class="historical-locatie">Oude Locatie(s)</h4>
+
+                                <summary>
+                                    <h4>Oude Locatie(s)</h4>
+                                </summary>
                         {% endif %}
-                        <li>
+                        {% comment %} <li> {% endcomment %}
                             {% if not forloop.first %}
-                                <div class="locatie-container">
+                                <div class="locatie-container display--flex--md">
                                     <ul class="list-clean">
                                         <li>
                                             <h3 class="h5">Adres</h3>
@@ -74,6 +81,8 @@
                                                 {% if locatie.wijknaam %}{{ locatie.wijknaam }} {% else %}onbekend {% endif %}
                                             </p>
                                         </li>
+                                    </ul>
+                                    <ul class="list-clean">
                                         <li>
                                             <h3 class="h5">Buurt</h3>
                                             <p class="h5">
@@ -83,29 +92,15 @@
                                     </ul>
                                 </div>
                             {% endif %}
-                        </li>
+                        {% comment %} </li> {% endcomment %}
                         {% if not forloop.last and not forloop.first %}
                             <hr class="divider">
                         {% endif %}
+
                     {% endfor %}
+                    </details>
                 {% endwith %}
-            </ul>
+            {% comment %} </ul> {% endcomment %}
         </div>
     </div>
 </section>
-
-<style>
-    .divider {
-        border-top: 1px solid #ccc;
-        margin: 20px 0;
-    }
-
-    .locatie-container {
-        flex: 1 1 auto;
-    }
-
-    .current-locatie,
-    .historical-locatie {
-        font-weight: bold;
-    }
-</style>

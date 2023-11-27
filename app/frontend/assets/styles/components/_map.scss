@@ -10,12 +10,12 @@
 
 .container__map {
     height: 0;
-    padding-bottom: 100%;
+    padding-bottom: 50%;
     flex: 4 1 auto;
 
     .map {
         height: 0;
-        padding-bottom: 100%;
+        padding-bottom: 50%;
 
         .map__overlay {
             color: $white;

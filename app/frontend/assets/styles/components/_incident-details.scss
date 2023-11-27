@@ -72,7 +72,26 @@
     }
 
     ul {
+        flex: 1;
+    }
+
+    .divider {
+        border-top: 1px solid #ccc;
+        margin: 20px 0;
+    }
+
+    .locatie-container {
         flex: 1 1 auto;
+        padding-left: 16px;
+
+        .list-clean {
+            margin-top: 0;
+        }
+    }
+
+    summary {
+        padding: 0 16px 0 40px;
+        border-top: 0;
     }
 }
 
