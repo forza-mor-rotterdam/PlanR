@@ -194,20 +194,16 @@ class MeldingenService(BasisService):
             "omschrijving_intern": omschrijving_intern,
             "locatie": locatie,
         }
-        data.update(
-            {
-                "status": {
-                    "naam": "geannuleerd",
-                },
-                "resolutie": "opgelost",
-            }
-        )
-        return self.do_request(
-            f"{self._api_path}/melding/{id}/locatie-aanpassen/",
-            method="patch",
+        response = self.do_request(
+            f"{self._api_path}/melding/{id}/locatie-aanmaken/",
+            method="post",
             data=data,
-            raw_response=False,
         )
+        if response.status_code // 100 != 2:
+            raise MeldingenService.AntwoordFout(
+                f"status code: {response.status_code}, fout: {response.text}."
+            )
+        return response.json()
 
     def taakapplicaties(self):
         return self.do_request(

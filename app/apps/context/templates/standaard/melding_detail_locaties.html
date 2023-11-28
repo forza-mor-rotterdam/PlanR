@@ -57,15 +57,17 @@
                         {% endif %}
                     {% comment %} </li> {% endcomment %}
                     <details>
-                    {% for locatie in melding.locaties_voor_melding %}
+                    {% for locatie in melding.locaties_voor_melding|dictsortreversed:"gewicht" %}
                         {% if forloop.first and forloop.first != forloop.last %}
 
                                 <summary>
                                     <h4>Oude Locatie(s)</h4>
+
                                 </summary>
                         {% endif %}
                         {% comment %} <li> {% endcomment %}
                             {% if not forloop.first %}
+
                                 <div class="locatie-container display--flex--md">
                                     <ul class="list-clean">
                                         <li>

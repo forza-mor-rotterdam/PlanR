@@ -45,7 +45,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.files.storage import default_storage
 from django.db.models import Q
-from django.http import HttpResponse, QueryDict, StreamingHttpResponse
+from django.http import HttpResponse, JsonResponse, QueryDict, StreamingHttpResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
@@ -853,50 +853,55 @@ class StandaardExterneOmschrijvingVerwijderenView(
 
 @permission_required("authorisatie.locatie_aanpassen")
 def locatie_aanpassen(request, id):
-    melding = MeldingenService().get_melding(id)
-    afhandel_reden_opties = [(s, s) for s in melding.get("volgende_statussen", ())]
+    try:
+        melding = MeldingenService().get_melding(id)
+        afhandel_reden_opties = [(s, s) for s in melding.get("volgende_statussen", ())]
 
-    form = LocatieAanpassenForm()
-    if request.POST:
-        form = LocatieAanpassenForm(request.POST)
-        if form.is_valid():
-            locatie_data = {
-                "locatie_type": "adres",
-                "geometrie": form.cleaned_data.get("geometrie"),
-                "straatnaam": form.cleaned_data.get("straatnaam"),
-                "postcode": form.cleaned_data.get("postcode"),
-                "huisnummer": form.cleaned_data.get("huisnummer"),
-                "huisletter": form.cleaned_data.get("huisletter"),
-                "toevoeging": form.cleaned_data.get("toevoeging"),
-                "buurtnaam": form.cleaned_data.get("buurtnaam"),
-                "wijknaam": form.cleaned_data.get("wijknaam"),
-                "plaatsnaam": form.cleaned_data.get("plaatsnaam"),
-                "gewicht": form.cleaned_data.get("gewicht", 0.3),
-            }
-            print(f"locatie_data: {locatie_data}")
+        form = LocatieAanpassenForm()
+        if request.POST:
+            form = LocatieAanpassenForm(request.POST)
+            if form.is_valid():
+                locatie_data = {
+                    "locatie_type": "adres",
+                    "geometrie": form.cleaned_data.get("geometrie"),
+                    "straatnaam": form.cleaned_data.get("straatnaam"),
+                    "postcode": form.cleaned_data.get("postcode"),
+                    "huisnummer": form.cleaned_data.get("huisnummer"),
+                    "huisletter": form.cleaned_data.get("huisletter"),
+                    "toevoeging": form.cleaned_data.get("toevoeging"),
+                    "buurtnaam": form.cleaned_data.get("buurtnaam"),
+                    "wijknaam": form.cleaned_data.get("wijknaam"),
+                    "plaatsnaam": form.cleaned_data.get("plaatsnaam"),
+                }
+                print(f"locatie_data: {locatie_data}")
 
-            MeldingenService().locatie_aanpassen(
-                id,
-                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
-                locatie=locatie_data,
-                gebruiker=request.user.email,
-            )
-            return redirect("melding_detail", id=id)
+                MeldingenService().locatie_aanpassen(
+                    id,
+                    omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
+                    locatie=locatie_data,
+                    gebruiker=request.user.id,
+                )
+                return redirect("melding_detail", id=id)
 
-    actieve_taken = [
-        to
-        for to in melding.get("taakopdrachten_voor_melding", [])
-        if to.get("status", {}).get("naam") != "voltooid"
-    ]
+        actieve_taken = [
+            to
+            for to in melding.get("taakopdrachten_voor_melding", [])
+            if to.get("status", {}).get("naam") != "voltooid"
+        ]
 
-    return render(
-        request,
-        "melding/part_locatie_aanpassen.html",
-        {
-            "form": form,
-            "melding": melding,
-            "afhandel_reden_opties": afhandel_reden_opties,
-            "actieve_taken": actieve_taken,
-            "aantal_actieve_taken": len(actieve_taken),
-        },
-    )
+        return render(
+            request,
+            "melding/part_locatie_aanpassen.html",
+            {
+                "form": form,
+                "melding": melding,
+                "afhandel_reden_opties": afhandel_reden_opties,
+                "actieve_taken": actieve_taken,
+                "aantal_actieve_taken": len(actieve_taken),
+            },
+        )
+    except MeldingenService.AntwoordFout as e:
+        return JsonResponse(
+            {"error": str(e)},
+            status=getattr(e, "status_code", 500),
+        )

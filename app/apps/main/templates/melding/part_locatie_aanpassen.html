@@ -90,8 +90,15 @@
                                 {{ form.postcode|render_rotterdam_formulier }}
                             </div>
                             <div class="form-control__with-helptext js-validation">
+                                {{ form.buurtnaam|render_rotterdam_formulier }}
+                            </div>
+                            <div class="form-control__with-helptext js-validation">
+                                {{ form.wijknaam|render_rotterdam_formulier }}
+                            </div>
+                            <div class="form-control__with-helptext js-validation">
                                 {{ form.omschrijving_intern|render_rotterdam_formulier }}
                             </div>
+
                             <div class="form-row btn-row">
                                 <button
                                     type="reset"
