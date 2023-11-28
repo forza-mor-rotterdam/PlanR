@@ -1,4 +1,5 @@
 import base64
+import json
 import logging
 
 from apps.context.constanten import KOLOMMEN, KOLOMMEN_KEYS
@@ -404,10 +405,6 @@ class LocatieAanpassenForm(forms.Form):
         ),
         required=True,
     )
-    #     "geometrie": {
-    #     "type": "Point",
-    #     "coordinates": [4.43995901, 51.93254212],
-    # },
     plaatsnaam = forms.CharField(
         label="Plaatsnaam",
         widget=forms.TextInput(
@@ -488,6 +485,22 @@ class LocatieAanpassenForm(forms.Form):
         ),
         required=True,
     )
+
+    def clean_geometrie(self):
+        new_geometrie = self.cleaned_data.get("geometrie")
+        current_geometrie = self.initial.get("geometrie", "")
+
+        try:
+            new_geometrie_dict = json.loads(new_geometrie)
+        except json.JSONDecodeError:
+            new_geometrie_dict = {}
+
+        if new_geometrie_dict == current_geometrie:
+            raise forms.ValidationError(
+                "Het is niet toegestaan om de locatie aan te passen met dezelfde coordinaten."
+            )
+
+        return new_geometrie
 
 
 class MeldingAanmakenForm(forms.Form):

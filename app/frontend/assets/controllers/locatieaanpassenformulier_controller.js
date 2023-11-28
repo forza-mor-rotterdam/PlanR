@@ -151,7 +151,11 @@ export default class extends Controller {
     // Update form fields with values from locatie
     this.constructor.targets.forEach((key) => {
       if (this[`has${capitalize(key)}Target`]) {
-        this[`${key}Target`].value = locatie[key]
+        if (key === 'geometrie') {
+          this[`${key}Target`].value = JSON.stringify(locatie[key])
+        } else {
+          this[`${key}Target`].value = locatie[key]
+        }
       }
     })
   }
@@ -205,10 +209,10 @@ export default class extends Controller {
 
       // Convert the PDOK search result to a locatie object
       const locatie = this.searchResultToLocatie(addressDetails)
-      locatie['geometrie'] = JSON.stringify({
+      locatie['geometrie'] = {
         type: 'Point',
         coordinates: [coordinates[1], coordinates[0]],
-      })
+      }
 
       // Update your form fields or perform other actions with locatie
       this.updateFormFields(locatie)
