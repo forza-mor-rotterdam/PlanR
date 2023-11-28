@@ -857,9 +857,21 @@ def locatie_aanpassen(request, id):
         melding = MeldingenService().get_melding(id)
         afhandel_reden_opties = [(s, s) for s in melding.get("volgende_statussen", ())]
 
-        form = LocatieAanpassenForm()
+        locaties_voor_melding = melding.get("locaties_voor_melding", [])
+
+        highest_gewicht_locatie = max(
+            locaties_voor_melding, key=lambda locatie: locatie.get("gewicht", 0)
+        )
+
+        form_initial = {
+            "geometrie": highest_gewicht_locatie.get("geometrie", "")
+            if highest_gewicht_locatie
+            else "",
+        }
+
+        form = LocatieAanpassenForm(initial=form_initial)
         if request.POST:
-            form = LocatieAanpassenForm(request.POST)
+            form = LocatieAanpassenForm(request.POST, initial=form_initial)
             if form.is_valid():
                 locatie_data = {
                     "locatie_type": "adres",
@@ -873,13 +885,12 @@ def locatie_aanpassen(request, id):
                     "wijknaam": form.cleaned_data.get("wijknaam"),
                     "plaatsnaam": form.cleaned_data.get("plaatsnaam"),
                 }
-                print(f"locatie_data: {locatie_data}")
 
                 MeldingenService().locatie_aanpassen(
                     id,
                     omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
                     locatie=locatie_data,
-                    gebruiker=request.user.id,
+                    gebruiker=request.user.email,
                 )
                 return redirect("melding_detail", id=id)
 
