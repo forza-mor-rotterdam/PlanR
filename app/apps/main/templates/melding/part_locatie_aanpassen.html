@@ -50,10 +50,9 @@
                         <form
                             action="{% url 'locatie_aanpassen' melding.uuid %}"
                             method="post"
-                            class="form--horizontal"
+                            class="form-locatie-aanpassen"
                             data-controller="locatieaanpassenformulier"
                             data-locatieaanpassenformulier-locatie-value="{{ melding.locaties_voor_melding|dictsort:'gewicht'|last|json_encode }}"
-                            data-turbo-frame="_top"
                             enctype="multipart/form-data"
                             id="afhandelForm"
                             novalidate
@@ -77,45 +76,48 @@
                             <div class="form-control__with-helptext js-validation">
                                 {{ form.geometrie|render_rotterdam_formulier }}
                             </div>
-                            <div class="form-control__with-helptext js-validation">
-                                {{ form.plaatsnaam|render_rotterdam_formulier }}
-                            </div>
-                            <div class="form-control__with-helptext js-validation">
-                                {{ form.straatnaam|render_rotterdam_formulier }}
-                            </div>
-                            <div class="form-control__with-helptext js-validation">
-                                {{ form.huisnummer|render_rotterdam_formulier }}
-                            </div>
-                            <div class="form-control__with-helptext js-validation">
-                                {{ form.postcode|render_rotterdam_formulier }}
-                            </div>
-                            <div class="form-control__with-helptext js-validation">
-                                {{ form.buurtnaam|render_rotterdam_formulier }}
-                            </div>
-                            <div class="form-control__with-helptext js-validation">
-                                {{ form.wijknaam|render_rotterdam_formulier }}
+                            <div class="container--flex">
+                                <div class="form-control__with-helptext js-validation">
+                                    {{ form.straatnaam|render_rotterdam_formulier }}
+                                </div>
+                                <div class="form-control__with-helptext js-validation">
+                                    {{ form.huisnummer|render_rotterdam_formulier }}
+                                </div>
+                                <div class="form-control__with-helptext js-validation">
+                                    {{ form.postcode|render_rotterdam_formulier }}
+                                </div>
+                                <div class="form-control__with-helptext js-validation">
+                                    {{ form.plaatsnaam|render_rotterdam_formulier }}
+                                </div>
+                                <div class="form-control__with-helptext js-validation">
+                                    {{ form.wijknaam|render_rotterdam_formulier }}
+                                </div>
+                                <div class="form-control__with-helptext js-validation">
+                                    {{ form.buurtnaam|render_rotterdam_formulier }}
+                                </div>
                             </div>
                             <div class="form-control__with-helptext js-validation">
                                 {{ form.omschrijving_intern|render_rotterdam_formulier }}
                             </div>
-
-                            <div class="form-row btn-row">
-                                <button
-                                    type="reset"
-                                    class="btn btn-tertiary"
-                                    data-controller="detail"
-                                    data-action="detail#closeModal"
-                                >
-                                    <span>Annuleren</span>
-                                </button>
-                                <button
-                                    type="submit"
-                                    class="btn btn-action"
-                                >
-                                    <span>Afhandelen</span>
-                                </button>
-
-                            </div>
+                            <div class="form--horizontal">
+                                <div class="form-row btn-row">
+                                    <button
+                                        type="reset"
+                                        class="btn btn-tertiary"
+                                        data-controller="detail"
+                                        data-detail-target="modalAfhandelen"
+                                        data-action="detail#closeModal"
+                                    >
+                                        <span>Annuleren</span>
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        class="btn btn-action"
+                                    >
+                                        <span>Opslaan</span>
+                                    </button>
+                                </div>
+                            </form>
                         </form>
                     </div>
                 </section>

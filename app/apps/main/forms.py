@@ -402,7 +402,7 @@ class LocatieAanpassenForm(forms.Form):
                 "data-locatieaanpassenformulier-target": "geometrie",
             }
         ),
-        required=False,
+        required=True,
     )
     #     "geometrie": {
     #     "type": "Point",
@@ -413,72 +413,80 @@ class LocatieAanpassenForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "plaatsnaam",
+                "readonly": "readonly",
             }
         ),
-        required=False,
+        required=True,
     )
     straatnaam = forms.CharField(
         label="Straatnaam",
         widget=forms.TextInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "straatnaam",
+                "readonly": "readonly",
             }
         ),
-        required=False,
+        required=True,
     )
     huisnummer = forms.IntegerField(
         label="Huisnummer",
         widget=forms.TextInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "huisnummer",
+                "readonly": "readonly",
             }
         ),
-        required=False,
+        required=True,
     )
     huisletter = forms.CharField(
         label="Huisletter",
         widget=forms.TextInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "huisletter",
+                "readonly": "readonly",
             }
         ),
-        required=False,
+        required=True,
     )
     toevoeging = forms.CharField(
         label="Toevoeging",
         widget=forms.TextInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "toevoeging",
+                "readonly": "readonly",
             }
         ),
-        required=False,
+        required=True,
     )
     postcode = forms.CharField(
         label="Postcode",
         widget=forms.TextInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "postcode",
+                "readonly": "readonly",
             }
         ),
-        required=False,
+        required=True,
     )
     buurtnaam = forms.CharField(
         label="Buurtnaam",
         widget=forms.TextInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "buurtnaam",
+                "readonly": "readonly",
             }
         ),
-        required=False,
+        required=True,
     )
     wijknaam = forms.CharField(
         label="Wijknaam",
         widget=forms.TextInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "wijknaam",
+                "readonly": "readonly",
             }
         ),
-        required=False,
+        required=True,
     )
 
 

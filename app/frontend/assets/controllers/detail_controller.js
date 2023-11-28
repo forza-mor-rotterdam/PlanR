@@ -86,6 +86,7 @@ export default class extends Controller {
   }
 
   closeModal() {
+    console.log('clodeModal')
     const modalBackdrop = document.querySelector('.modal-backdrop')
     this.modalAfhandelenTarget.classList.remove('show')
     modalBackdrop.classList.remove('show')
