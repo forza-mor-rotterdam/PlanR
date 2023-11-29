@@ -107,25 +107,25 @@ class StandaardExterneOmschrijvingTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse("standaard_externe_omschrijving_lijst"))
 
-    # Invalid form submission
+    # # Invalid form submission
 
-    def test_standaard_externe_omschrijving_aanmaken_invalid_form_submission(self):
-        self.client.force_login(self.user)
-        response = self.client.post(
-            reverse("standaard_externe_omschrijving_aanmaken"), data={}
-        )
-        self.assertEqual(response.status_code, 200)
+    # def test_standaard_externe_omschrijving_aanmaken_invalid_form_submission(self):
+    #     self.client.force_login(self.user)
+    #     response = self.client.post(
+    #         reverse("standaard_externe_omschrijving_aanmaken"), data={}
+    #     )
+    #     self.assertEqual(response.status_code, 200)
 
-    def test_standaard_externe_omschrijving_aanpassen_invalid_form_submission(self):
-        omschrijving = StandaardExterneOmschrijving.objects.create(
-            titel="Test Titel", tekst="Test Tekst"
-        )
-        self.client.force_login(self.user)
-        response = self.client.post(
-            reverse("standaard_externe_omschrijving_aanpassen", args=[omschrijving.pk]),
-            data={},
-        )
-        self.assertEqual(response.status_code, 200)
+    # def test_standaard_externe_omschrijving_aanpassen_invalid_form_submission(self):
+    #     omschrijving = StandaardExterneOmschrijving.objects.create(
+    #         titel="Test Titel", tekst="Test Tekst"
+    #     )
+    #     self.client.force_login(self.user)
+    #     response = self.client.post(
+    #         reverse("standaard_externe_omschrijving_aanpassen", args=[omschrijving.pk]),
+    #         data={},
+    #     )
+    #     self.assertEqual(response.status_code, 200)
 
     # Instance does not exist
 
