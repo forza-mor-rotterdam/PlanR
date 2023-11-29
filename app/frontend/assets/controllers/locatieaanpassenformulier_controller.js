@@ -1,5 +1,6 @@
 import { Controller } from '@hotwired/stimulus'
 import { capitalize } from 'lodash'
+import L from 'leaflet'
 
 let form = null
 let inputList = null

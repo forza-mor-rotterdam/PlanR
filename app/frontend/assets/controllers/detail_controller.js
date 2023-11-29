@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus'
+import L from 'leaflet'
 
 let lastFocussedItem = null
 let markerIcon,
@@ -62,7 +63,7 @@ export default class extends Controller {
       ]
       const map = L.map('incidentMap').setView(incidentCoordinates, 16)
       L.tileLayer(url, config).addTo(map)
-      const marker = L.marker(incidentCoordinates, { icon: markerGreen }).addTo(map)
+      L.marker(incidentCoordinates, { icon: markerGreen }).addTo(map)
     }
 
     document.addEventListener('keydown', (event) => {
