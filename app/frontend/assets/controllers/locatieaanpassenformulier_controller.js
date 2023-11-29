@@ -3,7 +3,8 @@ import { capitalize } from 'lodash'
 
 let form = null
 let inputList = null
-let map, markerGreen, markerBlue, markerIcon
+let markerGreen, markerBlue, markerIcon
+let initialGeometry = {}
 const defaultErrorMessage = 'Vul a.u.b. dit veld in.'
 
 export default class extends Controller {
@@ -29,7 +30,8 @@ export default class extends Controller {
     form = document.querySelector('#afhandelForm')
     inputList = document.querySelectorAll('.js-validation textarea')
     const locatie = JSON.parse(this.locatieValue)
-
+    initialGeometry = locatie.geometrie
+    console.log('initialGeometry', initialGeometry)
     this.initializeMap(locatie)
     this.updateFormFields(locatie)
 
@@ -48,11 +50,11 @@ export default class extends Controller {
     }
 
     form.addEventListener('submit', (event) => {
-      const allFieldsValid = this.checkValids()
+      console.log('form submit')
+      const coordinatesValid = !this.checkSameCoordinates()
 
-      if (!allFieldsValid) {
-        const errorList = document.querySelectorAll('div.is-invalid')
-        errorList[0].scrollIntoView({ behavior: 'smooth' })
+      if (!coordinatesValid) {
+        window.alert('Het is niet toegestaan om de locatie aan te passen met dezelfde coordinaten.')
         event.preventDefault()
       }
     })
@@ -221,23 +223,16 @@ export default class extends Controller {
     }
   }
 
-  checkValids() {
-    //check all inputfields (except checkboxes) for validity
-    // if 1 or more fields is invalid, don't send the form (return false)
-    inputList = document.querySelectorAll('textarea')
-    let count = 0
-    for (const input of inputList) {
-      const error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
-      if (input.validity.valid) {
-        error.textContent = ''
-        input.closest('.form-row').classList.remove('is-invalid')
-      } else {
-        error.textContent = defaultErrorMessage
-        input.closest('.form-row').classList.add('is-invalid')
-        count++
-      }
-    }
-    return count === 0
+  checkSameCoordinates() {
+    console.log('checkValids')
+    const newGeometry = JSON.parse(document.querySelector('#id_geometrie').value)
+    console.log('initialGeometry', initialGeometry.coordinates)
+    console.log('newGeometry', newGeometry.coordinates)
+    const sameCoordinates =
+      initialGeometry.coordinates[0] === newGeometry.coordinates[0] &&
+      initialGeometry.coordinates[1] === newGeometry.coordinates[1]
+
+    return sameCoordinates
   }
 
   cancelHandle() {

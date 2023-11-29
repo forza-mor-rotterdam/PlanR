@@ -397,7 +397,7 @@ class LocatieAanpassenForm(forms.Form):
     )
     geometrie = forms.CharField(
         label="Geometrie",
-        widget=forms.HiddenInput(
+        widget=forms.TextInput(
             # Change to widget=forms.HiddenInput(),
             attrs={
                 "data-locatieaanpassenformulier-target": "geometrie",
