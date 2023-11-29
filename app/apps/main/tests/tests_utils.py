@@ -1,8 +1,5 @@
-import os
-
 from apps.main.utils import snake_case
-from django.conf import settings
-from django.test import SimpleTestCase, TestCase
+from django.test import SimpleTestCase
 
 
 class TestUtils(SimpleTestCase):
@@ -14,19 +11,3 @@ class TestUtils(SimpleTestCase):
         string_out = "mock_data_mock_mock"
 
         self.assertEqual(snake_case(string_in), string_out)
-
-
-class YourTestCase(TestCase):
-    def test_something(self):
-        # Your test logic here
-
-        # Check if webpack-stats.json exists
-        webpack_stats_file = "/app/frontend/public/build/webpack-stats.json"
-        print("WEBPACK_LOADER setting:", settings.WEBPACK_LOADER)
-        self.assertTrue(
-            os.path.exists("/static/webpack-stats.json"),
-            f"{'/static/webpack-stats.json'} does not exist.",
-        )
-        self.assertTrue(
-            os.path.exists(webpack_stats_file), f"{webpack_stats_file} does not exist."
-        )
