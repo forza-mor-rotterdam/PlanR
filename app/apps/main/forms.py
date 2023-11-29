@@ -372,17 +372,6 @@ class MeldingAfhandelenForm(forms.Form):
 
 
 class LocatieAanpassenForm(forms.Form):
-    locatie = forms.CharField(
-        label="Locatie",
-        help_text="Voer een geldige locatie in.",
-        widget=forms.TextInput(
-            attrs={
-                "data-locatieaanpassenformulier-target": "locatieText",
-            }
-        ),
-        required=False,
-    )
-
     omschrijving_intern = forms.CharField(
         label="Interne opmerking",
         help_text="Deze tekst wordt niet naar de melder verstuurd.",
@@ -397,7 +386,7 @@ class LocatieAanpassenForm(forms.Form):
     )
     geometrie = forms.CharField(
         label="Geometrie",
-        widget=forms.TextInput(
+        widget=forms.HiddenInput(
             # Change to widget=forms.HiddenInput(),
             attrs={
                 "data-locatieaanpassenformulier-target": "geometrie",
@@ -443,7 +432,7 @@ class LocatieAanpassenForm(forms.Form):
                 "readonly": "readonly",
             }
         ),
-        required=True,
+        required=False,
     )
     toevoeging = forms.CharField(
         label="Toevoeging",
@@ -453,7 +442,7 @@ class LocatieAanpassenForm(forms.Form):
                 "readonly": "readonly",
             }
         ),
-        required=True,
+        required=False,
     )
     postcode = forms.CharField(
         label="Postcode",

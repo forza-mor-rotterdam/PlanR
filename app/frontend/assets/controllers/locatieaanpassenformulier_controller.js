@@ -31,7 +31,6 @@ export default class extends Controller {
     inputList = document.querySelectorAll('.js-validation textarea')
     const locatie = JSON.parse(this.locatieValue)
     initialGeometry = locatie.geometrie
-    console.log('initialGeometry', initialGeometry)
     this.initializeMap(locatie)
     this.updateFormFields(locatie)
 
@@ -50,20 +49,21 @@ export default class extends Controller {
     }
 
     form.addEventListener('submit', (event) => {
-      console.log('form submit')
       const coordinatesValid = !this.checkSameCoordinates()
 
       if (!coordinatesValid) {
         window.alert('Het is niet toegestaan om de locatie aan te passen met dezelfde coordinaten.')
         event.preventDefault()
+      } else {
+        document.body.classList.remove('show-modal')
       }
     })
   }
 
   initializeMap(locatie) {
-    var url =
+    const url =
       'https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/{layerName}/{crs}/{z}/{x}/{y}.{format}'
-    var config = {
+    const config = {
       crs: 'EPSG:3857',
       format: 'png',
       name: 'standaard',
@@ -224,10 +224,7 @@ export default class extends Controller {
   }
 
   checkSameCoordinates() {
-    console.log('checkValids')
     const newGeometry = JSON.parse(document.querySelector('#id_geometrie').value)
-    console.log('initialGeometry', initialGeometry.coordinates)
-    console.log('newGeometry', newGeometry.coordinates)
     const sameCoordinates =
       initialGeometry.coordinates[0] === newGeometry.coordinates[0] &&
       initialGeometry.coordinates[1] === newGeometry.coordinates[1]

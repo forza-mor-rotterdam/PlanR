@@ -23,11 +23,6 @@
 body.show-modal {
     @include bodyModal();
 
-    .modal-backdrop {
-        display: block;
-        opacity: 0.5;
-    }
-
     .modal.show {
         @include modalVisible();
     }
