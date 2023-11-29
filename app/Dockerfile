@@ -1,11 +1,13 @@
+# Stage 1: Build front-end assets
 FROM node:18-bullseye AS node_step
 
 WORKDIR /srv/web/
 COPY ./frontend /srv/web/
-RUN cd /srv/web \
- && npm install \
- && npm run build
 
+RUN npm install \
+    && npm run build
+
+# Stage 2: Final image with Python and front-end assets
 FROM python:3.10.10-slim-bullseye
 
 EXPOSE 8000
@@ -14,8 +16,8 @@ ENV APP_HOME=/app
 ENV APP_USER=appuser
 ENV APP_USER_ID=2000
 
-RUN groupadd -r $APP_USER && \
-    useradd -r -u $APP_USER_ID -g $APP_USER -d $APP_HOME -s /sbin/nologin -c "Docker image user" $APP_USER
+RUN groupadd -r "$APP_USER" && \
+    useradd -r -u "$APP_USER_ID" -g "$APP_USER" -d "$APP_HOME" -s /sbin/nologin -c "Docker image user" "$APP_USER"
 
 ENV PYTHONUNBUFFERED 1
 
@@ -59,9 +61,9 @@ RUN apt-get update \
         graphviz-dev \
         git \
         locales \
-    && pip install --upgrade pip \
     && sed -i '/nl_NL.UTF-8/s/^# //g' /etc/locale.gen && \
-        locale-gen
+        locale-gen \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ENV LANG=nl_NL.UTF-8 \
     LANGUAGE=nl_NL \
@@ -69,21 +71,22 @@ ENV LANG=nl_NL.UTF-8 \
 
 COPY . /app/
 
+# Copy front-end assets from the node_step image
 COPY --from=node_step /srv/web/public/build /static/
 
 RUN mkdir -p /media \
     && mkdir -p /static \
-    && chown -R $APP_USER:$APP_USER /media \
-    && chown -R $APP_USER:$APP_USER /static \
+    && chown -R "$APP_USER":"$APP_USER" /media \
+    && chown -R "$APP_USER":"$APP_USER" /static \
     && chmod -R 744 /media \
     && chmod -R 744 /static \
     && mkdir -p /srv/web/var/cache \
-    && chown $APP_USER:$APP_USER /srv/web/var/cache \
+    && chown "$APP_USER":"$APP_USER" /srv/web/var/cache \
     && chmod -R ugo+rwx /srv/web/var/cache \
-    && chown -R $APP_USER:$APP_USER $APP_HOME \
+    && chown -R "$APP_USER":"$APP_USER" "$APP_HOME" \
     && chmod -R +x /app/deploy \
     && pip install --no-cache-dir -r /app/requirements.txt
 
-USER $APP_USER
+USER "$APP_USER"
 
 CMD ["bash", "/app/deploy/docker-entrypoint.sh"]
