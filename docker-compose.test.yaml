@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
   app:
     build: ./app
@@ -8,6 +8,7 @@ services:
       - .env.test
     depends_on:
       - database
+      - redis
     networks:
       - planr_network
 
@@ -20,13 +21,13 @@ services:
 
   database:
     image: postgis/postgis:11-3.3
-    shm_size: '1024m'
+    shm_size: "1024m"
     ports:
       - "5432"
     env_file:
       - .env.test
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
       interval: 5s
       timeout: 5s
       retries: 5
