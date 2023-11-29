@@ -1,8 +1,10 @@
 {% load vind_in_dict from querystring_tags %}
-
 {% with grafnummer=melding.locaties_voor_melding.0.grafnummer vak=melding.locaties_voor_melding.0.vak plaats=melding.meta.begraafplaats %}
-<h1>
-    {% if grafnummer %} Grafnummer {{ grafnummer }}{% endif %}{% if vak %}, Vak {{ vak }}{% endif %}
-    {% if not grafnummer and not vak and plaats %}{% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices plaats %}{% endif %}
-</h1>
+    <h1>
+        {% if grafnummer %}Grafnummer {{ grafnummer }}{% endif %}
+        {% if vak %}, Vak {{ vak }}{% endif %}
+        {% if not grafnummer and not vak and plaats %}
+            {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices plaats %}
+        {% endif %}
+    </h1>
 {% endwith %}
