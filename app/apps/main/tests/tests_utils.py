@@ -24,5 +24,9 @@ class YourTestCase(TestCase):
         webpack_stats_file = "/app/frontend/public/build/webpack-stats.json"
         print("WEBPACK_LOADER setting:", settings.WEBPACK_LOADER)
         self.assertTrue(
+            os.path.exists("/static/webpack-stats.json"),
+            f"{'/static/webpack-stats.json'} does not exist.",
+        )
+        self.assertTrue(
             os.path.exists(webpack_stats_file), f"{webpack_stats_file} does not exist."
         )
