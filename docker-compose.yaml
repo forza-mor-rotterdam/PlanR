@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
   gateway:
     container_name: planr.mor.local
@@ -23,8 +23,10 @@ services:
       - ./media:/media
       - ./app:/app
     depends_on:
-      - redis
-      - database
+      redis:
+        condition: service_started
+      database:
+        condition: service_started
     networks:
       - planr_network
       - mor_bridge_network
@@ -40,7 +42,7 @@ services:
 
   database:
     image: postgis/postgis:11-3.3
-    shm_size: '1024m'
+    shm_size: "1024m"
     ports:
       - "7997:5432"
     env_file:
