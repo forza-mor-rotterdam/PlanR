@@ -157,12 +157,6 @@ table {
     }
 }
 
-summary {
-    &:focus {
-        @include focus-outline();
-    }
-}
-
 a,
 .link {
     color: $primary;

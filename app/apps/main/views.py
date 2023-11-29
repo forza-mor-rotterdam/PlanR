@@ -19,6 +19,7 @@ from apps.main.forms import (
     TAAK_STATUS_VOLTOOID,
     FilterForm,
     InformatieToevoegenForm,
+    LocatieAanpassenForm,
     MeldingAanmakenForm,
     MeldingAfhandelenForm,
     MSBLoginForm,
@@ -44,7 +45,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.files.storage import default_storage
 from django.db.models import Q
-from django.http import HttpResponse, QueryDict, StreamingHttpResponse
+from django.http import HttpResponse, JsonResponse, QueryDict, StreamingHttpResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
@@ -845,3 +846,73 @@ class StandaardExterneOmschrijvingVerwijderenView(
 
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
+
+
+# Locatie views
+
+
+@permission_required("authorisatie.locatie_aanpassen")
+def locatie_aanpassen(request, id):
+    try:
+        melding = MeldingenService().get_melding(id)
+        afhandel_reden_opties = [(s, s) for s in melding.get("volgende_statussen", ())]
+
+        locaties_voor_melding = melding.get("locaties_voor_melding", [])
+
+        highest_gewicht_locatie = max(
+            locaties_voor_melding, key=lambda locatie: locatie.get("gewicht", 0)
+        )
+
+        form_initial = {
+            "geometrie": highest_gewicht_locatie.get("geometrie", "")
+            if highest_gewicht_locatie
+            else "",
+        }
+
+        form = LocatieAanpassenForm(initial=form_initial)
+        if request.POST:
+            form = LocatieAanpassenForm(request.POST, initial=form_initial)
+            if form.is_valid():
+                locatie_data = {
+                    "locatie_type": "adres",
+                    "geometrie": form.cleaned_data.get("geometrie"),
+                    "straatnaam": form.cleaned_data.get("straatnaam"),
+                    "postcode": form.cleaned_data.get("postcode"),
+                    "huisnummer": form.cleaned_data.get("huisnummer"),
+                    "huisletter": form.cleaned_data.get("huisletter"),
+                    "toevoeging": form.cleaned_data.get("toevoeging"),
+                    "buurtnaam": form.cleaned_data.get("buurtnaam"),
+                    "wijknaam": form.cleaned_data.get("wijknaam"),
+                    "plaatsnaam": form.cleaned_data.get("plaatsnaam"),
+                }
+
+                MeldingenService().locatie_aanpassen(
+                    id,
+                    omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
+                    locatie=locatie_data,
+                    gebruiker=request.user.email,
+                )
+                return redirect("melding_detail", id=id)
+
+        actieve_taken = [
+            to
+            for to in melding.get("taakopdrachten_voor_melding", [])
+            if to.get("status", {}).get("naam") != "voltooid"
+        ]
+
+        return render(
+            request,
+            "melding/part_locatie_aanpassen.html",
+            {
+                "form": form,
+                "melding": melding,
+                "afhandel_reden_opties": afhandel_reden_opties,
+                "actieve_taken": actieve_taken,
+                "aantal_actieve_taken": len(actieve_taken),
+            },
+        )
+    except MeldingenService.AntwoordFout as e:
+        return JsonResponse(
+            {"error": str(e)},
+            status=getattr(e, "status_code", 500),
+        )

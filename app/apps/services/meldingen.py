@@ -182,6 +182,29 @@ class MeldingenService(BasisService):
             raw_response=False,
         )
 
+    def locatie_aanpassen(
+        self,
+        id,
+        omschrijving_intern=None,
+        locatie={},
+        gebruiker=None,
+    ):
+        data = {
+            "gebruiker": gebruiker,
+            "omschrijving_intern": omschrijving_intern,
+            "locatie": locatie,
+        }
+        response = self.do_request(
+            f"{self._api_path}/melding/{id}/locatie-aanmaken/",
+            method="post",
+            data=data,
+        )
+        if response.status_code // 100 != 2:
+            raise MeldingenService.AntwoordFout(
+                f"status code: {response.status_code}, fout: {response.text}."
+            )
+        return response.json()
+
     def taakapplicaties(self):
         return self.do_request(
             f"{self._api_path}/taakapplicatie/",

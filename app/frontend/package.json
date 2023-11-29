@@ -53,6 +53,7 @@
         ]
     },
     "dependencies": {
+        "leaflet": "^1.9.4",
         "styles-loader": "^4.0.1"
     }
 }

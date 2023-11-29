@@ -159,6 +159,14 @@ class StandaardExterneOmschrijvingVerwijderenPermissie(BasisPermissie):
     codenaam = "standaard_externe_omschrijving_verwijderen"
 
 
+# Rechten voor Locatie
+
+
+class LocatieAanpassenPermissie(BasisPermissie):
+    naam = "Locatie aanpassen"
+    codenaam = "locatie_aanpassen"
+
+
 gebruikersgroep_permissies = (
     MeldingAfhandelenPermissie,
     MeldingAnnulerenPermissie,
@@ -190,6 +198,7 @@ gebruikersgroep_permissies = (
     StandaardExterneOmschrijvingBekijkenPermissie,
     StandaardExterneOmschrijvingAanpassenPermissie,
     StandaardExterneOmschrijvingVerwijderenPermissie,
+    LocatieAanpassenPermissie,
 )
 
 gebruikersgroep_permissie_opties = [
