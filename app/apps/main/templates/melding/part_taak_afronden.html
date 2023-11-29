@@ -1,65 +1,48 @@
 {% load rotterdam_formulier_html %}
 {% load vind_in_dict from querystring_tags %}
 {% load json_encode from json_tags %}
-
 <turbo-frame id="melding_actie_form">
-    <div class="modal-dialog modal-dialog--small">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1>
-                    <span>Taak afronden</span>
-                </h1>
-                <button
-                    type="button"
+<div class="modal-dialog modal-dialog--small">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h1>
+                <span>Taak afronden</span>
+            </h1>
+            <button type="button"
                     class="btn-close"
                     aria-label="Sluit"
-                    data-action="detail#closeModal">
-                </button>
-            </div>
-            <div class="modal-body">
-                {% if form.taakopdracht %}
-                <form
-                    action="{% url 'taak_afronden' melding.uuid %}"
-                    method="post"
-                    class="form--horizontal"
-                    data-controller=""
-                    data-turbo-frame="_top"
-                    enctype="multipart/form-data"
-                >
-
+                    data-action="detail#closeModal"></button>
+        </div>
+        <div class="modal-body">
+            {% if form.taakopdracht %}
+                <form action="{% url 'taak_afronden' melding.uuid %}"
+                      method="post"
+                      class="form--horizontal"
+                      data-controller=""
+                      data-turbo-frame="_top"
+                      enctype="multipart/form-data">
                     {% csrf_token %}
-
                     {{ form.taakopdracht|render_rotterdam_formulier }}
                     {{ form.resolutie|render_rotterdam_formulier }}
-
-                    <div data-controller="bijlagen">
-                        {{ form.bijlagen|render_rotterdam_formulier }}
-                    </div>
-                    <div class="form-control__with-helptext">
-                        {{ form.omschrijving_intern|render_rotterdam_formulier }}
-                    </div>
+                    <div data-controller="bijlagen">{{ form.bijlagen|render_rotterdam_formulier }}</div>
+                    <div class="form-control__with-helptext">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
                     <div class="form-row btn-row">
-                        <button
-                            type="reset"
-                            class="btn btn-tertiary"
-                            data-controller="detail"
-                            data-action="detail#closeModal"
-                            data-detail-target="modalAfhandelen"
-                        >
+                        <button type="reset"
+                                class="btn btn-tertiary"
+                                data-controller="detail"
+                                data-action="detail#closeModal"
+                                data-detail-target="modalAfhandelen">
                             <span>Annuleren</span>
                         </button>
-                        <button
-                            type="submit"
-                            class="btn btn-action"
-                        >
+                        <button type="submit" class="btn btn-action">
                             <span>Taak afronden</span>
                         </button>
                     </div>
                 </form>
-                {% else %}
+            {% else %}
                 Alle taken zijn afgerond
-                {% endif %}
-            </div>
+            {% endif %}
         </div>
     </div>
+</div>
 </turbo-frame>

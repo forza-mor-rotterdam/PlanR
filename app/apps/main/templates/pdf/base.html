@@ -3,13 +3,18 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{% block title %}PlanR{% endblock %}</title>
+        <title>
+            {% block title %}
+                PlanR
+            {% endblock title %}
+        </title>
     </head>
     <body>
-    {% include 'pdf/pageheader.html' with title="Serviceverzoek" %}
+        {% include "pdf/pageheader.html" with title="Serviceverzoek" %}
         <main>
             <div class="container">
-                {% block body %}{% endblock %}
+                {% block body %}
+                {% endblock body %}
             </div>
         </main>
         <div class="spinner"></div>

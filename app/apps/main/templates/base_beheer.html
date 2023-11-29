@@ -1,15 +1,13 @@
 {% extends "base.html" %}
-
-{% block title %}PlanR beheer{% endblock %}
-
+{% block title %}
+    PlanR beheer
+{% endblock title %}
 {% block pageheader %}
-    {% with hide_menu=True screen_wide=True page_title="PlaRR" %}
-    {{ block.super }}
-    {% endwith %}
-{% endblock %}
-
+    {% with hide_menu=True screen_wide=True page_title="PlaRR" %}{{ block.super }}{% endwith %}
+{% endblock pageheader %}
 <main data-controller="main">
-    <div class="{% block container_class %}container container--wide{% endblock %}">
-        {% block body %}{% endblock %}
+    <div class="{% block container_class %}container container--wide{% endblock container_class %}">
+        {% block body %}
+        {% endblock body %}
     </div>
 </main>

@@ -1,7 +1,7 @@
 <legend class="divided">
     <h2>
         {% with template_name="icons/"|add:icon_name|stringformat:"s"|add:".svg" %}
-        {% include template_name %}
+            {% include template_name %}
         {% endwith %}
         {{ title }}
     </h2>

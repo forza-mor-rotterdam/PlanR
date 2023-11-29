@@ -1,9 +1,9 @@
 {% load webpack_static from webpack_loader %}
-
 <header data-testid="pageHeader">
     <div class="container">
         <a href="{% url 'root' %}">
-            <img src="{{base_url}}{% webpack_static 'images/assets/images/logo-organisatie.png' %}" alt="Logo organisatie" />
+            <img src="{{ base_url }}{% webpack_static 'images/assets/images/logo-organisatie.png' %}"
+                 alt="Logo organisatie" />
         </a>
     </div>
 </header>
