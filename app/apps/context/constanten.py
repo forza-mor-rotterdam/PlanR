@@ -6,7 +6,7 @@ from django.http import QueryDict
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from utils.datetime import stringdatetime_naar_datetime
-from utils.diversen import get_max_gewicht_locatie, string_based_lookup
+from utils.diversen import string_based_lookup
 
 
 class StandaardKolom:
@@ -121,10 +121,17 @@ class AdresKolom(StandaardKolom):
 
     def td_label(self):
         default = "-"
-        max_locatie = get_max_gewicht_locatie(self.context)
-        straatnaam = max_locatie.get("straatnaam", "")
-        huisnummer = max_locatie.get("huisnummer", "")
-        return f"{string.capwords(straatnaam)} {huisnummer}" if straatnaam else default
+        locatie_key = "melding.locaties_voor_melding.0"
+        if locatie := string_based_lookup(
+            self.context, locatie_key, not_found_value={}
+        ):
+            straatnaam = locatie.get("straatnaam", "")
+            huisnummer = locatie.get("huisnummer", "")
+            return (
+                f"{string.capwords(straatnaam)} {huisnummer}" if straatnaam else default
+            )
+
+        return default
 
 
 class AdresBuurtWijkKolom(StandaardKolom):
@@ -135,49 +142,44 @@ class AdresBuurtWijkKolom(StandaardKolom):
 
     def td_label(self):
         default = "-"
-        max_locatie = get_max_gewicht_locatie(self.context)
-        straatnaam = max_locatie.get("straatnaam", "")
-        huisnummer = max_locatie.get("huisnummer", "")
-        buurt = max_locatie.get("buurtnaam", "")
-        wijk = max_locatie.get("wijknaam", "")
+        locatie_key = "melding.locaties_voor_melding.0"
+        if locatie := string_based_lookup(
+            self.context, locatie_key, not_found_value={}
+        ):
+            straatnaam = locatie.get("straatnaam", "")
+            huisnummer = locatie.get("huisnummer", "")
+            buurt = locatie.get("buurt", "")
+            wijk = locatie.get("wijk", "")
 
-        lijst = []
-        if buurt:
-            lijst.append(buurt)
-        if wijk:
-            lijst.append(wijk)
+            lijst = []
+            if len(buurt) > 0:
+                lijst.append(buurt)
+            if len(wijk) > 0:
+                lijst.append(wijk)
 
-        return (
-            f"{string.capwords(straatnaam)} {huisnummer}" + "<br>" + ", ".join(lijst)
-            if lijst
-            else default
-        )
+            return (
+                f"{string.capwords(straatnaam)} {huisnummer}"
+                + "<br>"
+                + ", ".join(lijst)
+                if lijst
+                else default
+            )
 
 
 class WijkKolom(StandaardKolom):
     _key = "wijk"
     _kolom_hoofd = "Wijk"
+    _kolom_inhoud = "melding.locaties_voor_melding.0.wijknaam"
     _ordering_value = "locaties_voor_melding__wijknaam"
     _td_standaard_classes = "nowrap"
-
-    def td_label(self):
-        default = "-"
-        max_locatie = get_max_gewicht_locatie(self.context)
-        wijknaam = max_locatie.get("wijknaam", "")
-        return string.capwords(wijknaam) if wijknaam else default
 
 
 class BuurtKolom(StandaardKolom):
     _key = "buurt"
     _kolom_hoofd = "Buurt"
+    _kolom_inhoud = "melding.locaties_voor_melding.0.buurtnaam"
     _ordering_value = "locaties_voor_melding__buurtnaam"
     _td_standaard_classes = "nowrap"
-
-    def td_label(self):
-        default = "-"
-        max_locatie = get_max_gewicht_locatie(self.context)
-        buurtnaam = max_locatie.get("buurtnaam", "")
-        return string.capwords(buurtnaam) if buurtnaam else default
 
 
 class MeldingIdKolom(StandaardKolom):
@@ -196,16 +198,14 @@ class MeldingIdKolom(StandaardKolom):
 class BegraafplaatsKolom(StandaardKolom):
     _key = "begraafplaats"
     _kolom_hoofd = "Begraafplaats"
+    _kolom_inhoud = "melding.locaties_voor_melding.0.begraafplaats"
     _ordering_value = "locaties_voor_melding__begraafplaats"
     _td_standaard_classes = "nowrap"
 
     def td_label(self):
         default = "-"
-        max_locatie = get_max_gewicht_locatie(self.context)
-        begraafplaats = max_locatie.get("begraafplaats", "")
-        begraafplaatsen = self.context.get("filter_options", {}).get(
-            "begraafplaats", {}
-        )
+        begraafplaats = string_based_lookup(self.context, self._kolom_inhoud)
+        begraafplaatsen = self.context.get("filter_options", {}).get(self._key, {})
         begraafplaats_naam = begraafplaatsen.get(begraafplaats, begraafplaats)
         return begraafplaats_naam[0] if begraafplaats_naam else default
 
@@ -213,34 +213,25 @@ class BegraafplaatsKolom(StandaardKolom):
 class GrafnummerKolom(StandaardKolom):
     _key = "grafnummer"
     _kolom_hoofd = "Grafnummer"
+    _kolom_inhoud = "melding.locaties_voor_melding.0.grafnummer"
     _ordering_value = "locaties_voor_melding__grafnummer"
-
-    def td_label(self):
-        default = "-"
-        max_locatie = get_max_gewicht_locatie(self.context)
-        grafnummer = max_locatie.get("grafnummer", "")
-        return string.capwords(grafnummer) if grafnummer else default
 
 
 class VakKolom(StandaardKolom):
     _key = "vak"
     _kolom_hoofd = "Vak"
+    _kolom_inhoud = "melding.locaties_voor_melding.0.vak"
     _ordering_value = "locaties_voor_melding__vak"
-
-    def td_label(self):
-        default = "-"
-        max_locatie = get_max_gewicht_locatie(self.context)
-        vak = max_locatie.get("vak", "")
-        return string.capwords(vak) if vak else default
 
 
 class OnderwerpKolom(StandaardKolom):
     _key = "onderwerp"
     _kolom_hoofd = "Onderwerp"
+    _kolom_inhoud = "melding.onderwerpen"
 
     def td_label(self):
         default = "-"
-        onderwerpen_urls = string_based_lookup(self.context, "melding.onderwerpen")
+        onderwerpen_urls = string_based_lookup(self.context, self._kolom_inhoud)
         if not onderwerpen_urls:
             return default
         onderwerp_namen = [
@@ -252,13 +243,14 @@ class OnderwerpKolom(StandaardKolom):
 class OrigineelAangemaaktKolom(StandaardKolom):
     _key = "origineel_aangemaakt"
     _kolom_hoofd = "Datum"
+    _kolom_inhoud = "melding.origineel_aangemaakt"
     _ordering_value = "origineel_aangemaakt"
     _td_standaard_classes = "nowrap"
 
     def td_label(self):
         default = "-"
         origineel_aangemaakt = string_based_lookup(
-            self.context, "melding.origineel_aangemaakt", not_found_value=""
+            self.context, self._kolom_inhoud, not_found_value=""
         )
         if not origineel_aangemaakt:
             return default
@@ -270,6 +262,7 @@ class OrigineelAangemaaktKolom(StandaardKolom):
 class StatusKolom(StandaardKolom):
     _key = "status"
     _kolom_hoofd = "Status"
+    _kolom_inhoud = "melding.status.naam"
     _ordering_value = "status__naam"
     _td_standaard_classes = "nowrap"
 
@@ -286,7 +279,7 @@ class StatusKolom(StandaardKolom):
         if aantal_actieve_taken:
             aantal_actieve_taken = f"({aantal_actieve_taken})"
         status_naam = string_based_lookup(
-            self.context, "melding.status.naam", not_found_value=""
+            self.context, self._kolom_inhoud, not_found_value=""
         )
         return mark_safe(
             f'<span class="display--flex--center badge badge--{colors.get(status_naam, "lightblue")}">{VERTALINGEN.get(status_naam, status_naam)}{aantal_actieve_taken}</span>'
@@ -296,12 +289,13 @@ class StatusKolom(StandaardKolom):
 class MeldRNummerKolom(StandaardKolom):
     _key = "meldr_nummer"
     _kolom_hoofd = "MeldR nummer"
+    _kolom_inhoud = "melding.meta.meldingsnummerField"
     _ordering_value = "meta__meldingsnummerField"
     _td_standaard_classes = "nowrap"
 
     def td_label(self):
         meldr_nummer = string_based_lookup(
-            self.context, "melding.meta.meldingsnummerField", not_found_value=""
+            self.context, self._kolom_inhoud, not_found_value=""
         )
         if not meldr_nummer:
             meldr_nummer = string_based_lookup(
