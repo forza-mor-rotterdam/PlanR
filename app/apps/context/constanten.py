@@ -148,8 +148,8 @@ class AdresBuurtWijkKolom(StandaardKolom):
         ):
             straatnaam = locatie.get("straatnaam", "")
             huisnummer = locatie.get("huisnummer", "")
-            buurt = locatie.get("buurt", "")
-            wijk = locatie.get("wijk", "")
+            buurt = locatie.get("buurtnaam", "")
+            wijk = locatie.get("wijknaam", "")
 
             lijst = []
             if len(buurt) > 0:

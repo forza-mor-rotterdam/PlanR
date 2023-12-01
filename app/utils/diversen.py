@@ -41,13 +41,3 @@ def string_based_lookup(local_vars, lookup_str, separator=".", not_found_value="
         result = not_found_value
 
     return result if result else not_found_value
-
-
-def get_max_gewicht_locatie(context, locaties_key="melding.locaties_voor_melding"):
-    if locaties := string_based_lookup(context, locaties_key, not_found_value=[]):
-        if max_locatie := max(
-            locaties, key=lambda locatie: locatie.get("gewicht", 0), default=None
-        ):
-            return max_locatie
-
-    return {}
