@@ -53,6 +53,7 @@
                             class="form-locatie-aanpassen"
                             data-controller="locatieaanpassenformulier"
                             data-locatieaanpassenformulier-locatie-value="{{ melding.locaties_voor_melding|dictsort:'gewicht'|last|json_encode }}"
+                            data-turbo-frame="overview"
                             enctype="multipart/form-data"
                             id="afhandelForm"
                             novalidate
