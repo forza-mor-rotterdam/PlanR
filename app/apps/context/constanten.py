@@ -147,21 +147,21 @@ class AdresBuurtWijkKolom(StandaardKolom):
             self.context, locatie_key, not_found_value={}
         ):
             straatnaam = locatie.get("straatnaam", "")
-            huisnummer = locatie.get("huisnummer", "")
+            huisnummer = (
+                f' {locatie.get("huisnummer")}' if locatie.get("huisnummer") else ""
+            )
             buurt = locatie.get("buurtnaam", "")
             wijk = locatie.get("wijknaam", "")
 
             lijst = []
-            if len(buurt) > 0:
+            if buurt:
                 lijst.append(buurt)
-            if len(wijk) > 0:
+            if wijk:
                 lijst.append(wijk)
 
             return (
-                f"{string.capwords(straatnaam)} {huisnummer}"
-                + "<br>"
-                + ", ".join(lijst)
-                if lijst
+                f"{string.capwords(straatnaam)}{huisnummer}<br>{', '.join(lijst)}"
+                if straatnaam
                 else default
             )
 
