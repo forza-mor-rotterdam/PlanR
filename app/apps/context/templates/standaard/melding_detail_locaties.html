@@ -15,9 +15,7 @@
             {% endif %}
         </h2>
         <div>
-            {% comment %} <ul class="list-clean"> {% endcomment %}
             {% with hoogste_gewicht_locatie=melding.locaties_voor_melding|dictsort:"gewicht"|last %}
-                {% comment %} <li> {% endcomment %}
                 {% if hoogste_gewicht_locatie %}
                     <h4>Huidige Locatie</h4>
                     <div class="locatie-container">
@@ -75,15 +73,13 @@
                         {% endif %}
                     </div>
                 {% endif %}
-                {% comment %} </li> {% endcomment %}
-                <details>
-                    {% for locatie in melding.locaties_voor_melding|dictsortreversed:"gewicht" %}
-                        {% if forloop.first and forloop.first != forloop.last %}
+                {% for locatie in melding.locaties_voor_melding|dictsortreversed:"gewicht" %}
+                    {% if forloop.first and forloop.first != forloop.last %}
+                        <details>
                             <summary>
                                 <h4>Oude Locatie(s)</h4>
                             </summary>
                         {% endif %}
-                        {% comment %} <li> {% endcomment %}
                         {% if not forloop.first %}
                             <div class="locatie-container display--flex--md">
                                 <ul class="list-clean">
@@ -127,12 +123,10 @@
                                 </ul>
                             </div>
                         {% endif %}
-                        {% comment %} </li> {% endcomment %}
                         {% if not forloop.last and not forloop.first %}<hr class="divider">{% endif %}
-                    {% endfor %}
-                </details>
+                        {% if forloop.last %}</details>{% endif %}
+                {% endfor %}
             {% endwith %}
-            {% comment %} </ul> {% endcomment %}
         </div>
     </div>
 </section>
