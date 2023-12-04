@@ -136,7 +136,7 @@ class RechtengroepVerwijderenPermissie(BasisPermissie):
 
 class StandaardExterneOmschrijvingLijstBekijkenPermissie(BasisPermissie):
     naam = "Standaard externe omschrijving lijst bekijken"
-    codenaam = "standaard_externe_omschrijving_lijst"
+    codenaam = "standaard_externe_omschrijving_lijst_bekijken"
 
 
 class StandaardExterneOmschrijvingAanmakenPermissie(BasisPermissie):
@@ -157,6 +157,14 @@ class StandaardExterneOmschrijvingAanpassenPermissie(BasisPermissie):
 class StandaardExterneOmschrijvingVerwijderenPermissie(BasisPermissie):
     naam = "Standaard externe omschrijving verwijderen"
     codenaam = "standaard_externe_omschrijving_verwijderen"
+
+
+# Rechten voor Locatie
+
+
+class LocatieAanpassenPermissie(BasisPermissie):
+    naam = "Locatie aanpassen"
+    codenaam = "locatie_aanpassen"
 
 
 gebruikersgroep_permissies = (
@@ -190,6 +198,7 @@ gebruikersgroep_permissies = (
     StandaardExterneOmschrijvingBekijkenPermissie,
     StandaardExterneOmschrijvingAanpassenPermissie,
     StandaardExterneOmschrijvingVerwijderenPermissie,
+    LocatieAanpassenPermissie,
 )
 
 gebruikersgroep_permissie_opties = [

@@ -1,11 +1,11 @@
 {% load vind_in_dict from querystring_tags %}
 
 <h1>
-    {% for locatie in melding.locaties_voor_melding %}
-    {% if locatie.straatnaam %}
-    {{ locatie.straatnaam }}{% if locatie.huisnummer %} {{ locatie.huisnummer }}{% endif %}
-    {% else %}
-    Melding {{melding.id}}
-    {% endif %}
-    {% endfor %}
+    {% with hoogste_gewicht_locatie=melding.locaties_voor_melding|dictsort:"gewicht"|last %}
+        {% if hoogste_gewicht_locatie.straatnaam %}
+            {{ hoogste_gewicht_locatie.straatnaam }}{% if hoogste_gewicht_locatie.huisnummer %} {{ hoogste_gewicht_locatie.huisnummer }}{% endif %}
+        {% else %}
+            Melding {{ melding.id }}
+        {% endif %}
+    {% endwith %}
 </h1>

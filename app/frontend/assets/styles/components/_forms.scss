@@ -70,7 +70,9 @@ fieldset {
     width: 100%;
     margin: 0.5rem 0 1.5rem;
 
-    &:hover:not(:focus):not([disabled]) {
+    option[disabled],
+    option[read-only],
+    &:hover:not(:focus):not([disabled]):not([read-only]) {
         border-color: $hover-border-color;
         box-shadow: 0 0 0 1px $hover-border-color;
     }
@@ -81,7 +83,9 @@ fieldset {
         box-shadow: 0 0 0 1px $focus-border-color;
     }
     &:disabled,
-    option[disabled] {
+    &:read-only,
+    option[disabled],
+    option[read-only] {
         color: $text-muted;
     }
     &.search {
@@ -90,14 +94,14 @@ fieldset {
     }
 }
 
-.is-invalid:is(.form-control, .form-select):hover:not(:focus):not([disabled]) {
+.is-invalid:is(.form-control, .form-select):hover:not(:focus):not([disabled]):not([read-only]) {
     box-shadow:
         0 1px 0 $invalid-color,
         0 0 0 1px $green-tint01;
 }
 
-.form-control:hover:not(:focus):not([disabled]),
-.form-select:hover:not(:focus):not([disabled]) {
+.form-control:hover:not(:focus):not([disabled]):not([read-only]),
+.form-select:hover:not(:focus):not([disabled]):not([read-only]) {
     border-color: $green-tint01;
     box-shadow: 0 0 0 1px $green-tint01;
 }
@@ -538,5 +542,19 @@ textarea {
         padding: 0;
         border: 0;
         pointer-events: none;
+    }
+}
+
+.form-locatie-aanpassen {
+    .container--flex {
+        margin-top: 2 * $alert-padding-y;
+        display: flex;
+        flex-wrap: wrap;
+        column-gap: $alert-padding-x;
+
+        > div {
+            flex: 1 1 48%;
+            margin-bottom: $alert-padding-x;
+        }
     }
 }
