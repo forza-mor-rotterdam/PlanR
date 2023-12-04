@@ -26,7 +26,7 @@
                             <summary>
                                 {% if not melding.afgesloten_op or not forloop.first %}
                                 {% for cel in next_row_data.row %}
-                                {% if cel == 1 or cel == 0 %}
+                                {% if cel == 1 or cel == 0 or cel == 3 %}
                                 <span class="line {% if forloop.counter0 == 0 %}line-melding{% else %}line-taak{% endif %} {% if not row_data.afgesloten %}line--dashed{%endif%}" style="left: {{ forloop.counter|multiply:20|add:6 }}px"></span>
                                 {% endif %}
                                 {% endfor %}
@@ -41,23 +41,21 @@
                                 {% endif %}
 
                                 {% for cel in row_data.row %}
-                                {% if cel == 1 or cel == 2 %}
+                                {% if cel == 1 or cel == 2 or cel == 3 %}
                                 <span class="event {% if forloop.counter0 == 0 %}event-melding{% else %}event-taak{% endif %}" style="left: {{ forloop.counter|multiply:20 }}px"></span>
                                 {% endif %}
                                 {% endfor %}
 
                                 {% if not forloop.first %}
-                                    <strong>
-                                    {% if row_data.mg.taakgebeurtenis %}
-                                        {% with taakopdracht=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}
-                                        {{taakopdracht.titel}}{% if row_data.mg.taakgebeurtenis.taakstatus.naam != "nieuw" %}: {{taakopdracht.resolutie|vertaal}}{% endif %}
-                                        {% endwith %}
-                                    {% elif row_data.mg.locatie %}
-                                        melding: locatie gewijzigd
-                                    {% else %}
-                                        melding: {% if row_data.mg.status %}{{row_data.mg.status.naam}}{% else %}communicatie{% endif %}
-                                    {% endif %}
-                                    </strong>
+                                <strong>
+                                {% if row_data.mg.taakgebeurtenis %}
+                                    {% with taakopdracht=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}
+                                    {{taakopdracht.titel}}{% if row_data.mg.taakgebeurtenis.taakstatus.naam != "nieuw" %}: {% if row_data.mg.taakgebeurtenis.taakstatus.naam == "voltooid" %}{{taakopdracht.resolutie|vertaal}}{% else %}{{row_data.mg.taakgebeurtenis.taakstatus.naam}}{% endif %}{% endif %}
+                                    {% endwith %}
+                                {% else %}
+                                    melding: {% if row_data.mg.status %}{{row_data.mg.status.naam}}{% else %}communicatie{% endif %}
+                                {% endif %}
+                                </strong>
                                 {% endif %}
                             </summary>
                             <div class="content">
@@ -85,6 +83,10 @@
                                     {% if row_data.mg.omschrijving_intern %}
                                         <dt>Interne opmerking</dt>
                                         <dd>{{ row_data.mg.omschrijving_intern }}</dd>
+                                    {% endif %}
+                                    {% if row_data.mg.taakgebeurtenis.additionele_informatie.uitvoerder %}
+                                    <dt>Uitvoerder</dt>
+                                    <dd>{{ row_data.mg.taakgebeurtenis.additionele_informatie.uitvoerder|gebruiker_middels_email }}</dd>
                                     {% endif %}
                                 {% else %}
                                     {% if row_data.mg.gebruiker %}
