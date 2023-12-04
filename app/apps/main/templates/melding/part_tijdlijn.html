@@ -22,14 +22,6 @@
                         <summary>
                             {% if not melding.afgesloten_op or not forloop.first %}
                                 {% for cel in next_row_data.row %}
-                                    {% if cel == 1 or cel == 0 %}
-                                        <span class="line {% if forloop.counter0 == 0 %}line-melding{% else %}line-taak{% endif %} {% if not row_data.afgesloten %}line--dashed{% endif %}"
-                                              style="left: {{ forloop.counter|multiply:20|add:6 }}px"></span>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
-                            {% if melding.afgesloten_op and forloop.counter0 == 1 %}
-                                {% for cel in next_row_data.row %}
                                     {% if cel == 1 or cel == 0 or cel == 3 %}
                                         <span class="line {% if forloop.counter0 == 0 %}line-melding{% else %}line-taak{% endif %} {% if not row_data.afgesloten %}line--dashed{% endif %}"
                                               style="left: {{ forloop.counter|multiply:20|add:6 }}px"></span>
