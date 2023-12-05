@@ -115,7 +115,7 @@ class MSBNummerKolom(StandaardKolom):
 
 class AdresKolom(StandaardKolom):
     _key = "adres"
-    _kolom_hoofd = "Adres"
+    _kolom_hoofd = "Ter hoogte van"
     _td_standaard_classes = "nowrap"
     _ordering_value = "locaties_voor_melding__straatnaam"
 
@@ -136,7 +136,7 @@ class AdresKolom(StandaardKolom):
 
 class AdresBuurtWijkKolom(StandaardKolom):
     _key = "adres_buurt_wijk"
-    _kolom_hoofd = "Adres"
+    _kolom_hoofd = "Ter hoogte van"
     _td_standaard_classes = "nowrap"
     _ordering_value = "locaties_voor_melding__straatnaam"
 
