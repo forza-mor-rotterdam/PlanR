@@ -6,161 +6,189 @@
 {% load context_template from context_tags %}
 {% load render_onderwerp from melding_tags %}
 {% load json_encode from json_tags %}
-
 {% block body %}
-{% context_template "melding_detail_locaties.html" as locatie_template %}
-{% context_template "melding_detail_titel.html" as titel_template %}
-{% context_template "melding_detail_melder.html" as melder_template %}
-{% context_template "melding_detail_acties.html" as acties_template %}
-<turbo-frame id="overview">
-    <div
-        data-controller="detail"
-        data-detail-incident-object-value="{{ melding|json_encode }}"
-        {% with highest_weight_locatie=melding.locaties_voor_melding|dictsort:"gewicht"|last %}
-            {% if highest_weight_locatie %}
-                data-detail-incident-y-value="{{ highest_weight_locatie.geometrie.coordinates.0 }}"
-                data-detail-incident-x-value="{{ highest_weight_locatie.geometrie.coordinates.1 }}"
-            {% endif %}
-        {% endwith %}
-    >
-    <div class="border-green print-only"></div>
-
-    <div class="page__detail">
-        <div>
-            <a href="{% url 'melding_lijst' %}?{{overview_querystring}}" data-turbo-action='advance' class="link--back">
-                <svg width="25" height="16" viewBox="0 0 25 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9.15173 1.73256L7.73753 0.318359L1.44704 6.60885L1.4142 6.576L0 7.9902L1.4115 9.4017L1.37867 9.43453L7.67186 15.7277L9.08606 14.3135L3.7726 9.00006H24.0098V7.00006H3.88423L9.15173 1.73256Z" fill="#404B4F"/>
-                </svg>
-                Terug
-            </a>
-        </div>
-        <div id="id_maincontent">
-            <div class="grid-container">
-                <div class="grid-item">
-                    <div>
-                        {% include titel_template %}
-                    </div>
-                </div>
-
-                <div class="grid-item bottom-left">
-                    <div class="">
-                        {% if melding.status %}
-                        <span class="badge badge--{% if melding.status.naam == 'afgehandeld'%}green{% elif melding.status.naam == 'controle' %}yellow{% elif melding.status.naam == 'in_behandeling' %}darkblue{% elif melding.status.naam == 'geannuleerd' %}red{% else %}lightblue{% endif %}">{{melding.status.naam|vertaal}}{% if melding.status.naam == 'afgehandeld' or melding.status.naam == 'geannuleerd' %} ({{melding.resolutie}}){% endif %}</span>
-                        {% endif %}
-                        {% if aantal_actieve_taken %}
-                            <span class="badge badge--darkblue">{{aantal_actieve_taken}} {% if aantal_actieve_taken > 1 %}taken{%else%}taak{%endif%} actief</span>
-                        {% else %}
-                            <span class="badge badge--darkblue">0 taken actief</span>
-                        {% endif %}
-                        {% if aantal_voltooide_taken %}
-                            <span class="badge badge--darkblue">{{aantal_voltooide_taken}} {% if aantal_voltooide_taken > 1 %}taken{%else%}taak{%endif%} voltooid</span>
-                        {% else %}
-                            <span class="badge badge--darkblue">0 taken voltooid</span>
-                        {% endif %}
-                    </div>
-                </div>
+    {% context_template "melding_detail_locaties.html" as locatie_template %}
+    {% context_template "melding_detail_titel.html" as titel_template %}
+    {% context_template "melding_detail_melder.html" as melder_template %}
+    {% context_template "melding_detail_acties.html" as acties_template %}
+    <turbo-frame id="overview">
+    <div data-controller="detail"
+         data-detail-incident-object-value="{{ melding|json_encode }}"
+         {% with highest_weight_locatie=melding.locaties_voor_melding|dictsort:"gewicht"|last %}
+         {% if highest_weight_locatie %} data-detail-incident-y-value="{{ highest_weight_locatie.geometrie.coordinates.0 }}" data-detail-incident-x-value="{{ highest_weight_locatie.geometrie.coordinates.1 }}" {% endif %}
+         {% endwith %}>
+        <div class="border-green print-only"></div>
+        <div class="page__detail">
+            <div>
+                <a href="{% url 'melding_lijst' %}?{{ overview_querystring }}"
+                   data-turbo-action='advance'
+                   class="link--back">
+                    <svg width="25"
+                         height="16"
+                         viewBox="0 0 25 16"
+                         fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9.15173 1.73256L7.73753 0.318359L1.44704 6.60885L1.4142 6.576L0 7.9902L1.4115 9.4017L1.37867 9.43453L7.67186 15.7277L9.08606 14.3135L3.7726 9.00006H24.0098V7.00006H3.88423L9.15173 1.73256Z" fill="#404B4F" />
+                    </svg>
+                    Terug
+                </a>
             </div>
-            <div class="grid-container">
-                <div class="grid-item">
-                    <section class="section--seperated section--imageslider" data-testid="detailPhotoviewer" {% if melding.bijlagen|length < 2 %}style="border: 0;"{% endif %}>
-                        <div class="">
-                        {% with bijlagen_aantal=melding.bijlagen|length bijlagen_extra_aantal=bijlagen_extra|length %}
-                        {% if melding.bijlagen|length > 0 or bijlagen_extra|length != 0 %}
-                            <div class="container__imageslider" data-detail-target="imageSliderContainer" data-action="scroll->detail#onScrollSlider">
-                                <ul
-                                    class="list-clean imageslider"
-                                    style="width: calc(100% * {{ bijlagen_aantal|add:bijlagen_extra_aantal }})"
-                                >
-                                    {% for bijlage in melding.bijlagen %}
-                                    <li class="container__image" tabindex="0">
-                                        <div class="image" style="background-image: url('{{bijlage.afbeelding_relative_url}}')" data-detail-target="selectedImage">
-                                            <span>Foto van melder</span>
-                                        </div>
-                                    </li>
-                                    {% endfor %}
-                                    {% for b in bijlagen_extra reversed %}
-                                    <li class="container__image" tabindex="0">
-                                        <div class="image" style="background-image: url('{{b.afbeelding_relative_url}}')" data-detail-target="selectedImage">
-                                            <span>Foto toegevoegd door medewerker</span>
-                                        </div>
-                                    </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                            {% if melding.bijlagen|length > 1 or bijlagen_extra|length != 0 %}
-                                <div class="container__thumbs">
-                                    <ul data-detail-target="thumbList">
-                                        {% for bijlage in melding.bijlagen %}
-                                        <li>
-                                            <button data-action="click->detail#selectImage" data-detail-image-index-param="{{ forloop.counter }}" aria-label="Bekijk afbeelding">
-                                                <div class="container__image">
-                                                    <div class="image" style="background-image:url('{{bijlage.afbeelding_verkleind_relative_url}}');"></div>
-                                                </div>
-                                            </button>
-                                        </li>
-                                        {% endfor %}
-                                        {% for b in bijlagen_extra reversed %}
-                                        <li>
-                                            <button data-action="click->detail#selectImage" data-detail-image-index-param="{{ forloop.counter|add:bijlagen_aantal }}" aria-label="Bekijk afbeelding">
-                                                <div class="container__image">
-                                                    <div class="image" style="background-image:url('{{b.afbeelding_verkleind_relative_url}}');"></div>
-                                                </div>
-                                            </button>
-                                        </li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
+            <div id="id_maincontent">
+                <div class="grid-container">
+                    <div class="grid-item">
+                        <div>{% include titel_template %}</div>
+                    </div>
+                    <div class="grid-item bottom-left">
+                        <div>
+                            {% if melding.status %}
+                                <span class="badge badge--{% if melding.status.naam == 'afgehandeld' %}green{% elif melding.status.naam == 'controle' %}yellow{% elif melding.status.naam == 'in_behandeling' %}darkblue{% elif melding.status.naam == 'geannuleerd' %}red{% else %}lightblue{% endif %}">{{ melding.status.naam|vertaal }}
+                                    {% if melding.status.naam == 'afgehandeld' or melding.status.naam == 'geannuleerd' %}
+                                        ({{ melding.resolutie }})
+                                    {% endif %}
+                                </span>
                             {% endif %}
-                        {% else %}
-                            <div class="background-image"></div>
+                            {% if aantal_actieve_taken %}
+                                <span class="badge badge--darkblue">{{ aantal_actieve_taken }}
+                                    {% if aantal_actieve_taken > 1 %}
+                                        taken
+                                    {% else %}
+                                        taak
+                                    {% endif %}
+                                actief</span>
+                            {% else %}
+                                <span class="badge badge--darkblue">0 taken actief</span>
+                            {% endif %}
+                            {% if aantal_voltooide_taken %}
+                                <span class="badge badge--darkblue">{{ aantal_voltooide_taken }}
+                                    {% if aantal_voltooide_taken > 1 %}
+                                        taken
+                                    {% else %}
+                                        taak
+                                    {% endif %}
+                                voltooid</span>
+                            {% else %}
+                                <span class="badge badge--darkblue">0 taken voltooid</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-container">
+                    <div class="grid-item">
+                        <section class="section--seperated section--imageslider"
+                                 data-testid="detailPhotoviewer"
+                                 {% if melding.bijlagen|length < 2 %}style="border: 0;"{% endif %}>
+                            <div>
+                                {% with bijlagen_aantal=melding.bijlagen|length bijlagen_extra_aantal=bijlagen_extra|length %}
+                                    {% if melding.bijlagen|length > 0 or bijlagen_extra|length != 0 %}
+                                        <div class="container__imageslider"
+                                             data-detail-target="imageSliderContainer"
+                                             data-action="scroll->detail#onScrollSlider">
+                                            <ul class="list-clean imageslider"
+                                                style="width: calc(100% * {{ bijlagen_aantal|add:bijlagen_extra_aantal }})">
+                                                {% for bijlage in melding.bijlagen %}
+                                                    <li class="container__image" tabindex="0">
+                                                        <div class="image"
+                                                             style="background-image: url('{{ bijlage.afbeelding_relative_url }}')"
+                                                             data-detail-target="selectedImage">
+                                                            <span>Foto van melder</span>
+                                                        </div>
+                                                    </li>
+                                                {% endfor %}
+                                                {% for b in bijlagen_extra reversed %}
+                                                    <li class="container__image" tabindex="0">
+                                                        <div class="image"
+                                                             style="background-image: url('{{ b.afbeelding_relative_url }}')"
+                                                             data-detail-target="selectedImage">
+                                                            <span>Foto toegevoegd door medewerker</span>
+                                                        </div>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        {% if melding.bijlagen|length > 1 or bijlagen_extra|length != 0 %}
+                                            <div class="container__thumbs">
+                                                <ul data-detail-target="thumbList">
+                                                    {% for bijlage in melding.bijlagen %}
+                                                        <li>
+                                                            <button data-action="click->detail#selectImage"
+                                                                    data-detail-image-index-param="{{ forloop.counter }}"
+                                                                    aria-label="Bekijk afbeelding">
+                                                                <div class="container__image">
+                                                                    <div class="image"
+                                                                         style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url }}')">
+                                                                    </div>
+                                                                </div>
+                                                            </button>
+                                                        </li>
+                                                    {% endfor %}
+                                                    {% for b in bijlagen_extra reversed %}
+                                                        <li>
+                                                            <button data-action="click->detail#selectImage"
+                                                                    data-detail-image-index-param="{{ forloop.counter|add:bijlagen_aantal }}"
+                                                                    aria-label="Bekijk afbeelding">
+                                                                <div class="container__image">
+                                                                    <div class="image"
+                                                                         style="background-image:url('{{ b.afbeelding_verkleind_relative_url }}')">
+                                                                    </div>
+                                                                </div>
+                                                            </button>
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        {% endif %}
+                                    {% else %}
+                                        <div class="background-image"></div>
+                                    {% endif %}
+                                {% endwith %}
+                            </div>
+                        </section>
+                        {% if melding.bijlagen|length > 0 or bijlagen_extra|length != 0 %}
+                            <section class="section--seperated section--imagelist print-only">
+                                <div class="container__details">
+                                    {% with bijlagen_aantal=melding.bijlagen|length bijlagen_extra_aantal=bijlagen_extra|length %}
+                                        {% if melding.bijlagen|length > 0 or bijlagen_extra|length != 0 %}
+                                            <ul class="list-clean">
+                                                {% for bijlage in melding.bijlagen %}
+                                                    <li class="container__image">
+                                                        <div class="image">
+                                                            <img src="{{ bijlage.afbeelding_relative_url }}" alt="" />
+                                                            <span>Foto van melder</span>
+                                                        </div>
+                                                    </li>
+                                                {% endfor %}
+                                                {% for b in bijlagen_extra %}
+                                                    <li class="container__image">
+                                                        <div class="image">
+                                                            <img src="{{ b.afbeelding_relative_url }}" alt="" />
+                                                            <span>Foto toegevoegd door medewerker</span>
+                                                        </div>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                    {% endwith %}
+                                </div>
+                            </section>
                         {% endif %}
-                        {% endwith %}
-                        </div>
-                    </section>
-                    {% if melding.bijlagen|length > 0 or bijlagen_extra|length != 0%}
-                    <section class="section--seperated section--imagelist print-only">
-                        <div class="container__details">
-                            {% with bijlagen_aantal=melding.bijlagen|length bijlagen_extra_aantal=bijlagen_extra|length %}
-                            {% if melding.bijlagen|length > 0 or bijlagen_extra|length != 0 %}
-                            <ul class="list-clean">
-                                {% for bijlage in melding.bijlagen %}
-                                <li class="container__image">
-                                    <div class="image">
-                                        <img src="{{bijlage.afbeelding_relative_url}}" alt=""/>
-                                        <span>Foto van melder</span>
-                                    </div>
-                                </li>
-                                {% endfor %}
-                                {% for b in bijlagen_extra %}
-                                <li class="container__image">
-                                    <div class="image">
-                                        <img src="{{b.afbeelding_relative_url}}" alt=""/>
-                                        <span>Foto toegevoegd door medewerker</span>
-                                    </div>
-                                </li>
-                                {% endfor %}
-                            </ul>
-
-                            {%endif%}
-                            {%endwith%}
-                        </div>
-                    </section>
-                    {% endif %}
-
-                    <section class="section--seperated" data-testid="detailMelding">
-                        <div class="container__details melding">
-                            <h2>
-                                <svg width="20" height="22" viewBox="0 0 20 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M4 4H7V6H4V4Z" fill="#00811F"/>
-                                    <path d="M7 8H4V10H7V8Z" fill="#00811F"/>
-                                    <path d="M4 12H7V14H4V12Z" fill="#00811F"/>
-                                    <path d="M7 16H4V18H7V16Z" fill="#00811F"/>
-                                    <path d="M8 4H16V6H8V4Z" fill="#00811F"/>
-                                    <path d="M16 8H8V10H16V8Z" fill="#00811F"/>
-                                    <path d="M8 12H16V14H8V12Z" fill="#00811F"/>
-                                    <path d="M16 16H8V18H16V16Z" fill="#00811F"/>
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0 0V22H20V0H0ZM18 2H2V20H18V2Z" fill="#00811F"/>
-                                </svg>
+                        <section class="section--seperated" data-testid="detailMelding">
+                            <div class="container__details melding">
+                                <h2>
+                                    <svg width="20"
+                                         height="22"
+                                         viewBox="0 0 20 22"
+                                         fill="none"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M4 4H7V6H4V4Z" fill="#00811F" />
+                                        <path d="M7 8H4V10H7V8Z" fill="#00811F" />
+                                        <path d="M4 12H7V14H4V12Z" fill="#00811F" />
+                                        <path d="M7 16H4V18H7V16Z" fill="#00811F" />
+                                        <path d="M8 4H16V6H8V4Z" fill="#00811F" />
+                                        <path d="M16 8H8V10H16V8Z" fill="#00811F" />
+                                        <path d="M8 12H16V14H8V12Z" fill="#00811F" />
+                                        <path d="M16 16H8V18H16V16Z" fill="#00811F" />
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M0 0V22H20V0H0ZM18 2H2V20H18V2Z" fill="#00811F" />
+                                    </svg>
                                     Melding
                                 </h2>
                                 <div class="display--flex--md">
@@ -201,7 +229,8 @@
                                             <h3 class="h5">Onderwerp</h3>
                                             <p>
                                                 {% for onderwerp in melding.onderwerpen %}
-                                                {% render_onderwerp onderwerp %}{% if not forloop.last %}, {% endif %}
+                                                    {% render_onderwerp onderwerp %}
+                                                    {% if not forloop.last %},{% endif %}
                                                 {% endfor %}
                                             </p>
                                         </li>
@@ -229,37 +258,32 @@
                                 </div>
                             </div>
                         </section>
-
                         {% include locatie_template %}
-
                         {% include melder_template %}
-
                         <div class="border-green print-only"></div>
                     </div>
                     <div class="grid-item aside">
                         {% include acties_template %}
                         {% if melding.status.naam != "afgehandeld" and melding.status.naam != "geannuleerd" %}
-                        <section class="section--seperated">
-                            <turbo-frame id="informatie_toevoegen" src="{% url 'informatie_toevoegen' melding.uuid %}">
-
-                            </turbo-frame>
-                        </section>
+                            <section class="section--seperated">
+                                <turbo-frame id="informatie_toevoegen" src="{% url 'informatie_toevoegen' melding.uuid %}">
+                                </turbo-frame>
+                            </section>
                         {% endif %}
                         <section class="section--seperated" data-testid="detailTijdlijn">
                             {% include "melding/part_tijdlijn.html" %}
                         </section>
                     </div>
-
                 </div>
             </div>
         </div>
-
         <div class="modal" data-detail-target="modalAfhandelen">
-            <div class="modal-backdrop modal-exit" id="modal-backdrop" data-action="click->detail#closeModal"></div>
+            <div class="modal-backdrop modal-exit"
+                 id="modal-backdrop"
+                 data-action="click->detail#closeModal"></div>
             <turbo-frame id="melding_actie_form" class="turboframe-container" data-detail-target="turboActionModal">
-
             </turbo-frame>
         </div>
     </div>
-</turbo-frame>
+    </turbo-frame>
 {% endblock body %}
