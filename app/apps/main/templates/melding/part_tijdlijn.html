@@ -102,7 +102,7 @@
                                                 {{ row_data.mg.gebruiker|gebruiker_middels_email }}
                                             </dd>
                                         {% endif %}
-                                        {% if row_data.mg.taakgebeurtenis.aangemaakt_op %}
+                                        {% if row_data.mg.aangemaakt_op %}
                                             <dt>Datum</dt>
                                             <dd>
                                                 {{ row_data.mg.aangemaakt_op|to_datetime }}
@@ -127,7 +127,7 @@
                                                 {{ row_data.mg.gebruiker|gebruiker_middels_email }}
                                             </dd>
                                         {% endif %}
-                                        {% if row_data.mg.taakgebeurtenis.aangemaakt_op %}
+                                        {% if row_data.mg.aangemaakt_op %}
                                             <dt>Datum</dt>
                                             <dd>
                                                 {{ row_data.mg.aangemaakt_op|to_datetime }}
