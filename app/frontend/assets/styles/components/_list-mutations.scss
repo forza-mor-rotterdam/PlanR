@@ -118,11 +118,21 @@
         }
         .content {
             position: relative;
-            padding: 8px;
-            background-color: $gray-tint02;
             margin-bottom: 20px;
             font-size: 16px;
             text-align: right;
+
+            .wrapper {
+                display: flex;
+                align-items: flex-end;
+                flex-direction: column;
+
+                dl {
+                    padding: 12px 12px 12px 20px;
+                    margin: 0;
+                    background-color: $gray-tint02;
+                }
+            }
         }
 
         &[open] {
@@ -153,6 +163,7 @@
     }
 
     .container__thumbs {
+        background-color: $gray-tint02;
         .container__image {
             opacity: 1;
             cursor: initial;
