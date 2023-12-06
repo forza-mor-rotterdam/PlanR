@@ -121,16 +121,14 @@
             margin-bottom: 20px;
             font-size: 16px;
             text-align: right;
+            display: flex;
+            justify-content: flex-end;
 
             .wrapper {
-                display: flex;
-                align-items: flex-end;
-                flex-direction: column;
-
+                background-color: $gray-tint02;
                 dl {
                     padding: 12px 12px 12px 20px;
                     margin: 0;
-                    background-color: $gray-tint02;
                 }
             }
         }
@@ -163,10 +161,16 @@
     }
 
     .container__thumbs {
-        background-color: $gray-tint02;
+        padding: 0 12px 10px 0;
         .container__image {
             opacity: 1;
             cursor: initial;
+
+            .image {
+                background-size: contain;
+                background-position: 100% 50%;
+                background-repeat: no-repeat;
+            }
         }
     }
 }
