@@ -35,6 +35,8 @@ TAAK_STATUS_VOLTOOID = "voltooid"
 TAAK_RESOLUTIE_OPGELOST = "opgelost"
 TAAK_RESOLUTIE_NIET_OPGELOST = "niet_opgelost"
 TAAK_RESOLUTIE_GEANNULEERD = "geannuleerd"
+TAAK_RESOLUTIE_NIET_GEVONDEN = "niet_gevonden"
+
 
 TAAK_BEHANDEL_OPTIES = (
     (
@@ -43,6 +45,13 @@ TAAK_BEHANDEL_OPTIES = (
         "We zijn met uw melding aan de slag gegaan en hebben het probleem opgelost.",
         TAAK_STATUS_VOLTOOID,
         TAAK_RESOLUTIE_OPGELOST,
+    ),
+    (
+        "ja",
+        "Niets aangetroffen op locatie",
+        "In uw melding heeft u een locatie genoemd. Op deze locatie hebben wij echter niets aangetroffen. We sluiten daarom uw melding.",
+        TAAK_STATUS_VOLTOOID,
+        TAAK_RESOLUTIE_NIET_GEVONDEN,
     ),
     (
         "nee",

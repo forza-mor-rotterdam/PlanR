@@ -6,6 +6,7 @@ VERTALINGEN = {
     "taakopdracht_status_wijziging": "Taakopdracht status wijziging",
     "opgelost": "Opgelost",
     "niet_opgelost": "Niet opgelost",
+    "niet_gevonden": "Niets aangetroffen",
     "aangemaakt": "Aangemaakt",
     "gewijzigd": "Gewijzigd",
     "verwijderd": "Verwijderd",
