@@ -39,6 +39,7 @@ details {
     }
 
     &.details-form {
+        margin-top: $alert-padding-y;
         summary {
             padding-left: 25px;
             color: $green-tint01;

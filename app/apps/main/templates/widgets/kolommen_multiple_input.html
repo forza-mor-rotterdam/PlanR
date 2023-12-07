@@ -1,22 +1,26 @@
 {% load enhance_ordering_options get_selected_ordering_option from melding_tags %}
 {% with id=widget.attrs.id %}
-<tr{% if id %} id="{{ id }}"{% endif %}>
-    <th></th>
-    {% for group, options, index in widget.optgroups %}
-    {% get_selected_ordering_option options as selected_option %}
-    {% enhance_ordering_options options as valid_options %}
-    <th class="{% if group.has_ordering %}sorting{%endif%}{% if selected_option %} {% if selected_option.label.ordering_up %} sorting--up{% else %} sorting--down{% endif  %}{% endif %}">
-    {% if group.has_ordering %}
-    {% for option in valid_options %}
-        <label{% if option.attrs.id %} for="{{ option.attrs.id }}"{% endif %} {% if option.hide %}style="display: none;"{% endif %}>
-            <input type="{{ option.type }}" name="{{ option.name }}"{% if option.value != None %} value="{{ option.value|stringformat:'s' }}"{% endif %}{% include "django/forms/widgets/attrs.html" with widget=option %}>
-            {{ group.th_label }}
-        </label>
-    {% endfor %}
-    {% else %}
-    {{ group.th_label }}
-    {% endif %}
-    </th>
-    {% endfor %}
-</tr>
+    <tr {% if id %}id="{{ id }}"{% endif %}>
+        <th></th>
+        {% for group, options, index in widget.optgroups %}
+            {% get_selected_ordering_option options as selected_option %}
+            {% enhance_ordering_options options as valid_options %}
+            <th class="{% if group.has_ordering %}sorting{% endif %}{% if selected_option %} {% if selected_option.label.ordering_up %} sorting--up{% else %} sorting--down{% endif %}{% endif %}">
+                {% if group.has_ordering %}
+                    {% for option in valid_options %}
+                        <label {% if option.attrs.id %}for="{{ option.attrs.id }}"{% endif %}
+                               {% if option.hide %}style="display: none;"{% endif %}>
+                            <input type="{{ option.type }}"
+                                   name="{{ option.name }}"
+                                   {% if option.value != None %}value="{{ option.value|stringformat:'s' }}"{% endif %}
+                                   {% include "django/forms/widgets/attrs.html" with widget=option %}>
+                            {{ group.th_label }}
+                        </label>
+                    {% endfor %}
+                {% else %}
+                    {{ group.th_label }}
+                {% endif %}
+            </th>
+        {% endfor %}
+    </tr>
 {% endwith %}

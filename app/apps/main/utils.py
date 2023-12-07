@@ -50,6 +50,10 @@ def melding_naar_tijdlijn(melding: dict):
         taakstatus_is_voltooid = (
             tg and tg.get("taakstatus", {}).get("naam") == "voltooid"
         )
+        taakstatus_event = tg and tg.get("taakstatus", {}).get("naam") in [
+            "toegewezen",
+            "openstaand",
+        ]
         t_id = tg.get("taakopdracht")
         if t_id and t_id not in t_ids:
             try:
@@ -63,9 +67,11 @@ def melding_naar_tijdlijn(melding: dict):
         if taakstatus_is_voltooid:
             index = t_ids.index(t_id)
             row[index] = 2
-
-        for index, t in enumerate(t_ids):
-            row[index] = -1 if t == -1 else row[index]
+        if taakstatus_event:
+            index = t_ids.index(t_id)
+            row[index] = 3
+        for i, t in enumerate(t_ids):
+            row[i] = -1 if t == -1 else row[i]
 
         row.insert(0, 0 if tg else 1)
 
@@ -83,7 +89,7 @@ def melding_naar_tijdlijn(melding: dict):
         tijdlijn_data.append(row_dict)
 
     row_dict = {
-        "row": [t if t not in [1, 2] else 0 for t in row],
+        "row": [t if t not in [1, 2, 3] else 0 for t in row],
     }
     tijdlijn_data.append(row_dict)
     tijdlijn_data = [t for t in reversed(tijdlijn_data)]

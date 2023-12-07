@@ -5,144 +5,205 @@
 {% load gebruiker_middels_email from gebruikers_tags %}
 {% load vertaal from vertaal_tags %}
 {% load rotterdam_formulier_html %}
-
-                <ul class="list__mutations">
-                    {% for row_data in tijdlijn_data %}
-                    {% with previous_row_data=tijdlijn_data|previous:forloop.counter0 %}
-                    {% with next_row_data=tijdlijn_data|next:forloop.counter0 %}
-
-                    <li data-controller="datetime">
-                        <details>
-                            {% if not melding.afgesloten_op or not forloop.first %}
+<ul class="list__mutations">
+    {% for row_data in tijdlijn_data %}
+        {% with previous_row_data=tijdlijn_data|previous:forloop.counter0 %}
+            {% with next_row_data=tijdlijn_data|next:forloop.counter0 %}
+                <li data-controller="datetime">
+                    <details>
+                        {% if not melding.afgesloten_op or not forloop.first %}
                             {% for cel in next_row_data.row %}
-                            {% if cel == 1 or cel == 0 %}
-                            <span class="line {% if forloop.counter0 == 0 %}line-melding{% else %}line-taak{% endif %} {% if not row_data.afgesloten %}line--dashed{%endif%}"
-                                style="left: {{ forloop.counter|multiply:20|add:6 }}px"></span>
-                            {% endif %}
+                                {% if cel == 1 or cel == 0 %}
+                                    <span class="line {% if forloop.counter0 == 0 %}line-melding{% else %}line-taak{% endif %} {% if not row_data.afgesloten %}line--dashed{% endif %}"
+                                          style="left: {{ forloop.counter|multiply:20|add:6 }}px"></span>
+                                {% endif %}
                             {% endfor %}
+                        {% endif %}
+                        <summary>
+                            {% if not melding.afgesloten_op or not forloop.first %}
+                                {% for cel in next_row_data.row %}
+                                    {% if cel == 1 or cel == 0 or cel == 3 %}
+                                        <span class="line {% if forloop.counter0 == 0 %}line-melding{% else %}line-taak{% endif %} {% if not row_data.afgesloten %}line--dashed{% endif %}"
+                                              style="left: {{ forloop.counter|multiply:20|add:6 }}px"></span>
+                                    {% endif %}
+                                {% endfor %}
                             {% endif %}
-
-
-                            <summary>
-                                {% if not melding.afgesloten_op or not forloop.first %}
+                            {% if melding.afgesloten_op and forloop.counter0 == 1 %}
                                 {% for cel in next_row_data.row %}
-                                {% if cel == 1 or cel == 0 %}
-                                <span class="line {% if forloop.counter0 == 0 %}line-melding{% else %}line-taak{% endif %} {% if not row_data.afgesloten %}line--dashed{%endif%}" style="left: {{ forloop.counter|multiply:20|add:6 }}px"></span>
-                                {% endif %}
+                                    {% if cel == 1 or cel == 0 %}
+                                        <span class="event {% if forloop.counter0 == 0 %}{% else %}event-taak{% endif %}"
+                                              style="left: {{ forloop.counter|multiply:20 }}px"></span>
+                                    {% endif %}
                                 {% endfor %}
+                            {% endif %}
+                            {% for cel in row_data.row %}
+                                {% if cel == 1 or cel == 2 or cel == 3 %}
+                                    <span class="event {% if forloop.counter0 == 0 %}event-melding{% else %}event-taak{% endif %}"
+                                          style="left: {{ forloop.counter|multiply:20 }}px"></span>
                                 {% endif %}
-
-                                {% if melding.afgesloten_op and forloop.counter0 == 1 %}
-                                {% for cel in next_row_data.row %}
-                                {% if cel == 1 or cel == 0 %}
-                                <span class="event {% if forloop.counter0 == 0 %}{% else %}event-taak{% endif %}" style="left: {{ forloop.counter|multiply:20 }}px"></span>
-                                {% endif %}
-                                {% endfor %}
-                                {% endif %}
-
-                                {% for cel in row_data.row %}
-                                {% if cel == 1 or cel == 2 %}
-                                <span class="event {% if forloop.counter0 == 0 %}event-melding{% else %}event-taak{% endif %}" style="left: {{ forloop.counter|multiply:20 }}px"></span>
-                                {% endif %}
-                                {% endfor %}
-
-                                {% if not forloop.first %}
+                            {% endfor %}
+                            {% if not forloop.first %}
                                 <strong>
-                                {% if row_data.mg.taakgebeurtenis %}
-                                {% with taakopdracht=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}
-                                {{taakopdracht.titel}}{% if row_data.mg.taakgebeurtenis.taakstatus.naam != "nieuw" %}: {{taakopdracht.resolutie|vertaal}}{% endif %}
-                                {% endwith %}
-                                {% else %}
-                                melding: {% if row_data.mg.status %}{{row_data.mg.status.naam}}{% else %}communicatie{% endif %}
-                                {% endif %}
+                                    {% if row_data.mg.taakgebeurtenis %}
+                                        {% with taakopdracht=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}
+                                            {{ taakopdracht.titel }}
+                                            {% if row_data.mg.taakgebeurtenis.taakstatus.naam != "nieuw" %}
+                                                :
+                                                {% if row_data.mg.taakgebeurtenis.taakstatus.naam == "voltooid" %}
+                                                    {{ taakopdracht.resolutie|vertaal }}
+                                                {% else %}
+                                                    {{ row_data.mg.taakgebeurtenis.taakstatus.naam }}
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endwith %}
+                                    {% elif row_data.mg.locatie %}
+                                        Melding: locatie gewijzigd
+                                    {% else %}
+                                        Melding:
+                                        {% if row_data.mg.status %}
+                                            {{ row_data.mg.status.naam }}
+                                        {% else %}
+                                            communicatie
+                                        {% endif %}
+                                    {% endif %}
                                 </strong>
-                                {% endif %}
-                            </summary>
+                            {% endif %}
+                        </summary>
+                        {% if row_data.mg %}
                             <div class="content">
-                            <dl>
-                                {% if row_data.mg.taakgebeurtenis %}
-                                    <dt>Status</dt>
-                                    <dd>{{ row_data.mg.taakgebeurtenis.taakstatus.naam }}</dd>
-                                    <dt>Datum</dt>
-                                    <dd>{{ row_data.mg.taakgebeurtenis.aangemaakt_op|to_datetime }}</dd>
-                                    {% if row_data.mg.taakgebeurtenis.gebruiker %}
-                                    <dt>Gebruiker</dt>
-                                    <dd>{{ row_data.mg.taakgebeurtenis.gebruiker|gebruiker_middels_email }}</dd>
-                                    {% endif %}
-                                    {% if row_data.mg.taakgebeurtenis.omschrijving_intern %}
-                                    <dt>Interne opmerking</dt>
-                                    <dd>{{ row_data.mg.taakgebeurtenis.omschrijving_intern }}</dd>
-                                    {% endif %}
-                                {% else %}
-                                    {% if row_data.mg.gebruiker %}
-                                    <dt>Afgehandeld door</dt>
-                                    <dd>{{ row_data.mg.gebruiker|gebruiker_middels_email }}</dd>
-                                    {% endif %}
-                                    <dt>Datum</dt>
-                                    <dd>{{ row_data.mg.aangemaakt_op|to_datetime }}</dd>
-                                    {% if row_data.mg.omschrijving_extern %}
-                                    <dt>Bericht voor de melder</dt>
-                                    <dd>{{ row_data.mg.omschrijving_extern }}</dd>
-                                    {% endif %}
-                                    {% if row_data.mg.omschrijving_intern %}
-                                    <dt>Interne opmerking</dt>
-                                    <dd>{{ row_data.mg.omschrijving_intern }}</dd>
-                                    {% endif %}
-
-                                {% endif %}
-
-                            </dl>
-
-                            {% if row_data.mg.taakgebeurtenis %}
-                            {% if row_data.mg.taakgebeurtenis.bijlagen|length %}
-                                <div class="container__thumbs">
-                                    <ul>
-                                        {% for bijlage in row_data.mg.taakgebeurtenis.bijlagen %}
-                                        <li>
-                                            <div class="container__image">
-                                                <div class="image" style="background-image:url('{{bijlage.afbeelding_verkleind_relative_url}}');"></div>
+                                <div class="wrapper">
+                                    <dl>
+                                        {% if row_data.mg.taakgebeurtenis %}
+                                            <dt>Status</dt>
+                                            <dd>
+                                                {{ row_data.mg.taakgebeurtenis.taakstatus.naam }}
+                                            </dd>
+                                            {% if row_data.mg.taakgebeurtenis.aangemaakt_op %}
+                                                <dt>Datum</dt>
+                                                <dd>
+                                                    {{ row_data.mg.taakgebeurtenis.aangemaakt_op|to_datetime }}
+                                                </dd>
+                                            {% endif %}
+                                            {% if row_data.mg.taakgebeurtenis.gebruiker %}
+                                                <dt>Gebruiker</dt>
+                                                <dd>
+                                                    {{ row_data.mg.taakgebeurtenis.gebruiker|gebruiker_middels_email }}
+                                                </dd>
+                                            {% endif %}
+                                            {% if row_data.mg.taakgebeurtenis.omschrijving_intern %}
+                                                <dt>Interne opmerking</dt>
+                                                <dd>
+                                                    {{ row_data.mg.taakgebeurtenis.omschrijving_intern }}
+                                                </dd>
+                                            {% endif %}
+                                        {% elif row_data.mg.locatie %}
+                                            {% if row_data.mg.gebruiker %}
+                                                <dt>Gewijzigd door</dt>
+                                                <dd>
+                                                    {{ row_data.mg.gebruiker|gebruiker_middels_email }}
+                                                </dd>
+                                            {% endif %}
+                                            {% if row_data.mg.aangemaakt_op %}
+                                                <dt>Datum</dt>
+                                                <dd>
+                                                    {{ row_data.mg.aangemaakt_op|to_datetime }}
+                                                </dd>
+                                            {% endif %}
+                                            {% if row_data.mg.omschrijving_intern %}
+                                                <dt>Interne opmerking</dt>
+                                                <dd>
+                                                    {{ row_data.mg.omschrijving_intern }}
+                                                </dd>
+                                            {% endif %}
+                                            {% if row_data.mg.taakgebeurtenis.additionele_informatie.uitvoerder %}
+                                                <dt>Uitvoerder</dt>
+                                                <dd>
+                                                    {{ row_data.mg.taakgebeurtenis.additionele_informatie.uitvoerder|gebruiker_middels_email }}
+                                                </dd>
+                                            {% endif %}
+                                        {% else %}
+                                            {% if row_data.mg.gebruiker %}
+                                                <dt>Afgehandeld door</dt>
+                                                <dd>
+                                                    {{ row_data.mg.gebruiker|gebruiker_middels_email }}
+                                                </dd>
+                                            {% endif %}
+                                            {% if row_data.mg.aangemaakt_op %}
+                                                <dt>Datum</dt>
+                                                <dd>
+                                                    {{ row_data.mg.aangemaakt_op|to_datetime }}
+                                                </dd>
+                                            {% endif %}
+                                            {% if row_data.mg.omschrijving_extern %}
+                                                <dt>Bericht voor de melder</dt>
+                                                <dd>
+                                                    {{ row_data.mg.omschrijving_extern }}
+                                                </dd>
+                                            {% endif %}
+                                            {% if row_data.mg.omschrijving_intern %}
+                                                <dt>Interne opmerking</dt>
+                                                <dd>
+                                                    {{ row_data.mg.omschrijving_intern }}
+                                                </dd>
+                                            {% endif %}
+                                        {% endif %}
+                                    </dl>
+                                    {% if row_data.mg.taakgebeurtenis %}
+                                        {% if row_data.mg.taakgebeurtenis.bijlagen|length %}
+                                            <div class="container__thumbs">
+                                                <ul>
+                                                    {% for bijlage in row_data.mg.taakgebeurtenis.bijlagen %}
+                                                        <li>
+                                                            <div class="container__image">
+                                                                <div class="image"
+                                                                    style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url }}')">
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
                                             </div>
-                                        </li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            {% endif %}
-                            {% else %}
-                            {% if row_data.mg.bijlagen|length %}
-                                <div class="container__thumbs">
-                                    <ul>
-                                        {% for bijlage in row_data.mg.bijlagen %}
-                                        <li>
-                                            <div class="container__image">
-                                                <div class="image" style="background-image:url('{{bijlage.afbeelding_verkleind_relative_url}}');"></div>
+                                        {% endif %}
+                                    {% else %}
+                                        {% if row_data.mg.bijlagen|length %}
+                                            <div class="container__thumbs">
+                                                <ul>
+                                                    {% for bijlage in row_data.mg.bijlagen %}
+                                                        <li>
+                                                            <div class="container__image">
+                                                                <div class="image"
+                                                                    style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url }}')">
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
                                             </div>
-                                        </li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            {% endif %}
-                            {% endif %}
-                            {% if forloop.last %}
-                            {% if melding.bijlagen|length %}
-                                <div class="container__thumbs">
-                                    <ul>
-                                        {% for bijlage in melding.bijlagen %}
-                                        <li>
-                                            <div class="container__image">
-                                                <div class="image" style="background-image:url('{{bijlage.afbeelding_verkleind_relative_url}}');"></div>
+                                        {% endif %}
+                                    {% endif %}
+                                    {% if forloop.last %}
+                                        {% if melding.bijlagen|length %}
+                                            <div class="container__thumbs">
+                                                <ul>
+                                                    {% for bijlage in melding.bijlagen %}
+                                                        <li>
+                                                            <div class="container__image">
+                                                                <div class="image"
+                                                                    style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url }}')">
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
                                             </div>
-                                        </li>
-                                        {% endfor %}
-                                    </ul>
+                                        {% endif %}
+                                    {% endif %}
                                 </div>
-                            {% endif %}
-                            {% endif %}
                             </div>
-
-                        </details>
-                    </li>
-                    {% endwith %}
-                    {% endwith %}
-                    {% endfor %}
-
-                </ul>
+                        {% endif %}
+                    </details>
+                </li>
+            {% endwith %}
+        {% endwith %}
+    {% endfor %}
+</ul>

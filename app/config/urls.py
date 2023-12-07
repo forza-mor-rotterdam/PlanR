@@ -25,6 +25,7 @@ from apps.main.views import (
     http_404,
     http_500,
     informatie_toevoegen,
+    locatie_aanpassen,
     melding_aanmaken,
     melding_afhandelen,
     melding_annuleren,
@@ -173,7 +174,12 @@ urlpatterns = [
         StandaardExterneOmschrijvingVerwijderenView.as_view(),
         name="standaard_externe_omschrijving_verwijderen",
     ),
-    ###
+    ### Locatie
+    path(
+        "part/melding/<uuid:id>/locatie_aanpassen/",
+        locatie_aanpassen,
+        name="locatie_aanpassen",
+    ),
     re_path(r"media/", meldingen_bestand, name="meldingen_bestand"),
 ]
 
