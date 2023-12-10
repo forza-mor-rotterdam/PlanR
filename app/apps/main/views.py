@@ -1,5 +1,4 @@
 import base64
-import copy
 import logging
 import math
 
@@ -93,16 +92,30 @@ def melding_lijst(request):
     standaard_waardes = {
         "ordering": "-origineel_aangemaakt",
         "offset": "0",
-        "limit": "10",
     }
 
     query_dict = QueryDict("", mutable=True)
     query_dict.update(standaard_waardes)
     query_dict.update(request.GET)
+    filter_query_dict = query_dict.copy()
+    filter_query_dict.pop("offset")
+    query_dict.update(
+        {
+            "limit": "10",
+        }
+    )
     for k in query_dict.keys():
         query_dict.setlist(k, list(dict.fromkeys(query_dict.getlist(k))))
 
-    request.session["overview_querystring"] = request.GET.urlencode()
+    print("filter_query_dict")
+    print(filter_query_dict.urlencode())
+    print(request.session.get("overview_filter_querystring"))
+    if (
+        request.session.get("overview_filter_querystring")
+        != filter_query_dict.urlencode()
+    ):
+        query_dict["offset"] = "0"
+    request.session["overview_filter_querystring"] = filter_query_dict.urlencode()
 
     actieve_filters = FILTER_NAMEN
     kolommen = KOLOMMEN
@@ -122,19 +135,14 @@ def melding_lijst(request):
     data = MeldingenService().get_melding_lijst(
         query_string=meldingen_filter_query_dict.urlencode()
     )
+    query_dict["limit"] = data.get("limit", 10)
+    query_dict["offset"] = data.get("offset", 0)
 
-    pagina_aantal = math.ceil(data.get("count", 0) / int(query_dict.get("limit")))
-    offset_options = [
-        (str(p * int(query_dict.get("limit"))), str(p + 1))
-        for p in range(0, pagina_aantal)
-    ]
-    query_dict["offset"] = (
-        query_dict.get("offset")
-        if str(query_dict.get("offset")) in [str(oo[0]) for oo in offset_options]
-        else "0"
-    )
-    if not offset_options:
-        del query_dict["offset"]
+    limit = data.get("limit", 10)
+
+    pagina_aantal = math.ceil(data.get("count", 0) / limit)
+    offset_options = [(str(p * limit), str(p + 1)) for p in range(0, pagina_aantal)]
+
     filter_velden = [
         {
             "naam": f,
@@ -153,38 +161,16 @@ def melding_lijst(request):
         gebruiker_context=gebruiker_context,
     )
 
-    filter_form_data = copy.deepcopy(standaard_waardes)
-    if form.is_valid():
-        filter_form_data = copy.deepcopy(form.cleaned_data)
-    limit = int(filter_form_data.get("limit", "10"))
-    offset = int(
-        filter_form_data.get("offset", "0") if filter_form_data.get("offset") else "0"
-    )
-    filter_form_data.get("ordering")
-
-    meldingen = data.get("results", [])
-    totaal = data.get("count", 0)
-
-    currentPage = offset / limit + 1
-    volgende = data.get("next")
-    vorige = data.get("previous")
-    startNum = int((currentPage - 1) * limit)
-    endNum = int(min([currentPage * limit, totaal]))
-    melding_aanmaken_url = settings.MELDING_AANMAKEN_URL
-
+    form.is_valid()
+    if form.errors:
+        logger.warning(form.errors)
     return render(
         request,
         "melding/melding_lijst.html",
         {
-            "meldingen": meldingen,
-            "totaal": totaal,
-            "volgende": volgende,
-            "vorige": vorige,
-            "startNum": startNum,
-            "endNum": endNum,
+            "data": data,
             "form": form,
             "filter_options": data.get("filter_options", {}),
-            "melding_aanmaken_url": melding_aanmaken_url,
             "kolommen": kolommen,
         },
     )

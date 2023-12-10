@@ -71,6 +71,10 @@ class KolommenRadioSelect(forms.RadioSelect):
     template_name = "widgets/kolommen_multiple_input.html"
 
 
+class PagineringRadioSelect(forms.RadioSelect):
+    template_name = "widgets/paginering_radio_select.html"
+
+
 class FilterForm(forms.Form):
     filter_velden = []
 
@@ -93,7 +97,7 @@ class FilterForm(forms.Form):
     )
 
     offset = forms.ChoiceField(
-        widget=forms.RadioSelect(
+        widget=PagineringRadioSelect(
             attrs={
                 "class": "list--form-check-input",
                 "hideLabel": True,
@@ -119,6 +123,15 @@ class FilterForm(forms.Form):
         for field_name in self.fields:
             if field_name in self.filter_velden:
                 yield self[field_name]
+
+    def pagina_eerste_melding(self):
+        offset = int(self.data["offset"])
+        return offset + 1
+
+    def pagina_laatste_melding(self):
+        limit = int(self.data["limit"])
+        offset = int(self.data["offset"])
+        return offset + limit
 
     def __init__(self, *args, **kwargs):
         velden = kwargs.pop("filter_velden", None)
@@ -165,9 +178,20 @@ class FilterForm(forms.Form):
             required=False,
         )
 
-        self.fields["offset"].choices = (
-            offset_options if offset_options else [("0", "0")]
-        )
+        print(self.data.get("limit"))
+        offset_options = offset_options if offset_options else [("0", "1")]
+        limit = int(self.data.get("limit"))
+        offset = int(self.data.get("offset", "0")) / limit
+
+        offset_choices = [
+            o
+            for i, o in enumerate(offset_options)
+            if i == 0
+            or i == len(offset_options) - 1
+            or (i >= int(offset) - 1 and i <= int(offset) + 1)
+        ]
+        print(offset_choices)
+        self.fields["offset"].choices = offset_choices
 
         for v in velden:
             self.fields[v.get("naam")] = MultipleChoiceField(
