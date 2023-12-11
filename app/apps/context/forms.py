@@ -1,4 +1,4 @@
-from apps.context.constanten import FILTER_NAMEN, KOLOM_NAMEN
+from apps.context.constanten import FILTER_KEYS, KOLOM_KEYS
 from apps.context.models import Context
 from apps.services.meldingen import MeldingenService
 from apps.services.onderwerpen import render_onderwerp
@@ -25,7 +25,7 @@ class ContextAanpassenForm(forms.ModelForm):
         ),
         label="Filters",
         required=False,
-        choices=[(f, f) for f in FILTER_NAMEN],
+        choices=[(f, f) for f in FILTER_KEYS],
     )
 
     kolommen = forms.MultipleChoiceField(
@@ -36,7 +36,7 @@ class ContextAanpassenForm(forms.ModelForm):
         ),
         label="Kolommen",
         required=False,
-        choices=[(f, f) for f in KOLOM_NAMEN],
+        choices=[(f, f) for f in KOLOM_KEYS],
     )
 
     standaard_filters = forms.MultipleChoiceField(
