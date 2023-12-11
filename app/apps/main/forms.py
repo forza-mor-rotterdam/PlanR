@@ -1,19 +1,17 @@
 import base64
 import json
 import logging
+import math
 
-from apps.context.constanten import KOLOMMEN, KOLOMMEN_KEYS
+from apps.context.utils import get_gebruiker_context
 from apps.main.models import StandaardExterneOmschrijving
+from apps.main.utils import get_valide_filter_classes, get_valide_kolom_classes
 from django import forms
 from django.core.files.storage import default_storage
 from django.utils import timezone
 from utils.rd_convert import rd_to_wgs
 
 logger = logging.getLogger(__name__)
-
-
-def is_valid_callable(key):
-    return key is not None and callable(key)
 
 
 class CheckboxSelectMultiple(forms.CheckboxSelectMultiple):
@@ -90,9 +88,9 @@ class FilterForm(forms.Form):
         label="Zoeken",
         required=False,
     )
-    ordering = forms.CharField(
-        widget=forms.HiddenInput(),
-        initial="aangemaakt_op",
+    ordering = forms.ChoiceField(
+        widget=KolommenRadioSelect(),
+        initial="-origineel_aangemaakt",
         required=False,
     )
 
@@ -113,15 +111,9 @@ class FilterForm(forms.Form):
         required=False,
     )
 
-    def geselecteerde_filters(self):
-        return [
-            {f.name: [label for value, label in f.field.choices if value in f.value()]}
-            for f in self.filters()
-        ]
-
     def filters(self):
         for field_name in self.fields:
-            if field_name in self.filter_velden:
+            if field_name in [f.get("naam") for f in self.filter_velden]:
                 yield self[field_name]
 
     def pagina_eerste_melding(self):
@@ -131,69 +123,77 @@ class FilterForm(forms.Form):
     def pagina_laatste_melding(self):
         limit = int(self.data["limit"])
         offset = int(self.data["offset"])
-        return offset + limit
+        return (
+            offset + limit
+            if offset + limit < self.meldingen_count
+            else self.meldingen_count
+        )
+
+    def _get_offset_choices(self):
+        # creates paginated choices based on offset, limit and meldingen_count
+        limit = int(self.data.get("limit"))
+        offset = int(self.data.get("offset"))
+        page_count = math.ceil(self.meldingen_count / limit)
+        current_page_zero_based = math.floor(offset / limit)
+        surrounding_pages = 1
+        return [
+            (str(p * limit), str(p + 1))
+            for p in range(0, page_count)
+            # always include first page
+            if p in [0]
+            # always include last page
+            or p in [page_count - 1]
+            # include pages surrounding the current page
+            or (
+                p >= int(current_page_zero_based) - surrounding_pages
+                and p <= int(current_page_zero_based) + surrounding_pages
+            )
+        ]
+
+    def _get_ordering_choices(self, kolom_classes):
+        return [
+            (
+                cls({}),
+                [
+                    (o.ordering(), o)
+                    for o in [
+                        cls({"ordering": "up"}),
+                        cls({"ordering": "down"}),
+                    ]
+                ],
+            )
+            for cls in kolom_classes
+        ]
+
+    def _get_filter_choices(self, filter_classes, filter_options):
+        return [
+            {
+                "naam": cls.key(),
+                "opties": cls(filter_options.get(cls.key(), {})).opties(),
+                "aantal_actief": len(self.data.get(cls.key(), [])),
+            }
+            for cls in filter_classes
+        ]
 
     def __init__(self, *args, **kwargs):
-        velden = kwargs.pop("filter_velden", None)
-        gebruiker_context = kwargs.pop("gebruiker_context", None)
-        self.filter_velden = [v.get("naam") for v in velden]
+        gebruiker = kwargs.pop("gebruiker", None)
+        gebruiker_context = get_gebruiker_context(gebruiker)
+        meldingen_response_data = kwargs.pop("meldingen_data", {})
+        self.meldingen_count = meldingen_response_data.get("count", 0)
 
-        kolommen = KOLOMMEN
-
-        kolommen = (
-            [
-                k
-                for k in gebruiker_context.kolommen.get("sorted", [])
-                if is_valid_callable(KOLOMMEN_KEYS.get(k))
-            ]
-            if gebruiker_context
-            else []
-        )
-
-        self.kolommen = [
-            {
-                "instance": KOLOMMEN_KEYS.get(k)({}),
-                "opties": [
-                    KOLOMMEN_KEYS.get(k)({"ordering": "up"}),
-                    KOLOMMEN_KEYS.get(k)({"ordering": "down"}),
-                ],
-            }
-            for k in kolommen
-        ]
-        offset_options = kwargs.pop("offset_options", None)
         super().__init__(*args, **kwargs)
 
-        choices = [
-            (
-                k.get("instance"),
-                [(o.ordering(), o) for o in k.get("opties", [])],
-            )
-            for k in self.kolommen
-        ]
-
-        self.fields["ordering"] = forms.ChoiceField(
-            label="Ordering",
-            widget=KolommenRadioSelect(attrs={}),
-            choices=choices,
-            required=False,
+        self.filter_velden = self._get_filter_choices(
+            get_valide_filter_classes(gebruiker_context),
+            meldingen_response_data.get("filter_options", {}),
         )
 
-        print(self.data.get("limit"))
-        offset_options = offset_options if offset_options else [("0", "1")]
-        limit = int(self.data.get("limit"))
-        offset = int(self.data.get("offset", "0")) / limit
+        self.fields["offset"].choices = self._get_offset_choices()
+        self.fields["ordering"].choices = self._get_ordering_choices(
+            get_valide_kolom_classes(gebruiker_context)
+        )
 
-        offset_choices = [
-            o
-            for i, o in enumerate(offset_options)
-            if i == 0
-            or i == len(offset_options) - 1
-            or (i >= int(offset) - 1 and i <= int(offset) + 1)
-        ]
-        print(offset_choices)
-        self.fields["offset"].choices = offset_choices
-
-        for v in velden:
+        for v in self.filter_velden:
             self.fields[v.get("naam")] = MultipleChoiceField(
                 label=f"{v.get('naam')} ({v.get('aantal_actief')}/{len(v.get('opties', []))})",
                 widget=CheckboxSelectMultiple(

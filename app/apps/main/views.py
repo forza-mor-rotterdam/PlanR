@@ -1,6 +1,5 @@
 import base64
 import logging
-import math
 
 import requests
 import weasyprint
@@ -10,7 +9,6 @@ from apps.authorisatie.models import (
     StandaardExterneOmschrijvingLijstBekijkenPermissie,
     StandaardExterneOmschrijvingVerwijderenPermissie,
 )
-from apps.context.constanten import FILTER_KEYS, FILTER_NAMEN, KOLOMMEN, KOLOMMEN_KEYS
 from apps.context.utils import get_gebruiker_context
 from apps.main.constanten import MSB_WIJKEN
 from apps.main.forms import (
@@ -32,13 +30,19 @@ from apps.main.forms import (
 )
 from apps.main.models import StandaardExterneOmschrijving
 from apps.main.utils import (
+    get_actieve_filters,
     get_open_taakopdrachten,
+    get_ordering,
+    get_valide_kolom_classes,
     melding_naar_tijdlijn,
+    set_actieve_filters,
+    set_ordering,
     to_base64,
     update_qd_met_standaard_meldingen_filter_qd,
 )
 from apps.services.meldingen import MeldingenService, get_taaktypes
 from config.context_processors import general_settings
+from deepdiff import DeepDiff
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -88,90 +92,75 @@ def account(request):
 
 @permission_required("authorisatie.melding_lijst_bekijken")
 def melding_lijst(request):
-    gebruiker_context = get_gebruiker_context(request)
+    gebruiker = request.user
+    gebruiker_context = get_gebruiker_context(gebruiker)
+
     standaard_waardes = {
-        "ordering": "-origineel_aangemaakt",
-        "offset": "0",
+        "limit": "10",
+        "ordering": get_ordering(gebruiker),
     }
+    actieve_filters = get_actieve_filters(gebruiker)
+    if request.POST:
+        logger.info(f"request POST data: {request.POST}")
+        nieuwe_actieve_filters = {
+            k: request.POST.getlist(k, []) for k, v in actieve_filters.items()
+        }
+        standaard_waardes["ordering"] = set_ordering(
+            gebruiker, request.POST.get("ordering", standaard_waardes["ordering"])
+        )
+
+        # reset pagination offset if meldingen count most likely will change by changing filters
+        if DeepDiff(actieve_filters, nieuwe_actieve_filters) or request.POST.get(
+            "q", ""
+        ) != request.session.get("q", ""):
+            request.session["offset"] = "0"
+        else:
+            request.session["offset"] = request.POST.get("offset", "0")
+
+        if request.POST.get("q"):
+            request.session["q"] = request.POST.get("q", "")
+        elif request.session.get("q"):
+            del request.session["q"]
+
+        actieve_filters = set_actieve_filters(gebruiker, nieuwe_actieve_filters)
+
+    standaard_waardes["offset"] = request.session["offset"]
 
     query_dict = QueryDict("", mutable=True)
+    if request.session.get("q"):
+        query_dict.update({"q": request.session.get("q")})
     query_dict.update(standaard_waardes)
-    query_dict.update(request.GET)
-    filter_query_dict = query_dict.copy()
-    filter_query_dict.pop("offset")
-    query_dict.update(
-        {
-            "limit": "10",
-        }
-    )
-    for k in query_dict.keys():
-        query_dict.setlist(k, list(dict.fromkeys(query_dict.getlist(k))))
 
-    print("filter_query_dict")
-    print(filter_query_dict.urlencode())
-    print(request.session.get("overview_filter_querystring"))
-    if (
-        request.session.get("overview_filter_querystring")
-        != filter_query_dict.urlencode()
-    ):
-        query_dict["offset"] = "0"
-    request.session["overview_filter_querystring"] = filter_query_dict.urlencode()
-
-    actieve_filters = FILTER_NAMEN
-    kolommen = KOLOMMEN
-    if gebruiker_context:
-        actieve_filters = gebruiker_context.filters.get("fields", [])
-
-        kolommen = [
-            KOLOMMEN_KEYS.get(k)
-            for k in gebruiker_context.kolommen.get("sorted", [])
-            if KOLOMMEN_KEYS.get(k)
-        ]
-    actieve_filters = [f for f in actieve_filters if f in FILTER_NAMEN]
+    for k, v in actieve_filters.items():
+        if v:
+            query_dict.setlist(k, v)
 
     meldingen_filter_query_dict = update_qd_met_standaard_meldingen_filter_qd(
         query_dict, gebruiker_context
     )
-    data = MeldingenService().get_melding_lijst(
+    logger.info(f"Meldingen query string: {meldingen_filter_query_dict.urlencode()}")
+    meldingen_data = MeldingenService().get_melding_lijst(
         query_string=meldingen_filter_query_dict.urlencode()
     )
-    query_dict["limit"] = data.get("limit", 10)
-    query_dict["offset"] = data.get("offset", 0)
-
-    limit = data.get("limit", 10)
-
-    pagina_aantal = math.ceil(data.get("count", 0) / limit)
-    offset_options = [(str(p * limit), str(p + 1)) for p in range(0, pagina_aantal)]
-
-    filter_velden = [
-        {
-            "naam": f,
-            "opties": FILTER_KEYS[f](
-                data.get("filter_options", {}).get(f, {})
-            ).opties(),
-            "aantal_actief": len(query_dict.getlist(f)),
-        }
-        for f in actieve_filters
-    ]
+    logger.info(f"Meldingen data count: {meldingen_data.get('count', 0)}")
 
     form = FilterForm(
         query_dict,
-        filter_velden=filter_velden,
-        offset_options=offset_options,
-        gebruiker_context=gebruiker_context,
+        gebruiker=gebruiker,
+        meldingen_data=meldingen_data,
     )
 
     form.is_valid()
     if form.errors:
         logger.warning(form.errors)
+
     return render(
         request,
         "melding/melding_lijst.html",
         {
-            "data": data,
+            "data": meldingen_data,
             "form": form,
-            "filter_options": data.get("filter_options", {}),
-            "kolommen": kolommen,
+            "kolommen": get_valide_kolom_classes(gebruiker_context),
         },
     )
 
