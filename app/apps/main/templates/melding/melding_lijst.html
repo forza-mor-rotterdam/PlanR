@@ -7,11 +7,12 @@
 {% block body %}
     <turbo-frame id="overview">
     <div data-controller="overview">
-        <form method="get"
+        <form method="post"
               action="{% url 'melding_lijst' %}"
               id="filterForm"
               data-controller="filter"
               data-turbo-action="advance">
+            {% csrf_token %}
             <div class="filter-header">
                 <div class="container__flex">
                     <h1 class="page-title">Meldingen</h1>
