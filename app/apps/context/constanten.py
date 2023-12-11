@@ -357,8 +357,8 @@ FILTERS = (
     BuurtFilter,
 )
 
-FILTER_NAMEN = [f.key() for f in FILTERS]
-FILTER_KEYS = {f.key(): f for f in FILTERS}
+FILTER_KEYS = [f.key() for f in FILTERS]
+FILTER_CLASS_BY_KEY = {f.key(): f for f in FILTERS}
 
 KOLOMMEN = (
     MeldingIdKolom,
@@ -375,5 +375,5 @@ KOLOMMEN = (
     OrigineelAangemaaktKolom,
     StatusKolom,
 )
-KOLOM_NAMEN = [f.key() for f in KOLOMMEN]
-KOLOMMEN_KEYS = {k.key(): k for k in KOLOMMEN}
+KOLOM_KEYS = [f.key() for f in KOLOMMEN]
+KOLOM_CLASS_BY_KEY = {k.key(): k for k in KOLOMMEN}

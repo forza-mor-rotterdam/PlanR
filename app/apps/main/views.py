@@ -1,7 +1,5 @@
 import base64
-import copy
 import logging
-import math
 
 import requests
 import weasyprint
@@ -11,7 +9,6 @@ from apps.authorisatie.models import (
     StandaardExterneOmschrijvingLijstBekijkenPermissie,
     StandaardExterneOmschrijvingVerwijderenPermissie,
 )
-from apps.context.constanten import FILTER_KEYS, FILTER_NAMEN, KOLOMMEN, KOLOMMEN_KEYS
 from apps.context.utils import get_gebruiker_context
 from apps.main.constanten import MSB_WIJKEN
 from apps.main.forms import (
@@ -33,13 +30,19 @@ from apps.main.forms import (
 )
 from apps.main.models import StandaardExterneOmschrijving
 from apps.main.utils import (
+    get_actieve_filters,
     get_open_taakopdrachten,
+    get_ordering,
+    get_valide_kolom_classes,
     melding_naar_tijdlijn,
+    set_actieve_filters,
+    set_ordering,
     to_base64,
     update_qd_met_standaard_meldingen_filter_qd,
 )
 from apps.services.meldingen import MeldingenService, get_taaktypes
 from config.context_processors import general_settings
+from deepdiff import DeepDiff
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -89,103 +92,75 @@ def account(request):
 
 @permission_required("authorisatie.melding_lijst_bekijken")
 def melding_lijst(request):
-    gebruiker_context = get_gebruiker_context(request)
+    gebruiker = request.user
+    gebruiker_context = get_gebruiker_context(gebruiker)
+
     standaard_waardes = {
-        "ordering": "-origineel_aangemaakt",
-        "offset": "0",
         "limit": "10",
+        "ordering": get_ordering(gebruiker),
     }
+    actieve_filters = get_actieve_filters(gebruiker)
+    if request.POST:
+        logger.info(f"request POST data: {request.POST}")
+        nieuwe_actieve_filters = {
+            k: request.POST.getlist(k, []) for k, v in actieve_filters.items()
+        }
+        standaard_waardes["ordering"] = set_ordering(
+            gebruiker, request.POST.get("ordering", standaard_waardes["ordering"])
+        )
+
+        # reset pagination offset if meldingen count most likely will change by changing filters
+        if DeepDiff(actieve_filters, nieuwe_actieve_filters) or request.POST.get(
+            "q", ""
+        ) != request.session.get("q", ""):
+            request.session["offset"] = "0"
+        else:
+            request.session["offset"] = request.POST.get("offset", "0")
+
+        if request.POST.get("q"):
+            request.session["q"] = request.POST.get("q", "")
+        elif request.session.get("q"):
+            del request.session["q"]
+
+        actieve_filters = set_actieve_filters(gebruiker, nieuwe_actieve_filters)
+
+    standaard_waardes["offset"] = request.session["offset"]
 
     query_dict = QueryDict("", mutable=True)
+    if request.session.get("q"):
+        query_dict.update({"q": request.session.get("q")})
     query_dict.update(standaard_waardes)
-    query_dict.update(request.GET)
-    for k in query_dict.keys():
-        query_dict.setlist(k, list(dict.fromkeys(query_dict.getlist(k))))
 
-    request.session["overview_querystring"] = request.GET.urlencode()
-
-    actieve_filters = FILTER_NAMEN
-    kolommen = KOLOMMEN
-    if gebruiker_context:
-        actieve_filters = gebruiker_context.filters.get("fields", [])
-
-        kolommen = [
-            KOLOMMEN_KEYS.get(k)
-            for k in gebruiker_context.kolommen.get("sorted", [])
-            if KOLOMMEN_KEYS.get(k)
-        ]
-    actieve_filters = [f for f in actieve_filters if f in FILTER_NAMEN]
+    for k, v in actieve_filters.items():
+        if v:
+            query_dict.setlist(k, v)
 
     meldingen_filter_query_dict = update_qd_met_standaard_meldingen_filter_qd(
         query_dict, gebruiker_context
     )
-    data = MeldingenService().get_melding_lijst(
+    logger.info(f"Meldingen query string: {meldingen_filter_query_dict.urlencode()}")
+    meldingen_data = MeldingenService().get_melding_lijst(
         query_string=meldingen_filter_query_dict.urlencode()
     )
-
-    pagina_aantal = math.ceil(data.get("count", 0) / int(query_dict.get("limit")))
-    offset_options = [
-        (str(p * int(query_dict.get("limit"))), str(p + 1))
-        for p in range(0, pagina_aantal)
-    ]
-    query_dict["offset"] = (
-        query_dict.get("offset")
-        if str(query_dict.get("offset")) in [str(oo[0]) for oo in offset_options]
-        else "0"
-    )
-    if not offset_options:
-        del query_dict["offset"]
-    filter_velden = [
-        {
-            "naam": f,
-            "opties": FILTER_KEYS[f](
-                data.get("filter_options", {}).get(f, {})
-            ).opties(),
-            "aantal_actief": len(query_dict.getlist(f)),
-        }
-        for f in actieve_filters
-    ]
+    logger.info(f"Meldingen data count: {meldingen_data.get('count', 0)}")
 
     form = FilterForm(
         query_dict,
-        filter_velden=filter_velden,
-        offset_options=offset_options,
-        gebruiker_context=gebruiker_context,
+        gebruiker=gebruiker,
+        meldingen_data=meldingen_data,
     )
 
-    filter_form_data = copy.deepcopy(standaard_waardes)
-    if form.is_valid():
-        filter_form_data = copy.deepcopy(form.cleaned_data)
-    limit = int(filter_form_data.get("limit", "10"))
-    offset = int(
-        filter_form_data.get("offset", "0") if filter_form_data.get("offset") else "0"
-    )
-    filter_form_data.get("ordering")
-
-    meldingen = data.get("results", [])
-    totaal = data.get("count", 0)
-
-    currentPage = offset / limit + 1
-    volgende = data.get("next")
-    vorige = data.get("previous")
-    startNum = int((currentPage - 1) * limit)
-    endNum = int(min([currentPage * limit, totaal]))
-    melding_aanmaken_url = settings.MELDING_AANMAKEN_URL
+    form.is_valid()
+    if form.errors:
+        logger.warning(form.errors)
 
     return render(
         request,
         "melding/melding_lijst.html",
         {
-            "meldingen": meldingen,
-            "totaal": totaal,
-            "volgende": volgende,
-            "vorige": vorige,
-            "startNum": startNum,
-            "endNum": endNum,
+            "data": meldingen_data,
             "form": form,
-            "filter_options": data.get("filter_options", {}),
-            "melding_aanmaken_url": melding_aanmaken_url,
-            "kolommen": kolommen,
+            "kolommen": get_valide_kolom_classes(gebruiker_context),
         },
     )
 

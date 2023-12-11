@@ -16,3 +16,4 @@ psycopg2-binary==2.9.5
 mozilla-django-oidc==3.0.0
 PyJWT<2.4.0
 django-session-timeout-joinup==1.0.0
+deepdiff==6.7.1
