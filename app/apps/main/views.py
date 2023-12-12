@@ -124,7 +124,7 @@ def melding_lijst(request):
 
         actieve_filters = set_actieve_filters(gebruiker, nieuwe_actieve_filters)
 
-    standaard_waardes["offset"] = request.session["offset"]
+    standaard_waardes["offset"] = request.session.get("offset", "0")
 
     query_dict = QueryDict("", mutable=True)
     if request.session.get("q"):
@@ -170,7 +170,7 @@ def melding_detail(request, id):
     melding = MeldingenService().get_melding(id)
     open_taakopdrachten = get_open_taakopdrachten(melding)
     tijdlijn_data = melding_naar_tijdlijn(melding)
-    taaktypes = get_taaktypes(melding)
+    taaktypes = get_taaktypes(melding, request.user)
     melding_bijlagen = [
         [bijlage for bijlage in meldinggebeurtenis.get("bijlagen", [])]
         + [
@@ -351,7 +351,7 @@ def melding_annuleren(request, id):
 @permission_required("authorisatie.taak_aanmaken")
 def taak_starten(request, id):
     melding = MeldingenService().get_melding(id)
-    taaktypes = get_taaktypes(melding)
+    taaktypes = get_taaktypes(melding, request.user)
     form = TaakStartenForm(taaktypes=taaktypes)
     if request.POST:
         form = TaakStartenForm(request.POST, taaktypes=taaktypes)
