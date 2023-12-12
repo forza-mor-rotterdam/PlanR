@@ -100,25 +100,25 @@ def melding_lijst(request):
         "ordering": get_ordering(gebruiker),
     }
     actieve_filters = get_actieve_filters(gebruiker)
-    if request.POST:
-        logger.info(f"request POST data: {request.POST}")
+    if request.GET:
+        logger.info(f"request GET data: {request.GET}")
         nieuwe_actieve_filters = {
-            k: request.POST.getlist(k, []) for k, v in actieve_filters.items()
+            k: request.GET.getlist(k, []) for k, v in actieve_filters.items()
         }
         standaard_waardes["ordering"] = set_ordering(
-            gebruiker, request.POST.get("ordering", standaard_waardes["ordering"])
+            gebruiker, request.GET.get("ordering", standaard_waardes["ordering"])
         )
 
         # reset pagination offset if meldingen count most likely will change by changing filters
-        if DeepDiff(actieve_filters, nieuwe_actieve_filters) or request.POST.get(
+        if DeepDiff(actieve_filters, nieuwe_actieve_filters) or request.GET.get(
             "q", ""
         ) != request.session.get("q", ""):
             request.session["offset"] = "0"
         else:
-            request.session["offset"] = request.POST.get("offset", "0")
+            request.session["offset"] = request.GET.get("offset", "0")
 
-        if request.POST.get("q"):
-            request.session["q"] = request.POST.get("q", "")
+        if request.GET.get("q"):
+            request.session["q"] = request.GET.get("q", "")
         elif request.session.get("q"):
             del request.session["q"]
 
