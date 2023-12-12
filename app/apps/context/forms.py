@@ -49,10 +49,27 @@ class ContextAanpassenForm(forms.ModelForm):
         required=False,
         choices=(),
     )
+    taaktypes = forms.MultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple(
+            attrs={
+                "class": "form-check-input",
+            }
+        ),
+        label="Taaktypes",
+        required=False,
+        choices=(),
+    )
 
     class Meta:
         model = Context
-        fields = ("naam", "filters", "kolommen", "standaard_filters", "template")
+        fields = (
+            "naam",
+            "filters",
+            "kolommen",
+            "standaard_filters",
+            "taaktypes",
+            "template",
+        )
 
     def __init__(self, *args, **kwargs):
         kwargs.get("instance")
@@ -60,6 +77,8 @@ class ContextAanpassenForm(forms.ModelForm):
         onderwerp_alias_list = (
             MeldingenService().onderwerp_alias_list().get("results", [])
         )
+        taakapplicaties = MeldingenService().taakapplicaties().get("results", [])
+        taaktypes = [tt for ta in taakapplicaties for tt in ta.get("taaktypes", [])]
         self.fields["standaard_filters"].choices = [
             (
                 onderwerp_alias.get("pk"),
@@ -68,6 +87,13 @@ class ContextAanpassenForm(forms.ModelForm):
                 ),
             )
             for onderwerp_alias in onderwerp_alias_list
+        ]
+        self.fields["taaktypes"].choices = [
+            (
+                taaktype.get("_links", {}).get("self"),
+                taaktype.get("omschrijving"),
+            )
+            for taaktype in taaktypes
         ]
 
 
@@ -79,6 +105,7 @@ class ContextAanmakenForm(ContextAanpassenForm):
             "filters",
             "kolommen",
             "standaard_filters",
+            "taaktypes",
             "template",
         )
 
