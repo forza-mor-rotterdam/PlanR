@@ -170,7 +170,7 @@ class FilterForm(forms.Form):
             {
                 "naam": cls.key(),
                 "opties": cls(filter_options.get(cls.key(), {})).opties(),
-                "aantal_actief": len(self.data.get(cls.key(), [])),
+                "aantal_actief": len(self.data.getlist(cls.key(), [])),
             }
             for cls in filter_classes
         ]
