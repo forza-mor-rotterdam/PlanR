@@ -15,7 +15,7 @@
             <div class="filter-header">
                 <div class="container__flex">
                     <h1 class="page-title">Meldingen</h1>
-                    <span class="help-text">{{ startNum }} - {{ endNum }} van {{ totaal }} resultaten</span>
+                    <span class="help-text">{{ form.pagina_eerste_melding }} - {{ form.pagina_laatste_melding }} van {{ data.count }} resultaten</span>
                 </div>
                 <div class="container__search">{{ form.q|render_rotterdam_formulier }}</div>
             </div>
@@ -38,7 +38,7 @@
                         {{ form.ordering }}
                     </thead>
                     <tbody id="id_maincontent">
-                        {% for melding in meldingen %}
+                        {% for melding in data.results %}
                             <tr data-action="click->overview#navigate"
                                 data-overview-targeturl-param="{% url 'melding_detail' melding.uuid %}">
                                 <td width="80">
@@ -60,11 +60,11 @@
                     </tbody>
                 </table>
             </div>
-            {% if totaal > meldingen|length %}
+            {% if data.count > data.results|length %}
                 <div class="container__pagination">
                     <div class="pagination">
                         <div class="wrapper-horizontal">
-                            {% if vorige %}
+                            {% if data.previous %}
                                 <button type="button"
                                         class="btn--previous has-text"
                                         data-action="overview#navigatePrevious">
@@ -78,8 +78,8 @@
                                     Vorige
                                 </button>
                             {% endif %}
-                            {{ form.offset|render_rotterdam_formulier }}
-                            {% if volgende %}
+                            {{ form.offset }}
+                            {% if data.next %}
                                 <button type="button"
                                         class="btn--next has-text"
                                         data-action="overview#navigateNext">

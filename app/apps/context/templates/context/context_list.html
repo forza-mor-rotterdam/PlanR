@@ -42,6 +42,7 @@
                     <th>Filters</th>
                     <th>Kolommen</th>
                     <th>Onderwerpen</th>
+                    <th>Taaktypes</th>
                     <th>Sjabloon</th>
                     <th>Aantal gebruikers</th>
                     <th></th>
@@ -76,6 +77,16 @@
                             {% if object.standaard_filters %}
                                 {% for onderwerp in object.onderwerpen %}
                                     {{ onderwerp }}
+                                    {% if not forloop.last %},{% endif %}
+                                {% endfor %}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td data-row-search-target="searchable">
+                            {% if object.taaktypes %}
+                                {% for taaktype in object.taaktype_namen %}
+                                    {{ taaktype }}
                                     {% if not forloop.last %},{% endif %}
                                 {% endfor %}
                             {% else %}

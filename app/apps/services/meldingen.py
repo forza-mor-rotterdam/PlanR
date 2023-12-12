@@ -11,8 +11,11 @@ from django.core.validators import validate_email
 logger = logging.getLogger(__name__)
 
 
-def get_taaktypes(melding):
+def get_taaktypes(melding, gebruiker):
+    from apps.context.utils import get_gebruiker_context
     from apps.services.meldingen import MeldingenService
+
+    gebruiker_context = get_gebruiker_context(gebruiker)
 
     taakapplicaties = MeldingenService().taakapplicaties()
     taaktypes = [
@@ -22,6 +25,7 @@ def get_taaktypes(melding):
         ]
         for ta in taakapplicaties.get("results", [])
         for tt in ta.get("taaktypes", [])
+        if tt.get("_links", {}).get("self") in gebruiker_context.taaktypes
     ]
     gebruikte_taaktypes = [
         *set(
@@ -208,6 +212,7 @@ class MeldingenService(BasisService):
     def taakapplicaties(self):
         return self.do_request(
             f"{self._api_path}/taakapplicatie/",
+            cache_timeout=60,
             raw_response=False,
         )
 
