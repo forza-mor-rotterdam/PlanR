@@ -61,6 +61,10 @@
                             </ul>
                         </div>
                         {% if hoogste_gewicht_locatie.geometrie.coordinates %}
+                            <label for="egd_id">
+                                <input id="egd_id" type="checkbox" data-detail-map-layer-type-param="EGD" data-action="detail#onMapLayerChange">
+                                EGD
+                            </label>
                             <div class="container__map full-width">
                                 <div class="map"
                                      id="incidentMap"
