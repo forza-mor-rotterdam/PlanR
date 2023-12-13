@@ -2,10 +2,15 @@ import logging
 from urllib import parse
 
 import requests
-from apps.authenticatie.forms import GebruikerAanmakenForm, GebruikerAanpassenForm
+from apps.authenticatie.forms import (
+    GebruikerAanmakenForm,
+    GebruikerAanpassenForm,
+    GebruikerBulkImportForm,
+)
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -102,3 +107,21 @@ class GebruikerAanpassenView(GebruikerAanmakenAanpassenView, UpdateView):
 class GebruikerAanmakenView(GebruikerAanmakenAanpassenView, CreateView):
     template_name = "authenticatie/gebruiker_aanmaken.html"
     form_class = GebruikerAanmakenForm
+
+
+def gebruiker_bulk_import(request):
+    form = GebruikerBulkImportForm()
+    aangemaakte_gebruikers = None
+    if request.POST:
+        form = GebruikerBulkImportForm(request.POST)
+        if form.is_valid() and request.POST.get("aanmaken"):
+            aangemaakte_gebruikers = form.submit()
+            form = None
+    return render(
+        request,
+        "authenticatie/gebruiker_bulk_import.html",
+        {
+            "form": form,
+            "aangemaakte_gebruikers": aangemaakte_gebruikers,
+        },
+    )
