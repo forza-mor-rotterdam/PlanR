@@ -61,11 +61,13 @@ class GebruikerBulkImportForm(forms.Form):
         required=True,
     )
     context = forms.ModelChoiceField(
+        widget=forms.Select(attrs={"class": "form-control"}),
         queryset=Context.objects.all(),
         label="Rol",
         required=True,
     )
     group = forms.ModelChoiceField(
+        widget=forms.Select(attrs={"class": "form-control"}),
         queryset=Group.objects.all(),
         label="Rechtengroep",
         required=True,

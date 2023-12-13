@@ -66,9 +66,15 @@
                     <p>Er kunnen geen gebruikers worden aangemaakt met deze e-mailadressen</p>
                     {% endif %}
                 {% endif %}
-                {{ form.emailadressen|render_rotterdam_formulier }}
-                {{ form.context|render_rotterdam_formulier }}
-                {{ form.group|render_rotterdam_formulier }}
+                <div class="form-control__with-helptext padding--bottom">
+                    {{ form.emailadressen|render_rotterdam_formulier }}
+                </div>
+                <div class="form-control__with-helptext padding--bottom">
+                    {{ form.context|render_rotterdam_formulier }}
+                </div>
+                <div class="form-control__with-helptext padding--bottom">
+                    {{ form.group|render_rotterdam_formulier }}
+                </div>
             </fieldset>
             <div class="form-row container__button">
                 <div class="form-row btn-row">
