@@ -29,6 +29,63 @@ export default class extends Controller {
     const incidentXValue = this.incidentXValue
     const incidentYValue = this.incidentYValue
     const mapDiv = document.getElementById('incidentMap')
+    this.mapLayers = {
+      containers: {
+        layer: L.tileLayer.wms(
+          'https://www.gis.rotterdam.nl/GisWeb2/js/modules/kaart/WmsHandler.ashx',
+          {
+            layers: 'OBS.OO.CONTAINER',
+            format: 'image/png',
+            transparent: true,
+            minZoom: 10,
+            maxZoom: 19,
+          }
+        ),
+        legend: [],
+      },
+      EGD: {
+        layer: L.tileLayer.wms(
+          'https://www.gis.rotterdam.nl/GisWeb2/js/modules/kaart/WmsHandler.ashx',
+          {
+            layers: 'BSB.OBJ.EGD',
+            format: 'image/png',
+            transparent: true,
+            minZoom: 10,
+            maxZoom: 19,
+          }
+        ),
+        legend: [
+          {
+            title: 'Openbaar',
+            color: '00AD00',
+          },
+          {
+            title: 'RET',
+            color: 'FFFF64',
+          },
+          {
+            title: 'Civiele kunstwerken',
+            color: 'D700B0',
+          },
+          {
+            title: 'Begraafplaatsen',
+            color: 'FFAEFF',
+          },
+          {
+            title: 'Aquisitie',
+            color: '3C3CFF',
+          },
+          {
+            title: 'Vastgoed',
+            color: 'D36000',
+          },
+          {
+            title: 'Overig',
+            color: 'D36000',
+          },
+        ],
+      },
+    }
 
     if (mapDiv && incidentXValue && incidentYValue) {
       markerIcon = L.Icon.extend({
@@ -61,9 +118,9 @@ export default class extends Controller {
         parseFloat(this.incidentXValue.replace(/,/g, '.')),
         parseFloat(this.incidentYValue.replace(/,/g, '.')),
       ]
-      const map = L.map('incidentMap').setView(incidentCoordinates, 18)
-      L.tileLayer(url, config).addTo(map)
-      L.marker(incidentCoordinates, { icon: markerGreen }).addTo(map)
+      this.map = L.map('incidentMap').setView(incidentCoordinates, 18)
+      L.tileLayer(url, config).addTo(this.map)
+      L.marker(incidentCoordinates, { icon: markerGreen }).addTo(this.map)
     }
 
     document.addEventListener('keydown', (event) => {
@@ -72,7 +129,13 @@ export default class extends Controller {
       }
     })
   }
-
+  onMapLayerChange(e) {
+    if (e.target.checked) {
+      this.mapLayers[e.params.mapLayerType].layer.addTo(this.map)
+    } else {
+      this.map.removeLayer(this.mapLayers[e.params.mapLayerType].layer)
+    }
+  }
   openModal(event) {
     lastFocussedItem = event.target.closest('button')
     const modal = this.modalAfhandelenTarget
