@@ -381,7 +381,7 @@ class MeldingAfhandelenForm(forms.Form):
         ),
         initial="Deze melding is behandeld. Bedankt voor uw inzet om Rotterdam schoon, heel en veilig te houden.",
         required=False,
-        max_length=2000,
+        max_length=1000,
     )
 
     omschrijving_intern = forms.CharField(
@@ -808,7 +808,7 @@ class StandaardExterneOmschrijvingAanpassenForm(forms.ModelForm):
             }
         ),
         label="Bericht naar melder",
-        max_length=2000,
+        max_length=1000,
     )
 
     class Meta:
