@@ -29,4 +29,11 @@
             color: inherit;
         }
     }
+    &--confirmation {
+        background-color: rgba(230, 243, 233, 1);
+        border-color: rgba(172, 214, 183, 1);
+        a {
+            color: inherit;
+        }
+    }
 }
