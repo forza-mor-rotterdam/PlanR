@@ -87,6 +87,11 @@
         .list-clean {
             margin-top: 0;
         }
+
+        input[type="checkbox"] {
+            @include form-check-input();
+            margin-bottom: 1em;
+        }
     }
 
     summary {
