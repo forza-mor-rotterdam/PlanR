@@ -3,7 +3,11 @@ import L from 'leaflet'
 
 let lastFocussedItem = null
 let markerIcon,
-  markerGreen = null
+  markerGreen,
+  sliderContainerWidth,
+  self,
+  imageSliderWidth,
+  imageSliderThumbContainer = null
 
 export default class extends Controller {
   static values = {
@@ -17,13 +21,21 @@ export default class extends Controller {
     'selectedImage',
     'thumbList',
     'imageSliderContainer',
+    'imageSliderThumbContainer',
     'turboActionModal',
     'modalAfhandelen',
+    'imageSliderWidth',
   ]
 
   initialize() {
+    self = this
     if (this.hasThumbListTarget) {
-      this.thumbListTarget.getElementsByTagName('li')[0].classList.add('selected')
+      const element = this.thumbListTarget.getElementsByTagName('li')[0]
+      element.classList.add('selected')
+      imageSliderWidth = self.imageSliderWidthTarget
+      imageSliderThumbContainer = self.imageSliderThumbContainerTarget
+      sliderContainerWidth = imageSliderWidth.offsetWidth
+      imageSliderThumbContainer.style.maxWidth = `${sliderContainerWidth}px`
     }
 
     const incidentXValue = this.incidentXValue
@@ -98,6 +110,12 @@ export default class extends Controller {
         this.closeModal()
       }
     })
+
+    const resizeObserver = new ResizeObserver(() => {
+      sliderContainerWidth = imageSliderWidth.offsetWidth
+      imageSliderThumbContainer.style.maxWidth = `${sliderContainerWidth}px`
+    })
+    resizeObserver.observe(imageSliderWidth)
   }
   onMapLayerChange(e) {
     if (e.target.checked) {
@@ -151,7 +169,19 @@ export default class extends Controller {
 
   highlightThumb(index) {
     this.deselectThumbs(this.thumbListTarget)
-    this.thumbListTarget.getElementsByTagName('li')[index].classList.add('selected')
+    const thumb = this.thumbListTarget.getElementsByTagName('li')[index]
+    thumb.classList.add('selected')
+    const thumbWidth = thumb.offsetWidth
+    const offsetNum = thumbWidth * index
+    const maxScroll = this.thumbListTarget.offsetWidth - sliderContainerWidth
+
+    const newLeft =
+      offsetNum - sliderContainerWidth / 2 > 0
+        ? offsetNum - sliderContainerWidth / 3 < maxScroll
+          ? offsetNum - sliderContainerWidth / 3
+          : maxScroll
+        : 0
+    this.thumbListTarget.style.left = `-${newLeft}px`
   }
 
   deselectThumbs(list) {

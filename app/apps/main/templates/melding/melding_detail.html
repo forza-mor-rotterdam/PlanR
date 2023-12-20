@@ -35,7 +35,7 @@
             </div>
             <div id="id_maincontent">
                 <div class="grid-container">
-                    <div class="grid-item">
+                    <div class="grid-item" data-detail-target="imageSliderWidth">
                         <div>{% include titel_template %}</div>
                     </div>
                     <div class="grid-item bottom-left">
@@ -75,7 +75,7 @@
                 <div class="grid-container">
                     <div class="grid-item">
                         <section class="section--seperated section--imageslider"
-                                 data-testid="detailPhotoviewer"
+
                                  {% if melding.bijlagen|length < 2 %}style="border: 0;"{% endif %}>
                             <div>
                                 {% with bijlagen_aantal=melding.bijlagen|length bijlagen_extra_aantal=bijlagen_extra|length %}
@@ -106,7 +106,7 @@
                                             </ul>
                                         </div>
                                         {% if melding.bijlagen|length > 1 or bijlagen_extra|length != 0 %}
-                                            <div class="container__thumbs">
+                                            <div class="container__thumbs" data-detail-target="imageSliderThumbContainer">
                                                 <ul data-detail-target="thumbList">
                                                     {% for bijlage in melding.bijlagen %}
                                                         <li>
