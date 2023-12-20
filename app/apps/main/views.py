@@ -549,8 +549,8 @@ def melding_aanmaken(request):
     initial_form = {
         "straatnaam": "Westerkade",
         "huisnummer": "29",
-        "buurtnaam": "Rotterdam Centrum",
         "wijknaam": "Nieuwe Kerk",
+        "buurtnaam": "Rotterdam Centrum",
         "rd_x": "4.47522318",
         "rd_y": "51.90523667",
         # "onderwerp": ""
@@ -688,8 +688,8 @@ def msb_importeer_melding(request):
     now = timezone.localtime(timezone.now())
     wijk_buurt = [
         {
-            "buurtnaam": b.get("omschrijving"),
             "wijknaam": w.get("omschrijving"),
+            "buurtnaam": b.get("omschrijving"),
         }
         for w in MSB_WIJKEN
         for b in w.get("buurten", [])
@@ -739,8 +739,8 @@ def msb_importeer_melding(request):
         post_data["adressen"][0]["huisletter"] = huisletter
 
     if wijk_buurt:
-        post_data["adressen"][0]["buurtnaam"] = wijk_buurt[0].get("buurtnaam")
         post_data["adressen"][0]["wijknaam"] = wijk_buurt[0].get("wijknaam")
+        post_data["adressen"][0]["buurtnaam"] = wijk_buurt[0].get("buurtnaam")
     try:
         wgs = rd_to_wgs(
             msb_data.get("locatie", {}).get("x", 0),
@@ -873,8 +873,8 @@ def locatie_aanpassen(request, id):
                     "huisnummer": form.cleaned_data.get("huisnummer"),
                     "huisletter": form.cleaned_data.get("huisletter"),
                     "toevoeging": form.cleaned_data.get("toevoeging"),
-                    "buurtnaam": form.cleaned_data.get("buurtnaam"),
                     "wijknaam": form.cleaned_data.get("wijknaam"),
+                    "buurtnaam": form.cleaned_data.get("buurtnaam"),
                     "plaatsnaam": form.cleaned_data.get("plaatsnaam"),
                 }
 

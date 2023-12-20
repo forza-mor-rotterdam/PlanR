@@ -483,21 +483,21 @@ class LocatieAanpassenForm(forms.Form):
         ),
         required=True,
     )
-    buurtnaam = forms.CharField(
-        label="Buurtnaam",
-        widget=forms.TextInput(
-            attrs={
-                "data-locatieaanpassenformulier-target": "buurtnaam",
-                "readonly": "readonly",
-            }
-        ),
-        required=True,
-    )
     wijknaam = forms.CharField(
         label="Wijknaam",
         widget=forms.TextInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "wijknaam",
+                "readonly": "readonly",
+            }
+        ),
+        required=True,
+    )
+    buurtnaam = forms.CharField(
+        label="Buurtnaam",
+        widget=forms.TextInput(
+            attrs={
+                "data-locatieaanpassenformulier-target": "buurtnaam",
                 "readonly": "readonly",
             }
         ),
@@ -540,15 +540,6 @@ class MeldingAanmakenForm(forms.Form):
         label="Huisnummer",
         required=False,
     )
-    buurtnaam = forms.CharField(
-        widget=forms.TextInput(
-            attrs={
-                "class": "form-control",
-            }
-        ),
-        label="Buurt",
-        required=True,
-    )
     wijknaam = forms.CharField(
         widget=forms.TextInput(
             attrs={
@@ -558,6 +549,16 @@ class MeldingAanmakenForm(forms.Form):
         label="Wijk",
         required=True,
     )
+    buurtnaam = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+            }
+        ),
+        label="Buurt",
+        required=True,
+    )
+
     rd_x = forms.CharField(
         widget=forms.TextInput(
             attrs={
@@ -729,8 +730,8 @@ class MeldingAanmakenForm(forms.Form):
                     "huisnummer": data.get("huisnummer")
                     if data.get("huisnummer")
                     else 0,
-                    "buurtnaam": data.get("buurtnaam"),
                     "wijknaam": data.get("wijknaam"),
+                    "buurtnaam": data.get("buurtnaam"),
                     "geometrie": {
                         "type": "Point",
                         "coordinates": [4.43995901, 51.93254212],
