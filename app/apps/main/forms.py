@@ -6,6 +6,8 @@ import math
 from apps.context.utils import get_gebruiker_context
 from apps.main.models import StandaardExterneOmschrijving
 from apps.main.utils import get_valide_filter_classes, get_valide_kolom_classes
+from apps.services.meldingen import MeldingenService
+from apps.services.onderwerpen import render_onderwerp
 from django import forms
 from django.core.files.storage import default_storage
 from django.utils import timezone
@@ -582,12 +584,7 @@ class MeldingAanmakenForm(forms.Form):
             }
         ),
         label="Onderwerp",
-        choices=(
-            (
-                "http://core.mor.local:8002/api/v1/onderwerp/grofvuil-op-straat/",
-                "Grofvuil",
-            ),
-        ),
+        choices=(),
         required=True,
     )
 
@@ -656,6 +653,23 @@ class MeldingAanmakenForm(forms.Form):
         ),
         required=True,
     )
+
+    def __init__(self, *args, **kwargs):
+        kwargs.get("instance")
+        super().__init__(*args, **kwargs)
+        onderwerp_alias_list = (
+            MeldingenService().onderwerp_alias_list().get("results", [])
+        )
+        choices = [
+            (
+                onderwerp_alias.get("bron_url"),
+                render_onderwerp(
+                    onderwerp_alias.get("bron_url"), onderwerp_alias.get("pk")
+                ),
+            )
+            for onderwerp_alias in onderwerp_alias_list
+        ]
+        self.fields["onderwerp"].choices = choices
 
     def get_categorie_choices(self):
         return []

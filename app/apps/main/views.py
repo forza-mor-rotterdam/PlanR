@@ -545,8 +545,25 @@ def meldingen_bestand(request):
 
 @permission_required("authorisatie.melding_aanmaken")
 def melding_aanmaken(request):
+    # Temporary initial form data
+    initial_form = {
+        "straatnaam": "Westerkade",
+        "huisnummer": "29",
+        "buurtnaam": "Rotterdam Centrum",
+        "wijknaam": "Nieuwe Kerk",
+        "rd_x": "4.47522318",
+        "rd_y": "51.90523667",
+        # "onderwerp": ""
+        "toelichting": "Dit is een test melding",
+        "naam_melder": "Test Melder",
+        "terugkoppeling_gewenst": 1,
+    }
+
     if request.POST:
-        form = MeldingAanmakenForm(request.POST, request.FILES)
+        form = MeldingAanmakenForm(
+            request.POST,
+            request.FILES,
+        )
         bijlagen = request.FILES.getlist("bijlagen", [])
         file_names = []
         for f in bijlagen:
@@ -567,7 +584,7 @@ def melding_aanmaken(request):
                 )
             )
     else:
-        form = MeldingAanmakenForm()
+        form = MeldingAanmakenForm(initial=initial_form)
 
     return render(
         request,
