@@ -54,36 +54,6 @@ export default class extends Controller {
             maxZoom: 19,
           }
         ),
-        legend: [
-          {
-            title: 'Openbaar',
-            color: '00AD00',
-          },
-          {
-            title: 'RET',
-            color: 'FFFF64',
-          },
-          {
-            title: 'Civiele kunstwerken',
-            color: 'D700B0',
-          },
-          {
-            title: 'Begraafplaatsen',
-            color: 'FFAEFF',
-          },
-          {
-            title: 'Aquisitie',
-            color: '3C3CFF',
-          },
-          {
-            title: 'Vastgoed',
-            color: 'D36000',
-          },
-          {
-            title: 'Overig',
-            color: 'D36000',
-          },
-        ],
       },
     }
 
