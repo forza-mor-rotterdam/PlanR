@@ -549,8 +549,8 @@ def melding_aanmaken(request):
     initial_form = {
         "straatnaam": "Westerkade",
         "huisnummer": "29",
-        "wijknaam": "Nieuwe Kerk",
-        "buurtnaam": "Rotterdam Centrum",
+        "wijknaam": "Rotterdam Centrum",
+        "buurtnaam": "Nieuwe Kerk",
         "rd_x": "4.47522318",
         "rd_y": "51.90523667",
         # "onderwerp": ""
