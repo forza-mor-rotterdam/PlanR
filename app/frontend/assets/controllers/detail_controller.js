@@ -3,7 +3,11 @@ import L from 'leaflet'
 
 let lastFocussedItem = null
 let markerIcon,
-  markerGreen = null
+  markerGreen,
+  sliderContainerWidth,
+  self,
+  imageSliderWidth,
+  imageSliderThumbContainer = null
 
 export default class extends Controller {
   static values = {
@@ -17,18 +21,53 @@ export default class extends Controller {
     'selectedImage',
     'thumbList',
     'imageSliderContainer',
+    'imageSliderThumbContainer',
     'turboActionModal',
     'modalAfhandelen',
+    'imageSliderWidth',
   ]
 
   initialize() {
+    self = this
     if (this.hasThumbListTarget) {
-      this.thumbListTarget.getElementsByTagName('li')[0].classList.add('selected')
+      const element = this.thumbListTarget.getElementsByTagName('li')[0]
+      element.classList.add('selected')
+      imageSliderWidth = self.imageSliderWidthTarget
+      imageSliderThumbContainer = self.imageSliderThumbContainerTarget
+      sliderContainerWidth = imageSliderWidth.offsetWidth
+      imageSliderThumbContainer.style.maxWidth = `${sliderContainerWidth}px`
     }
 
     const incidentXValue = this.incidentXValue
     const incidentYValue = this.incidentYValue
     const mapDiv = document.getElementById('incidentMap')
+    this.mapLayers = {
+      containers: {
+        layer: L.tileLayer.wms(
+          'https://www.gis.rotterdam.nl/GisWeb2/js/modules/kaart/WmsHandler.ashx',
+          {
+            layers: 'OBS.OO.CONTAINER',
+            format: 'image/png',
+            transparent: true,
+            minZoom: 10,
+            maxZoom: 19,
+          }
+        ),
+        legend: [],
+      },
+      EGD: {
+        layer: L.tileLayer.wms(
+          'https://www.gis.rotterdam.nl/GisWeb2/js/modules/kaart/WmsHandler.ashx',
+          {
+            layers: 'BSB.OBJ.EGD',
+            format: 'image/png',
+            transparent: true,
+            minZoom: 10,
+            maxZoom: 19,
+          }
+        ),
+      },
+    }
 
     if (mapDiv && incidentXValue && incidentYValue) {
       markerIcon = L.Icon.extend({
@@ -61,9 +100,9 @@ export default class extends Controller {
         parseFloat(this.incidentXValue.replace(/,/g, '.')),
         parseFloat(this.incidentYValue.replace(/,/g, '.')),
       ]
-      const map = L.map('incidentMap').setView(incidentCoordinates, 18)
-      L.tileLayer(url, config).addTo(map)
-      L.marker(incidentCoordinates, { icon: markerGreen }).addTo(map)
+      this.map = L.map('incidentMap').setView(incidentCoordinates, 18)
+      L.tileLayer(url, config).addTo(this.map)
+      L.marker(incidentCoordinates, { icon: markerGreen }).addTo(this.map)
     }
 
     document.addEventListener('keydown', (event) => {
@@ -71,8 +110,20 @@ export default class extends Controller {
         this.closeModal()
       }
     })
-  }
 
+    const resizeObserver = new ResizeObserver(() => {
+      sliderContainerWidth = imageSliderWidth.offsetWidth
+      imageSliderThumbContainer.style.maxWidth = `${sliderContainerWidth}px`
+    })
+    resizeObserver.observe(imageSliderWidth)
+  }
+  onMapLayerChange(e) {
+    if (e.target.checked) {
+      this.mapLayers[e.params.mapLayerType].layer.addTo(this.map)
+    } else {
+      this.map.removeLayer(this.mapLayers[e.params.mapLayerType].layer)
+    }
+  }
   openModal(event) {
     lastFocussedItem = event.target.closest('button')
     const modal = this.modalAfhandelenTarget
@@ -118,7 +169,19 @@ export default class extends Controller {
 
   highlightThumb(index) {
     this.deselectThumbs(this.thumbListTarget)
-    this.thumbListTarget.getElementsByTagName('li')[index].classList.add('selected')
+    const thumb = this.thumbListTarget.getElementsByTagName('li')[index]
+    thumb.classList.add('selected')
+    const thumbWidth = thumb.offsetWidth
+    const offsetNum = thumbWidth * index
+    const maxScroll = this.thumbListTarget.offsetWidth - sliderContainerWidth
+
+    const newLeft =
+      offsetNum - sliderContainerWidth / 2 > 0
+        ? offsetNum - sliderContainerWidth / 3 < maxScroll
+          ? offsetNum - sliderContainerWidth / 3
+          : maxScroll
+        : 0
+    this.thumbListTarget.style.left = `-${newLeft}px`
   }
 
   deselectThumbs(list) {

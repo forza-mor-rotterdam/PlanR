@@ -43,9 +43,10 @@
 }
 
 .container__thumbs {
-    padding: 16px $container-padding-x 0;
+    padding: 16px 0 0;
     white-space: nowrap;
     overflow-x: scroll;
+    position: relative;
 
     ul {
         list-style: none;
@@ -67,7 +68,20 @@
             button {
                 border: 0;
                 cursor: pointer;
+                padding: 0;
             }
+        }
+    }
+
+    .section--imageslider & {
+        height: 98px;
+        max-width: 0;
+
+        ul {
+            position: absolute;
+            top: 16px;
+            left: 2px;
+            transition: left, 0.5s;
         }
     }
 

@@ -150,14 +150,14 @@ class AdresBuurtWijkKolom(StandaardKolom):
             huisnummer = (
                 f' {locatie.get("huisnummer")}' if locatie.get("huisnummer") else ""
             )
-            buurt = locatie.get("buurtnaam", "")
             wijk = locatie.get("wijknaam", "")
+            buurt = locatie.get("buurtnaam", "")
 
             lijst = []
-            if buurt:
-                lijst.append(buurt)
             if wijk:
                 lijst.append(wijk)
+            if buurt:
+                lijst.append(buurt)
 
             return (
                 f"{string.capwords(straatnaam)}{huisnummer}<br>{', '.join(lijst)}"

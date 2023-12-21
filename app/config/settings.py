@@ -227,6 +227,8 @@ CSP_IMG_SRC = [
     "mor-core-acc.forzamor.nl",
     "cdn.jsdelivr.net",
     "service.pdok.nl",
+    "ows.gis.rotterdam.nl",
+    "www.gis.rotterdam.nl",
 ]
 
 CSP_STYLE_SRC = (

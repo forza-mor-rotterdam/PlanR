@@ -210,13 +210,17 @@ export default class extends Controller {
     } else {
       temp_filesArr.push(...newFiles)
     }
+    this.updateInputFiles()
+  }
 
-    const dT = new ClipboardEvent('').clipboardData || new DataTransfer() // Firefox < 62 workaround exploiting https://bugzilla.mozilla.org/show_bug.cgi?id=1422655 // specs compliant (as of March 2018 only Chrome)
-
-    for (let file of temp_filesArr) {
+  updateInputFiles() {
+    const input = document.getElementById('id_fotos')
+    const dT = new ClipboardEvent('').clipboardData || new DataTransfer()
+    temp_filesArr.forEach((file) => {
       dT.items.add(file)
-    }
+    })
     temp_files = dT.files
+    input.files = dT.files
   }
 
   updateImageDisplay(adding = true) {

@@ -2,7 +2,6 @@ import { Controller } from '@hotwired/stimulus'
 
 let temp_files = {}
 let temp_filesArr = []
-let input = null
 export default class extends Controller {
   static targets = ['bijlagenExtra', 'bijlagenAfronden', 'bijlagenNieuw']
   connect() {
@@ -28,12 +27,7 @@ export default class extends Controller {
 
   removeFile(e) {
     const index = e.params.index
-    if (this.hasBijlagenExtraTarget) {
-      input = this.bijlagenExtraTarget
-    }
-    if (this.hasBijlagenAfrondenTarget) {
-      input = this.bijlagenAfrondenTarget
-    }
+    const input = this.getFileInput()
     temp_filesArr = [...temp_files]
     temp_filesArr.splice(index, 1)
 
@@ -55,25 +49,34 @@ export default class extends Controller {
     } else {
       temp_filesArr.push(...newFiles)
     }
+    this.updateInputFiles()
+  }
 
-    const dT = new ClipboardEvent('').clipboardData || new DataTransfer() // Firefox < 62 workaround exploiting https://bugzilla.mozilla.org/show_bug.cgi?id=1422655 // specs compliant (as of March 2018 only Chrome)
-
-    for (let file of temp_filesArr) {
+  updateInputFiles() {
+    const input = this.getFileInput()
+    const dT = new ClipboardEvent('').clipboardData || new DataTransfer()
+    temp_filesArr.forEach((file) => {
       dT.items.add(file)
-    }
+    })
     temp_files = dT.files
+    input.files = dT.files
+  }
+
+  getFileInput() {
+    if (this.hasBijlagenExtraTarget) {
+      return this.bijlagenExtraTarget
+    }
+    if (this.hasBijlagenAfrondenTarget) {
+      return this.bijlagenAfrondenTarget
+    }
+    if (this.hasBijlagenNieuwTarget) {
+      return this.bijlagenNieuwTarget
+    }
+    return null
   }
 
   updateImageDisplay(adding = true) {
-    if (this.hasBijlagenExtraTarget) {
-      input = this.bijlagenExtraTarget
-    }
-    if (this.hasBijlagenAfrondenTarget) {
-      input = this.bijlagenAfrondenTarget
-    }
-    if (this.hasBijlagenNieuwTarget) {
-      input = this.bijlagenNieuwTarget
-    }
+    const input = this.getFileInput()
     const preview = input.nextElementSibling
     const newFiles = input.files //contains only new file(s)
     if (adding) {

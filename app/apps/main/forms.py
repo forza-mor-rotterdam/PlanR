@@ -6,6 +6,8 @@ import math
 from apps.context.utils import get_gebruiker_context
 from apps.main.models import StandaardExterneOmschrijving
 from apps.main.utils import get_valide_filter_classes, get_valide_kolom_classes
+from apps.services.meldingen import MeldingenService
+from apps.services.onderwerpen import render_onderwerp
 from django import forms
 from django.core.files.storage import default_storage
 from django.utils import timezone
@@ -352,20 +354,35 @@ class TaakAnnulerenForm(forms.Form):
 
 
 class MeldingAfhandelenForm(forms.Form):
-    standaard_omschrijvingen = forms.ModelChoiceField(
-        queryset=StandaardExterneOmschrijving.objects.all(),
-        label="Selecteer een afhandelreden",
-        to_field_name="tekst",
-        required=False,
-        widget=forms.Select(
-            attrs={
-                "class": "form-control",
-                "data-testid": "testid",
-                "data-meldingbehandelformulier-target": "standardTextChoice",
-                "data-action": "meldingbehandelformulier#onChangeStandardTextChoice",
-            }
-        ),
-    )
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        (
+            self.default_standaard_omschrijving,
+            _created,
+        ) = StandaardExterneOmschrijving.objects.get_or_create(
+            titel="Standaard afhandelreden",
+            defaults={
+                "tekst": "Deze melding is behandeld. Bedankt voor uw inzet om Rotterdam schoon, heel en veilig te houden."
+            },
+        )
+
+        self.fields["standaard_omschrijvingen"] = forms.ModelChoiceField(
+            queryset=StandaardExterneOmschrijving.objects.all(),
+            label="Afhandelreden",
+            to_field_name="tekst",
+            required=True,
+            widget=forms.Select(
+                attrs={
+                    "class": "form-control",
+                    "data-testid": "testid",
+                    "data-meldingbehandelformulier-target": "standardTextChoice",
+                    "data-action": "meldingbehandelformulier#onChangeStandardTextChoice",
+                }
+            ),
+            initial=self.default_standaard_omschrijving,
+        )
+
     omschrijving_extern = forms.CharField(
         label="Bericht voor de melder",
         help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",
@@ -379,9 +396,8 @@ class MeldingAfhandelenForm(forms.Form):
                 "name": "omschrijving_extern",
             }
         ),
-        initial="Deze melding is behandeld. Bedankt voor uw inzet om Rotterdam schoon, heel en veilig te houden.",
-        required=False,
-        max_length=2000,
+        required=True,
+        max_length=1000,
     )
 
     omschrijving_intern = forms.CharField(
@@ -481,21 +497,21 @@ class LocatieAanpassenForm(forms.Form):
         ),
         required=True,
     )
-    buurtnaam = forms.CharField(
-        label="Buurtnaam",
-        widget=forms.TextInput(
-            attrs={
-                "data-locatieaanpassenformulier-target": "buurtnaam",
-                "readonly": "readonly",
-            }
-        ),
-        required=True,
-    )
     wijknaam = forms.CharField(
         label="Wijknaam",
         widget=forms.TextInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "wijknaam",
+                "readonly": "readonly",
+            }
+        ),
+        required=True,
+    )
+    buurtnaam = forms.CharField(
+        label="Buurtnaam",
+        widget=forms.TextInput(
+            attrs={
+                "data-locatieaanpassenformulier-target": "buurtnaam",
                 "readonly": "readonly",
             }
         ),
@@ -538,15 +554,6 @@ class MeldingAanmakenForm(forms.Form):
         label="Huisnummer",
         required=False,
     )
-    buurtnaam = forms.CharField(
-        widget=forms.TextInput(
-            attrs={
-                "class": "form-control",
-            }
-        ),
-        label="Buurt",
-        required=True,
-    )
     wijknaam = forms.CharField(
         widget=forms.TextInput(
             attrs={
@@ -556,6 +563,16 @@ class MeldingAanmakenForm(forms.Form):
         label="Wijk",
         required=True,
     )
+    buurtnaam = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+            }
+        ),
+        label="Buurt",
+        required=True,
+    )
+
     rd_x = forms.CharField(
         widget=forms.TextInput(
             attrs={
@@ -582,12 +599,7 @@ class MeldingAanmakenForm(forms.Form):
             }
         ),
         label="Onderwerp",
-        choices=(
-            (
-                "http://core.mor.local:8002/api/v1/onderwerp/grofvuil-op-straat/",
-                "Grofvuil",
-            ),
-        ),
+        choices=(),
         required=True,
     )
 
@@ -657,6 +669,23 @@ class MeldingAanmakenForm(forms.Form):
         required=True,
     )
 
+    def __init__(self, *args, **kwargs):
+        kwargs.get("instance")
+        super().__init__(*args, **kwargs)
+        onderwerp_alias_list = (
+            MeldingenService().onderwerp_alias_list().get("results", [])
+        )
+        choices = [
+            (
+                onderwerp_alias.get("bron_url"),
+                render_onderwerp(
+                    onderwerp_alias.get("bron_url"), onderwerp_alias.get("pk")
+                ),
+            )
+            for onderwerp_alias in onderwerp_alias_list
+        ]
+        self.fields["onderwerp"].choices = choices
+
     def get_categorie_choices(self):
         return []
 
@@ -715,8 +744,8 @@ class MeldingAanmakenForm(forms.Form):
                     "huisnummer": data.get("huisnummer")
                     if data.get("huisnummer")
                     else 0,
-                    "buurtnaam": data.get("buurtnaam"),
                     "wijknaam": data.get("wijknaam"),
+                    "buurtnaam": data.get("buurtnaam"),
                     "geometrie": {
                         "type": "Point",
                         "coordinates": [4.43995901, 51.93254212],
@@ -808,7 +837,7 @@ class StandaardExterneOmschrijvingAanpassenForm(forms.ModelForm):
             }
         ),
         label="Bericht naar melder",
-        max_length=2000,
+        max_length=1000,
     )
 
     class Meta:
