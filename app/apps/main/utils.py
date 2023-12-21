@@ -1,8 +1,15 @@
 import base64
+import json
+import logging
 from re import sub
 
+from apps.services.mercure import MercureService
 from django.core.files.storage import default_storage
 from django.http import QueryDict
+from django.urls import reverse
+from django.utils import timezone
+
+logger = logging.getLogger(__name__)
 
 
 def snake_case(s: str) -> str:
@@ -172,3 +179,47 @@ def set_ordering(gebruiker, nieuwe_ordering):
     gebruiker.profiel.ui_instellingen.update({"ordering": nieuwe_ordering})
     gebruiker.profiel.save()
     return gebruiker.profiel.ui_instellingen.get("ordering")
+
+
+def publiseer_melding_gebruikers_activiteit(melding_id, request):
+    ts_key = "timestamp"
+    user_key = "gebruiker"
+    payload_key = "payload"
+    topic_key = "topic"
+
+    topic = reverse("melding_detail", args=[melding_id])
+
+    mercure_service = None
+    try:
+        mercure_service = MercureService()
+    except MercureService.ConfigException:
+        ...
+
+    subscriptions = mercure_service.get_subscriptions().get("subscriptions", [])
+    sorted_subscriptions = sorted(
+        subscriptions, key=lambda key: key.get(payload_key, {}).get(ts_key, 0)
+    )
+
+    subscription_gebruikers = {
+        sub.get(payload_key, {}).get(user_key): {
+            ts_key: sub.get(payload_key, {}).get(ts_key),
+        }
+        for sub in sorted_subscriptions
+        if sub.get(payload_key, {}).get(user_key) and sub.get(topic_key) == topic
+    }
+    subscription_gebruikers[request.user.email] = {
+        ts_key: int(timezone.now().timestamp()),
+    }
+
+    sorted_subscriptions = sorted(
+        [dict(**v, gebruiker=k) for k, v in subscription_gebruikers.items()],
+        key=lambda key: key.get(ts_key),
+        reverse=True,
+    )
+    logger.info(
+        f"Publiceer gebruikers: {json.dumps(sorted_subscriptions, indent=4)}, voor topic {topic}"
+    )
+
+    if mercure_service:
+        mercure_service.publish(topic, sorted_subscriptions)
+    return sorted_subscriptions

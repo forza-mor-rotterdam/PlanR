@@ -2,6 +2,7 @@ from apps.authenticatie.managers import GebruikerManager
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.contrib.gis.db import models
+from django.utils.html import mark_safe
 from utils.fields import DictJSONField
 from utils.models import BasisModel
 
@@ -17,7 +18,19 @@ class Gebruiker(AbstractUser):
     objects = GebruikerManager()
 
     def __str__(self):
+        if self.first_name:
+            return f"{self.first_name}{' ' if self.last_name else ''}{self.last_name}"
         return self.email
+
+    def rollen_verbose(self):
+        return mark_safe(
+            f"rol: <strong>{self.profiel.context.naam if self.profiel.context else '- geen rol - '}</strong>"
+        )
+
+    def rechten_verbose(self):
+        return mark_safe(
+            f"rechten: <strong>{self.groups.all().first().name if self.groups.all() else '- geen rechten - '}</strong>"
+        )
 
 
 User = get_user_model()
