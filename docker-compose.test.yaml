@@ -13,6 +13,9 @@ services:
         condition: service_started
     networks:
       - planr_network
+    command: ["bash", "/app/deploy/docker-entrypoint.sh"]
+
+
 
   redis:
     image: redis
