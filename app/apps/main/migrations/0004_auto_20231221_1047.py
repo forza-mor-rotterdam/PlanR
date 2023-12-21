@@ -5,10 +5,14 @@ def create_default_standaard_omschrijving(apps, schema_editor):
     StandaardExterneOmschrijving = apps.get_model(
         "main", "StandaardExterneOmschrijving"
     )
-    StandaardExterneOmschrijving.objects.create(
-        titel="Standaard afhandelreden",
-        tekst="Deze melding is behandeld. Bedankt voor uw inzet om Rotterdam schoon, heel en veilig te houden.",
-    )
+
+    if not StandaardExterneOmschrijving.objects.filter(
+        titel="Standaard afhandelreden"
+    ).exists():
+        StandaardExterneOmschrijving.objects.create(
+            titel="Standaard afhandelreden",
+            tekst="Deze melding is behandeld. Bedankt voor uw inzet om Rotterdam schoon, heel en veilig te houden.",
+        )
 
 
 class Migration(migrations.Migration):
