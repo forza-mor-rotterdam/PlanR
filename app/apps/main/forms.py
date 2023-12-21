@@ -354,20 +354,35 @@ class TaakAnnulerenForm(forms.Form):
 
 
 class MeldingAfhandelenForm(forms.Form):
-    standaard_omschrijvingen = forms.ModelChoiceField(
-        queryset=StandaardExterneOmschrijving.objects.all(),
-        label="Selecteer een afhandelreden",
-        to_field_name="tekst",
-        required=False,
-        widget=forms.Select(
-            attrs={
-                "class": "form-control",
-                "data-testid": "testid",
-                "data-meldingbehandelformulier-target": "standardTextChoice",
-                "data-action": "meldingbehandelformulier#onChangeStandardTextChoice",
-            }
-        ),
-    )
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        (
+            self.default_standaard_omschrijving,
+            _created,
+        ) = StandaardExterneOmschrijving.objects.get_or_create(
+            titel="Standaard afhandelreden",
+            defaults={
+                "tekst": "Deze melding is behandeld. Bedankt voor uw inzet om Rotterdam schoon, heel en veilig te houden."
+            },
+        )
+
+        self.fields["standaard_omschrijvingen"] = forms.ModelChoiceField(
+            queryset=StandaardExterneOmschrijving.objects.all(),
+            label="Afhandelreden",
+            to_field_name="tekst",
+            required=True,
+            widget=forms.Select(
+                attrs={
+                    "class": "form-control",
+                    "data-testid": "testid",
+                    "data-meldingbehandelformulier-target": "standardTextChoice",
+                    "data-action": "meldingbehandelformulier#onChangeStandardTextChoice",
+                }
+            ),
+            initial=self.default_standaard_omschrijving,
+        )
+
     omschrijving_extern = forms.CharField(
         label="Bericht voor de melder",
         help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",
@@ -381,8 +396,7 @@ class MeldingAfhandelenForm(forms.Form):
                 "name": "omschrijving_extern",
             }
         ),
-        initial="Deze melding is behandeld. Bedankt voor uw inzet om Rotterdam schoon, heel en veilig te houden.",
-        required=False,
+        required=True,
         max_length=1000,
     )
 
