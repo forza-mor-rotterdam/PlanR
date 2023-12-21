@@ -550,7 +550,7 @@ def melding_aanmaken(request):
         "straatnaam": "Westerkade",
         "huisnummer": "29",
         "wijknaam": "Rotterdam Centrum",
-        "buurtnaam": "Nieuwe Kerk",
+        "buurtnaam": "Nieuwe Werk",
         "rd_x": "4.47522318",
         "rd_y": "51.90523667",
         # "onderwerp": ""
