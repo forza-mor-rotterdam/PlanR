@@ -81,6 +81,7 @@ body.show-modal--first-filter {
         position: relative;
         padding-left: $container-padding-x;
         padding-bottom: 4px;
+        padding: 0 $container-padding-x 4px;
 
         h1 {
             padding: 25px 48px 0 0;

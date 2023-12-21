@@ -96,6 +96,32 @@ def melding_naar_tijdlijn(melding: dict):
     return tijdlijn_data
 
 
+def is_valid_callable(key):
+    return key is not None and callable(key)
+
+
+def get_valide_kolom_classes(gebruiker_context):
+    from apps.context.constanten import KOLOM_CLASS_BY_KEY
+
+    return [
+        KOLOM_CLASS_BY_KEY.get(k)
+        for k in gebruiker_context.kolommen.get("sorted", [])
+        if KOLOM_CLASS_BY_KEY.get(k)
+        if is_valid_callable(KOLOM_CLASS_BY_KEY.get(k))
+    ]
+
+
+def get_valide_filter_classes(gebruiker_context):
+    from apps.context.constanten import FILTER_CLASS_BY_KEY
+
+    return [
+        FILTER_CLASS_BY_KEY.get(f)
+        for f in gebruiker_context.filters.get("fields", [])
+        if FILTER_CLASS_BY_KEY.get(f)
+        if is_valid_callable(FILTER_CLASS_BY_KEY.get(f))
+    ]
+
+
 def update_qd_met_standaard_meldingen_filter_qd(qd, gebruiker_context=None):
     meldingen_filter_qd = QueryDict("", mutable=True)
     meldingen_filter_qd.update(qd)
@@ -110,3 +136,39 @@ def truncate_tekst(text, length=200):
     if len(text) > length:
         return f"{text[:length]}..."
     return text
+
+
+def get_actieve_filters(gebruiker):
+    if not hasattr(gebruiker, "profiel") or not hasattr(gebruiker.profiel, "context"):
+        return {}
+    return {
+        k: gebruiker.profiel.filters.get(k, [])
+        for k in gebruiker.profiel.context.filters.get("fields", [])
+    }
+
+
+def set_actieve_filters(gebruiker, actieve_filters):
+    actieve_filters = {
+        k: actieve_filters.get(k, [])
+        for k in gebruiker.profiel.context.filters.get("fields", [])
+    }
+    gebruiker.profiel.filters.update(actieve_filters)
+    unused_keys = [
+        k
+        for k, v in gebruiker.profiel.filters.items()
+        if k not in gebruiker.profiel.context.filters.get("fields", [])
+    ]
+    for k in unused_keys:
+        gebruiker.profiel.filters.pop(k, None)
+    gebruiker.profiel.save()
+    return gebruiker.profiel.filters
+
+
+def get_ordering(gebruiker):
+    return gebruiker.profiel.ui_instellingen.get("ordering", "-origineel_aangemaakt")
+
+
+def set_ordering(gebruiker, nieuwe_ordering):
+    gebruiker.profiel.ui_instellingen.update({"ordering": nieuwe_ordering})
+    gebruiker.profiel.save()
+    return gebruiker.profiel.ui_instellingen.get("ordering")

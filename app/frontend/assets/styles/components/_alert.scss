@@ -25,6 +25,16 @@
         background-color: rgba(237, 181, 0, 0.1);
         border-color: rgba(237, 181, 0, 0.25);
 
+        svg {
+            margin-left: -4px;
+        }
+        a {
+            color: inherit;
+        }
+    }
+    &--confirmation {
+        background-color: rgba(230, 243, 233, 1);
+        border-color: rgba(172, 214, 183, 1);
         a {
             color: inherit;
         }

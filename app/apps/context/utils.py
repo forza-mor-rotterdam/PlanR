@@ -1,8 +1,10 @@
-def get_gebruiker_context(request):
-    if (
-        hasattr(request, "user")
-        and hasattr(request.user, "profiel")
-        and hasattr(request.user.profiel, "context")
-    ):
-        return request.user.profiel.context
+def get_gebruiker_context(gebruiker):
+    if hasattr(gebruiker, "profiel") and hasattr(gebruiker.profiel, "context"):
+        return gebruiker.profiel.context
+    return None
+
+
+def get_gebruiker_profiel(gebruiker):
+    if hasattr(gebruiker, "profiel"):
+        return gebruiker.profiel
     return None

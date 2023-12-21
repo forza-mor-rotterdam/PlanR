@@ -55,6 +55,8 @@ export default class extends Controller {
         event.preventDefault()
       }
     })
+
+    this.updateExternalTextValue()
   }
 
   onChangeExternalText(e) {

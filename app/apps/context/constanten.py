@@ -115,7 +115,7 @@ class MSBNummerKolom(StandaardKolom):
 
 class AdresKolom(StandaardKolom):
     _key = "adres"
-    _kolom_hoofd = "Adres"
+    _kolom_hoofd = "Ter hoogte van"
     _td_standaard_classes = "nowrap"
     _ordering_value = "locaties_voor_melding__straatnaam"
 
@@ -136,7 +136,7 @@ class AdresKolom(StandaardKolom):
 
 class AdresBuurtWijkKolom(StandaardKolom):
     _key = "adres_buurt_wijk"
-    _kolom_hoofd = "Adres"
+    _kolom_hoofd = "Ter hoogte van"
     _td_standaard_classes = "nowrap"
     _ordering_value = "locaties_voor_melding__straatnaam"
 
@@ -150,14 +150,14 @@ class AdresBuurtWijkKolom(StandaardKolom):
             huisnummer = (
                 f' {locatie.get("huisnummer")}' if locatie.get("huisnummer") else ""
             )
-            buurt = locatie.get("buurtnaam", "")
             wijk = locatie.get("wijknaam", "")
+            buurt = locatie.get("buurtnaam", "")
 
             lijst = []
-            if buurt:
-                lijst.append(buurt)
             if wijk:
                 lijst.append(wijk)
+            if buurt:
+                lijst.append(buurt)
 
             return (
                 f"{string.capwords(straatnaam)}{huisnummer}<br>{', '.join(lijst)}"
@@ -357,8 +357,8 @@ FILTERS = (
     BuurtFilter,
 )
 
-FILTER_NAMEN = [f.key() for f in FILTERS]
-FILTER_KEYS = {f.key(): f for f in FILTERS}
+FILTER_KEYS = [f.key() for f in FILTERS]
+FILTER_CLASS_BY_KEY = {f.key(): f for f in FILTERS}
 
 KOLOMMEN = (
     MeldingIdKolom,
@@ -375,5 +375,5 @@ KOLOMMEN = (
     OrigineelAangemaaktKolom,
     StatusKolom,
 )
-KOLOM_NAMEN = [f.key() for f in KOLOMMEN]
-KOLOMMEN_KEYS = {k.key(): k for k in KOLOMMEN}
+KOLOM_KEYS = [f.key() for f in KOLOMMEN]
+KOLOM_CLASS_BY_KEY = {k.key(): k for k in KOLOMMEN}

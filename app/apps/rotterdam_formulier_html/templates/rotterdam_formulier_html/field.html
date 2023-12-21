@@ -149,7 +149,7 @@
                             {{ choice.tag }}
                             <label class="form-check-label" for="{{ choice.id_for_label }}">
                                 {{ choice.choice_label }}
-                                {% if choice.data.attrs.selected == True %}({{ choice.data.attrs.item_count }}){% endif %}
+                                {% comment %} {% if choice.data.attrs.selected == True %}({{ choice.data.attrs.item_count }}){% endif %} {% endcomment %}
                             </label>
                         </div>
                     </li>

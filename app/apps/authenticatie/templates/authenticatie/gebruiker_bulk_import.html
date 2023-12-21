@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% load rotterdam_formulier_html %}
+{% load json_encode from json_tags %}
+{% block body %}
+    <turbo-frame id="beheer" data-turbo-action="advance">
+    <div class="page__beheer" data-controller="row-search">
+        <div>
+            <a href="{% url 'beheer' %}"
+               class="link--back"
+               data-turbo-action="advance">
+                <svg width="25"
+                     height="16"
+                     viewBox="0 0 25 16"
+                     fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.15173 1.73256L7.73753 0.318359L1.44704 6.60885L1.4142 6.576L0 7.9902L1.4115 9.4017L1.37867 9.43453L7.67186 15.7277L9.08606 14.3135L3.7726 9.00006H24.0098V7.00006H3.88423L9.15173 1.73256Z" fill="#404B4F" />
+                </svg>
+                Beheer
+            </a>
+        </div>
+        <div class="container__flex">
+            <h1>Bulk import gebruikers</h1>
+
+        </div>
+        {% if form %}
+        <form method="post" action="{% url 'gebruiker_bulk_import' %}" novalidate>
+            {% csrf_token %}
+            <fieldset>
+                {% if form.cleaned_data.emailadressen %}
+                    <div>
+                        <h2 class="h3">Validatie resultaat</h2>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>E-mailadres</th>
+                                <th>Wordt geimporteerd</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for emailadres in form.cleaned_data.emailadressen.validate_resultaat %}
+                            <tr>
+                                <td>{{ emailadres.emailadres }}</td>
+                                <td>{% if emailadres.is_emailadres and emailadres.bestaat_niet %}{% include "icons/checkmark.svg" %}{% else %}{% include "icons/close.svg" %}{% endif %}</td>
+                                <td>
+                                    <ul>
+                                        {% if not emailadres.is_emailadres %}<li><mark>{{ emailadres.emailadres }}</mark> is geen e-mailadres</li>{% endif %}
+                                        {% if not emailadres.bestaat_niet %}<li>Een gebruiker met dit e-mailadres bestaat reeds</li>{% endif %}
+                                    </ul>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% if form.cleaned_data.emailadressen.valide_emailadressen %}
+                    <p>{{ form.cleaned_data.emailadressen.valide_emailadressen|length }} van de {{ form.cleaned_data.emailadressen.validate_resultaat|length }} gebruikers, kunnen worden aangemaakt.</p>
+                    <div class="form-row container__button">
+                        <div class="form-row btn-row">
+                            <button type="submit" name="aanmaken" value="ja" class="btn btn-action">
+                                <span>Gebruikers aanmaken</span>
+                            </button>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p>Er kunnen geen gebruikers worden aangemaakt met deze e-mailadressen</p>
+                    {% endif %}
+                {% endif %}
+                <div class="form-control__with-helptext padding--bottom">
+                    {{ form.emailadressen|render_rotterdam_formulier }}
+                </div>
+                <div class="form-control__with-helptext padding--bottom">
+                    {{ form.context|render_rotterdam_formulier }}
+                </div>
+                <div class="form-control__with-helptext padding--bottom">
+                    {{ form.group|render_rotterdam_formulier }}
+                </div>
+            </fieldset>
+            <div class="form-row container__button">
+                <div class="form-row btn-row">
+                    <button type="reset"
+                            class="btn btn-tertiary"
+                            data-controller="detail"
+                            data-action="detail#closeModal">
+                        <span>Annuleren</span>
+                    </button>
+                    <button type="submit"class="btn btn-action">
+                        <span>Valideren</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+        {% else %}
+            <div>
+                <h2>Gelukt!</h2>
+                <p>Onderstaande gebruikers zijn aangemaakt</p>
+            </div>
+            <ul>
+                {% for gebruiker in aangemaakte_gebruikers %}
+                    <li><a href="{% url 'gebruiker_aanpassen' gebruiker.id %}">{{ gebruiker }}</a></li>
+                {% endfor %}
+            </ul>
+            <a href="{% url 'gebruiker_bulk_import' %}">Nog meer gebruikers aanmaken</a><br>
+            <a href="{% url 'beheer' %}">Beheer</a>
+        {% endif%}
+
+    </div>
+    </turbo-frame>
+{% endblock body %}

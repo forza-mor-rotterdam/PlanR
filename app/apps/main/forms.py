@@ -1,19 +1,19 @@
 import base64
 import json
 import logging
+import math
 
-from apps.context.constanten import KOLOMMEN, KOLOMMEN_KEYS
+from apps.context.utils import get_gebruiker_context
 from apps.main.models import StandaardExterneOmschrijving
+from apps.main.utils import get_valide_filter_classes, get_valide_kolom_classes
+from apps.services.meldingen import MeldingenService
+from apps.services.onderwerpen import render_onderwerp
 from django import forms
 from django.core.files.storage import default_storage
 from django.utils import timezone
 from utils.rd_convert import rd_to_wgs
 
 logger = logging.getLogger(__name__)
-
-
-def is_valid_callable(key):
-    return key is not None and callable(key)
 
 
 class CheckboxSelectMultiple(forms.CheckboxSelectMultiple):
@@ -35,6 +35,8 @@ TAAK_STATUS_VOLTOOID = "voltooid"
 TAAK_RESOLUTIE_OPGELOST = "opgelost"
 TAAK_RESOLUTIE_NIET_OPGELOST = "niet_opgelost"
 TAAK_RESOLUTIE_GEANNULEERD = "geannuleerd"
+TAAK_RESOLUTIE_NIET_GEVONDEN = "niet_gevonden"
+
 
 TAAK_BEHANDEL_OPTIES = (
     (
@@ -43,6 +45,13 @@ TAAK_BEHANDEL_OPTIES = (
         "We zijn met uw melding aan de slag gegaan en hebben het probleem opgelost.",
         TAAK_STATUS_VOLTOOID,
         TAAK_RESOLUTIE_OPGELOST,
+    ),
+    (
+        "ja",
+        "Niets aangetroffen op locatie",
+        "In uw melding heeft u een locatie genoemd. Op deze locatie hebben wij echter niets aangetroffen. We sluiten daarom uw melding.",
+        TAAK_STATUS_VOLTOOID,
+        TAAK_RESOLUTIE_NIET_GEVONDEN,
     ),
     (
         "nee",
@@ -62,6 +71,10 @@ class KolommenRadioSelect(forms.RadioSelect):
     template_name = "widgets/kolommen_multiple_input.html"
 
 
+class PagineringRadioSelect(forms.RadioSelect):
+    template_name = "widgets/paginering_radio_select.html"
+
+
 class FilterForm(forms.Form):
     filter_velden = []
 
@@ -77,14 +90,14 @@ class FilterForm(forms.Form):
         label="Zoeken",
         required=False,
     )
-    ordering = forms.CharField(
-        widget=forms.HiddenInput(),
-        initial="aangemaakt_op",
+    ordering = forms.ChoiceField(
+        widget=KolommenRadioSelect(),
+        initial="-origineel_aangemaakt",
         required=False,
     )
 
     offset = forms.ChoiceField(
-        widget=forms.RadioSelect(
+        widget=PagineringRadioSelect(
             attrs={
                 "class": "list--form-check-input",
                 "hideLabel": True,
@@ -100,67 +113,89 @@ class FilterForm(forms.Form):
         required=False,
     )
 
-    def geselecteerde_filters(self):
-        return [
-            {f.name: [label for value, label in f.field.choices if value in f.value()]}
-            for f in self.filters()
-        ]
-
     def filters(self):
         for field_name in self.fields:
-            if field_name in self.filter_velden:
+            if field_name in [f.get("naam") for f in self.filter_velden]:
                 yield self[field_name]
 
-    def __init__(self, *args, **kwargs):
-        velden = kwargs.pop("filter_velden", None)
-        gebruiker_context = kwargs.pop("gebruiker_context", None)
-        self.filter_velden = [v.get("naam") for v in velden]
+    def pagina_eerste_melding(self):
+        offset = int(self.data["offset"])
+        return offset + 1
 
-        kolommen = KOLOMMEN
-
-        kolommen = (
-            [
-                k
-                for k in gebruiker_context.kolommen.get("sorted", [])
-                if is_valid_callable(KOLOMMEN_KEYS.get(k))
-            ]
-            if gebruiker_context
-            else []
+    def pagina_laatste_melding(self):
+        limit = int(self.data["limit"])
+        offset = int(self.data["offset"])
+        return (
+            offset + limit
+            if offset + limit < self.meldingen_count
+            else self.meldingen_count
         )
 
-        self.kolommen = [
-            {
-                "instance": KOLOMMEN_KEYS.get(k)({}),
-                "opties": [
-                    KOLOMMEN_KEYS.get(k)({"ordering": "up"}),
-                    KOLOMMEN_KEYS.get(k)({"ordering": "down"}),
-                ],
-            }
-            for k in kolommen
+    def _get_offset_choices(self):
+        # creates paginated choices based on offset, limit and meldingen_count
+        limit = int(self.data.get("limit"))
+        offset = int(self.data.get("offset"))
+        page_count = math.ceil(self.meldingen_count / limit)
+        current_page_zero_based = math.floor(offset / limit)
+        surrounding_pages = 1
+        return [
+            (str(p * limit), str(p + 1))
+            for p in range(0, page_count)
+            # always include first page
+            if p in [0]
+            # always include last page
+            or p in [page_count - 1]
+            # include pages surrounding the current page
+            or (
+                p >= int(current_page_zero_based) - surrounding_pages
+                and p <= int(current_page_zero_based) + surrounding_pages
+            )
         ]
-        offset_options = kwargs.pop("offset_options", None)
+
+    def _get_ordering_choices(self, kolom_classes):
+        return [
+            (
+                cls({}),
+                [
+                    (o.ordering(), o)
+                    for o in [
+                        cls({"ordering": "up"}),
+                        cls({"ordering": "down"}),
+                    ]
+                ],
+            )
+            for cls in kolom_classes
+        ]
+
+    def _get_filter_choices(self, filter_classes, filter_options):
+        return [
+            {
+                "naam": cls.key(),
+                "opties": cls(filter_options.get(cls.key(), {})).opties(),
+                "aantal_actief": len(self.data.getlist(cls.key(), [])),
+            }
+            for cls in filter_classes
+        ]
+
+    def __init__(self, *args, **kwargs):
+        gebruiker = kwargs.pop("gebruiker", None)
+        gebruiker_context = get_gebruiker_context(gebruiker)
+        meldingen_response_data = kwargs.pop("meldingen_data", {})
+        self.meldingen_count = meldingen_response_data.get("count", 0)
+
         super().__init__(*args, **kwargs)
 
-        choices = [
-            (
-                k.get("instance"),
-                [(o.ordering(), o) for o in k.get("opties", [])],
-            )
-            for k in self.kolommen
-        ]
-
-        self.fields["ordering"] = forms.ChoiceField(
-            label="Ordering",
-            widget=KolommenRadioSelect(attrs={}),
-            choices=choices,
-            required=False,
+        self.filter_velden = self._get_filter_choices(
+            get_valide_filter_classes(gebruiker_context),
+            meldingen_response_data.get("filter_options", {}),
         )
 
-        self.fields["offset"].choices = (
-            offset_options if offset_options else [("0", "0")]
+        self.fields["offset"].choices = self._get_offset_choices()
+        self.fields["ordering"].choices = self._get_ordering_choices(
+            get_valide_kolom_classes(gebruiker_context)
         )
 
-        for v in velden:
+        for v in self.filter_velden:
             self.fields[v.get("naam")] = MultipleChoiceField(
                 label=f"{v.get('naam')} ({v.get('aantal_actief')}/{len(v.get('opties', []))})",
                 widget=CheckboxSelectMultiple(
@@ -319,20 +354,35 @@ class TaakAnnulerenForm(forms.Form):
 
 
 class MeldingAfhandelenForm(forms.Form):
-    standaard_omschrijvingen = forms.ModelChoiceField(
-        queryset=StandaardExterneOmschrijving.objects.all(),
-        label="Selecteer een afhandelreden",
-        to_field_name="tekst",
-        required=False,
-        widget=forms.Select(
-            attrs={
-                "class": "form-control",
-                "data-testid": "testid",
-                "data-meldingbehandelformulier-target": "standardTextChoice",
-                "data-action": "meldingbehandelformulier#onChangeStandardTextChoice",
-            }
-        ),
-    )
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        (
+            self.default_standaard_omschrijving,
+            _created,
+        ) = StandaardExterneOmschrijving.objects.get_or_create(
+            titel="Standaard afhandelreden",
+            defaults={
+                "tekst": "Deze melding is behandeld. Bedankt voor uw inzet om Rotterdam schoon, heel en veilig te houden."
+            },
+        )
+
+        self.fields["standaard_omschrijvingen"] = forms.ModelChoiceField(
+            queryset=StandaardExterneOmschrijving.objects.all(),
+            label="Afhandelreden",
+            to_field_name="tekst",
+            required=True,
+            widget=forms.Select(
+                attrs={
+                    "class": "form-control",
+                    "data-testid": "testid",
+                    "data-meldingbehandelformulier-target": "standardTextChoice",
+                    "data-action": "meldingbehandelformulier#onChangeStandardTextChoice",
+                }
+            ),
+            initial=self.default_standaard_omschrijving,
+        )
+
     omschrijving_extern = forms.CharField(
         label="Bericht voor de melder",
         help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",
@@ -346,9 +396,8 @@ class MeldingAfhandelenForm(forms.Form):
                 "name": "omschrijving_extern",
             }
         ),
-        initial="Deze melding is behandeld. Bedankt voor uw inzet om Rotterdam schoon, heel en veilig te houden.",
-        required=False,
-        max_length=2000,
+        required=True,
+        max_length=1000,
     )
 
     omschrijving_intern = forms.CharField(
@@ -448,21 +497,21 @@ class LocatieAanpassenForm(forms.Form):
         ),
         required=True,
     )
-    buurtnaam = forms.CharField(
-        label="Buurtnaam",
-        widget=forms.TextInput(
-            attrs={
-                "data-locatieaanpassenformulier-target": "buurtnaam",
-                "readonly": "readonly",
-            }
-        ),
-        required=True,
-    )
     wijknaam = forms.CharField(
         label="Wijknaam",
         widget=forms.TextInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "wijknaam",
+                "readonly": "readonly",
+            }
+        ),
+        required=True,
+    )
+    buurtnaam = forms.CharField(
+        label="Buurtnaam",
+        widget=forms.TextInput(
+            attrs={
+                "data-locatieaanpassenformulier-target": "buurtnaam",
                 "readonly": "readonly",
             }
         ),
@@ -505,15 +554,6 @@ class MeldingAanmakenForm(forms.Form):
         label="Huisnummer",
         required=False,
     )
-    buurtnaam = forms.CharField(
-        widget=forms.TextInput(
-            attrs={
-                "class": "form-control",
-            }
-        ),
-        label="Buurt",
-        required=True,
-    )
     wijknaam = forms.CharField(
         widget=forms.TextInput(
             attrs={
@@ -523,6 +563,16 @@ class MeldingAanmakenForm(forms.Form):
         label="Wijk",
         required=True,
     )
+    buurtnaam = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+            }
+        ),
+        label="Buurt",
+        required=True,
+    )
+
     rd_x = forms.CharField(
         widget=forms.TextInput(
             attrs={
@@ -549,12 +599,7 @@ class MeldingAanmakenForm(forms.Form):
             }
         ),
         label="Onderwerp",
-        choices=(
-            (
-                "http://core.mor.local:8002/api/v1/onderwerp/grofvuil-op-straat/",
-                "Grofvuil",
-            ),
-        ),
+        choices=(),
         required=True,
     )
 
@@ -624,6 +669,23 @@ class MeldingAanmakenForm(forms.Form):
         required=True,
     )
 
+    def __init__(self, *args, **kwargs):
+        kwargs.get("instance")
+        super().__init__(*args, **kwargs)
+        onderwerp_alias_list = (
+            MeldingenService().onderwerp_alias_list().get("results", [])
+        )
+        choices = [
+            (
+                onderwerp_alias.get("bron_url"),
+                render_onderwerp(
+                    onderwerp_alias.get("bron_url"), onderwerp_alias.get("pk")
+                ),
+            )
+            for onderwerp_alias in onderwerp_alias_list
+        ]
+        self.fields["onderwerp"].choices = choices
+
     def get_categorie_choices(self):
         return []
 
@@ -682,8 +744,8 @@ class MeldingAanmakenForm(forms.Form):
                     "huisnummer": data.get("huisnummer")
                     if data.get("huisnummer")
                     else 0,
-                    "buurtnaam": data.get("buurtnaam"),
                     "wijknaam": data.get("wijknaam"),
+                    "buurtnaam": data.get("buurtnaam"),
                     "geometrie": {
                         "type": "Point",
                         "coordinates": [4.43995901, 51.93254212],
@@ -775,7 +837,7 @@ class StandaardExterneOmschrijvingAanpassenForm(forms.ModelForm):
             }
         ),
         label="Bericht naar melder",
-        max_length=2000,
+        max_length=1000,
     )
 
     class Meta:
