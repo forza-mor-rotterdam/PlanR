@@ -50,8 +50,11 @@ export default class extends Controller {
     if (this.hasMercureSubscriptionsValue) {
       console.log(JSON.parse(this.mercureSubscriptionsValue))
       this.mercureSubscriptions = JSON.parse(this.mercureSubscriptionsValue)
+      this.initMessages()
     }
-    this.initMessages()
+    if (this.hasGebruikersActiviteitTarget) {
+      this.gebruikersActiviteitTarget.style.display = 'none'
+    }
 
     const incidentXValue = this.incidentXValue
     const incidentYValue = this.incidentYValue
@@ -162,7 +165,7 @@ export default class extends Controller {
       self.eventSource = new EventSource(url)
       self.eventSource.onmessage = (e) => self.onMessage(e)
       self.eventSource.onerror = (e) => self.onMessageError(e)
-      setInterval(() => self.updateGebruikerActiviteit(), 1000)
+      self.updateMessagesInterval = setInterval(() => self.updateGebruikerActiviteit(), 1000)
     }
   }
   onMessage(e) {
@@ -192,28 +195,37 @@ export default class extends Controller {
   }
   onMessageError(e) {
     let self = this
-    console.log(e)
-    console.log('An error occurred while attempting to connect.')
+    console.error(e)
+    console.error('An error occurred while attempting to connect.')
     self.eventSource.close()
-    self.initMessages()
+    clearInterval(self.updateMessagesInterval)
+    setTimeout(() => self.initMessages(), 5000)
   }
   updateGebruikerActiviteit() {
+    const self = this
+    const currentDate = new Date()
+    const tsOutdated = parseInt(currentDate.getTime() / 1000) - 60 * 60 * 2
     if (this.hasGebruikersActiviteitTarget) {
-      this.gebruikersActiviteitTarget.innerHTML = ''
-      const subscriptions = this.mercureSubscriptions
-      const currentDate = new Date()
-      for (let i = 0; i < subscriptions.length; i++) {
-        const subscription = subscriptions[i]
-        if (this.gebruiker.email != subscription.gebruiker) {
+      let gebruikersLijstElem = this.gebruikersActiviteitTarget.querySelector('ul')
+      gebruikersLijstElem.innerHTML = ''
+      const subscriptions = this.mercureSubscriptions.filter(
+        (sub) => self.gebruiker.email != sub.gebruiker.email && sub.timestamp > tsOutdated
+      )
+      if (subscriptions.length > 0) {
+        this.gebruikersActiviteitTarget.style.display = 'block'
+        for (let i = 0; i < subscriptions.length; i++) {
+          const subscription = subscriptions[i]
           let liElem = document.createElement('li')
           const timeLeft = parseInt(parseInt(currentDate.getTime())) - subscription.timestamp * 1000
           let min = Math.floor(timeLeft / 1000 / 60 + 60) % 60
           let hours = Math.floor(timeLeft / 1000 / 60 / 60)
           let minVerbal = min > 0 ? `${min} ${min > 1 ? 'minuten' : 'minuut'}` : `< minuut`
           let hoursVerbal = hours > 0 ? `${hours} uur en ` : ``
-          liElem.textContent = `${subscription.gebruiker}: ${hoursVerbal}${minVerbal} geleden`
-          this.gebruikersActiviteitTarget.appendChild(liElem)
+          liElem.textContent = `${subscription.gebruiker.naam}: ${hoursVerbal}${minVerbal} geleden`
+          gebruikersLijstElem.appendChild(liElem)
         }
+      } else {
+        this.gebruikersActiviteitTarget.style.display = 'none'
       }
     }
   }
