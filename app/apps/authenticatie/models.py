@@ -2,6 +2,7 @@ from apps.authenticatie.managers import GebruikerManager
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.contrib.gis.db import models
+from django.forms.models import model_to_dict
 from django.utils.html import mark_safe
 from utils.fields import DictJSONField
 from utils.models import BasisModel
@@ -31,6 +32,24 @@ class Gebruiker(AbstractUser):
         return mark_safe(
             f"rechten: <strong>{self.groups.all().first().name if self.groups.all() else '- geen rechten - '}</strong>"
         )
+
+    def serialized_instance(self):
+        if not self.is_authenticated:
+            return None
+        dict_instance = model_to_dict(
+            self, fields=["email", "first_name", "last_name", "telefoonnummer"]
+        )
+        dict_instance.update(
+            {
+                "naam": self.__str__(),
+                "rol": self.profiel.context.naam if self.profiel.context else None,
+                "rechten": self.groups.all().first().name
+                if self.groups.all()
+                else None,
+            }
+        )
+
+        return dict_instance
 
 
 User = get_user_model()
