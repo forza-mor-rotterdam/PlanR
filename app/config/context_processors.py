@@ -2,7 +2,6 @@ import logging
 
 from apps.services.mercure import MercureService
 from django.conf import settings
-from django.forms.models import model_to_dict
 from django.urls import reverse
 from django.utils import timezone
 from utils.diversen import absolute
@@ -11,6 +10,8 @@ logger = logging.getLogger(__name__)
 
 
 def general_settings(context):
+    gebruiker = context.user.serialized_instance()
+
     session_expiry_max_timestamp = context.session.get("_session_init_timestamp_", 0)
     if session_expiry_max_timestamp:
         session_expiry_max_timestamp += settings.SESSION_EXPIRE_MAXIMUM_SECONDS
@@ -36,7 +37,7 @@ def general_settings(context):
 
     if mercure_service:
         payload = {
-            "gebruiker": context.user.email if context.user.is_authenticated else None,
+            "gebruiker": gebruiker,
             "timestamp": int(timezone.now().timestamp()),
         }
         subscriber_token = mercure_service.get_subscriber_token(payload)
@@ -54,7 +55,5 @@ def general_settings(context):
         "ENVIRONMENT": settings.ENVIRONMENT,
         "APP_MERCURE_PUBLIC_URL": settings.APP_MERCURE_PUBLIC_URL,
         "MERCURE_SUBSCRIBER_TOKEN": subscriber_token,
-        "GEBRUIKER": model_to_dict(
-            context.user, fields=["email", "first_name", "last_name", "telefoonnummer"]
-        ),
+        "GEBRUIKER": gebruiker,
     }
