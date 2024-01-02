@@ -182,8 +182,11 @@ def set_ordering(gebruiker, nieuwe_ordering):
 
 
 def publiseer_melding_gebruikers_activiteit(melding_id, request):
+    ts_now = int(timezone.now().timestamp())
+    ts_outdated = ts_now - 60 * 60 * 2
     ts_key = "timestamp"
     user_key = "gebruiker"
+    user_id_key = "email"
     payload_key = "payload"
     topic_key = "topic"
 
@@ -197,22 +200,26 @@ def publiseer_melding_gebruikers_activiteit(melding_id, request):
 
     subscriptions = mercure_service.get_subscriptions().get("subscriptions", [])
     sorted_subscriptions = sorted(
-        subscriptions, key=lambda key: key.get(payload_key, {}).get(ts_key, 0)
+        subscriptions,
+        key=lambda key: key.get(payload_key, {}).get(ts_key, 0),
+        reverse=True,
     )
-
     subscription_gebruikers = {
-        sub.get(payload_key, {}).get(user_key): {
-            ts_key: sub.get(payload_key, {}).get(ts_key),
-        }
+        sub.get(payload_key, {}).get(user_key, {}).get(user_id_key)
+        if isinstance(sub.get(payload_key, {}).get(user_key), dict)
+        else sub.get(payload_key, {}).get(user_key): sub.get(payload_key, {})
         for sub in sorted_subscriptions
-        if sub.get(payload_key, {}).get(user_key) and sub.get(topic_key) == topic
+        if sub.get(payload_key, {}).get(user_key)
+        and sub.get(topic_key) == topic
+        and sub.get(payload_key, {}).get(ts_key) > ts_outdated
     }
     subscription_gebruikers[request.user.email] = {
-        ts_key: int(timezone.now().timestamp()),
+        ts_key: ts_now,
+        user_key: request.user.serialized_instance(),
     }
 
     sorted_subscriptions = sorted(
-        [dict(**v, gebruiker=k) for k, v in subscription_gebruikers.items()],
+        [v for k, v in subscription_gebruikers.items()],
         key=lambda key: key.get(ts_key),
         reverse=True,
     )
