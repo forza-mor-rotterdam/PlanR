@@ -242,12 +242,16 @@ CSP_CONNECT_SRC = (
     (
         "'self'",
         "api.pdok.nl",
+        "mercure.planr-test.forzamor.nl",
+        "mercure.planr-acc.forzamor.nl",
+        "mercure.planr.forzamor.nl",
     )
     if not DEBUG
     else (
         "'self'",
         "ws:",
         "api.pdok.nl",
+        "localhost:7002",
     )
 )
 
@@ -422,3 +426,20 @@ if OPENID_CONFIG and OIDC_RP_CLIENT_ID:
     LOGIN_REDIRECT_URL_FAILURE = "/"
     LOGOUT_REDIRECT_URL = OIDC_OP_LOGOUT_ENDPOINT
     LOGIN_URL = "/oidc/authenticate/"
+
+APP_MERCURE_PUBLIC_URL = os.getenv("APP_MERCURE_PUBLIC_URL")
+APP_MERCURE_INTERNAL_URL = os.getenv("APP_MERCURE_INTERNAL_URL", APP_MERCURE_PUBLIC_URL)
+MERCURE_PUBLISHER_JWT_KEY = os.getenv("MERCURE_PUBLISHER_JWT_KEY")
+MERCURE_SUBSCRIBER_JWT_KEY = os.getenv("MERCURE_SUBSCRIBER_JWT_KEY")
+
+MERCURE_PUBLISH_TARGETS = [
+    "/melding/{id}/",
+    # "/melding/{id}/afhandelen/",
+    # "/melding/{id}/annuleren/",
+    # "/melding/{id}/taakstarten/",
+    # "/melding/{id}/taak-afronden/",
+    # "/melding/{id}/taak-annuleren/",
+    # "/melding/{id}/informatie-toevoegen/",
+]
+
+USER_ACTIVITY_CACHE_KEY = "user_activity_cache_key"

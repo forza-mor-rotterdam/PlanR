@@ -13,7 +13,11 @@
     {% context_template "melding_detail_acties.html" as acties_template %}
     <turbo-frame id="overview">
     <div data-controller="detail"
-         data-detail-incident-object-value="{{ melding|json_encode }}"
+        data-detail-incident-object-value="{{ melding|json_encode }}"
+        data-detail-mercure-public-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
+        data-detail-gebruiker-value="{{ GEBRUIKER|json_encode }}"
+        data-detail-mercure-subscriptions-value="{{ mercure_subscriptions|json_encode }}"
+        data-detail-mercure-subscriber-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}"
          {% with highest_weight_locatie=melding.locaties_voor_melding|dictsort:"gewicht"|last %}
          {% if highest_weight_locatie %} data-detail-incident-y-value="{{ highest_weight_locatie.geometrie.coordinates.0 }}" data-detail-incident-x-value="{{ highest_weight_locatie.geometrie.coordinates.1 }}" {% endif %}
          {% endwith %}>
@@ -263,7 +267,16 @@
                         <div class="border-green print-only"></div>
                     </div>
                     <div class="grid-item aside">
+
                         {% include acties_template %}
+                        <section class="section--seperated" data-testid="" data-detail-target="gebruikersActiviteit">
+                            <h2>
+                                {% include "icons/person.svg" %}
+                                Melding gebruikers
+                            </h2>
+                            <ul>
+                            </ul>
+                        </section>
                         {% if melding.status.naam != "afgehandeld" and melding.status.naam != "geannuleerd" %}
                             <section class="section--seperated">
                                 <turbo-frame id="informatie_toevoegen" src="{% url 'informatie_toevoegen' melding.uuid %}">

@@ -56,7 +56,7 @@ urlpatterns = [
     path("api-token-auth/", views.obtain_auth_token),
     path("oidc/", include("mozilla_django_oidc.urls")),
     path("melding/", melding_lijst, name="melding_lijst"),
-    path("melding/<uuid:id>", melding_detail, name="melding_detail"),
+    path("melding/<uuid:id>/", melding_detail, name="melding_detail"),
     path("health/", include("health_check.urls")),
     path("msb/login/", msb_login, name="msb_login"),
     path("msb/zoeken/", msb_melding_zoeken, name="msb_melding_zoeken"),
