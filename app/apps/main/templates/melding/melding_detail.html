@@ -269,14 +269,7 @@
                     <div class="grid-item aside">
 
                         {% include acties_template %}
-                        <section class="section--seperated" data-testid="" data-detail-target="gebruikersActiviteit">
-                            <h2>
-                                {% include "icons/person.svg" %}
-                                Melding gebruikers
-                            </h2>
-                            <ul>
-                            </ul>
-                        </section>
+
                         {% if melding.status.naam != "afgehandeld" and melding.status.naam != "geannuleerd" %}
                             <section class="section--seperated">
                                 <turbo-frame id="informatie_toevoegen" src="{% url 'informatie_toevoegen' melding.uuid %}">

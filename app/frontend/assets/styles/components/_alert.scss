@@ -12,6 +12,14 @@
         margin-top: -6px;
     }
 
+    ul:not(.list-clean) {
+        padding-left: 1em;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
     &--info {
         background-color: rgba(23, 145, 212, 0.1);
         border-color: rgba(23, 145, 212, 0.25);
@@ -38,5 +46,9 @@
         a {
             color: inherit;
         }
+    }
+
+    .container__actions & {
+        margin-top: 1em;
     }
 }

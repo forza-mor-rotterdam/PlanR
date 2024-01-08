@@ -436,6 +436,10 @@ section {
     color: $gray-tint09;
 }
 
+.js-hidden {
+    display: none !important;
+}
+
 .hidden-vertical {
     // display: none;
     padding-top: 0;
