@@ -196,7 +196,7 @@ def publiseer_melding_gebruikers_activiteit(melding_id, request):
     try:
         mercure_service = MercureService()
     except MercureService.ConfigException:
-        ...
+        return []
 
     subscriptions = mercure_service.get_subscriptions().get("subscriptions", [])
     sorted_subscriptions = sorted(
