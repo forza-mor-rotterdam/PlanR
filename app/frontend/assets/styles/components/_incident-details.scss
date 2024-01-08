@@ -35,6 +35,10 @@
     p:not(:first-of-type) {
         margin-top: 0.5rem;
     }
+
+    .alert {
+        display: flex;
+    }
 }
 
 .container__details {

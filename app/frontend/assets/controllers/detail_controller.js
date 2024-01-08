@@ -53,7 +53,7 @@ export default class extends Controller {
       this.initMessages()
     }
     if (this.hasGebruikersActiviteitTarget) {
-      this.gebruikersActiviteitTarget.style.display = 'none'
+      this.gebruikersActiviteitTarget.classList.add('js-hidden')
     }
 
     const incidentXValue = this.incidentXValue
@@ -212,7 +212,7 @@ export default class extends Controller {
         (sub) => self.gebruiker.email != sub.gebruiker.email && sub.timestamp > tsOutdated
       )
       if (subscriptions.length > 0) {
-        this.gebruikersActiviteitTarget.style.display = 'block'
+        this.gebruikersActiviteitTarget.classList.remove('js-hidden')
         for (let i = 0; i < subscriptions.length; i++) {
           const subscription = subscriptions[i]
           let liElem = document.createElement('li')
@@ -225,7 +225,7 @@ export default class extends Controller {
           gebruikersLijstElem.appendChild(liElem)
         }
       } else {
-        this.gebruikersActiviteitTarget.style.display = 'none'
+        this.gebruikersActiviteitTarget.classList.add('js-hidden')
       }
     }
   }
