@@ -97,7 +97,9 @@
                                 {% endif %}
                             </td>
                             <td>
-                                <a href="{% url 'gebruiker_aanpassen' object.pk %}">Aanpassen</a>
+                                <a href="{% url 'gebruiker_aanpassen' object.pk %}" aria-label="Aanpassen">
+                                    {% include "icons/edit.svg" %}
+                                </a>
                             </td>
                         </tr>
                     {% endfor %}
@@ -161,7 +163,9 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{% url 'gebruiker_aanpassen' object.pk %}">Aanpassen</a>
+                            <a href="{% url 'gebruiker_aanpassen' object.pk %}" aria-label="Aanpassen">
+                                {% include "icons/edit.svg" %}
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}
