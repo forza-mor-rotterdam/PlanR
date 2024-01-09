@@ -1,0 +1,18 @@
+{% load json_encode from json_tags %}
+
+<section
+    data-controller="meldingGebruiker"
+    data-meldingGebruiker-mercure-public-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
+    data-meldingGebruiker-melding-id-value="{{ melding.uuid }}"
+    data-meldingGebruiker-gebruiker-value="{{ GEBRUIKER|json_encode }}"
+    data-meldingGebruiker-mercure-subscriber-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}"
+    class="section--seperated"
+    data-testid=""
+    >
+    <h2>
+        {% include "icons/person.svg" %}
+        Melding gebruikers
+    </h2>
+    <ul data-meldingGebruiker-target="gebruikerLijst">
+    </ul>
+</section>

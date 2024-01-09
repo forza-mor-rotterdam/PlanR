@@ -52,6 +52,38 @@ services:
     networks:
       - planr_network
 
+  app_celery_worker:
+    build: ./app
+    command: "celery -A config worker -l info"
+    depends_on:
+      database:
+        condition: service_started
+      redis:
+        condition: service_started
+    volumes:
+      - ./media:/media
+    env_file:
+      - .env.local
+    networks:
+      - planr_network
+      - mor_bridge_network
+
+  app_celery_beat:
+    build: ./app
+    command: "celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    depends_on:
+      database:
+        condition: service_started
+      redis:
+        condition: service_started
+    volumes:
+      - ./media:/media
+    env_file:
+      - .env.local
+    networks:
+      - planr_network
+      - mor_bridge_network
+
   mercure:
     image: dunglas/mercure
     restart: unless-stopped
