@@ -5,7 +5,7 @@ export default class extends Controller {
     dateObject: String,
   }
 
-  static targets = ['timeHoursMinutes', 'details']
+  static targets = ['timeHoursMinutes', 'resolutie']
 
   connect() {
     const dateObject = new Date(this.data.get('dateObjectValue'))
@@ -17,10 +17,9 @@ export default class extends Controller {
       this.timeHoursMinutesTarget.textContent = time
     }
 
-    if (this.hasDetailsTarget) {
-      const subject = this.detailsTarget.querySelector('strong').innerHTML
-      if (subject.includes('Niet opgelost')) {
-        this.detailsTarget.open = true
+    if (this.hasResolutieTarget) {
+      if (this.resolutieTarget.innerHTML.toLowerCase() !== 'opgelost') {
+        this.resolutieTarget.closest('details').open = true
       }
     }
   }

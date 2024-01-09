@@ -10,7 +10,7 @@
         {% with previous_row_data=tijdlijn_data|previous:forloop.counter0 %}
             {% with next_row_data=tijdlijn_data|next:forloop.counter0 %}
                 <li data-controller="datetime">
-                    <details data-datetime-target="details">
+                    <details>
                         {% if not melding.afgesloten_op or not forloop.first %}
                             {% for cel in next_row_data.row %}
                                 {% if cel == 1 or cel == 0 %}
@@ -51,6 +51,7 @@
                                                 :
                                                 {% if row_data.mg.taakgebeurtenis.taakstatus.naam == "voltooid" %}
                                                     {{ taakopdracht.resolutie|vertaal }}
+                                                    <span class="visually-hidden" data-datetime-target="resolutie">{{ taakopdracht.resolutie }}<span>
                                                 {% else %}
                                                     {{ row_data.mg.taakgebeurtenis.taakstatus.naam }}
                                                 {% endif %}
@@ -66,6 +67,7 @@
                                             communicatie
                                         {% endif %}
                                     {% endif %}
+
                                 </strong>
                             {% endif %}
                         </summary>
