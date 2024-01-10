@@ -132,6 +132,12 @@ textarea {
         border-color: $gray-tint08;
         color: $gray-tint11;
 
+        svg {
+            path {
+                fill: currentColor;
+            }
+        }
+
         &:hover,
         &:focus {
             color: $primary;
