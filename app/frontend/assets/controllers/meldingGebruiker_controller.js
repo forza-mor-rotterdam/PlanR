@@ -69,7 +69,6 @@ export default class extends Controller {
         throw new Error(`HTTP error! Status: ${response.status}`)
       }
       const json_resp = response.json()
-      console.log(json_resp)
       return await json_resp
     } catch (error) {
       console.error('Error fetching address details:', error.message)

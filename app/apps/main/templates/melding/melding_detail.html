@@ -264,8 +264,8 @@
                     </div>
                     <div class="grid-item aside">
 
-                        {% include acties_template %}
                         {% include "melding/melding_gebruiker_actief.html" %}
+                        {% include acties_template %}
                         {% if melding.status.naam != "afgehandeld" and melding.status.naam != "geannuleerd" %}
                             <section class="section--seperated">
                                 <turbo-frame id="informatie_toevoegen" src="{% url 'informatie_toevoegen' melding.uuid %}">
