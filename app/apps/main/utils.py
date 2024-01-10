@@ -1,13 +1,10 @@
 import base64
-import json
 import logging
 from re import sub
 
 from apps.services.mercure import MercureService
 from django.core.files.storage import default_storage
 from django.http import QueryDict
-from django.urls import reverse
-from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -181,52 +178,33 @@ def set_ordering(gebruiker, nieuwe_ordering):
     return gebruiker.profiel.ui_instellingen.get("ordering")
 
 
-def publiseer_melding_gebruikers_activiteit(melding_id, request):
-    ts_now = int(timezone.now().timestamp())
-    ts_outdated = ts_now - 60 * 60 * 2
-    ts_key = "timestamp"
-    user_key = "gebruiker"
-    user_id_key = "email"
-    payload_key = "payload"
-    topic_key = "topic"
+def subscriptions_voor_topic(topic, alle_subscriptions):
+    subscriptions = [
+        subscription
+        for subscription in alle_subscriptions
+        if subscription.get("topic") == topic
+    ]
+    return [
+        v
+        for k, v in {
+            subscription.get("payload", {})
+            .get("gebruiker", {})
+            .get("email"): subscription
+            for subscription in subscriptions
+        }.items()
+    ]
 
-    topic = reverse("melding_detail", args=[melding_id])
 
+def publiceer_topic_met_subscriptions(topic, alle_subscriptions=None):
     mercure_service = None
     try:
         mercure_service = MercureService()
     except MercureService.ConfigException:
-        return []
-
-    subscriptions = mercure_service.get_subscriptions().get("subscriptions", [])
-    sorted_subscriptions = sorted(
-        subscriptions,
-        key=lambda key: key.get(payload_key, {}).get(ts_key, 0),
-        reverse=True,
-    )
-    subscription_gebruikers = {
-        sub.get(payload_key, {}).get(user_key, {}).get(user_id_key)
-        if isinstance(sub.get(payload_key, {}).get(user_key), dict)
-        else sub.get(payload_key, {}).get(user_key): sub.get(payload_key, {})
-        for sub in sorted_subscriptions
-        if sub.get(payload_key, {}).get(user_key)
-        and sub.get(topic_key) == topic
-        and sub.get(payload_key, {}).get(ts_key) > ts_outdated
-    }
-    subscription_gebruikers[request.user.email] = {
-        ts_key: ts_now,
-        user_key: request.user.serialized_instance(),
-    }
-
-    sorted_subscriptions = sorted(
-        [v for k, v in subscription_gebruikers.items()],
-        key=lambda key: key.get(ts_key),
-        reverse=True,
-    )
-    logger.info(
-        f"Publiceer gebruikers: {json.dumps(sorted_subscriptions, indent=4)}, voor topic {topic}"
-    )
-
-    if mercure_service:
-        mercure_service.publish(topic, sorted_subscriptions)
-    return sorted_subscriptions
+        return "MercureService.ConfigException error"
+    if not alle_subscriptions:
+        alle_subscriptions = mercure_service.get_subscriptions().get(
+            "subscriptions", []
+        )
+    subscriptions = subscriptions_voor_topic(topic, alle_subscriptions)
+    if len(subscriptions) > 1:
+        mercure_service.publish(topic, subscriptions)

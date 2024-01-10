@@ -35,7 +35,7 @@ from apps.main.utils import (
     get_ordering,
     get_valide_kolom_classes,
     melding_naar_tijdlijn,
-    publiseer_melding_gebruikers_activiteit,
+    publiceer_topic_met_subscriptions,
     set_actieve_filters,
     set_ordering,
     to_base64,
@@ -170,8 +170,6 @@ def melding_lijst(request):
 def melding_detail(request, id):
     melding = MeldingenService().get_melding(id)
 
-    mercure_subscriptions = publiseer_melding_gebruikers_activiteit(id, request)
-
     open_taakopdrachten = get_open_taakopdrachten(melding)
     tijdlijn_data = melding_naar_tijdlijn(melding)
     taaktypes = get_taaktypes(melding, request.user)
@@ -235,16 +233,19 @@ def melding_detail(request, id):
             "aantal_voltooide_taken": aantal_voltooide_taken,
             "tijdlijn_data": tijdlijn_data,
             "open_taakopdrachten": open_taakopdrachten,
-            "mercure_subscriptions": mercure_subscriptions,
         },
     )
+
+
+@permission_required("authorisatie.melding_bekijken")
+def publiceer_topic(request, id):
+    publiceer_topic_met_subscriptions(reverse("melding_detail", args=[id]))
+    return JsonResponse({})
 
 
 @permission_required("authorisatie.melding_afhandelen")
 def melding_afhandelen(request, id):
     melding = MeldingenService().get_melding(id)
-
-    publiseer_melding_gebruikers_activiteit(id, request)
 
     afhandel_reden_opties = [(s, s) for s in melding.get("volgende_statussen", ())]
     melding_bijlagen = [
@@ -305,8 +306,6 @@ def melding_afhandelen(request, id):
 def melding_annuleren(request, id):
     melding = MeldingenService().get_melding(id)
 
-    publiseer_melding_gebruikers_activiteit(id, request)
-
     afhandel_reden_opties = [(s, s) for s in melding.get("volgende_statussen", ())]
     melding_bijlagen = [
         [
@@ -363,8 +362,6 @@ def melding_annuleren(request, id):
 def taak_starten(request, id):
     melding = MeldingenService().get_melding(id)
 
-    publiseer_melding_gebruikers_activiteit(id, request)
-
     taaktypes = get_taaktypes(melding, request.user)
     form = TaakStartenForm(taaktypes=taaktypes)
     if request.POST:
@@ -394,8 +391,6 @@ def taak_starten(request, id):
 @permission_required("authorisatie.taak_afronden")
 def taak_afronden(request, melding_uuid):
     melding = MeldingenService().get_melding(melding_uuid)
-
-    publiseer_melding_gebruikers_activiteit(melding_uuid, request)
 
     open_taakopdrachten = get_open_taakopdrachten(melding)
     taakopdracht_urls = {
@@ -441,8 +436,6 @@ def taak_afronden(request, melding_uuid):
 def taak_annuleren(request, melding_uuid):
     melding = MeldingenService().get_melding(melding_uuid)
 
-    publiseer_melding_gebruikers_activiteit(melding_uuid, request)
-
     open_taakopdrachten = get_open_taakopdrachten(melding)
     taakopdracht_urls = {
         to.get("uuid"): to.get("_links", {}).get("self") for to in open_taakopdrachten
@@ -479,8 +472,6 @@ def taak_annuleren(request, melding_uuid):
 @permission_required("authorisatie.melding_bekijken")
 def informatie_toevoegen(request, id):
     melding = MeldingenService().get_melding(id)
-
-    publiseer_melding_gebruikers_activiteit(id, request)
 
     tijdlijn_data = melding_naar_tijdlijn(melding)
     form = InformatieToevoegenForm()
@@ -868,8 +859,6 @@ class StandaardExterneOmschrijvingVerwijderenView(
 
 @permission_required("authorisatie.locatie_aanpassen")
 def locatie_aanpassen(request, id):
-    publiseer_melding_gebruikers_activiteit(id, request)
-
     try:
         melding = MeldingenService().get_melding(id)
         afhandel_reden_opties = [(s, s) for s in melding.get("volgende_statussen", ())]

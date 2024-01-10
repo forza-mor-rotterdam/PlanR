@@ -16,10 +16,6 @@ export default class extends Controller {
     areaList: String,
     currentDistrict: String,
     incidentObject: Object,
-    mercurePublicUrl: String,
-    mercureSubscriberToken: String,
-    mercureSubscriptions: String,
-    gebruiker: String,
   }
   static targets = [
     'selectedImage',
@@ -29,15 +25,11 @@ export default class extends Controller {
     'turboActionModal',
     'modalAfhandelen',
     'imageSliderWidth',
-    'gebruikersActiviteit',
   ]
 
   initialize() {
     let self = this
-    self.gebruiker = self.hasGebruikerValue ? JSON.parse(self.gebruikerValue) : {}
 
-    this.lastEventId = null
-    this.mercureSubscriptions = []
     if (this.hasThumbListTarget) {
       const element = this.thumbListTarget.getElementsByTagName('li')[0]
       element.classList.add('selected')
@@ -45,14 +37,6 @@ export default class extends Controller {
       imageSliderThumbContainer = self.imageSliderThumbContainerTarget
       sliderContainerWidth = imageSliderWidth.offsetWidth
       imageSliderThumbContainer.style.maxWidth = `${sliderContainerWidth}px`
-    }
-    if (this.hasMercureSubscriptionsValue) {
-      console.log(JSON.parse(this.mercureSubscriptionsValue))
-      this.mercureSubscriptions = JSON.parse(this.mercureSubscriptionsValue)
-      this.initMessages()
-    }
-    if (this.hasGebruikersActiviteitTarget) {
-      this.gebruikersActiviteitTarget.classList.add('js-hidden')
     }
 
     const incidentXValue = this.incidentXValue
@@ -127,101 +111,12 @@ export default class extends Controller {
         this.closeModal()
       }
     })
-
-    const resizeObserver = new ResizeObserver(() => {
-      sliderContainerWidth = imageSliderWidth.offsetWidth
-      imageSliderThumbContainer.style.maxWidth = `${sliderContainerWidth}px`
-    })
-    resizeObserver.observe(imageSliderWidth)
-  }
-  isValidHttpUrl(string) {
-    let url
-
-    try {
-      url = new URL(string)
-    } catch (_) {
-      return false
-    }
-
-    return url.protocol === 'http:' || url.protocol === 'https:'
-  }
-  initMessages() {
-    let self = this
-    if (self.hasMercurePublicUrlValue && self.isValidHttpUrl(self.mercurePublicUrlValue)) {
-      const url = new URL(self.mercurePublicUrlValue)
-      url.searchParams.append('topic', window.location.pathname)
-      if (self.lastEventId) {
-        url.searchParams.append('lastEventId', self.lastEventId)
-      }
-      if (self.hasMercureSubscriberTokenValue) {
-        console.log(self.mercureSubscriberTokenValue)
-        url.searchParams.append('authorization', self.mercureSubscriberTokenValue)
-      }
-      self.eventSource = new EventSource(url)
-      self.eventSource.onmessage = (e) => self.onMessage(e)
-      self.eventSource.onerror = (e) => self.onMessageError(e)
-      self.updateMessagesInterval = setInterval(() => self.updateGebruikerActiviteit(), 1000)
-    }
-  }
-  onMessage(e) {
-    this.lastEventId = e.lastEventId
-    let data = JSON.parse(e.data)
-    console.log('mercure message', data)
-    this.mercureSubscriptions = data
-  }
-  // unused for now
-  async getSubscriptions() {
-    const url = `${this.mercurePublicUrlValue}/subscriptions`
-
-    try {
-      const response = await fetch(`${url}`, {
-        headers: {
-          Authorization: `Bearer ${this.mercureSubscriberTokenValue}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+    if (this.hasThumbListTarget) {
+      const resizeObserver = new ResizeObserver(() => {
+        sliderContainerWidth = imageSliderWidth.offsetWidth
+        imageSliderThumbContainer.style.maxWidth = `${sliderContainerWidth}px`
       })
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`)
-      }
-      return await response.json()
-    } catch (error) {
-      console.error('Error fetching address details:', error.message)
-    }
-  }
-  onMessageError(e) {
-    let self = this
-    console.error(e)
-    console.error('An error occurred while attempting to connect.')
-    self.eventSource.close()
-    clearInterval(self.updateMessagesInterval)
-    setTimeout(() => self.initMessages(), 5000)
-  }
-  updateGebruikerActiviteit() {
-    const self = this
-    const currentDate = new Date()
-    const tsOutdated = parseInt(currentDate.getTime() / 1000) - 60 * 60 * 2
-    if (this.hasGebruikersActiviteitTarget) {
-      let gebruikersLijstElem = this.gebruikersActiviteitTarget.querySelector('ul')
-      gebruikersLijstElem.innerHTML = ''
-      const subscriptions = this.mercureSubscriptions.filter(
-        (sub) => self.gebruiker.email != sub.gebruiker.email && sub.timestamp > tsOutdated
-      )
-      if (subscriptions.length > 0) {
-        this.gebruikersActiviteitTarget.classList.remove('js-hidden')
-        for (let i = 0; i < subscriptions.length; i++) {
-          const subscription = subscriptions[i]
-          let liElem = document.createElement('li')
-          const timeLeft = parseInt(parseInt(currentDate.getTime())) - subscription.timestamp * 1000
-          let min = Math.floor(timeLeft / 1000 / 60 + 60) % 60
-          let hours = Math.floor(timeLeft / 1000 / 60 / 60)
-          let minVerbal = min > 0 ? `${min} ${min > 1 ? 'minuten' : 'minuut'}` : `< minuut`
-          let hoursVerbal = hours > 0 ? `${hours} uur en ` : ``
-          liElem.textContent = `${subscription.gebruiker.naam}: ${hoursVerbal}${minVerbal} geleden`
-          gebruikersLijstElem.appendChild(liElem)
-        }
-      } else {
-        this.gebruikersActiviteitTarget.classList.add('js-hidden')
-      }
+      resizeObserver.observe(imageSliderWidth)
     }
   }
   onMapLayerChange(e) {

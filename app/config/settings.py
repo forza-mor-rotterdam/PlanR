@@ -52,6 +52,8 @@ INSTALLED_APPS = (
     "health_check.cache",
     "health_check.db",
     "health_check.contrib.migrations",
+    "django_celery_beat",
+    "django_celery_results",
     # Apps
     "apps.health",
     "apps.rotterdam_formulier_html",
@@ -139,6 +141,16 @@ DATABASES.update(
 )
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 AUTH_USER_MODEL = "authenticatie.Gebruiker"
+
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERY_BROKER_URL = "redis://redis:6379/0"
+
+BROKER_URL = CELERY_BROKER_URL
+CELERY_TASK_TRACK_STARTED = True
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERYBEAT_SCHEDULE = {}
 
 SITE_ID = 1
 SITE_NAME = os.getenv("SITE_NAME", "PlanR")
@@ -357,6 +369,10 @@ LOGGING = {
             "level": LOG_LEVEL,
             "propagate": True,
         },
+        "celery": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+        },
     },
 }
 
@@ -434,12 +450,6 @@ MERCURE_SUBSCRIBER_JWT_KEY = os.getenv("MERCURE_SUBSCRIBER_JWT_KEY")
 
 MERCURE_PUBLISH_TARGETS = [
     "/melding/{id}/",
-    # "/melding/{id}/afhandelen/",
-    # "/melding/{id}/annuleren/",
-    # "/melding/{id}/taakstarten/",
-    # "/melding/{id}/taak-afronden/",
-    # "/melding/{id}/taak-annuleren/",
-    # "/melding/{id}/informatie-toevoegen/",
 ]
 
 USER_ACTIVITY_CACHE_KEY = "user_activity_cache_key"

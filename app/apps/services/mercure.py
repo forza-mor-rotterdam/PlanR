@@ -47,9 +47,7 @@ class MercureService:
         self._mercure_subscriber_jwt_key = settings.MERCURE_SUBSCRIBER_JWT_KEY
 
     def _get_headers(self):
-        token = self._get_jwt_token(
-            self._mercure_publisher_jwt_key, {"publisher": "server"}
-        )
+        token = self.get_publisher_token({"publisher": "server"})
         logger.info(f"Auth token token: {token}")
         return {
             "Authorization": f"Bearer {token}",
@@ -103,3 +101,6 @@ class MercureService:
 
     def get_subscriber_token(self, payload=dict):
         return self._get_jwt_token(self._mercure_subscriber_jwt_key, payload)
+
+    def get_publisher_token(self, payload=dict):
+        return self._get_jwt_token(self._mercure_publisher_jwt_key, payload)
