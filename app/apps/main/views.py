@@ -45,8 +45,13 @@ from apps.services.meldingen import MeldingenService, get_taaktypes
 from config.context_processors import general_settings
 from deepdiff import DeepDiff
 from django.conf import settings
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import (
+    login_required,
+    permission_required,
+    user_passes_test,
+)
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse, QueryDict, StreamingHttpResponse
@@ -922,3 +927,9 @@ def locatie_aanpassen(request, id):
             {"error": str(e)},
             status=getattr(e, "status_code", 500),
         )
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def clear_melding_token_from_cache(request):
+    cache.delete("meldingen_token")
+    return HttpResponse("melding_token removed from cache")
