@@ -264,11 +264,25 @@ def melding_afhandelen(request, id):
         ]
         for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
     ]
-
+    benc_user = request.user.profiel.context.template == "benc"
+    melding_meta = melding.get("meta", {})
+    # Als het om een B&C formulier gaat en er geen terugkoppeling gewenst is en/of er geen email bekend is
+    standaard_omschrijving_niet_weergeven = bool(
+        benc_user
+        and (
+            melding_meta.get("terugkoppeling_gewenst") != "Ja"
+            or not melding_meta.get("email_melder")
+        )
+    )
     bijlagen_flat = [b for bl in melding_bijlagen for b in bl]
-    form = MeldingAfhandelenForm()
+    form = MeldingAfhandelenForm(
+        standaard_omschrijving_niet_weergeven=standaard_omschrijving_niet_weergeven
+    )
     if request.POST:
-        form = MeldingAfhandelenForm(request.POST)
+        form = MeldingAfhandelenForm(
+            request.POST,
+            standaard_omschrijving_niet_weergeven=standaard_omschrijving_niet_weergeven,
+        )
         if form.is_valid():
             bijlagen = request.FILES.getlist("bijlagen", [])
             bijlagen_base64 = []
