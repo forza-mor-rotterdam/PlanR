@@ -382,6 +382,10 @@ def taak_starten(request, id):
     melding = MeldingenService().get_melding(id)
 
     taaktypes = get_taaktypes(melding, request.user)
+    taaktypes.insert(
+        0,
+        ("", "Selecteer een taak"),
+    )
     form = TaakStartenForm(taaktypes=taaktypes)
     if request.POST:
         form = TaakStartenForm(request.POST, taaktypes=taaktypes)
