@@ -80,8 +80,10 @@
                 <div class="form-row btn-row">
                     <button type="reset"
                             class="btn btn-tertiary"
-                            data-controller="detail"
-                            data-action="detail#closeModal">
+                            data-controller="utils"
+                            data-action="utils#goToUrl"
+                            data-utils-url-param="{% url 'gebruiker_lijst' %}"
+                        >
                         <span>Annuleren</span>
                     </button>
                     <button type="submit"class="btn btn-action">
