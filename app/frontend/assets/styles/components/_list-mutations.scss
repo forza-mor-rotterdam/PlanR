@@ -116,6 +116,18 @@
                 background-color: $gray-tint11;
             }
         }
+
+        .warning {
+            &::before {
+                content: url("../icons/warning_triangle_open.svg");
+                position: absolute;
+                top: 0;
+                margin-left: -35px;
+                path {
+                    fill: $red;
+                }
+            }
+        }
         .content {
             position: relative;
             margin-bottom: 20px;
