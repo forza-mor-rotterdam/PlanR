@@ -72,25 +72,25 @@ fieldset {
 
     option[disabled],
     option[read-only],
-    &:hover:not(:focus):not([disabled]):not([read-only]) {
-        border-color: $hover-border-color;
-        box-shadow: 0 0 0 1px $hover-border-color;
-    }
     &:focus,
     &:focus-visible {
         outline: 0;
         border-color: $focus-border-color;
         box-shadow: 0 0 0 1px $focus-border-color;
     }
+
+    &.search {
+        padding-left: 40px;
+        background-repeat: no-repeat;
+    }
+}
+
+.form-control {
     &:disabled,
     &:read-only,
     option[disabled],
     option[read-only] {
         color: $text-muted;
-    }
-    &.search {
-        padding-left: 40px;
-        background-repeat: no-repeat;
     }
 }
 
