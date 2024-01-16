@@ -51,13 +51,13 @@
                                 <ul>
                                     {% for taak in actieve_taken %}<li>{{ taak.titel }}</li>{% endfor %}
                                 </ul>
-                                Als de locatie wordt aangepast wordt de locatie van deze
+                                <span>Als de locatie wordt aangepast wordt de locatie van deze
                                 {% if aantal_actieve_taken == 1 %}
                                     taak
                                 {% else %}
                                     taken
                                 {% endif %}
-                                ook bijgewerkt.
+                                ook bijgewerkt.</span>
                             </div>
                         </div>
                     {% endif %}
