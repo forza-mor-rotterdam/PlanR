@@ -160,7 +160,7 @@ table {
 a,
 .link {
     color: $primary;
-    text-decoration: underline;
+    text-decoration: $link-decoration;
     cursor: pointer;
 
     &:hover,
