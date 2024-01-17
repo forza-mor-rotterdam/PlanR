@@ -93,7 +93,7 @@ class MercureService:
     def get_subscriptions(self):
         response = requests.get(
             f"{self._mercure_url}/subscriptions",
-            headers=self._get_headers(self.get_publisher_token()),
+            headers=self._get_headers(self.get_subscriber_token()),
         )
         logger.info(f"Subscriptions response status_code: {response.status_code}")
         logger.info(f"Subscriptions response text: {response.text}")
