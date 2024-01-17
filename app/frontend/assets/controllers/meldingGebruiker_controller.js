@@ -76,7 +76,11 @@ export default class extends Controller {
   }
   updateGebruikerActiviteit() {
     const self = this
-    if (this.gebruikerLijstTarget) {
+    if (
+      this.gebruikerLijstTarget &&
+      self.mercureSubscriptions !== null &&
+      Array.isArray(self.mercureSubscriptions)
+    ) {
       self.gebruikerLijstTarget.innerHTML = ''
       const subscriptions = this.mercureSubscriptions.filter(
         (sub) => self.gebruiker.email != sub.payload.gebruiker.email

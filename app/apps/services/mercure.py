@@ -70,7 +70,7 @@ class MercureService:
             algorithm=algorithm,
         )
 
-    def publish(self, topic: str, data: dict = {}):
+    def publish(self, topic: str, data=[]):
         logger.info(f"Publish with topic: {topic}")
         logger.info(f"Publish with data: {data}")
 

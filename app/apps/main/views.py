@@ -173,6 +173,11 @@ def melding_lijst(request):
 
 @permission_required("authorisatie.melding_bekijken")
 def melding_detail(request, id):
+    from apps.services.mercure import MercureService
+
+    mercure_service = MercureService()
+    mercure_service.publish(reverse("melding_detail", args=(id,)), {"mijn": "data"})
+
     melding = MeldingenService().get_melding(id)
 
     open_taakopdrachten = get_open_taakopdrachten(melding)
