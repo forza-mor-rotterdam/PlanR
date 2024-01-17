@@ -143,6 +143,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 AUTH_USER_MODEL = "authenticatie.Gebruiker"
 
 CELERY_TASK_TRACK_STARTED = True
+CELERY_RESULTS_EXTENDED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 CELERY_BROKER_URL = "redis://redis:6379/0"
 
