@@ -44,17 +44,18 @@ class MercureService:
         self._mercure_url = settings.APP_MERCURE_INTERNAL_URL
         logger.info(f"_mercure_url: {self._mercure_url}")
         self._mercure_publisher_jwt_key = settings.MERCURE_PUBLISHER_JWT_KEY
+        self._mercure_publisher_jwt_alg = settings.MERCURE_PUBLISHER_JWT_ALG
         self._mercure_subscriber_jwt_key = settings.MERCURE_SUBSCRIBER_JWT_KEY
+        self._mercure_subscriber_jwt_alg = settings.MERCURE_SUBSCRIBER_JWT_ALG
 
-    def _get_headers(self):
-        token = self.get_publisher_token({"publisher": "server"})
+    def _get_headers(self, token):
         logger.info(f"Auth token token: {token}")
         return {
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/x-www-form-urlencoded",
         }
 
-    def _get_jwt_token(self, key, mercure_payload=None):
+    def _get_jwt_token(self, key, algorithm="HS256", mercure_payload=None):
         payload = {
             "mercure": {
                 "subscribe": self._subscribe_targets,
@@ -66,7 +67,7 @@ class MercureService:
         return jwt.encode(
             payload,
             key,
-            algorithm="HS256",
+            algorithm=algorithm,
         )
 
     def publish(self, topic: str, data: dict = {}):
@@ -81,7 +82,7 @@ class MercureService:
         response = requests.post(
             self._mercure_url,
             data=data,
-            headers=self._get_headers(),
+            headers=self._get_headers(self.get_publisher_token()),
         )
         response.raise_for_status()
         logger.info(f"Publish response status_code: {response.status_code}")
@@ -92,15 +93,23 @@ class MercureService:
     def get_subscriptions(self):
         response = requests.get(
             f"{self._mercure_url}/subscriptions",
-            headers=self._get_headers(),
+            headers=self._get_headers(self.get_publisher_token()),
         )
         logger.info(f"Subscriptions response status_code: {response.status_code}")
         logger.info(f"Subscriptions response text: {response.text}")
         response.raise_for_status()
         return response.json()
 
-    def get_subscriber_token(self, payload=dict):
-        return self._get_jwt_token(self._mercure_subscriber_jwt_key, payload)
+    def get_subscriber_token(self, payload=None):
+        return self._get_jwt_token(
+            self._mercure_subscriber_jwt_key,
+            mercure_payload=payload,
+            algorithm=self._mercure_subscriber_jwt_alg,
+        )
 
-    def get_publisher_token(self, payload=dict):
-        return self._get_jwt_token(self._mercure_publisher_jwt_key, payload)
+    def get_publisher_token(self, payload=None):
+        return self._get_jwt_token(
+            self._mercure_publisher_jwt_key,
+            mercure_payload=payload,
+            algorithm=self._mercure_publisher_jwt_alg,
+        )

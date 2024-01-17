@@ -90,9 +90,9 @@ services:
     environment:
       MERCURE_EXTRA_DIRECTIVES: |
           cors_origins "http://planr.mor.local:8003"
-          anonymous
+          subscriptions
       SERVER_NAME: ':80'
-    command: /usr/bin/caddy run --config /etc/caddy/Caddyfile.dev
+    # command: /usr/bin/caddy run --config /etc/caddy/Caddyfile.dev
     env_file:
       - .env.local
     ports:
