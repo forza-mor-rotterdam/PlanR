@@ -205,7 +205,9 @@ class BegraafplaatsKolom(StandaardKolom):
     def td_label(self):
         default = "-"
         begraafplaats = string_based_lookup(self.context, self._kolom_inhoud)
-        begraafplaatsen = self.context.get("filter_options", {}).get(self._key, {})
+        begraafplaatsen = (
+            self.context.get("data", {}).get("filter_options", {}).get(self._key, {})
+        )
         begraafplaats_naam = begraafplaatsen.get(begraafplaats, begraafplaats)
         return begraafplaats_naam[0] if begraafplaats_naam else default
 

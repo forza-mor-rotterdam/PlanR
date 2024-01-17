@@ -35,6 +35,7 @@ from apps.main.utils import (
     get_ordering,
     get_valide_kolom_classes,
     melding_naar_tijdlijn,
+    publiceer_topic_met_subscriptions,
     set_actieve_filters,
     set_ordering,
     to_base64,
@@ -44,8 +45,13 @@ from apps.services.meldingen import MeldingenService, get_taaktypes
 from config.context_processors import general_settings
 from deepdiff import DeepDiff
 from django.conf import settings
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import (
+    login_required,
+    permission_required,
+    user_passes_test,
+)
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse, QueryDict, StreamingHttpResponse
@@ -167,7 +173,13 @@ def melding_lijst(request):
 
 @permission_required("authorisatie.melding_bekijken")
 def melding_detail(request, id):
+    from apps.services.mercure import MercureService
+
+    mercure_service = MercureService()
+    mercure_service.publish(reverse("melding_detail", args=(id,)), {"mijn": "data"})
+
     melding = MeldingenService().get_melding(id)
+
     open_taakopdrachten = get_open_taakopdrachten(melding)
     tijdlijn_data = melding_naar_tijdlijn(melding)
     taaktypes = get_taaktypes(melding, request.user)
@@ -235,9 +247,16 @@ def melding_detail(request, id):
     )
 
 
+@permission_required("authorisatie.melding_bekijken")
+def publiceer_topic(request, id):
+    publiceer_topic_met_subscriptions(reverse("melding_detail", args=[id]))
+    return JsonResponse({})
+
+
 @permission_required("authorisatie.melding_afhandelen")
 def melding_afhandelen(request, id):
     melding = MeldingenService().get_melding(id)
+
     afhandel_reden_opties = [(s, s) for s in melding.get("volgende_statussen", ())]
     melding_bijlagen = [
         [
@@ -250,11 +269,25 @@ def melding_afhandelen(request, id):
         ]
         for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
     ]
-
+    benc_user = request.user.profiel.context.template == "benc"
+    melding_meta = melding.get("meta", {})
+    # Als het om een B&C formulier gaat en er geen terugkoppeling gewenst is en/of er geen email bekend is
+    standaard_omschrijving_niet_weergeven = bool(
+        benc_user
+        and (
+            melding_meta.get("terugkoppeling_gewenst") != "Ja"
+            or not melding_meta.get("email_melder")
+        )
+    )
     bijlagen_flat = [b for bl in melding_bijlagen for b in bl]
-    form = MeldingAfhandelenForm()
+    form = MeldingAfhandelenForm(
+        standaard_omschrijving_niet_weergeven=standaard_omschrijving_niet_weergeven
+    )
     if request.POST:
-        form = MeldingAfhandelenForm(request.POST)
+        form = MeldingAfhandelenForm(
+            request.POST,
+            standaard_omschrijving_niet_weergeven=standaard_omschrijving_niet_weergeven,
+        )
         if form.is_valid():
             bijlagen = request.FILES.getlist("bijlagen", [])
             bijlagen_base64 = []
@@ -296,6 +329,7 @@ def melding_afhandelen(request, id):
 @permission_required("authorisatie.melding_annuleren")
 def melding_annuleren(request, id):
     melding = MeldingenService().get_melding(id)
+
     afhandel_reden_opties = [(s, s) for s in melding.get("volgende_statussen", ())]
     melding_bijlagen = [
         [
@@ -351,7 +385,12 @@ def melding_annuleren(request, id):
 @permission_required("authorisatie.taak_aanmaken")
 def taak_starten(request, id):
     melding = MeldingenService().get_melding(id)
+
     taaktypes = get_taaktypes(melding, request.user)
+    taaktypes.insert(
+        0,
+        ("", "Selecteer een taak"),
+    )
     form = TaakStartenForm(taaktypes=taaktypes)
     if request.POST:
         form = TaakStartenForm(request.POST, taaktypes=taaktypes)
@@ -380,6 +419,7 @@ def taak_starten(request, id):
 @permission_required("authorisatie.taak_afronden")
 def taak_afronden(request, melding_uuid):
     melding = MeldingenService().get_melding(melding_uuid)
+
     open_taakopdrachten = get_open_taakopdrachten(melding)
     taakopdracht_urls = {
         to.get("uuid"): to.get("_links", {}).get("self") for to in open_taakopdrachten
@@ -423,6 +463,7 @@ def taak_afronden(request, melding_uuid):
 @permission_required("authorisatie.taak_annuleren")
 def taak_annuleren(request, melding_uuid):
     melding = MeldingenService().get_melding(melding_uuid)
+
     open_taakopdrachten = get_open_taakopdrachten(melding)
     taakopdracht_urls = {
         to.get("uuid"): to.get("_links", {}).get("self") for to in open_taakopdrachten
@@ -459,6 +500,7 @@ def taak_annuleren(request, melding_uuid):
 @permission_required("authorisatie.melding_bekijken")
 def informatie_toevoegen(request, id):
     melding = MeldingenService().get_melding(id)
+
     tijdlijn_data = melding_naar_tijdlijn(melding)
     form = InformatieToevoegenForm()
     if request.POST:
@@ -908,3 +950,9 @@ def locatie_aanpassen(request, id):
             {"error": str(e)},
             status=getattr(e, "status_code", 500),
         )
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def clear_melding_token_from_cache(request):
+    cache.delete("meldingen_token")
+    return HttpResponse("melding_token removed from cache")

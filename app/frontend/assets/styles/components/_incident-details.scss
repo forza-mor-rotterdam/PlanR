@@ -18,7 +18,7 @@
             margin-right: 4px;
 
             &-textlink {
-                text-decoration: underline;
+                text-decoration: $link-decoration;
             }
         }
 
@@ -34,6 +34,10 @@
     }
     p:not(:first-of-type) {
         margin-top: 0.5rem;
+    }
+
+    .alert {
+        display: flex;
     }
 }
 

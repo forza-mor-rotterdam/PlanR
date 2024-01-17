@@ -1,8 +1,12 @@
 import base64
+import logging
 from re import sub
 
+from apps.services.mercure import MercureService
 from django.core.files.storage import default_storage
 from django.http import QueryDict
+
+logger = logging.getLogger(__name__)
 
 
 def snake_case(s: str) -> str:
@@ -172,3 +176,35 @@ def set_ordering(gebruiker, nieuwe_ordering):
     gebruiker.profiel.ui_instellingen.update({"ordering": nieuwe_ordering})
     gebruiker.profiel.save()
     return gebruiker.profiel.ui_instellingen.get("ordering")
+
+
+def subscriptions_voor_topic(topic, alle_subscriptions):
+    subscriptions = [
+        subscription
+        for subscription in alle_subscriptions
+        if subscription.get("topic") == topic
+    ]
+    return [
+        v
+        for k, v in {
+            subscription.get("payload", {})
+            .get("gebruiker", {})
+            .get("email"): subscription
+            for subscription in subscriptions
+        }.items()
+    ]
+
+
+def publiceer_topic_met_subscriptions(topic, alle_subscriptions=None):
+    mercure_service = None
+    try:
+        mercure_service = MercureService()
+    except MercureService.ConfigException:
+        return "MercureService.ConfigException error"
+    if not alle_subscriptions:
+        alle_subscriptions = mercure_service.get_subscriptions().get(
+            "subscriptions", []
+        )
+    subscriptions = subscriptions_voor_topic(topic, alle_subscriptions)
+    if len(subscriptions) > 1:
+        mercure_service.publish(topic, subscriptions)

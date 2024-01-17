@@ -15,13 +15,16 @@
         </div>
         <div class="modal-body">
             <form action="{% url 'taak_starten' melding.uuid %}"
-                  method="post"
-                  class="form--horizontal"
-                  data-controller=""
-                  data-turbo-frame="_top"
-                  enctype="multipart/form-data">
+                method="post"
+                class="form--horizontal"
+                data-controller="taakstartenformulier"
+                data-turbo-frame="_top"
+                data-taakstartenformulier-target="formTaakStarten"
+                enctype="multipart/form-data"
+                novalidate
+            >
                 {% csrf_token %}
-                {{ form.taaktype|render_rotterdam_formulier }}
+                <div class="form-control__with-helptext">{{ form.taaktype|render_rotterdam_formulier }}</div>
                 <div class="form-control__with-helptext">{{ form.bericht|render_rotterdam_formulier }}</div>
                 <div class="form-row btn-row">
                     <button type="reset"

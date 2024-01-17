@@ -43,7 +43,7 @@ details {
         summary {
             padding-left: 25px;
             color: $green-tint01;
-            text-decoration: underline;
+            text-decoration: $link-decoration;
 
             &::before {
                 content: url("../icons/plus.svg");

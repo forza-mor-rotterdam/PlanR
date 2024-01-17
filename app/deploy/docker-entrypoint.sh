@@ -35,5 +35,10 @@ fi
 # Log a message indicating the script has completed
 echo "Docker entrypoint script has completed."
 
+# Initialize celery worker
+celery -A config worker -l info -D
+celery -A config beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler --detach
+
 # Execute uWSGI with the specified configuration file
-exec uwsgi --ini /app/deploy/config.ini
+uwsgi --ini /app/deploy/config.ini --daemonize /app/uwsgi.log
+tail -f /app/uwsgi.log

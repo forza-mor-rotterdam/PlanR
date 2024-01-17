@@ -96,12 +96,16 @@
                         <td data-row-search-target="searchable">{{ object.template }}</td>
                         <td data-row-search-target="searchable">{{ object.profielen_voor_context.all|length }}</td>
                         <td>
-                            <a href="{% url 'context_aanpassen' object.pk %}">Aanpassen</a>
+                            <a href="{% url 'context_aanpassen' object.pk %}" aria-label="Aanpassen">
+                                {% include "icons/edit.svg" %}
+                            </a>
                         </td>
                         <td>
                             {% if object.naam != "Standaard" and not object.profielen_voor_context.all %}
                                 <a href="{% url 'context_verwijderen' object.pk %}"
-                                   onclick="return confirm('Weet je zeker dat je deze rol wilt verwijderen?')">Verwijderen</a>
+                                   onclick="return confirm('Weet je zeker dat je deze rol wilt verwijderen?')" aria-label="Verwijderen">
+                                {% include "icons/bin.svg" %}
+                            </a>
                             {% endif %}
                         </td>
                     </tr>

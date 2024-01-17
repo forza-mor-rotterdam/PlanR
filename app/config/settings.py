@@ -52,6 +52,8 @@ INSTALLED_APPS = (
     "health_check.cache",
     "health_check.db",
     "health_check.contrib.migrations",
+    "django_celery_beat",
+    "django_celery_results",
     # Apps
     "apps.health",
     "apps.rotterdam_formulier_html",
@@ -139,6 +141,17 @@ DATABASES.update(
 )
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 AUTH_USER_MODEL = "authenticatie.Gebruiker"
+
+CELERY_TASK_TRACK_STARTED = True
+CELERY_RESULTS_EXTENDED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERY_BROKER_URL = "redis://redis:6379/0"
+
+BROKER_URL = CELERY_BROKER_URL
+CELERY_TASK_TRACK_STARTED = True
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERYBEAT_SCHEDULE = {}
 
 SITE_ID = 1
 SITE_NAME = os.getenv("SITE_NAME", "PlanR")
@@ -242,12 +255,16 @@ CSP_CONNECT_SRC = (
     (
         "'self'",
         "api.pdok.nl",
+        "mercure.planr-test.forzamor.nl",
+        "mercure.planr-acc.forzamor.nl",
+        "mercure.planr.forzamor.nl",
     )
     if not DEBUG
     else (
         "'self'",
         "ws:",
         "api.pdok.nl",
+        "localhost:7002",
     )
 )
 
@@ -314,7 +331,7 @@ MELDINGEN_API_HEALTH_CHECK_URL = os.getenv(
 MELDINGEN_TOKEN_API = os.getenv(
     "MELDINGEN_TOKEN_API", f"{MELDINGEN_URL}/api-token-auth/"
 )
-MELDINGEN_TOKEN_TIMEOUT = 60 * 5
+MELDINGEN_TOKEN_TIMEOUT = 60 * 60 * 24
 MELDINGEN_USERNAME = os.getenv("MELDINGEN_USERNAME")
 MELDINGEN_PASSWORD = os.getenv("MELDINGEN_PASSWORD")
 
@@ -352,6 +369,10 @@ LOGGING = {
             "handlers": ["console"],
             "level": LOG_LEVEL,
             "propagate": True,
+        },
+        "celery": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
         },
     },
 }
@@ -422,3 +443,16 @@ if OPENID_CONFIG and OIDC_RP_CLIENT_ID:
     LOGIN_REDIRECT_URL_FAILURE = "/"
     LOGOUT_REDIRECT_URL = OIDC_OP_LOGOUT_ENDPOINT
     LOGIN_URL = "/oidc/authenticate/"
+
+APP_MERCURE_PUBLIC_URL = os.getenv("APP_MERCURE_PUBLIC_URL")
+APP_MERCURE_INTERNAL_URL = os.getenv("APP_MERCURE_INTERNAL_URL", APP_MERCURE_PUBLIC_URL)
+MERCURE_PUBLISHER_JWT_KEY = os.getenv("MERCURE_PUBLISHER_JWT_KEY")
+MERCURE_PUBLISHER_JWT_ALG = os.getenv("MERCURE_PUBLISHER_JWT_ALG", "HS256")
+MERCURE_SUBSCRIBER_JWT_KEY = os.getenv("MERCURE_SUBSCRIBER_JWT_KEY")
+MERCURE_SUBSCRIBER_JWT_ALG = os.getenv("MERCURE_SUBSCRIBER_JWT_ALG", "HS256")
+
+MERCURE_PUBLISH_TARGETS = [
+    "/melding/{id}/",
+]
+
+USER_ACTIVITY_CACHE_KEY = "user_activity_cache_key"
