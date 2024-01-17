@@ -50,7 +50,7 @@ export default class extends Controller {
   onMessage(e) {
     this.lastEventId = e.lastEventId
     let data = JSON.parse(e.data)
-    console.log('mercure message', data)
+    console.log('mercure message', data, new Date().toString())
     this.mercureSubscriptions = data
     this.updateGebruikerActiviteit()
   }
