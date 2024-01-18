@@ -190,6 +190,15 @@ def melding_detail(request, id):
         ]
         for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
     ]
+    # niet_opgeloste_taken = [
+    #     taakopdracht
+    #     for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
+    #     if taakopdracht.get("resolutie") != None or taakopdracht.get("resolutie") != "opgelost"
+    # ]
+    # print("= =  = = > ")
+    # print (bool(niet_opgeloste_taken))
+    # print("< = =  = = niet_opgeloste_taken")
+
     bijlagen_flat = [b for bl in melding_bijlagen for b in bl]
     form = InformatieToevoegenForm()
     overview_querystring = request.session.get("overview_querystring", "")
