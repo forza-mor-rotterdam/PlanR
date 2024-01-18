@@ -19,8 +19,9 @@ export default class extends Controller {
 
     if (this.hasResolutieTarget) {
       if (this.resolutieTarget.innerHTML.toLowerCase() !== 'opgelost') {
-        this.resolutieTarget.closest('details').open = true
-        this.resolutieTarget.parentNode.classList.add('warning')
+        const detailsNode = this.resolutieTarget.closest('details')
+        detailsNode.open = true
+        detailsNode.classList.add('warning')
       }
     }
   }
