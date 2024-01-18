@@ -160,7 +160,7 @@ table {
 a,
 .link {
     color: $primary;
-    text-decoration: underline;
+    text-decoration: $link-decoration;
     cursor: pointer;
 
     &:hover,
@@ -434,6 +434,10 @@ section {
 .help-text {
     font-size: 16px;
     color: $gray-tint09;
+}
+
+.js-hidden {
+    display: none !important;
 }
 
 .hidden-vertical {

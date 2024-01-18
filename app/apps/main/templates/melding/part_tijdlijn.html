@@ -51,6 +51,7 @@
                                                 :
                                                 {% if row_data.mg.taakgebeurtenis.taakstatus.naam == "voltooid" %}
                                                     {{ taakopdracht.resolutie|vertaal }}
+                                                    <span class="visually-hidden" data-datetime-target="resolutie">{{ taakopdracht.resolutie }}<span>
                                                 {% else %}
                                                     {{ row_data.mg.taakgebeurtenis.taakstatus.naam }}
                                                 {% endif %}
@@ -66,6 +67,7 @@
                                             communicatie
                                         {% endif %}
                                     {% endif %}
+
                                 </strong>
                             {% endif %}
                         </summary>

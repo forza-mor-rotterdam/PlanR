@@ -9,7 +9,7 @@ from apps.authenticatie.forms import (
 )
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -109,6 +109,8 @@ class GebruikerAanmakenView(GebruikerAanmakenAanpassenView, CreateView):
     form_class = GebruikerAanmakenForm
 
 
+@login_required
+@permission_required("authorisatie.gebruiker_aanmaken", raise_exception=True)
 def gebruiker_bulk_import(request):
     form = GebruikerBulkImportForm()
     aangemaakte_gebruikers = None

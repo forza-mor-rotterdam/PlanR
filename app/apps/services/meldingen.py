@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 def get_taaktypes(melding, gebruiker):
     from apps.context.utils import get_gebruiker_context
-    from apps.services.meldingen import MeldingenService
 
     gebruiker_context = get_gebruiker_context(gebruiker)
 
@@ -26,6 +25,7 @@ def get_taaktypes(melding, gebruiker):
         for ta in taakapplicaties.get("results", [])
         for tt in ta.get("taaktypes", [])
         if tt.get("_links", {}).get("self") in gebruiker_context.taaktypes
+        and tt.get("actief", False)
     ]
     gebruikte_taaktypes = [
         *set(
@@ -56,7 +56,7 @@ class MeldingenService(BasisService):
         )
 
     def haal_token(self):
-        meldingen_token = cache.get("meldingen_token2")
+        meldingen_token = cache.get("meldingen_token")
         if not meldingen_token:
             email = settings.MELDINGEN_USERNAME
             try:
