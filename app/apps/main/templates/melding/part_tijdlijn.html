@@ -51,7 +51,7 @@
                                                 :
                                                 {% if row_data.mg.taakgebeurtenis.taakstatus.naam == "voltooid" %}
                                                     {{ taakopdracht.resolutie|vertaal }}
-                                                    <span class="visually-hidden" data-datetime-target="resolutie">{{ taakopdracht.resolutie }}<span>
+                                                    <span class="visually-hidden" data-datetime-target="resolutie">{{ taakopdracht.resolutie }}</span>
                                                 {% else %}
                                                     {{ row_data.mg.taakgebeurtenis.taakstatus.naam }}
                                                 {% endif %}
@@ -76,15 +76,30 @@
                                 <div class="wrapper">
                                     <dl>
                                         {% if row_data.mg.taakgebeurtenis %}
-                                            <dt>Status</dt>
-                                            <dd>
-                                                {{ row_data.mg.taakgebeurtenis.taakstatus.naam }}
-                                            </dd>
-                                            {% if row_data.mg.taakgebeurtenis.aangemaakt_op %}
-                                                <dt>Datum</dt>
+                                            {% if row_data.mg.taakgebeurtenis.taakstatus.naam|lower != "nieuw" %}
+                                                <dt>Status</dt>
                                                 <dd>
-                                                    {{ row_data.mg.taakgebeurtenis.aangemaakt_op|to_datetime }}
+                                                    {% with taakopdracht=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}
+                                                        {{ taakopdracht.resolutie|vertaal }}
+                                                    {% endwith %}
                                                 </dd>
+                                                {% if row_data.mg.taakgebeurtenis.aangemaakt_op %}
+                                                    <dt>Afgehandeld op</dt>
+                                                    <dd>
+                                                        {{ row_data.mg.taakgebeurtenis.aangemaakt_op|to_datetime }}
+                                                    </dd>
+                                                {% endif %}
+                                            {% else %}
+                                                <dt>Status</dt>
+                                                <dd>
+                                                    {{ row_data.mg.taakgebeurtenis.taakstatus.naam }}
+                                                </dd>
+                                                {% if row_data.mg.taakgebeurtenis.aangemaakt_op %}
+                                                    <dt>Datum</dt>
+                                                    <dd>
+                                                        {{ row_data.mg.taakgebeurtenis.aangemaakt_op|to_datetime }}
+                                                    </dd>
+                                                {% endif %}
                                             {% endif %}
                                             {% if row_data.mg.taakgebeurtenis.gebruiker %}
                                                 <dt>Gebruiker</dt>
