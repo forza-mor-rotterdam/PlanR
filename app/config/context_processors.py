@@ -10,7 +10,11 @@ logger = logging.getLogger(__name__)
 
 
 def general_settings(context):
-    gebruiker = context.user.serialized_instance()
+    gebruiker = (
+        context.user.serialized_instance()
+        if hasattr(context.user, "serialized_instance")
+        else {}
+    )
 
     session_expiry_max_timestamp = context.session.get("_session_init_timestamp_", 0)
     if session_expiry_max_timestamp:
