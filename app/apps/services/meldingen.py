@@ -291,3 +291,14 @@ class MeldingenService(BasisService):
             },
             raw_response=False,
         )
+
+    def get_gebruiker(self, gebruiker_email):
+        return self.do_request(
+            f"{self._api_path}/gebruiker/{gebruiker_email}/",
+            method="get",
+        )
+
+    def set_gebruiker(self, gebruiker):
+        return self.do_request(
+            f"{self._api_path}/gebruiker/", method="post", data=gebruiker
+        )
