@@ -58,16 +58,27 @@
                             {% else %}
                                 <span class="badge badge--darkblue">0 taken actief</span>
                             {% endif %}
-                            {% if aantal_voltooide_taken %}
-                                <span class="badge badge--darkblue">{{ aantal_voltooide_taken }}
-                                    {% if aantal_voltooide_taken > 1 %}
+                            {% if aantal_opgeloste_taken %}
+                                <span class="badge badge--darkblue">{{ aantal_opgeloste_taken }}
+                                    {% if aantal_opgeloste_taken > 1 %}
                                         taken
                                     {% else %}
                                         taak
                                     {% endif %}
-                                voltooid</span>
+                                opgelost</span>
                             {% else %}
-                                <span class="badge badge--darkblue">0 taken voltooid</span>
+                                <span class="badge badge--darkblue">0 taken opgelost</span>
+                            {% endif %}
+                            {% if aantal_niet_opgeloste_taken %}
+                                <span class="badge badge--red">{{ aantal_niet_opgeloste_taken }}
+                                    {% if aantal_niet_opgeloste_taken > 1 %}
+                                        taken
+                                    {% else %}
+                                        taak
+                                    {% endif %}
+                                niet opgelost</span>
+                            {% comment %} {% else %}
+                                <span class="badge badge--darkblue">0 taken niet opgelost</span> {% endcomment %}
                             {% endif %}
                         </div>
                     </div>

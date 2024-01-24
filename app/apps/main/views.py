@@ -229,11 +229,20 @@ def melding_detail(request, id):
         ]
     )
 
-    aantal_voltooide_taken = len(
+    aantal_opgeloste_taken = len(
         [
             to
             for to in melding.get("taakopdrachten_voor_melding", [])
-            if to.get("status", {}).get("naam") == "voltooid"
+            # if to.get("status", {}).get("naam") == "voltooid"
+            if to.get("resolutie", {}) == "opgelost"
+        ]
+    )
+    aantal_niet_opgeloste_taken = len(
+        [
+            to
+            for to in melding.get("taakopdrachten_voor_melding", [])
+            if to.get("resolutie", {})
+            in {"niet_opgelost", "geannuleerd", "niet_gevonden"}
             # if to.get("resolutie", {}).get("naam") == "opgelost"
         ]
     )
@@ -248,7 +257,8 @@ def melding_detail(request, id):
             "bijlagen_extra": bijlagen_flat,
             "taaktypes": taaktypes,
             "aantal_actieve_taken": aantal_actieve_taken,
-            "aantal_voltooide_taken": aantal_voltooide_taken,
+            "aantal_opgeloste_taken": aantal_opgeloste_taken,
+            "aantal_niet_opgeloste_taken": aantal_niet_opgeloste_taken,
             "tijdlijn_data": tijdlijn_data,
             "open_taakopdrachten": open_taakopdrachten,
         },
