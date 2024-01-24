@@ -98,6 +98,9 @@ def account(request):
 
 @permission_required("authorisatie.melding_lijst_bekijken")
 def melding_lijst(request):
+    MeldingenService().set_gebruiker(
+        gebruiker=request.user.serialized_instance(),
+    )
     gebruiker = request.user
     gebruiker_context = get_gebruiker_context(gebruiker)
 
