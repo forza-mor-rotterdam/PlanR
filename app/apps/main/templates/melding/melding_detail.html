@@ -194,10 +194,20 @@
                                 <div class="display--flex--md">
                                     <ul class="list-clean">
                                         <li>
-                                            <h3 class="h5">Nummer</h3>
+                                            <h3 class="h5">Meldingummer</h3>
                                             <p>
                                                 {% if melding.id %}
                                                     {{ melding.id }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </p>
+                                        </li>
+                                         <li>
+                                            <h3 class="h5">MeldR-nummer</h3>
+                                            <p>
+                                                {% if melding.meta.morId %}
+                                                    {{ melding.meta.morId }}
                                                 {% else %}
                                                     -
                                                 {% endif %}
