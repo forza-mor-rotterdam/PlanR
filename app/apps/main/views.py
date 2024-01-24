@@ -233,7 +233,8 @@ def melding_detail(request, id):
         [
             to
             for to in melding.get("taakopdrachten_voor_melding", [])
-            if to.get("resolutie", {}).get("naam") == "opgelost"
+            if to.get("status", {}).get("naam") == "voltooid"
+            # if to.get("resolutie", {}).get("naam") == "opgelost"
         ]
     )
 

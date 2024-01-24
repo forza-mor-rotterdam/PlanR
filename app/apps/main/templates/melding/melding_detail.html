@@ -223,16 +223,14 @@
                                                 {% endif %}
                                             </p>
                                         </li>
+                                        {% if melding.meta.aannemer %}
                                         <li>
                                             <h3 class="h5">Aangenomen door</h3>
                                             <p>
-                                                {% if melding.meta.aannemer %}
-                                                    {{ melding.meta.aannemer }}
-                                                {% else %}
-                                                    -
-                                                {% endif %}
+                                                {{ melding.meta.aannemer }}
                                             </p>
                                         </li>
+                                        {% endif %}
                                     </ul>
                                     <ul class="list-clean">
                                         <li>
