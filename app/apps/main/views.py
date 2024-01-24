@@ -98,6 +98,9 @@ def account(request):
 
 @permission_required("authorisatie.melding_lijst_bekijken")
 def melding_lijst(request):
+    MeldingenService().set_gebruiker(
+        gebruiker=request.user.serialized_instance(),
+    )
     gebruiker = request.user
     gebruiker_context = get_gebruiker_context(gebruiker)
 
@@ -173,11 +176,6 @@ def melding_lijst(request):
 
 @permission_required("authorisatie.melding_bekijken")
 def melding_detail(request, id):
-    from apps.services.mercure import MercureService
-
-    mercure_service = MercureService()
-    mercure_service.publish(reverse("melding_detail", args=(id,)), {"mijn": "data"})
-
     melding = MeldingenService().get_melding(id)
 
     open_taakopdrachten = get_open_taakopdrachten(melding)
@@ -195,6 +193,15 @@ def melding_detail(request, id):
         ]
         for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
     ]
+    # niet_opgeloste_taken = [
+    #     taakopdracht
+    #     for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
+    #     if taakopdracht.get("resolutie") != None or taakopdracht.get("resolutie") != "opgelost"
+    # ]
+    # print("= =  = = > ")
+    # print (bool(niet_opgeloste_taken))
+    # print("< = =  = = niet_opgeloste_taken")
+
     bijlagen_flat = [b for bl in melding_bijlagen for b in bl]
     form = InformatieToevoegenForm()
     overview_querystring = request.session.get("overview_querystring", "")

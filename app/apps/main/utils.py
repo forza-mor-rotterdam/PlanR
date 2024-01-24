@@ -206,5 +206,4 @@ def publiceer_topic_met_subscriptions(topic, alle_subscriptions=None):
             "subscriptions", []
         )
     subscriptions = subscriptions_voor_topic(topic, alle_subscriptions)
-    if len(subscriptions) > 1:
-        mercure_service.publish(topic, subscriptions)
+    mercure_service.publish(topic, subscriptions)
