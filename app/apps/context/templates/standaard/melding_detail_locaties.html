@@ -17,10 +17,12 @@
         <div>
             {% with hoogste_gewicht_locatie=melding.locaties_voor_melding|dictsort:"gewicht"|last %}
                 {% if hoogste_gewicht_locatie %}
+                    {% if melding.locaties_voor_melding|length > 1 %}
                     <h4>Huidige Locatie</h4>
+                    {% endif %}
                     <div class="locatie-container">
                         <div class="display--flex--md">
-                            <ul class="list-clean">
+                            <ul class="list-clean {% if melding.locaties_voor_melding|length == 1 %} has-padding{% endif %}">
                                 <li>
                                     <h3 class="h5">Ter hoogte van</h3>
                                     <p>
@@ -47,7 +49,7 @@
                                     </p>
                                 </li>
                             </ul>
-                            <ul class="list-clean">
+                            <ul class="list-clean {% if melding.locaties_voor_melding|length == 1 %} has-padding{% endif %}">
                                 <li>
                                     <h3 class="h5">Buurt</h3>
                                     <p>
