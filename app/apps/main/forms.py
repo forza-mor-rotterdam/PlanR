@@ -249,11 +249,6 @@ class TaakStartenForm(forms.Form):
     taaktype = forms.ChoiceField(
         widget=Select2Widget(attrs={"class": "select2"}),
         label="Taak",
-        choices=(
-            ("graf_ophogen", "Graf ophogen"),
-            ("steen_rechtzetten", "Steen rechtzetten"),
-            ("snoeien", "Snoeien"),
-        ),
         required=True,
     )
 
@@ -273,35 +268,34 @@ class TaakStartenForm(forms.Form):
     def __init__(self, *args, **kwargs):
         taaktypes = kwargs.pop("taaktypes", None)
         super().__init__(*args, **kwargs)
-        self.fields["taaktype"].choices = taaktypes
 
+        taaktype_categories = {}
+        for taaktype_url, taaktype_omschrijving in taaktypes:
+            categories = TaaktypeCategorie.objects.filter(
+                taaktypes__contains=[taaktype_url]
+            )
+            if categories.exists():
+                for category in categories:
+                    category_name = category.naam
+                    if category_name not in taaktype_categories:
+                        taaktype_categories[category_name] = []
+                    taaktype_categories[category_name].append(
+                        (taaktype_url, taaktype_omschrijving)
+                    )
+            else:
+                if "Overig" not in taaktype_categories:
+                    taaktype_categories["Overig"] = []
+                taaktype_categories["Overig"].append(
+                    (taaktype_url, taaktype_omschrijving)
+                )
 
-### Add optgroup to taaktype, optgroup is not working in render rotterdam formulier yet
+        choices = [("", "Selecteer een taak")]
 
-# class TaaktypeCategorieAanpassenForm(forms.ModelForm):
-#     taaktypes = forms.MultipleChoiceField(
-#         choices=[],  # We'll set this dynamically in the form's __init__ method
-#         widget=Select2MultipleWidget(attrs={"class": "select2"}),
-#     )
+        for category_name, category_taaktypes in taaktype_categories.items():
+            optgroup = (category_name, category_taaktypes)
+            choices.append(optgroup)
 
-#     class Meta:
-#         model = TaaktypeCategorie
-#         fields = ["naam", "taaktypes"]
-
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.fields["taaktypes"].choices = self.get_taaktypes_choices()
-
-#     def get_taaktypes_choices(self):
-#         taakapplicaties = MeldingenService().taakapplicaties().get("results", [])
-#         taaktypes = [tt for ta in taakapplicaties for tt in ta.get("taaktypes", [])]
-
-#         grouped_choices = [
-#             ("Group 1", [(taaktype.get("_links", {}).get("self"), taaktype.get("omschrijving")) for taaktype in taaktypes]),
-#             ("Group 2", [("Another ID", "Another Description"), ("Yet Another ID", "Yet Another Description")]),
-#         ]
-
-#         return grouped_choices
+        self.fields["taaktype"].choices = choices
 
 
 class TaakAfrondenForm(forms.Form):
@@ -918,14 +912,39 @@ class TaaktypeCategorieAanpassenForm(forms.ModelForm):
 
     def get_taaktypes_choices(self):
         taakapplicaties = MeldingenService().taakapplicaties().get("results", [])
-        taaktypes = [tt for ta in taakapplicaties for tt in ta.get("taaktypes", [])]
-        return [
+        alle_taaktypes = [
+            tt for ta in taakapplicaties for tt in ta.get("taaktypes", [])
+        ]
+
+        current_taaktypes = (
+            [
+                (
+                    taaktype.get("_links", {}).get("self"),
+                    taaktype.get("omschrijving"),
+                )
+                for taaktype in alle_taaktypes
+                if taaktype.get("_links", {}).get("self") in self.instance.taaktypes
+            ]
+            if self.instance
+            else []
+        )
+
+        alle_taaktypes_urls = [
+            taaktype.get("_links", {}).get("self") for taaktype in alle_taaktypes
+        ]
+
+        unused_taaktypes = [
             (
                 taaktype.get("_links", {}).get("self"),
                 taaktype.get("omschrijving"),
             )
-            for taaktype in taaktypes
+            for taaktype, taaktype_url in zip(alle_taaktypes, alle_taaktypes_urls)
+            if not TaaktypeCategorie.objects.filter(
+                taaktypes__contains=[taaktype_url]
+            ).exists()
         ]
+
+        return unused_taaktypes + current_taaktypes
 
 
 class TaaktypeCategorieAanmakenForm(TaaktypeCategorieAanpassenForm):
