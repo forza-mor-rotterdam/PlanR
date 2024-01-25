@@ -4,13 +4,14 @@ import logging
 import math
 
 from apps.context.utils import get_gebruiker_context
-from apps.main.models import StandaardExterneOmschrijving
+from apps.main.models import StandaardExterneOmschrijving, TaaktypeCategorie
 from apps.main.utils import get_valide_filter_classes, get_valide_kolom_classes
 from apps.services.meldingen import MeldingenService
 from apps.services.onderwerpen import render_onderwerp
 from django import forms
 from django.core.files.storage import default_storage
 from django.utils import timezone
+from django_select2.forms import Select2MultipleWidget
 from utils.rd_convert import rd_to_wgs
 
 logger = logging.getLogger(__name__)
@@ -273,6 +274,34 @@ class TaakStartenForm(forms.Form):
         taaktypes = kwargs.pop("taaktypes", None)
         super().__init__(*args, **kwargs)
         self.fields["taaktype"].choices = taaktypes
+
+
+### Add optgroup to taaktype, optgroup is not working in render rotterdam formulier yet
+
+# class TaaktypeCategorieAanpassenForm(forms.ModelForm):
+#     taaktypes = forms.MultipleChoiceField(
+#         choices=[],  # We'll set this dynamically in the form's __init__ method
+#         widget=Select2MultipleWidget(attrs={"class": "select2"}),
+#     )
+
+#     class Meta:
+#         model = TaaktypeCategorie
+#         fields = ["naam", "taaktypes"]
+
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.fields["taaktypes"].choices = self.get_taaktypes_choices()
+
+#     def get_taaktypes_choices(self):
+#         taakapplicaties = MeldingenService().taakapplicaties().get("results", [])
+#         taaktypes = [tt for ta in taakapplicaties for tt in ta.get("taaktypes", [])]
+
+#         grouped_choices = [
+#             ("Group 1", [(taaktype.get("_links", {}).get("self"), taaktype.get("omschrijving")) for taaktype in taaktypes]),
+#             ("Group 2", [("Another ID", "Another Description"), ("Yet Another ID", "Yet Another Description")]),
+#         ]
+
+#         return grouped_choices
 
 
 class TaakAfrondenForm(forms.Form):
@@ -867,4 +896,52 @@ class StandaardExterneOmschrijvingSearchForm(forms.Form):
         label="Zoeken",
         required=False,
         widget=forms.TextInput(attrs={"placeholder": "Zoek standaard tekst"}),
+    )
+
+
+# Taaktype categorie forms
+
+
+class TaaktypeCategorieAanpassenForm(forms.ModelForm):
+    taaktypes = forms.MultipleChoiceField(
+        choices=[],  # We'll set this dynamically in the form's __init__ method
+        widget=Select2MultipleWidget(attrs={"class": "select2"}),
+    )
+
+    class Meta:
+        model = TaaktypeCategorie
+        fields = ["naam", "taaktypes"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["taaktypes"].choices = self.get_taaktypes_choices()
+
+    def get_taaktypes_choices(self):
+        taakapplicaties = MeldingenService().taakapplicaties().get("results", [])
+        taaktypes = [tt for ta in taakapplicaties for tt in ta.get("taaktypes", [])]
+        return [
+            (
+                taaktype.get("_links", {}).get("self"),
+                taaktype.get("omschrijving"),
+            )
+            for taaktype in taaktypes
+        ]
+
+
+class TaaktypeCategorieAanmakenForm(TaaktypeCategorieAanpassenForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # self.fields[
+        #     "titel"
+        # ].help_text = "Geef een titel op voor de standaard tekst."
+        # self.fields[
+        #     "tekst"
+        # ].help_text = "Geef een standaard tekst op van maximaal 2000 tekens. Deze tekst kan bij het afhandelen van een melding aangepast worden."
+
+
+class TaaktypeCategorieSearchForm(forms.Form):
+    search = forms.CharField(
+        label="Zoeken",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "Zoek taaktype categorie"}),
     )

@@ -54,6 +54,7 @@ INSTALLED_APPS = (
     "health_check.contrib.migrations",
     "django_celery_beat",
     "django_celery_results",
+    "django_select2",
     # Apps
     "apps.health",
     "apps.rotterdam_formulier_html",

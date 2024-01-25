@@ -22,6 +22,10 @@ from apps.main.views import (
     StandaardExterneOmschrijvingAanpassenView,
     StandaardExterneOmschrijvingLijstView,
     StandaardExterneOmschrijvingVerwijderenView,
+    TaaktypeCategorieAanmakenView,
+    TaaktypeCategorieAanpassenView,
+    TaaktypeCategorieLijstView,
+    TaaktypeCategorieVerwijderenView,
     account,
     clear_melding_token_from_cache,
     http_404,
@@ -50,6 +54,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
 from django.views.generic import RedirectView
+from django_select2 import urls as select2_urls
 from rest_framework.authtoken import views
 
 urlpatterns = [
@@ -188,12 +193,34 @@ urlpatterns = [
         StandaardExterneOmschrijvingVerwijderenView.as_view(),
         name="standaard_externe_omschrijving_verwijderen",
     ),
+    # Taaktype categorie
+    path(
+        "beheer/taaktype-categorie/",
+        TaaktypeCategorieLijstView.as_view(),
+        name="taaktype_categorie_lijst",
+    ),
+    path(
+        "beheer/taaktype-categorie/aanmaken/",
+        TaaktypeCategorieAanmakenView.as_view(),
+        name="taaktype_categorie_aanmaken",
+    ),
+    path(
+        "beheer/taaktype-categorie/<int:pk>/aanpassen/",
+        TaaktypeCategorieAanpassenView.as_view(),
+        name="taaktype_categorie_aanpassen",
+    ),
+    path(
+        "beheer/taaktype-categorie/<int:pk>/verwijderen/",
+        TaaktypeCategorieVerwijderenView.as_view(),
+        name="taaktype_categorie_verwijderen",
+    ),
     ### Locatie
     path(
         "part/melding/<uuid:id>/locatie_aanpassen/",
         locatie_aanpassen,
         name="locatie_aanpassen",
     ),
+    path("select2/", include(select2_urls)),
     re_path(r"media/", meldingen_bestand, name="meldingen_bestand"),
 ]
 

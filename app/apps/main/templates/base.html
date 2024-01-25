@@ -7,7 +7,9 @@
         <meta name="viewport"
               content="user-scalable=no, width=device-width, initial-scale=1.0">
         <title>
-            {% block title %}PlanR{% endblock title %}
+            {% block title %}
+                PlanR
+            {% endblock title %}
         </title>
         <link rel="apple-touch-icon"
               sizes="180x180"
@@ -35,6 +37,8 @@
                   href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
                   integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
                   crossorigin="" />
+            <link href=" https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css "
+                  rel="stylesheet">
             {% render_bundle 'app' 'css' %}
         {% endblock stylesheets %}
         {% if DEBUG %}
@@ -56,6 +60,8 @@
             </script>
         {% endif %}
         {% block javascripts %}
+            <script src=" https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js "></script>
+            <script src=" https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js "></script>
             {% render_bundle 'app' 'js' %}
         {% endblock javascripts %}
         <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin="">
@@ -70,7 +76,8 @@
         {% endblock header %}
         <main data-controller="main">
             <div class="container">
-                {% block body %}{% endblock body %}
+                {% block body %}
+                {% endblock body %}
             </div>
         </main>
         <div class="spinner"></div>
