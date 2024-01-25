@@ -247,7 +247,7 @@ class InformatieToevoegenForm(forms.Form):
 
 class TaakStartenForm(forms.Form):
     taaktype = forms.ChoiceField(
-        widget=forms.Select(),
+        widget=Select2MultipleWidget(attrs={"class": "select2"}),
         label="Taak",
         choices=(
             ("graf_ophogen", "Graf ophogen"),
