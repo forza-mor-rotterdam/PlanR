@@ -11,7 +11,7 @@ from apps.services.onderwerpen import render_onderwerp
 from django import forms
 from django.core.files.storage import default_storage
 from django.utils import timezone
-from django_select2.forms import Select2MultipleWidget
+from django_select2.forms import Select2MultipleWidget, Select2Widget
 from utils.rd_convert import rd_to_wgs
 
 logger = logging.getLogger(__name__)
@@ -247,7 +247,7 @@ class InformatieToevoegenForm(forms.Form):
 
 class TaakStartenForm(forms.Form):
     taaktype = forms.ChoiceField(
-        widget=Select2MultipleWidget(attrs={"class": "select2"}),
+        widget=Select2Widget(attrs={"class": "select2"}),
         label="Taak",
         choices=(
             ("graf_ophogen", "Graf ophogen"),
