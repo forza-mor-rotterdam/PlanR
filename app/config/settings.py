@@ -16,6 +16,7 @@ SECRET_KEY = os.getenv(
     "DJANGO_SECRET_KEY", os.getenv("SECRET_KEY", os.getenv("APP_SECRET"))
 )
 
+GIT_SHA = os.getenv("GIT_SHA")
 ENVIRONMENT = os.getenv("ENVIRONMENT")
 DEBUG = ENVIRONMENT == "development"
 

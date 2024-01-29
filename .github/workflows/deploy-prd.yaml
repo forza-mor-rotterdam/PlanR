@@ -43,6 +43,8 @@ jobs:
           push: true
           tags: ${{ steps.meta_app.outputs.tags }}
           labels: ${{ steps.meta_app.outputs.labels }}
+          build-args: |
+            GIT_SHA=${{ github.sha }}
 
       - name: Start rollout on k8s platform
         uses: actions-hub/kubectl@master
