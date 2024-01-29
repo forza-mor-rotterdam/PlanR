@@ -50,7 +50,7 @@ jobs:
           KUBE_CERTIFICATE: ${{ secrets.KUBE_CERTIFICATE }}
           KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
         with:
-          args: rollout restart deployment/app --namespace=regie-test
+          args: rollout restart deployment/app --namespace=planr-test
 
       - name: Status rollout on k8s platform
         uses: actions-hub/kubectl@master
@@ -59,4 +59,4 @@ jobs:
           KUBE_CERTIFICATE: ${{ secrets.KUBE_CERTIFICATE }}
           KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
         with:
-          args: rollout status deployment/app --namespace=regie-test
+          args: rollout status deployment/app --namespace=planr-test
