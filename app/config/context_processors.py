@@ -60,4 +60,5 @@ def general_settings(context):
         "APP_MERCURE_PUBLIC_URL": settings.APP_MERCURE_PUBLIC_URL,
         "MERCURE_SUBSCRIBER_TOKEN": subscriber_token,
         "GEBRUIKER": gebruiker,
+        "GIT_SHA": settings.GIT_SHA,
     }

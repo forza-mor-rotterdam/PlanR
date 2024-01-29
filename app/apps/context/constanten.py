@@ -296,13 +296,25 @@ class MeldRNummerKolom(StandaardKolom):
     _td_standaard_classes = "nowrap"
 
     def td_label(self):
-        meldr_nummer = string_based_lookup(
-            self.context, self._kolom_inhoud, not_found_value=""
+        meldr_nummer = "<br>".join(
+            [
+                signaal.get("bron_signaal_id", "")
+                if signaal.get("bron_signaal_id")
+                else ""
+                for signaal in self.context.get("melding", {}).get(
+                    "signalen_voor_melding", []
+                )
+            ]
         )
+        if not meldr_nummer:
+            meldr_nummer = string_based_lookup(
+                self.context, self._kolom_inhoud, not_found_value=""
+            )
         if not meldr_nummer:
             meldr_nummer = string_based_lookup(
                 self.context, "melding.meta.morId", not_found_value=""
             )
+
         return meldr_nummer
 
 

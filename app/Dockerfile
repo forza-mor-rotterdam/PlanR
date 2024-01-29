@@ -87,6 +87,9 @@ RUN mkdir -p /media \
     && chmod -R +x /app/deploy \
     && pip install --no-cache-dir -r /app/requirements.txt
 
-USER "$APP_USER"
+USER $APP_USER
+
+ARG GIT_SHA
+ENV GIT_SHA=$GIT_SHA
 
 CMD ["bash", "/app/deploy/docker-entrypoint.sh"]
