@@ -34,7 +34,12 @@
                   enctype="multipart/form-data"
                   novalidate>
                 {% csrf_token %}
-                <div class="form-control__with-helptext">{{ form.taaktype }}</div> <!-- @TODO Render rotterdam formulier doesnt include optgroups yet -->
+                <div class="form-control__with-helptext">
+                    <div class="form-row">
+                        <label class="">Selecteer een taak</label>
+                        <div>{{ form.taaktype }}</div>
+                    </div> <!-- @TODO Render rotterdam formulier doesnt include optgroups yet -->
+                </div>
                 <div class="form-control__with-helptext">{{ form.bericht|render_rotterdam_formulier }}</div>
                 <!-- Initialize select2 and target the correct modal -->
                 <script>
