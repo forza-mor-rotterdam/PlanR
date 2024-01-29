@@ -1,0 +1,20 @@
+.list-tabs {
+    @include list-clean();
+
+    li {
+        display: inline;
+    }
+    .btn--tab {
+        display: inline-block;
+        width: auto;
+        background-color: transparent;
+        font-size: 16px;
+        font-weight: normal;
+        padding: 12px 4px;
+        color: $gray-tint11;
+
+        &.active {
+            border-bottom: 4px solid $green-tint01;
+        }
+    }
+}
