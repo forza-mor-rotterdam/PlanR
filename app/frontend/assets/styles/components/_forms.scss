@@ -561,8 +561,9 @@ textarea {
 
 .select2-container--default {
     width: 100% !important;
-    .select2-selection--single {
-        border-radius: 0;
+    .select2-selection--single,
+    .select2-selection--multiple {
+        border-radius: 0 !important;
         background-color: white;
         border: 1px solid #7c8b90;
         outline: 0;
@@ -572,7 +573,7 @@ textarea {
         color: #404b4f;
         text-align: left;
         -webkit-appearance: none;
-        height: 48px;
+        min-height: 48px;
         // background-image: url(data:image/svg+xml, <svg width=%2724%27 height=%2724%27 viewBox=%270 0 24 24%27 fill=%27none%27 xmlns=%27http://www.w3.org/2000/svg%27> <path fill-rule=%27evenodd%27 clip-rule=%27evenodd%27 d=%27M15.75 9.75L12 4.5L8.25 9.75H15.75ZM15.75 14.25L12 19.5L8.25 14.25H15.75Z%27 fill=%27%2365757B%27/> </svg>);
         // background-repeat: no-repeat;
         // background-position: right 10px center;
@@ -589,9 +590,46 @@ textarea {
             transform: translateY(-50%);
         }
 
-        &:focus,
-        &:hover {
+        &:focus {
             outline: 3px solid $gray-tint11;
+        }
+
+        &:hover {
+            outline: 1px solid $green-tint01;
+        }
+    }
+
+    .select2-selection--multiple {
+        padding: 4px 0;
+        .select2-search {
+            .select2-search__field {
+                &:focus,
+                &:hover {
+                    outline: 0 !important;
+                }
+            }
+        }
+        .select2-search--inline {
+            float: none;
+        }
+
+        .select2-selection__rendered {
+            display: inline !important;
+            list-style: none;
+            padding: 0 !important;
+            white-space: normal !important;
+            line-height: 1;
+
+            .select2-selection__choice {
+                line-height: 28px;
+                padding-left: 20px;
+                display: inline;
+                float: none;
+
+                .select2-selection__choice__remove {
+                    height: 100%;
+                }
+            }
         }
     }
 
