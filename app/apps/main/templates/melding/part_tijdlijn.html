@@ -63,7 +63,8 @@
                                         Melding:
                                         {% if row_data.mg.status %}
                                             {{ row_data.mg.status.naam }}
-                                        {% else %}
+                                        {% elif row_data.mg.gebeurtenis_type %}
+                                            {{ row_data.mg.gebeurtenis_type }}
                                             communicatie
                                         {% endif %}
                                     {% endif %}
