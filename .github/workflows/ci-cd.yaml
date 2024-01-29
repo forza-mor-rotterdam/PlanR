@@ -46,6 +46,7 @@ jobs:
     if: github.ref == 'refs/heads/develop'
     needs: docker-build-and-test
     runs-on: ubuntu-latest
+    environment: acc
     permissions:
       contents: read
       packages: write
