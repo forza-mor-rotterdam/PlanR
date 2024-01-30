@@ -79,13 +79,14 @@ class PagineringRadioSelect(forms.RadioSelect):
 class FilterForm(forms.Form):
     filter_velden = []
 
+    # Dit veld staat komma separated zoeken toe
     q = forms.CharField(
         widget=forms.TextInput(
             attrs={
                 "class": "list--form-text-input",
                 "hideLabel": True,
                 "typeOfInput": "search",
-                "placeHolder": "MeldR nummer",
+                "placeHolder": "MeldR-nummer",  # @TODO @Remco Toevoegen melder telefoonnummer, email en naam.
             }
         ),
         label="Zoeken",
