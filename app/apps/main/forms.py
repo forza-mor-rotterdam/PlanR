@@ -86,7 +86,7 @@ class FilterForm(forms.Form):
                 "class": "list--form-text-input",
                 "hideLabel": True,
                 "typeOfInput": "search",
-                "placeHolder": "Zoek op naam, contactgegevens of MeldR-nummmer",
+                "placeHolder": "Zoek op straatnaam, contactgegevens of MeldR-nummer",
             }
         ),
         help_text="Maak gebruik van komma's om op meerdere termen te zoeken",
