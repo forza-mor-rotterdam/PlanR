@@ -3,12 +3,6 @@ import logging
 
 import requests
 import weasyprint
-from apps.authorisatie.models import (
-    StandaardExterneOmschrijvingAanmakenPermissie,
-    StandaardExterneOmschrijvingAanpassenPermissie,
-    StandaardExterneOmschrijvingLijstBekijkenPermissie,
-    StandaardExterneOmschrijvingVerwijderenPermissie,
-)
 from apps.context.utils import get_gebruiker_context
 from apps.main.constanten import MSB_WIJKEN
 from apps.main.forms import (
@@ -19,6 +13,7 @@ from apps.main.forms import (
     LocatieAanpassenForm,
     MeldingAanmakenForm,
     MeldingAfhandelenForm,
+    MeldingAnnulerenForm,
     MSBLoginForm,
     MSBMeldingZoekenForm,
     StandaardExterneOmschrijvingAanmakenForm,
@@ -27,8 +22,11 @@ from apps.main.forms import (
     TaakAfrondenForm,
     TaakAnnulerenForm,
     TaakStartenForm,
+    TaaktypeCategorieAanmakenForm,
+    TaaktypeCategorieAanpassenForm,
+    TaaktypeCategorieSearchForm,
 )
-from apps.main.models import StandaardExterneOmschrijving
+from apps.main.models import StandaardExterneOmschrijving, TaaktypeCategorie
 from apps.main.utils import (
     get_actieve_filters,
     get_open_taakopdrachten,
@@ -362,9 +360,9 @@ def melding_annuleren(request, id):
     ]
 
     bijlagen_flat = [b for bl in melding_bijlagen for b in bl]
-    form = MeldingAfhandelenForm()
+    form = MeldingAnnulerenForm()
     if request.POST:
-        form = MeldingAfhandelenForm(request.POST)
+        form = MeldingAnnulerenForm(request.POST)
         if form.is_valid():
             bijlagen = request.FILES.getlist("bijlagen", [])
             bijlagen_base64 = []
@@ -405,10 +403,6 @@ def taak_starten(request, id):
     melding = MeldingenService().get_melding(id)
 
     taaktypes = get_taaktypes(melding, request.user)
-    taaktypes.insert(
-        0,
-        ("", "Selecteer een taak"),
-    )
     form = TaakStartenForm(taaktypes=taaktypes)
     if request.POST:
         form = TaakStartenForm(request.POST, taaktypes=taaktypes)
@@ -974,3 +968,50 @@ def locatie_aanpassen(request, id):
 def clear_melding_token_from_cache(request):
     cache.delete("meldingen_token")
     return HttpResponse("melding_token removed from cache")
+
+
+# Taaktype categorie view
+class TaaktypeCategorieView(View):
+    model = TaaktypeCategorie
+    success_url = reverse_lazy("taaktype_categorie_lijst")
+
+
+class TaaktypeCategorieLijstView(
+    TaaktypeCategorieView, PermissionRequiredMixin, ListView
+):
+    context_object_name = "Taaktype categorieën"
+    permission_required = "authorisatie.taaktype_categorie_lijst_bekijken"
+    form_class = TaaktypeCategorieSearchForm
+    template_name = "taaktype_categorie/taaktype_categorie_lijst.html"
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.GET.get("search", "")
+        if search:
+            queryset = queryset.filter(Q(naam__icontains=search))
+        return queryset
+
+
+class TaaktypeCategorieAanmakenView(
+    TaaktypeCategorieView, PermissionRequiredMixin, CreateView
+):
+    form_class = TaaktypeCategorieAanmakenForm
+    template_name = "taaktype_categorie/taaktype_categorie_aanmaken.html"
+    permission_required = "authorisatie.taaktype_categorie_aanmaken"
+
+
+class TaaktypeCategorieAanpassenView(
+    TaaktypeCategorieView, PermissionRequiredMixin, UpdateView
+):
+    form_class = TaaktypeCategorieAanpassenForm
+    template_name = "taaktype_categorie/taaktype_categorie_aanpassen.html"
+    permission_required = "authorisatie.taaktype_categorie_aanpassen"
+
+
+class TaaktypeCategorieVerwijderenView(
+    TaaktypeCategorieView, PermissionRequiredMixin, DeleteView
+):
+    permission_required = "authorisatie.taaktype_categorie_verwijderen"
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)

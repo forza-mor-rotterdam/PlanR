@@ -55,6 +55,7 @@ INSTALLED_APPS = (
     "health_check.contrib.migrations",
     "django_celery_beat",
     "django_celery_results",
+    "django_select2",
     # Apps
     "apps.health",
     "apps.rotterdam_formulier_html",
@@ -244,6 +245,8 @@ CSP_IMG_SRC = [
     "ows.gis.rotterdam.nl",
     "www.gis.rotterdam.nl",
 ]
+
+CSP_FONT_SRC = ["'self'", "fonts.gstatic.com"]
 
 CSP_STYLE_SRC = (
     "'self'",

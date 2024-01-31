@@ -2,15 +2,17 @@ import base64
 import json
 import logging
 import math
+import uuid
 
 from apps.context.utils import get_gebruiker_context
-from apps.main.models import StandaardExterneOmschrijving
+from apps.main.models import StandaardExterneOmschrijving, TaaktypeCategorie
 from apps.main.utils import get_valide_filter_classes, get_valide_kolom_classes
 from apps.services.meldingen import MeldingenService
 from apps.services.onderwerpen import render_onderwerp
 from django import forms
 from django.core.files.storage import default_storage
 from django.utils import timezone
+from django_select2.forms import Select2MultipleWidget, Select2Widget
 from utils.rd_convert import rd_to_wgs
 
 logger = logging.getLogger(__name__)
@@ -78,15 +80,17 @@ class PagineringRadioSelect(forms.RadioSelect):
 class FilterForm(forms.Form):
     filter_velden = []
 
+    # Dit veld staat komma separated zoeken toe
     q = forms.CharField(
         widget=forms.TextInput(
             attrs={
                 "class": "list--form-text-input",
                 "hideLabel": True,
                 "typeOfInput": "search",
-                "placeHolder": "MeldR nummer",
+                "placeHolder": "Zoek op straatnaam, contactgegevens of MeldR-nummer",
             }
         ),
+        help_text="Maak gebruik van komma's om op meerdere termen te zoeken",
         label="Zoeken",
         required=False,
     )
@@ -246,13 +250,8 @@ class InformatieToevoegenForm(forms.Form):
 
 class TaakStartenForm(forms.Form):
     taaktype = forms.ChoiceField(
-        widget=forms.Select(),
+        widget=Select2Widget(attrs={"class": "select2"}),
         label="Taak",
-        choices=(
-            ("graf_ophogen", "Graf ophogen"),
-            ("steen_rechtzetten", "Steen rechtzetten"),
-            ("snoeien", "Snoeien"),
-        ),
         required=True,
     )
 
@@ -272,7 +271,34 @@ class TaakStartenForm(forms.Form):
     def __init__(self, *args, **kwargs):
         taaktypes = kwargs.pop("taaktypes", None)
         super().__init__(*args, **kwargs)
-        self.fields["taaktype"].choices = taaktypes
+
+        taaktype_categories = {}
+        for taaktype_url, taaktype_omschrijving in taaktypes:
+            categories = TaaktypeCategorie.objects.filter(
+                taaktypes__contains=[taaktype_url]
+            )
+            if categories.exists():
+                for category in categories:
+                    category_name = category.naam
+                    if category_name not in taaktype_categories:
+                        taaktype_categories[category_name] = []
+                    taaktype_categories[category_name].append(
+                        (taaktype_url, taaktype_omschrijving)
+                    )
+            else:
+                if "Overig" not in taaktype_categories:
+                    taaktype_categories["Overig"] = []
+                taaktype_categories["Overig"].append(
+                    (taaktype_url, taaktype_omschrijving)
+                )
+
+        choices = [("", "Selecteer een taak")]
+
+        for category_name, category_taaktypes in taaktype_categories.items():
+            optgroup = (category_name, category_taaktypes)
+            choices.append(optgroup)
+
+        self.fields["taaktype"].choices = choices
 
 
 class TaakAfrondenForm(forms.Form):
@@ -404,6 +430,23 @@ class MeldingAfhandelenForm(forms.Form):
                 max_length=1000,
             )
 
+        self.fields["omschrijving_intern"] = forms.CharField(
+            label="Interne opmerking",
+            help_text="Deze tekst wordt niet naar de melder verstuurd.",
+            widget=forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": "4",
+                    "data-meldingbehandelformulier-target": "internalText",
+                }
+            ),
+            required=False,
+        )
+
+
+class MeldingAnnulerenForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.fields["omschrijving_intern"] = forms.CharField(
             label="Interne opmerking",
             help_text="Deze tekst wordt niet naar de melder verstuurd.",
@@ -727,7 +770,8 @@ class MeldingAanmakenForm(forms.Form):
         choice_fields = ("terugkoppeling_gewenst",)
         for cf in choice_fields:
             data[cf] = self.get_verbose_value_from_field(cf, data[cf])
-
+        bron_signaal_id = str(uuid.uuid4())
+        logger.info(f"Signaal aanmaken met uuid: {bron_signaal_id}")
         post_data = {
             "signaal_url": "https://planr.rotterdam.nl/melding/signaal/42",
             "melder": {
@@ -735,8 +779,10 @@ class MeldingAanmakenForm(forms.Form):
                 "email": data.get("email_melder"),
                 "telefoonnummer": data.get("telefoon_melder"),
             },
+            "bron_id": "PlanR",
+            "bron_signaal_id": bron_signaal_id,
             "origineel_aangemaakt": now.isoformat(),
-            "onderwerpen": [data.get("onderwerp", [])],
+            "onderwerpen": [{"bron_url": data.get("onderwerp", [])}],
             "omschrijving_kort": data.get("toelichting", "")[:200],
             "omschrijving": data.get("toelichting", ""),
             "meta": data,
@@ -867,4 +913,77 @@ class StandaardExterneOmschrijvingSearchForm(forms.Form):
         label="Zoeken",
         required=False,
         widget=forms.TextInput(attrs={"placeholder": "Zoek standaard tekst"}),
+    )
+
+
+# Taaktype categorie forms
+
+
+class TaaktypeCategorieAanpassenForm(forms.ModelForm):
+    taaktypes = forms.MultipleChoiceField(
+        choices=[],  # We'll set this dynamically in the form's __init__ method
+        widget=Select2MultipleWidget(attrs={"class": "select2"}),
+    )
+
+    class Meta:
+        model = TaaktypeCategorie
+        fields = ["naam", "taaktypes"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["taaktypes"].choices = self.get_taaktypes_choices()
+
+    def get_taaktypes_choices(self):
+        taakapplicaties = MeldingenService().taakapplicaties().get("results", [])
+        alle_taaktypes = [
+            tt for ta in taakapplicaties for tt in ta.get("taaktypes", [])
+        ]
+
+        current_taaktypes = (
+            [
+                (
+                    taaktype.get("_links", {}).get("self"),
+                    taaktype.get("omschrijving"),
+                )
+                for taaktype in alle_taaktypes
+                if taaktype.get("_links", {}).get("self") in self.instance.taaktypes
+            ]
+            if self.instance
+            else []
+        )
+
+        alle_taaktypes_urls = [
+            taaktype.get("_links", {}).get("self") for taaktype in alle_taaktypes
+        ]
+
+        unused_taaktypes = [
+            (
+                taaktype.get("_links", {}).get("self"),
+                taaktype.get("omschrijving"),
+            )
+            for taaktype, taaktype_url in zip(alle_taaktypes, alle_taaktypes_urls)
+            if not TaaktypeCategorie.objects.filter(
+                taaktypes__contains=[taaktype_url]
+            ).exists()
+        ]
+
+        return unused_taaktypes + current_taaktypes
+
+
+class TaaktypeCategorieAanmakenForm(TaaktypeCategorieAanpassenForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # self.fields[
+        #     "titel"
+        # ].help_text = "Geef een titel op voor de standaard tekst."
+        # self.fields[
+        #     "tekst"
+        # ].help_text = "Geef een standaard tekst op van maximaal 2000 tekens. Deze tekst kan bij het afhandelen van een melding aangepast worden."
+
+
+class TaaktypeCategorieSearchForm(forms.Form):
+    search = forms.CharField(
+        label="Zoeken",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "Zoek taaktype categorie"}),
     )
