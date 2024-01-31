@@ -1,3 +1,5 @@
+from urllib.parse import urlparse
+
 from apps.services.meldingen import MeldingenService
 from apps.services.onderwerpen import render_onderwerp
 from django.contrib.gis.db import models
@@ -44,7 +46,8 @@ class Context(BasisModel):
         taaktype_namen = [
             taaktype.get("omschrijving")
             for taaktype in taaktypes
-            if taaktype.get("_links", {}).get("self") in self.taaktypes
+            if urlparse(taaktype.get("_links", {}).get("self")).path
+            in [urlparse(tt).path for tt in self.taaktypes]
         ]
         return taaktype_namen
 

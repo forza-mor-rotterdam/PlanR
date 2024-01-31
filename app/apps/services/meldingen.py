@@ -24,7 +24,8 @@ def get_taaktypes(melding, gebruiker):
         ]
         for ta in taakapplicaties.get("results", [])
         for tt in ta.get("taaktypes", [])
-        if tt.get("_links", {}).get("self") in gebruiker_context.taaktypes
+        if urlparse(tt.get("_links", {}).get("self")).path
+        in [urlparse(tt).path for tt in gebruiker_context.taaktypes]
         and tt.get("actief", False)
     ]
     gebruikte_taaktypes = [
