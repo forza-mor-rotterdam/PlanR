@@ -246,6 +246,8 @@ CSP_IMG_SRC = [
     "www.gis.rotterdam.nl",
 ]
 
+CSP_FONT_SRC = ["'self'", "fonts.gstatic.com"]
+
 CSP_STYLE_SRC = (
     "'self'",
     "'unsafe-inline'",
