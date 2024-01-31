@@ -10,34 +10,14 @@ let formData = null
 const defaultErrorMessage = 'Vul a.u.b. dit veld in.'
 
 export default class extends Controller {
-  static targets = ['formTaakStarten']
+  static targets = ['formTaaktypeCategorie']
 
   initializeSelect2() {
-    $(this.formTaakStartenTarget.querySelector('.select2')).select2({
-      dropdownParent: $('#meldingDetailModal'),
-      matcher: (params, data) => {
-        const originalMatcher = $.fn.select2.defaults.defaults.matcher
-        const result = originalMatcher(params, data)
-
-        if (result && data.children && result.children && data.children.length) {
-          if (
-            data.children.length !== result.children.length &&
-            data.text.toLowerCase().includes(params.term.toLowerCase())
-          ) {
-            return {
-              ...result,
-              children: data.children,
-            }
-          }
-        }
-
-        return result
-      },
-    })
+    $(this.formTaaktypeCategorieTarget.querySelector('.select2')).select2({})
   }
 
   connect() {
-    form = this.formTaakStartenTarget
+    form = this.formTaaktypeCategorieTarget
     inputList = document.querySelectorAll('[type="text"], [type="radio"], select, textarea')
 
     formData = new FormData(form)
