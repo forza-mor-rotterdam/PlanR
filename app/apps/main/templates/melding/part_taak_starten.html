@@ -8,8 +8,6 @@
     {% render_bundle 'app' 'css' %}
 {% endblock stylesheets %}
 {% block javascripts %}
-    <script src=" https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js "></script>
-    <script src=" https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js "></script>
     {% render_bundle 'app' 'js' %}
 {% endblock javascripts %}
 <turbo-frame id="melding_actie_form">
@@ -38,17 +36,9 @@
                     <div class="form-row">
                         <label class="">Selecteer een taak</label>
                         <div>{{ form.taaktype }}</div>
-                    </div> <!-- @TODO Render rotterdam formulier doesnt include optgroups yet -->
+                    </div>
                 </div>
                 <div class="form-control__with-helptext">{{ form.bericht|render_rotterdam_formulier }}</div>
-                <!-- Initialize select2 and target the correct modal -->
-                <script>
-                    $(document).ready(function() {
-                        $('.select2').select2({
-                            dropdownParent: $("#meldingDetailModal")
-                        });
-                    });
-                </script>
                 <div class="form-row btn-row">
                     <button type="reset"
                             class="btn btn-tertiary"
