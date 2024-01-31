@@ -2,6 +2,7 @@ import base64
 import json
 import logging
 import math
+import uuid
 
 from apps.context.utils import get_gebruiker_context
 from apps.main.models import StandaardExterneOmschrijving, TaaktypeCategorie
@@ -767,7 +768,8 @@ class MeldingAanmakenForm(forms.Form):
         choice_fields = ("terugkoppeling_gewenst",)
         for cf in choice_fields:
             data[cf] = self.get_verbose_value_from_field(cf, data[cf])
-
+        bron_signaal_id = str(uuid.uuid4())
+        logger.info(f"Signaal aanmaken met uuid: {bron_signaal_id}")
         post_data = {
             "signaal_url": "https://planr.rotterdam.nl/melding/signaal/42",
             "melder": {
@@ -775,8 +777,10 @@ class MeldingAanmakenForm(forms.Form):
                 "email": data.get("email_melder"),
                 "telefoonnummer": data.get("telefoon_melder"),
             },
+            "bron_id": "PlanR",
+            "bron_signaal_id": bron_signaal_id,
             "origineel_aangemaakt": now.isoformat(),
-            "onderwerpen": [data.get("onderwerp", [])],
+            "onderwerpen": [{"bron_url": data.get("onderwerp", [])}],
             "omschrijving_kort": data.get("toelichting", "")[:200],
             "omschrijving": data.get("toelichting", ""),
             "meta": data,

@@ -3,6 +3,7 @@
 {% load vertaal from vertaal_tags %}
 {% load render_th_tags from melding_tags %}
 {% load render_td_tags from melding_tags %}
+{% load get_bijlagen from melding_tags %}
 {% load rotterdam_formulier_html %}
 {% block body %}
     <turbo-frame id="overview">
@@ -39,16 +40,17 @@
                     </thead>
                     <tbody id="id_maincontent">
                         {% for melding in data.results %}
+                            {% get_bijlagen melding as bijlagen %}
                             <tr data-action="click->overview#navigate"
                                 data-overview-targeturl-param="{% url 'melding_detail' melding.uuid %}">
                                 <td width="80">
-                                    {% if melding.bijlagen.0.afbeelding_verkleind_relative_url %}
+                                    {% if bijlagen.0.afbeelding_verkleind_relative_url %}
                                         <div class="container__thumbnail"
-                                             style="background-image: url('{{ melding.bijlagen.0.afbeelding_verkleind_relative_url }}')">
+                                             style="background-image: url('{{ bijlagen.0.afbeelding_verkleind_relative_url }}')">
                                         </div>
-                                    {% elif melding.bijlagen.0.bestand_relative_url %}
+                                    {% elif bijlagen.0.bestand_relative_url %}
                                         <div class="container__thumbnail"
-                                             style="background-image: url('{{ melding.bijlagen.0.bestand_relative_url }}')">
+                                             style="background-image: url('{{ bijlagen.0.bestand_relative_url }}')">
                                         </div>
                                     {% else %}
                                         <div class="background-image"></div>
