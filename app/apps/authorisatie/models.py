@@ -167,6 +167,34 @@ class LocatieAanpassenPermissie(BasisPermissie):
     codenaam = "locatie_aanpassen"
 
 
+# Rechten voor Taaktype Categorie
+
+
+class TaaktypeCategorieLijstBekijkenPermissie(BasisPermissie):
+    naam = "Taaktype categorie lijst bekijken"
+    codenaam = "taaktype_categorie_lijst_bekijken"
+
+
+class TaaktypeCategorieAanmakenPermissie(BasisPermissie):
+    naam = "Taaktype categorie aanmaken"
+    codenaam = "taaktype_categorie_aanmaken"
+
+
+class TaaktypeCategorieBekijkenPermissie(BasisPermissie):
+    naam = "Taaktype categorie bekijken"
+    codenaam = "taaktype_categorie_bekijken"
+
+
+class TaaktypeCategorieAanpassenPermissie(BasisPermissie):
+    naam = "Taaktype categorie aanpassen"
+    codenaam = "taaktype_categorie_aanpassen"
+
+
+class TaaktypeCategorieVerwijderenPermissie(BasisPermissie):
+    naam = "Taaktype categorie verwijderen"
+    codenaam = "taaktype_categorie_verwijderen"
+
+
 gebruikersgroep_permissies = (
     MeldingAfhandelenPermissie,
     MeldingAnnulerenPermissie,
@@ -199,6 +227,11 @@ gebruikersgroep_permissies = (
     StandaardExterneOmschrijvingAanpassenPermissie,
     StandaardExterneOmschrijvingVerwijderenPermissie,
     LocatieAanpassenPermissie,
+    TaaktypeCategorieLijstBekijkenPermissie,
+    TaaktypeCategorieAanmakenPermissie,
+    TaaktypeCategorieBekijkenPermissie,
+    TaaktypeCategorieAanpassenPermissie,
+    TaaktypeCategorieVerwijderenPermissie,
 )
 
 gebruikersgroep_permissie_opties = [

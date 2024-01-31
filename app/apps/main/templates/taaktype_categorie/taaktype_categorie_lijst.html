@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load rotterdam_formulier_html %}
+{% load json_encode from json_tags %}
+{% block body %}
+    <turbo-frame id="beheer" data-turbo-action="advance">
+    <div class="page__beheer" data-controller="row-search">
+        <div>
+            <a href="{% url 'beheer' %}" class="link--back">
+                <svg width="25"
+                     height="16"
+                     viewBox="0 0 25 16"
+                     fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.15173 1.73256L7.73753 0.318359L1.44704 6.60885L1.4142 6.576L0 7.9902L1.4115 9.4017L1.37867 9.43453L7.67186 15.7277L9.08606 14.3135L3.7726 9.00006H24.0098V7.00006H3.88423L9.15173 1.73256Z" fill="#404B4F" />
+                </svg>
+                Beheer
+            </a>
+        </div>
+        <div class="container__flex">
+            <h1>Taaktype Categorieën</h1>
+            <a class="btn btn-action btn-240"
+               href="{% url 'taaktype_categorie_aanmaken' %}">
+                <svg width="24"
+                     height="24"
+                     viewBox="0 0 32 32"
+                     fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#ffffff"></path>
+                </svg>
+                Nieuwe categorie
+            </a>
+        </div>
+        <form>
+            <div class="form-row">
+                <label class="" for="id_zoeken">Zoeken</label>
+                <div>
+                    <input type="text"
+                           id="id_zoeken"
+                           name="zoeken"
+                           class="form-control "
+                           data-action="row-search#search">
+                </div>
+            </div>
+        </form>
+        <h2>Taaktype Categorieën</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Naam</th>
+                    <th>Taaktypes</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in object_list %}
+                    <tr data-row-search-target="row">
+                        <td data-row-search-target="searchable">{{ object.id }}</td>
+                        <td data-row-search-target="searchable">{{ object.naam }}</td>
+                        <td data-row-search-target="searchable">{{ object.taaktype_namen|join:", " }}</td>
+                        <td>
+                            <a href="{% url 'taaktype_categorie_aanpassen' object.pk %}" aria-label="Aanpassen">
+                                {% include "icons/edit.svg" %}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{% url 'taaktype_categorie_verwijderen' object.pk %}"
+                               onclick="return confirm('Weet je zeker dat je deze taaktype categorie wil verwijderen?')" aria-label="Verwijderen">
+                                {% include "icons/bin.svg" %}
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    </turbo-frame>
+{% endblock body %}
