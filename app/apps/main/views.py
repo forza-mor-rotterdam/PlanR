@@ -13,6 +13,7 @@ from apps.main.forms import (
     LocatieAanpassenForm,
     MeldingAanmakenForm,
     MeldingAfhandelenForm,
+    MeldingAnnulerenForm,
     MSBLoginForm,
     MSBMeldingZoekenForm,
     StandaardExterneOmschrijvingAanmakenForm,
@@ -359,9 +360,9 @@ def melding_annuleren(request, id):
     ]
 
     bijlagen_flat = [b for bl in melding_bijlagen for b in bl]
-    form = MeldingAfhandelenForm()
+    form = MeldingAnnulerenForm()
     if request.POST:
-        form = MeldingAfhandelenForm(request.POST)
+        form = MeldingAnnulerenForm(request.POST)
         if form.is_valid():
             bijlagen = request.FILES.getlist("bijlagen", [])
             bijlagen_base64 = []
