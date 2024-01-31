@@ -86,9 +86,10 @@ class FilterForm(forms.Form):
                 "class": "list--form-text-input",
                 "hideLabel": True,
                 "typeOfInput": "search",
-                "placeHolder": "MeldR-nummer",  # @TODO @Remco veranderen naar: "Zoek op naam, contactgegevens of MeldR-nummmer" en de balk langer maken. Misschien iets vermelden dat meerdere zoektermen met kommas mogelijk zijn.
+                "placeHolder": "Zoek op naam, contactgegevens of MeldR-nummmer",
             }
         ),
+        help_text="Maak gebruik van komma's om op meerdere termen te zoeken",
         label="Zoeken",
         required=False,
     )
