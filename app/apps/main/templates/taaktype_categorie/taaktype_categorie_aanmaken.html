@@ -24,6 +24,7 @@
                 <form action="."
                       method="post"
                       data-controller="taaktypecategorieformulier"
+                      data-turbo-frame="_top"
                       data-taaktypecategorieformulier-target="formTaaktypeCategorie"
                       enctype="multipart/form-data"
                       id="taaktypeCategorieForm"
@@ -33,7 +34,9 @@
                     {% csrf_token %}
                     <fieldset>
                         <div class="form-control__with-helptext padding--bottom js-validation">{{ form.naam|render_rotterdam_formulier }}</div>
-                        <div class="form-control__with-helptext padding--bottom js-validation">{{ form.taaktypes|render_rotterdam_formulier }}</div>
+                        <div class="form-control__with-helptext padding--bottom js-validation">
+                            {{ form.taaktypes|render_rotterdam_formulier }}
+                        </div>
                     </fieldset>
                     <div class="form-row container__button">
                         <div class="form-row btn-row">
