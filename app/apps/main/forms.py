@@ -442,6 +442,23 @@ class MeldingAfhandelenForm(forms.Form):
         )
 
 
+class MeldingAnnulerenForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["omschrijving_intern"] = forms.CharField(
+            label="Interne opmerking",
+            help_text="Deze tekst wordt niet naar de melder verstuurd.",
+            widget=forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": "4",
+                    "data-meldingbehandelformulier-target": "internalText",
+                }
+            ),
+            required=False,
+        )
+
+
 class LocatieAanpassenForm(forms.Form):
     omschrijving_intern = forms.CharField(
         label="Interne opmerking",
