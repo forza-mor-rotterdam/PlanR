@@ -55,6 +55,7 @@
 }
 
 .container__search {
+    width: 100%;
     input {
         margin: 0;
         border: 1px solid $gray-tint04;
@@ -64,6 +65,7 @@
             no-repeat;
         background-position: 8px 50%;
         color: $gray-tint11;
+        font-size: 16px;
 
         &::-webkit-search-cancel-button {
             -webkit-appearance: none;
@@ -76,8 +78,18 @@
             cursor: pointer;
         }
     }
+    input::placeholder {
+        font-size: inherit;
+    }
+
+    .help-block {
+        padding: 2px 0 08px;
+        font-size: 12px;
+    }
+
     @media (min-width: map-get($grid-breakpoints, md)) {
         padding: 0 12px 0 0;
+        width: 430px;
     }
 }
 
