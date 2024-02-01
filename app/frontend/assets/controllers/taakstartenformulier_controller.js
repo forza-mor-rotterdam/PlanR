@@ -34,35 +34,32 @@ export default class extends Controller {
         return result
       },
     })
+
+    $(this.formTaakStartenTarget.querySelector('.select2')).on('select2:select', function (e) {
+      const select = e.target
+      const error = select.closest('.form-row').getElementsByClassName('invalid-text')[0]
+      if (select.validity.valid) {
+        select.closest('.form-row').classList.remove('is-invalid')
+        error.textContent = ''
+      } else {
+        error.textContent = defaultErrorMessage
+        select.closest('.form-row').classList.add('is-invalid')
+      }
+    })
   }
 
   connect() {
     form = this.formTaakStartenTarget
-    inputList = document.querySelectorAll('[type="text"], [type="radio"], select, textarea')
+    inputList = this.element.querySelectorAll('select')
 
     formData = new FormData(form)
     this.initializeSelect2()
-
-    for (let i = 0; i < inputList.length; i++) {
-      const input = inputList[i]
-      const error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
-
-      input.addEventListener('input', () => {
-        if (input.validity.valid) {
-          input.closest('.form-row').classList.remove('is-invalid')
-          error.textContent = ''
-        } else {
-          error.textContent = defaultErrorMessage
-          input.closest('.form-row').classList.add('is-invalid')
-        }
-      })
-    }
 
     form.addEventListener('submit', (event) => {
       const allFieldsValid = this.checkValids()
 
       if (!allFieldsValid) {
-        const errorList = document.querySelectorAll('div.is-invalid')
+        const errorList = this.element.querySelectorAll('div.is-invalid')
         errorList[0].scrollIntoView({ behavior: 'smooth' })
         event.preventDefault()
       }
@@ -72,7 +69,7 @@ export default class extends Controller {
   checkValids() {
     //check all inputfields (except checkboxes) for validity
     // if 1 or more fields is invalid, don't send the form (return false)
-    inputList = document.querySelectorAll('select')
+    inputList = this.element.querySelectorAll('select')
     let count = 0
     for (let i = 0; i < inputList.length; i++) {
       const input = inputList[i]
