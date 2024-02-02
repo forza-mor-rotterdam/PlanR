@@ -296,26 +296,24 @@ class MeldRNummerKolom(StandaardKolom):
     _td_standaard_classes = "nowrap"
 
     def td_label(self):
-        meldr_nummer = "<br>".join(
-            [
-                signaal.get("bron_signaal_id", "")
-                if signaal.get("bron_signaal_id")
-                else ""
-                for signaal in self.context.get("melding", {}).get(
-                    "signalen_voor_melding", []
-                )
-            ]
+        bron_signaal_ids = [
+            signaal.get("bron_signaal_id", "") if signaal.get("bron_signaal_id") else ""
+            for signaal in self.context.get("melding", {}).get(
+                "signalen_voor_melding", []
+            )
+        ]
+        meta_meldr_nummer = string_based_lookup(
+            self.context, self._kolom_inhoud, not_found_value=""
         )
-        if not meldr_nummer:
-            meldr_nummer = string_based_lookup(
-                self.context, self._kolom_inhoud, not_found_value=""
-            )
-        if not meldr_nummer:
-            meldr_nummer = string_based_lookup(
-                self.context, "melding.meta.morId", not_found_value=""
-            )
+        msb_meldr_nummer = string_based_lookup(
+            self.context, "melding.meta.morId", not_found_value=""
+        )
+        bron_signaal_ids.append(meta_meldr_nummer)
+        bron_signaal_ids.append(msb_meldr_nummer)
 
-        return meldr_nummer
+        bron_signaal_ids_joined = "<br>".join([id for id in bron_signaal_ids if id])
+
+        return bron_signaal_ids_joined
 
 
 class StandaardFilter:

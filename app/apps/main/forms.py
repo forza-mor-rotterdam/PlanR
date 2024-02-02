@@ -715,6 +715,16 @@ class MeldingAanmakenForm(forms.Form):
         ),
         required=True,
     )
+    melding = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+            }
+        ),
+        label="Moeder melding id",
+        help_text="Deze melding als dubbele melding aanmaken",
+        required=False,
+    )
 
     def __init__(self, *args, **kwargs):
         kwargs.get("instance")
@@ -773,7 +783,7 @@ class MeldingAanmakenForm(forms.Form):
         bron_signaal_id = str(uuid.uuid4())
         logger.info(f"Signaal aanmaken met uuid: {bron_signaal_id}")
         post_data = {
-            "signaal_url": "https://planr.rotterdam.nl/melding/signaal/42",
+            "signaal_url": f"https://planr.rotterdam.nl/melding/signaal/{bron_signaal_id}",
             "melder": {
                 "naam": data.get("naam_melder"),
                 "email": data.get("email_melder"),
@@ -803,6 +813,8 @@ class MeldingAanmakenForm(forms.Form):
                 },
             ],
         }
+        if data.get("melding"):
+            post_data.update({"melding": data.get("melding")})
         try:
             post_data["adressen"][0]["geometrie"] = rd_to_wgs(
                 data.get("rd_x"), data.get("rd_y")
