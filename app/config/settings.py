@@ -34,6 +34,8 @@ DEFAULT_ALLOWED_HOSTS = ".forzamor.nl,localhost,127.0.0.1,.mor.local"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", DEFAULT_ALLOWED_HOSTS).split(",")
 
 INSTALLED_APPS = (
+    # templates override
+    "apps.health",
     "django.contrib.contenttypes",
     "django.contrib.staticfiles",
     "django.contrib.messages",
@@ -57,7 +59,6 @@ INSTALLED_APPS = (
     "django_celery_results",
     "django_select2",
     # Apps
-    "apps.health",
     "apps.rotterdam_formulier_html",
     "apps.main",
     "apps.authorisatie",
