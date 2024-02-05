@@ -25,10 +25,24 @@ export default class extends Controller {
     'turboActionModal',
     'modalAfhandelen',
     'imageSliderWidth',
+    'tabs',
+    'tabsContent',
   ]
 
   initialize() {
     let self = this
+
+    if (this.hasTabsTarget && this.hasTabsContentTarget) {
+      const tabs = this.tabsTarget.querySelectorAll('.btn--tab')
+      const tabsContent = this.tabsContentTarget.querySelectorAll('.tab-content')
+      tabs[0].classList.add('active')
+      tabsContent[0].classList.add('active')
+      tabs.forEach(function (e, index) {
+        e.addEventListener('click', function () {
+          self.onSelectTab(e, index, tabs, tabsContent)
+        })
+      })
+    }
 
     if (this.hasThumbListTarget) {
       const element = this.thumbListTarget.getElementsByTagName('li')[0]
@@ -119,6 +133,18 @@ export default class extends Controller {
       resizeObserver.observe(imageSliderWidth)
     }
   }
+
+  onSelectTab(e, index, tabs, tabsContent) {
+    tabs.forEach(function (element) {
+      element.classList.remove('active')
+    })
+    tabsContent.forEach(function (element) {
+      element.classList.remove('active')
+    })
+    e.classList.add('active')
+    tabsContent[index].classList.add('active')
+  }
+
   onMapLayerChange(e) {
     if (e.target.checked) {
       this.mapLayers[e.params.mapLayerType].layer.addTo(this.map)

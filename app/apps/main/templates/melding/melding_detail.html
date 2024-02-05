@@ -4,6 +4,7 @@
 {% load rotterdam_formulier_html %}
 {% load vertaal from vertaal_tags %}
 {% load context_template from context_tags %}
+{% load slice_iterable from main_tags %}
 {% load render_onderwerp get_bijlagen from melding_tags %}
 {% load json_encode from json_tags %}
 {% block body %}
@@ -170,7 +171,7 @@
                                     Melding
                                 </h2>
                                 <div>
-                                {% if melding.signalen_voor_melding|length > 0 %}
+                                {% if melding.signalen_voor_melding|length > 1 %}
                                      <ul class="list-clean">
                                         <li>
                                             <h3 class="h5">Meldingnummer</h3>
@@ -184,30 +185,25 @@
                                         </li>
                                     </ul>
                                     <div class="display--flex--md">
-                                        <ul class="list-tabs">
+                                        <ul class="list-tabs" data-detail-target="tabs">
                                         {% for signaal in melding.signalen_voor_melding %}
+                                        {% comment %} {{ signaal }} {% endcomment %}
                                             <li>
-                                                <button class="btn btn--tab">{{ signaal.signaal_data.meta.morId }}</button>
-                                            </li>
-                                             <li>
-                                                <button class="btn btn--tab active">{{ signaal.signaal_data.meta.morId }}</button>
-                                            </li> <li>
-                                                <button class="btn btn--tab">{{ signaal.signaal_data.meta.morId }}</button>
+                                                <button class="btn btn--tab">{% slice_iterable signaal.bron_signaal_id 1 -3 %}</button>
                                             </li>
                                         {% endfor %}
                                         </ul>
                                     </div>
-                                    <div class="container__tab-content">
+                                    <div class="container__tab-content" data-detail-target="tabsContent">
                                         {% for signaal in melding.signalen_voor_melding %}
                                             <div class="tab-content">
                                                 <div class="display--flex--md">
-                                                    {% with signaal=signaal.signaal_data %}
                                                     <ul class="list-clean">
                                                         <li>
                                                             <h3 class="h5">Onderwerp</h3>
                                                             <p>
                                                                 {% for onderwerp in signaal.onderwerpen %}
-                                                                    {% render_onderwerp onderwerp %}
+                                                                    {{ onderwerp.naam }}
                                                                     {% if not forloop.last %},{% endif %}
                                                                 {% endfor %}
                                                             </p>
@@ -215,8 +211,8 @@
                                                         <li>
                                                             <h3 class="h5">MeldR-nummer</h3>
                                                             <p>
-                                                                {% if signaal.meta.morId %}
-                                                                    {{ signaal.meta.morId }}
+                                                                {% if signaal.bron_signaal_id %}
+                                                                    {{ signaal.bron_signaal_id }}
                                                                 {% else %}
                                                                     -
                                                                 {% endif %}
@@ -263,7 +259,6 @@
                                                             </p>
                                                         </li>
                                                     </ul>
-                                                    {% endwith %}
                                                 </div>
                                             </div>
                                         {% endfor %}
@@ -317,6 +312,11 @@
                                                     {% render_onderwerp onderwerp %}
                                                     {% if not forloop.last %},{% endif %}
                                                 {% endfor %}
+                                                {% comment %} {{ melding.meta.onderwerp.omschrijving }}
+                                                    {% for onderwerp in signaal.onderwerpen %}
+                                                        {{ onderwerp.naam }}
+                                                        {% if not forloop.last %},{% endif %}
+                                                    {% endfor %} {% endcomment %}
                                             </p>
                                         </li>
                                         <li>
