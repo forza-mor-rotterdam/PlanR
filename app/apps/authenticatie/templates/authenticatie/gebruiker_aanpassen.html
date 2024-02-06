@@ -21,7 +21,7 @@
         <h1>Wijzig gebruiker</h1>
         <div class="grid-container">
             <div class="grid-item">
-                <form action="." method="post">
+                <form action="{% url 'gebruiker_aanpassen' object.id %}" method="post">
                     {% csrf_token %}
                     <div>
                         <h2 class="h5 no-margin-bottom">E-mailadres</h2>
