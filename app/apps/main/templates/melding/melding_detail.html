@@ -184,8 +184,8 @@
                                          <li>
                                             <h3 class="h5">MeldR-nummer</h3>
                                             <p>
-                                                {% if melding.meta.morId %}
-                                                    {{ melding.meta.morId }}
+                                                {% if melding.signalen_voor_melding.0.bron_signaal_id %}
+                                                    {{melding.signalen_voor_melding.0.bron_signaal_id }}
                                                 {% else %}
                                                     -
                                                 {% endif %}
@@ -201,11 +201,11 @@
                                                 {% endif %}
                                             </p>
                                         </li>
-                                        {% if melding.meta.aannemer %}
+                                        {% if melding.signalen_voor_melding.0.meta.aannemer %}
                                         <li>
                                             <h3 class="h5">Aangenomen door</h3>
                                             <p>
-                                                {{ melding.meta.aannemer }}
+                                                {{ melding.signalen_voor_melding.0.meta.aannemer }}
                                             </p>
                                         </li>
                                         {% endif %}
