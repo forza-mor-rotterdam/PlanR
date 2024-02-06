@@ -17,8 +17,10 @@
           method="post"
           novalidate>
         {% csrf_token %}
+        {{form.errors}}
         <fieldset>
             {% include "snippets/legend.html" with title="Locatie" icon_name="pin_filled" only %}
+            {{ form.melding|render_rotterdam_formulier }}
             {{ form.straatnaam|render_rotterdam_formulier }}
             {{ form.huisnummer|render_rotterdam_formulier }}
             {{ form.wijknaam|render_rotterdam_formulier }}

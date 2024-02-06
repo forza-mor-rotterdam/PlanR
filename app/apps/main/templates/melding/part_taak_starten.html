@@ -35,7 +35,10 @@
                 <div class="form-control__with-helptext">
                     <div class="form-row">
                         <label class="">Selecteer een taak</label>
-                        <div>{{ form.taaktype }}</div>
+                        <div>
+                            {{ form.taaktype }}
+                            <p class="help-block invalid-text" style="margin:0;"></p>
+                        </div>
                     </div>
                 </div>
                 <div class="form-control__with-helptext">{{ form.bericht|render_rotterdam_formulier }}</div>
