@@ -287,7 +287,7 @@ def melding_afhandelen(request, id):
     ]
     benc_user = request.user.profiel.context.template == "benc"
     signaal = (
-        melding.get("signalen_voor_melding")[1]
+        melding.get("signalen_voor_melding")[0]
         if melding.get("signalen_voor_melding")
         else {}
     )
