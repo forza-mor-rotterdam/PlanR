@@ -62,6 +62,7 @@
         {% endfor %}
         {% if field.help_text %}<p class="help-block">{{ field.help_text|safe }}</p>{% endif %}
     </div>
+{% comment %} Werkt nog niet met optgroups {% endcomment %}
 {% elif field|is_select %}
     <div class="form-row col {{ classes.label }} {{ classes.value }} {{ classes.single_value }}">
         {% if field|is_select_multiple %}
@@ -83,6 +84,7 @@
                         {% if field.field.required %}required{% endif %}>
                     {% for choice in field %}{{ choice.tag }}{% endfor %}
                 </select>
+                <span class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</span>
                 {% for error in field.errors %}
                     <span class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</span>
                 {% endfor %}
@@ -244,9 +246,10 @@
                    id="{{ field.auto_id }}"
                    name="{{ field.html_name }}"
                    {% if field.value != None %}value="{{ field.value|stringformat:'s' }}"{% endif %}
-                   class="form-control {% if field.errors %}is-invalid{% endif %}"
+                   class="form-control {% if field.errors %}is-invalid{% endif %}{% if field.field.required %}required{% endif %}"
                    {% render_attrs field %}
                    {% if field.field.required %}required{% endif %}>
+                   <p class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</p>
             {% for error in field.errors %}
                 <p class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</p>
             {% endfor %}

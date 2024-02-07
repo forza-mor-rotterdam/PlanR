@@ -16,6 +16,7 @@ SECRET_KEY = os.getenv(
     "DJANGO_SECRET_KEY", os.getenv("SECRET_KEY", os.getenv("APP_SECRET"))
 )
 
+GIT_SHA = os.getenv("GIT_SHA")
 ENVIRONMENT = os.getenv("ENVIRONMENT")
 DEBUG = ENVIRONMENT == "development"
 
@@ -33,6 +34,8 @@ DEFAULT_ALLOWED_HOSTS = ".forzamor.nl,localhost,127.0.0.1,.mor.local"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", DEFAULT_ALLOWED_HOSTS).split(",")
 
 INSTALLED_APPS = (
+    # templates override
+    "apps.health",
     "django.contrib.contenttypes",
     "django.contrib.staticfiles",
     "django.contrib.messages",
@@ -54,8 +57,8 @@ INSTALLED_APPS = (
     "health_check.contrib.migrations",
     "django_celery_beat",
     "django_celery_results",
+    "django_select2",
     # Apps
-    "apps.health",
     "apps.rotterdam_formulier_html",
     "apps.main",
     "apps.authorisatie",
@@ -243,6 +246,8 @@ CSP_IMG_SRC = [
     "ows.gis.rotterdam.nl",
     "www.gis.rotterdam.nl",
 ]
+
+CSP_FONT_SRC = ["'self'", "fonts.gstatic.com"]
 
 CSP_STYLE_SRC = (
     "'self'",

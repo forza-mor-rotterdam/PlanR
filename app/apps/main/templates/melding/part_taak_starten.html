@@ -1,6 +1,15 @@
 {% load rotterdam_formulier_html %}
 {% load vind_in_dict from querystring_tags %}
 {% load json_encode from json_tags %}
+{% load render_bundle from webpack_loader %}
+{% block stylesheets %}
+    <link href=" https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css "
+          rel="stylesheet">
+    {% render_bundle 'app' 'css' %}
+{% endblock stylesheets %}
+{% block javascripts %}
+    {% render_bundle 'app' 'js' %}
+{% endblock javascripts %}
 <turbo-frame id="melding_actie_form">
 <div class="modal-dialog modal-dialog--small">
     <div class="modal-content">
@@ -15,16 +24,23 @@
         </div>
         <div class="modal-body">
             <form action="{% url 'taak_starten' melding.uuid %}"
-                method="post"
-                class="form--horizontal"
-                data-controller="taakstartenformulier"
-                data-turbo-frame="_top"
-                data-taakstartenformulier-target="formTaakStarten"
-                enctype="multipart/form-data"
-                novalidate
-            >
+                  method="post"
+                  class="form--horizontal"
+                  data-controller="taakstartenformulier"
+                  data-turbo-frame="_top"
+                  data-taakstartenformulier-target="formTaakStarten"
+                  enctype="multipart/form-data"
+                  novalidate>
                 {% csrf_token %}
-                <div class="form-control__with-helptext">{{ form.taaktype|render_rotterdam_formulier }}</div>
+                <div class="form-control__with-helptext">
+                    <div class="form-row">
+                        <label class="">Selecteer een taak</label>
+                        <div>
+                            {{ form.taaktype }}
+                            <p class="help-block invalid-text" style="margin:0;"></p>
+                        </div>
+                    </div>
+                </div>
                 <div class="form-control__with-helptext">{{ form.bericht|render_rotterdam_formulier }}</div>
                 <div class="form-row btn-row">
                     <button type="reset"

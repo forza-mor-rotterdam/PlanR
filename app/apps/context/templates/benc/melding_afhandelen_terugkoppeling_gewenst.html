@@ -1,4 +1,4 @@
-{% if melding.meta.terugkoppeling_gewenst == "Ja" and not melding.meta.email_melder and melding.meta.telefoon_melder %}
+{% if melding.signalen_voor_melding.0.meta.terugkoppeling_gewenst == "Ja" and not melding.signalen_voor_melding.0.melder.email and melding.signalen_voor_melding.0.melder.telefoonnummer %}
     <div class="alert alert--info">
         <span>
             <svg width="24"
@@ -10,7 +10,7 @@
             </svg>
         </span>
         <div>
-            Let op: de melder wil op de hoogte blijven maar beschikt niet over een e-mailadres. Het telefoonnummer van de melder is <a href="tel:{{ melding.meta.telefoon_melder }}">{{ melding.meta.telefoon_melder }}</a>.
+            Let op: de melder wil op de hoogte blijven maar beschikt niet over een e-mailadres. Het telefoonnummer van de melder is <a href="tel:{{ melding.signalen_voor_melding.0.melder.telefoonnummer }}">{{ melding.signalen_voor_melding.0.melder.telefoonnummer }}</a>.
         </div>
     </div>
 {% endif %}

@@ -24,7 +24,8 @@ def get_taaktypes(melding, gebruiker):
         ]
         for ta in taakapplicaties.get("results", [])
         for tt in ta.get("taaktypes", [])
-        if tt.get("_links", {}).get("self") in gebruiker_context.taaktypes
+        if urlparse(tt.get("_links", {}).get("self")).path
+        in [urlparse(tt).path for tt in gebruiker_context.taaktypes]
         and tt.get("actief", False)
     ]
     gebruikte_taaktypes = [
@@ -290,4 +291,15 @@ class MeldingenService(BasisService):
                 "limit": 200,
             },
             raw_response=False,
+        )
+
+    def get_gebruiker(self, gebruiker_email):
+        return self.do_request(
+            f"{self._api_path}/gebruiker/{gebruiker_email}/",
+            method="get",
+        )
+
+    def set_gebruiker(self, gebruiker):
+        return self.do_request(
+            f"{self._api_path}/gebruiker/", method="post", data=gebruiker
         )

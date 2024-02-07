@@ -10,7 +10,11 @@ logger = logging.getLogger(__name__)
 
 
 def general_settings(context):
-    gebruiker = context.user.serialized_instance()
+    gebruiker = (
+        context.user.serialized_instance()
+        if hasattr(context.user, "serialized_instance")
+        else {}
+    )
 
     session_expiry_max_timestamp = context.session.get("_session_init_timestamp_", 0)
     if session_expiry_max_timestamp:
@@ -56,4 +60,5 @@ def general_settings(context):
         "APP_MERCURE_PUBLIC_URL": settings.APP_MERCURE_PUBLIC_URL,
         "MERCURE_SUBSCRIBER_TOKEN": subscriber_token,
         "GEBRUIKER": gebruiker,
+        "GIT_SHA": settings.GIT_SHA,
     }
