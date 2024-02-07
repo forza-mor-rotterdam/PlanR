@@ -25,6 +25,8 @@
 .container__tab-content {
     padding: 0 $input-padding-y;
     background-color: $gray-tint02;
+    width: 100%;
+    box-sizing: border-box;
 
     .tab-content {
         display: none;

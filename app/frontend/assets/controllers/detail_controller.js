@@ -27,22 +27,28 @@ export default class extends Controller {
     'imageSliderWidth',
     'tabs',
     'tabsContent',
+    'tabs2',
+    'tabsContent2',
   ]
 
   initialize() {
     let self = this
-
+    const urlParams = new URLSearchParams(window.location.search)
+    const tabIndex = urlParams.get('tabIndex')
+    console.log('tabIndex', tabIndex)
+    this.selectTab(tabIndex)
     if (this.hasTabsTarget && this.hasTabsContentTarget) {
       const tabs = this.tabsTarget.querySelectorAll('.btn--tab')
       const tabsContent = this.tabsContentTarget.querySelectorAll('.tab-content')
-      tabs[0].classList.add('active')
-      tabsContent[0].classList.add('active')
-      tabs.forEach(function (e, index) {
-        e.addEventListener('click', function () {
-          self.onSelectTab(e, index, tabs, tabsContent)
-        })
-      })
+      this.activateTabs(tabs, tabsContent, this)
     }
+    if (this.hasTabs2Target && this.hasTabsContent2Target) {
+      const tabs = this.tabs2Target.querySelectorAll('.btn--tab')
+      const tabsContent = this.tabsContent2Target.querySelectorAll('.tab-content')
+      this.activateTabs(tabs, tabsContent, this)
+    }
+
+    // this.deselectTabs()
 
     if (this.hasThumbListTarget) {
       const element = this.thumbListTarget.getElementsByTagName('li')[0]
@@ -132,6 +138,44 @@ export default class extends Controller {
       })
       resizeObserver.observe(imageSliderWidth)
     }
+  }
+
+  selectTab() {
+    this.deselectTabs()
+    // if (this.hasTabsTarget && this.hasTabsContentTarget) {
+    //   const tabs = this.tabsTarget.querySelectorAll('.btn--tab')
+    //   const tabsContent = this.tabsContentTarget.querySelectorAll('.tab-content')
+    //   this.activateTabs(tabs, tabsContent, this)
+    // }
+    // if (this.hasTabs2Target && this.hasTabsContent2Target) {
+    //   const tabs = this.tabs2Target.querySelectorAll('.btn--tab')
+    //   const tabsContent = this.tabsContent2Target.querySelectorAll('.tab-content')
+    //   this.activateTabs(tabs, tabsContent, this)
+    // }
+  }
+
+  deselectTabs() {
+    const tabs = this.element.querySelectorAll('.btn--tab')
+    const tabsContent = this.element.querySelectorAll('.tab-content')
+
+    tabs.forEach(function (element) {
+      element.classList.remove('active')
+    })
+    tabsContent.forEach(function (element) {
+      element.classList.remove('active')
+    })
+  }
+
+  activateTabs(tabs, tabsContent, _this) {
+    console.log('tabs', tabs)
+    tabs[0].classList.add('active')
+    tabsContent[0].classList.add('active')
+    tabs.forEach(function (e, index) {
+      e.addEventListener('click', function () {
+        console.log('this', _this)
+        _this.onSelectTab(e, index, tabs, tabsContent)
+      })
+    })
   }
 
   onSelectTab(e, index, tabs, tabsContent) {
