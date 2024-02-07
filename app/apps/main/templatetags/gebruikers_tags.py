@@ -26,7 +26,6 @@ def gebruiker_middels_email(value):
         name = [n for n in [first_name, last_name] if n]
         if name:
             return " ".join(name)
-        return gebruiker.get("email")
 
     UserModel = get_user_model()
     gebruiker = UserModel.objects.filter(email=value).first()
