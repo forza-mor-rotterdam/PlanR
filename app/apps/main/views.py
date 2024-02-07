@@ -286,13 +286,17 @@ def melding_afhandelen(request, id):
         for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
     ]
     benc_user = request.user.profiel.context.template == "benc"
-    melding_meta = melding.get("meta", {})
+    signaal = (
+        melding.get("signalen_voor_melding")[1]
+        if melding.get("signalen_voor_melding")
+        else {}
+    )
     # Als het om een B&C formulier gaat en er geen terugkoppeling gewenst is en/of er geen email bekend is
     standaard_omschrijving_niet_weergeven = bool(
         benc_user
         and (
-            melding_meta.get("terugkoppeling_gewenst") != "Ja"
-            or not melding_meta.get("email_melder")
+            signaal.get("meta", {}).get("terugkoppeling_gewenst") != "Ja"
+            or not signaal.get("melder", {}).get("email")
         )
     )
     bijlagen_flat = [b for bl in melding_bijlagen for b in bl]
