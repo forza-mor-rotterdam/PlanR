@@ -29,6 +29,18 @@ export default class extends Controller {
 
   initialize() {
     let self = this
+    if (this.hasTabsTarget && this.hasTabsContentTarget) {
+      const tabs = this.tabsTarget.querySelectorAll('.btn--tab')
+      const tabsContent = this.tabsContentTarget.querySelectorAll('.tab-content')
+      this.activateTabs(tabs, tabsContent, this)
+    }
+    if (this.hasTabs2Target && this.hasTabsContent2Target) {
+      const tabs = this.tabs2Target.querySelectorAll('.btn--tab')
+      const tabsContent = this.tabsContent2Target.querySelectorAll('.tab-content')
+      this.activateTabs(tabs, tabsContent, this)
+    }
+
+    // this.deselectTabs()
 
     if (this.hasThumbListTarget) {
       const element = this.thumbListTarget.getElementsByTagName('li')[0]
@@ -119,6 +131,63 @@ export default class extends Controller {
       resizeObserver.observe(imageSliderWidth)
     }
   }
+
+  connect() {
+    this.urlParams = new URLSearchParams(window.location.search)
+    this.tabIndex = Number(this.urlParams.get('tabIndex'))
+    this.selectTab(this.tabIndex || 1)
+  }
+
+  selectTab(tabIndex) {
+    this.deselectTabs()
+    const tabs = Array.from(this.element.querySelectorAll('.btn--tab'))
+    const tabsContent = Array.from(this.element.querySelectorAll('.tab-content'))
+    if (tabs.length > 0 && tabsContent.length > 0) {
+      this.activateTabs(tabIndex, tabs, tabsContent, this)
+    }
+  }
+
+  deselectTabs() {
+    const tabs = this.element.querySelectorAll('.btn--tab')
+    const tabsContent = this.element.querySelectorAll('.tab-content')
+
+    tabs.forEach(function (element) {
+      element.classList.remove('active')
+    })
+    tabsContent.forEach(function (element) {
+      element.classList.remove('active')
+    })
+  }
+
+  activateTabs(tabIndex, tabs, tabsContent) {
+    const activeTabs = tabs.filter((tab) => Number(tab.dataset.index) === tabIndex)
+    const activeTabsContent = tabsContent.filter((tab) => Number(tab.dataset.index) === tabIndex)
+    activeTabs.forEach(function (tab) {
+      tab.classList.add('active')
+    })
+    activeTabsContent.forEach(function (tab) {
+      tab.classList.add('active')
+    })
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        this.urlParams = new URLSearchParams(window.location.search)
+        this.urlParams.set('tabIndex', tab.dataset.index)
+        window.location.search = this.urlParams
+      })
+    })
+  }
+
+  onSelectTab(e, index, tabs, tabsContent) {
+    tabs.forEach(function (element) {
+      element.classList.remove('active')
+    })
+    tabsContent.forEach(function (element) {
+      element.classList.remove('active')
+    })
+    e.classList.add('active')
+    tabsContent[index].classList.add('active')
+  }
+
   onMapLayerChange(e) {
     if (e.target.checked) {
       this.mapLayers[e.params.mapLayerType].layer.addTo(this.map)
