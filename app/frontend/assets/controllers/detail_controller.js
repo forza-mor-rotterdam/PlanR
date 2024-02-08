@@ -7,7 +7,8 @@ let markerIcon,
   sliderContainerWidth,
   self,
   imageSliderWidth,
-  imageSliderThumbContainer = null
+  imageSliderThumbContainer = null,
+  detailScrollY = 0
 
 export default class extends Controller {
   static values = {
@@ -133,6 +134,8 @@ export default class extends Controller {
   }
 
   connect() {
+    document.documentElement.scrollTop = detailScrollY
+
     this.urlParams = new URLSearchParams(window.location.search)
     this.tabIndex = Number(this.urlParams.get('tabIndex'))
     this.selectTab(this.tabIndex || 1)
@@ -172,7 +175,10 @@ export default class extends Controller {
       tab.addEventListener('click', function () {
         this.urlParams = new URLSearchParams(window.location.search)
         this.urlParams.set('tabIndex', tab.dataset.index)
-        window.location.search = this.urlParams
+        const targetUrl = `${window.location.pathname}?${this.urlParams}`
+        detailScrollY = document.documentElement.scrollTop
+        // eslint-disable-next-line no-undef
+        Turbo.visit(targetUrl)
       })
     })
   }
