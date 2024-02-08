@@ -4,6 +4,7 @@
 {% load rotterdam_formulier_html %}
 {% load vertaal from vertaal_tags %}
 {% load context_template from context_tags %}
+{% load slice_iterable from main_tags %}
 {% load render_onderwerp get_bijlagen from melding_tags %}
 {% load json_encode from json_tags %}
 {% block body %}
@@ -169,8 +170,9 @@
                                     </svg>
                                     Melding
                                 </h2>
-                                <div class="display--flex--md">
-                                    <ul class="list-clean">
+                                <div>
+                                {% if melding.signalen_voor_melding|length > 1 %}
+                                     <ul class="list-clean">
                                         <li>
                                             <h3 class="h5">Meldingnummer</h3>
                                             <p>
@@ -181,66 +183,172 @@
                                                 {% endif %}
                                             </p>
                                         </li>
-                                         <li>
-                                            <h3 class="h5">MeldR-nummer</h3>
-                                            <p>
-                                                {% if melding.signalen_voor_melding.0.bron_signaal_id %}
-                                                    {{melding.signalen_voor_melding.0.bron_signaal_id }}
-                                                {% else %}
-                                                    -
-                                                {% endif %}
-                                            </p>
-                                        </li>
-                                        <li>
-                                            <h3 class="h5">Ingediend</h3>
-                                            <p>
-                                                {% if melding.origineel_aangemaakt %}
-                                                    {{ melding.origineel_aangemaakt|to_datetime|date:"d-m-Y H:i" }}
-                                                {% else %}
-                                                    -
-                                                {% endif %}
-                                            </p>
-                                        </li>
-                                        {% if melding.signalen_voor_melding.0.meta.aannemer %}
-                                        <li>
-                                            <h3 class="h5">Aangenomen door</h3>
-                                            <p>
-                                                {{ melding.signalen_voor_melding.0.meta.aannemer }}
-                                            </p>
-                                        </li>
-                                        {% endif %}
                                     </ul>
-                                    <ul class="list-clean">
-                                        <li>
-                                            <h3 class="h5">Onderwerp</h3>
-                                            <p>
-                                                {% for onderwerp in melding.onderwerpen %}
-                                                    {% render_onderwerp onderwerp %}
-                                                    {% if not forloop.last %},{% endif %}
-                                                {% endfor %}
-                                            </p>
-                                        </li>
-                                        <li>
-                                            <h3 class="h5">Toelichting kort</h3>
-                                            <p>
-                                                {% if melding.omschrijving_kort %}
-                                                    {{ melding.omschrijving_kort }}
+                                    <div class="display--flex--md">
+                                        <ul class="list-tabs" data-detail-target="tabs">
+                                        {% for signaal in melding.signalen_voor_melding %}
+                                        {% comment %} {{ signaal }} {% endcomment %}
+                                            <li>
+                                                <button class="btn btn--tab" data-index="{{forloop.counter}}">
+                                                {% if signaal.bron_signaal_id|length > 8 %}
+                                                    ...{% slice_iterable signaal.bron_signaal_id -6 None %}
                                                 {% else %}
-                                                    -
+                                                    {{ signaal.bron_signaal_id }}
                                                 {% endif %}
-                                            </p>
-                                        </li>
-                                        <li>
-                                            <h3 class="h5">Toelichting</h3>
-                                            <p>
-                                                {% if melding.omschrijving %}
-                                                    {{ melding.omschrijving }}
-                                                {% else %}
-                                                    -
-                                                {% endif %}
-                                            </p>
-                                        </li>
-                                    </ul>
+                                                </button>
+                                            </li>
+                                        {% endfor %}
+                                        </ul>
+                                    </div>
+                                    <div class="container__tab-content" data-detail-target="tabsContent">
+                                        {% for signaal in melding.signalen_voor_melding %}
+                                            <div class="tab-content" data-index="{{forloop.counter}}">
+                                                <div class="display--flex--md">
+                                                    <ul class="list-clean">
+                                                        <li>
+                                                            <h3 class="h5">Onderwerp</h3>
+                                                            <p>
+                                                                {% for onderwerp in signaal.onderwerpen %}
+                                                                    {{ onderwerp.naam }}
+                                                                    {% if not forloop.last %},{% endif %}
+                                                                {% endfor %}
+                                                            </p>
+                                                        </li>
+                                                        <li>
+                                                            <h3 class="h5">MeldR-nummer</h3>
+                                                            <p>
+                                                                {% if signaal.bron_signaal_id %}
+                                                                    {{ signaal.bron_signaal_id }}
+                                                                {% else %}
+                                                                    -
+                                                                {% endif %}
+                                                            </p>
+                                                        </li>
+                                                        <li>
+                                                            <h3 class="h5">Ingediend</h3>
+                                                            <p>
+                                                                {% if signaal.origineel_aangemaakt %}
+                                                                    {{ signaal.origineel_aangemaakt|to_datetime|date:"d-m-Y H:i" }}
+                                                                {% else %}
+                                                                    -
+                                                                {% endif %}
+                                                            </p>
+                                                        </li>
+                                                        {% if signaal.aannemer %}
+                                                        <li>
+                                                            <h3 class="h5">Aangenomen door</h3>
+                                                            <p>
+                                                                {{ signaal.aannemer }}
+                                                            </p>
+                                                        </li>
+                                                        {% endif %}
+                                                    </ul>
+                                                    <ul class="list-clean">
+                                                        <li>
+                                                            <h3 class="h5">Toelichting</h3>
+                                                            <p>
+                                                                {% if signaal.omschrijving_kort %}
+                                                                    {{ signaal.omschrijving_kort }}
+                                                                {% else %}
+                                                                    -
+                                                                {% endif %}
+                                                            </p>
+                                                        </li>
+                                                        <li>
+                                                            <h3 class="h5">Meer informatie</h3>
+                                                            <p>
+                                                                {% if signaal.omschrijving %}
+                                                                    {{ signaal.omschrijving }}
+                                                                {% else %}
+                                                                    -
+                                                                {% endif %}
+                                                            </p>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="display--flex--md">
+                                        <ul class="list-clean">
+                                            <li>
+                                                <h3 class="h5">Meldingnummer</h3>
+                                                <p>
+                                                    {% if melding.id %}
+                                                        {{ melding.id }}
+                                                    {% else %}
+                                                        -
+                                                    {% endif %}
+                                                </p>
+                                            </li>
+                                            <li>
+                                                <h3 class="h5">MeldR-nummer</h3>
+                                                <p>
+                                                    {% if melding.signalen_voor_melding.0.bron_signaal_id %}
+                                                        {{melding.signalen_voor_melding.0.bron_signaal_id }}
+                                                    {% else %}
+                                                        -
+                                                    {% endif %}
+                                                </p>
+                                            </li>
+                                            <li>
+                                                <h3 class="h5">Ingediend</h3>
+                                                <p>
+                                                    {% if melding.origineel_aangemaakt %}
+                                                        {{ melding.origineel_aangemaakt|to_datetime|date:"d-m-Y H:i" }}
+                                                    {% else %}
+                                                        -
+                                                    {% endif %}
+                                                </p>
+                                            </li>
+                                            {% if melding.signalen_voor_melding.0.meta.aannemer %}
+                                            <li>
+                                                <h3 class="h5">Aangenomen door</h3>
+                                                <p>
+                                                    {{ melding.signalen_voor_melding.0.meta.aannemer }}
+                                                </p>
+                                            </li>
+                                            {% endif %}
+                                        </ul>
+                                        <ul class="list-clean">
+                                            <li>
+                                                <h3 class="h5">Onderwerp</h3>
+                                                <p>
+                                                    {% for onderwerp in melding.onderwerpen %}
+                                                        {% render_onderwerp onderwerp %}
+                                                        {% if not forloop.last %},{% endif %}
+                                                    {% endfor %}
+                                                    {% comment %} {{ melding.meta.onderwerp.omschrijving }}
+                                                        {% for onderwerp in signaal.onderwerpen %}
+                                                            {{ onderwerp.naam }}
+                                                            {% if not forloop.last %},{% endif %}
+                                                        {% endfor %} {% endcomment %}
+                                                </p>
+                                            </li>
+                                            <li>
+                                                <h3 class="h5">Toelichting kort</h3>
+                                                <p>
+                                                    {% if melding.omschrijving_kort %}
+                                                        {{ melding.omschrijving_kort }}
+                                                    {% else %}
+                                                        -
+                                                    {% endif %}
+                                                </p>
+                                            </li>
+                                            <li>
+                                                <h3 class="h5">Toelichting</h3>
+                                                <p>
+                                                    {% if melding.omschrijving %}
+                                                        {{ melding.omschrijving }}
+                                                    {% else %}
+                                                        -
+                                                    {% endif %}
+                                                </p>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                {% endif %}
                                 </div>
                             </div>
                         </section>
