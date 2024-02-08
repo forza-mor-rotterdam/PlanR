@@ -18,7 +18,13 @@
                 {% for signaal in melding.signalen_voor_melding %}
 
                     <li>
-                        <button class="btn btn--tab" data-index="{{forloop.counter}}">{% slice_iterable signaal.bron_signaal_id 1 -3 %}</button>
+                        <button class="btn btn--tab" data-index="{{forloop.counter}}">
+                        {% if signaal.bron_signaal_id|length > 8 %}
+                            ...{% slice_iterable signaal.bron_signaal_id -6 None %}
+                        {% else %}
+                            {{ signaal.bron_signaal_id }}
+                        {% endif %}
+                        </button>
                     </li>
                 {% endfor %}
                 </ul>
