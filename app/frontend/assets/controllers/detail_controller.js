@@ -25,18 +25,10 @@ export default class extends Controller {
     'turboActionModal',
     'modalAfhandelen',
     'imageSliderWidth',
-    'tabs',
-    'tabsContent',
-    'tabs2',
-    'tabsContent2',
   ]
 
   initialize() {
     let self = this
-    const urlParams = new URLSearchParams(window.location.search)
-    const tabIndex = urlParams.get('tabIndex')
-    console.log('tabIndex', tabIndex)
-    this.selectTab(tabIndex)
     if (this.hasTabsTarget && this.hasTabsContentTarget) {
       const tabs = this.tabsTarget.querySelectorAll('.btn--tab')
       const tabsContent = this.tabsContentTarget.querySelectorAll('.tab-content')
@@ -140,18 +132,19 @@ export default class extends Controller {
     }
   }
 
-  selectTab() {
+  connect() {
+    this.urlParams = new URLSearchParams(window.location.search)
+    this.tabIndex = Number(this.urlParams.get('tabIndex'))
+    this.selectTab(this.tabIndex || 1)
+  }
+
+  selectTab(tabIndex) {
     this.deselectTabs()
-    // if (this.hasTabsTarget && this.hasTabsContentTarget) {
-    //   const tabs = this.tabsTarget.querySelectorAll('.btn--tab')
-    //   const tabsContent = this.tabsContentTarget.querySelectorAll('.tab-content')
-    //   this.activateTabs(tabs, tabsContent, this)
-    // }
-    // if (this.hasTabs2Target && this.hasTabsContent2Target) {
-    //   const tabs = this.tabs2Target.querySelectorAll('.btn--tab')
-    //   const tabsContent = this.tabsContent2Target.querySelectorAll('.tab-content')
-    //   this.activateTabs(tabs, tabsContent, this)
-    // }
+    const tabs = Array.from(this.element.querySelectorAll('.btn--tab'))
+    const tabsContent = Array.from(this.element.querySelectorAll('.tab-content'))
+    if (tabs.length > 0 && tabsContent.length > 0) {
+      this.activateTabs(tabIndex, tabs, tabsContent, this)
+    }
   }
 
   deselectTabs() {
@@ -166,14 +159,20 @@ export default class extends Controller {
     })
   }
 
-  activateTabs(tabs, tabsContent, _this) {
-    console.log('tabs', tabs)
-    tabs[0].classList.add('active')
-    tabsContent[0].classList.add('active')
-    tabs.forEach(function (e, index) {
-      e.addEventListener('click', function () {
-        console.log('this', _this)
-        _this.onSelectTab(e, index, tabs, tabsContent)
+  activateTabs(tabIndex, tabs, tabsContent) {
+    const activeTabs = tabs.filter((tab) => Number(tab.dataset.index) === tabIndex)
+    const activeTabsContent = tabsContent.filter((tab) => Number(tab.dataset.index) === tabIndex)
+    activeTabs.forEach(function (tab) {
+      tab.classList.add('active')
+    })
+    activeTabsContent.forEach(function (tab) {
+      tab.classList.add('active')
+    })
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        this.urlParams = new URLSearchParams(window.location.search)
+        this.urlParams.set('tabIndex', tab.dataset.index)
+        window.location.search = this.urlParams
       })
     })
   }

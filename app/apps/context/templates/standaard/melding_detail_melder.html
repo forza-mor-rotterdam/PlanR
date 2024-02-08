@@ -14,19 +14,19 @@
         <div>
         {% if melding.signalen_voor_melding|length > 1 %}
             <div class="display--flex--md">
-                <ul class="list-tabs" data-detail-target="tabs2">
+                <ul class="list-tabs">
                 {% for signaal in melding.signalen_voor_melding %}
 
                     <li>
-                        <button class="btn btn--tab">{% slice_iterable signaal.bron_signaal_id 1 -3 %}</button>
+                        <button class="btn btn--tab" data-index="{{forloop.counter}}">{% slice_iterable signaal.bron_signaal_id 1 -3 %}</button>
                     </li>
                 {% endfor %}
                 </ul>
             </div>
             <div class="display--flex--md">
-                <div class="container__tab-content" data-detail-target="tabsContent2">
+                <div class="container__tab-content">
                     {% for signaal in melding.signalen_voor_melding %}
-                    <div class="tab-content">
+                    <div class="tab-content" data-index="{{forloop.counter}}">
                         <div class="display--flex--md">
                         {% comment %} {{ signaal }} {% endcomment %}
                             <ul class="list-clean incident-meta-list">
