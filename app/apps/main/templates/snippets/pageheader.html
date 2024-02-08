@@ -17,6 +17,36 @@
                         <small>{{ request.user|gebruikersnaam }}</small>
                     </a>
                 </li>
+                {% if perms.authorisatie.beheer_bekijken %}
+                    <li>
+                        <a href="{% url 'beheer' %}">
+                            <svg width="20"
+                                 height="20"
+                                 viewBox="0 -960 960 960"
+                                 fill="none"
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 title="">
+                                <path fill-rule="evenodd" clip-rule="evenodd" fill="#9DAFB6" d="m680-80-12-60q-12-5-22.5-10.5T624-164l-58 18-40-68 46-40q-2-12-2-26t2-26l-46-40 40-68 58 18q11-8 21.5-13.5T668-420l12-60h80l12 60q12 5 22.5 10.5T816-396l58-18 40 68-46 40q2 12 2 26t-2 26l46 40-40 68-58-18q-11 8-21.5 13.5T772-140l-12 60h-80Zm40-120q33 0 56.5-23.5T800-280q0-33-23.5-56.5T720-360q-33 0-56.5 23.5T640-280q0 33 23.5 56.5T720-200Zm-560-40v-480 172-12 320Zm0 80q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h240l80 80h320q33 0 56.5 23.5T880-640v131q-18-13-38-22.5T800-548v-92H447l-80-80H160v480h283q3 21 9.5 41t15.5 39H160Z" />
+                            </svg>
+                            <small>Beheer</small>
+                        </a>
+                    </li>
+                {% endif %}
+                {% if request.user.is_superuser %}
+                    <li>
+                        <a href="{% url 'admin:index' %}">
+                            <svg width="20"
+                                 height="20"
+                                 viewBox="0 -960 960 960"
+                                 fill="none"
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 title="">
+                                <path fill-rule="evenodd" clip-rule="evenodd" fill="#9DAFB6" d="M480-440q-59 0-99.5-40.5T340-580q0-59 40.5-99.5T480-720q59 0 99.5 40.5T620-580q0 59-40.5 99.5T480-440Zm0-80q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm0 440q-139-35-229.5-159.5T160-516v-244l320-120 320 120v244q0 152-90.5 276.5T480-80Zm0-400Zm0-315-240 90v189q0 54 15 105t41 96q42-21 88-33t96-12q50 0 96 12t88 33q26-45 41-96t15-105v-189l-240-90Zm0 515q-36 0-70 8t-65 22q29 30 63 52t72 34q38-12 72-34t63-52q-31-14-65-22t-70-8Z" />
+                            </svg>
+                            <small>Admin</small>
+                        </a>
+                    </li>
+                {% endif %}
                 <li>
                     <a href="{% url 'oidc_logout' %}">
                         <svg width="20"
