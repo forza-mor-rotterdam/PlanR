@@ -94,8 +94,21 @@ class FilterForm(forms.Form):
         label="Zoeken",
         required=False,
     )
+    foldout_states = forms.CharField(
+        widget=forms.HiddenInput(
+            attrs={
+                "data-filter-target": "foldoutStateField",
+            }
+        ),
+        initial="remove me",
+        required=False,
+    )
     ordering = forms.ChoiceField(
-        widget=KolommenRadioSelect(),
+        widget=KolommenRadioSelect(
+            attrs={
+                "data-action": "filter#onChangeFilter",
+            }
+        ),
         initial="-origineel_aangemaakt",
         required=False,
     )
@@ -104,6 +117,7 @@ class FilterForm(forms.Form):
         widget=PagineringRadioSelect(
             attrs={
                 "class": "list--form-check-input",
+                "data-action": "filter#onChangeFilter",
                 "hideLabel": True,
             }
         ),
@@ -205,6 +219,7 @@ class FilterForm(forms.Form):
                 widget=CheckboxSelectMultiple(
                     attrs={
                         "class": "list--form-check-input",
+                        "data-action": "filter#onChangeFilter",
                         "hideLabel": True,
                     }
                 ),

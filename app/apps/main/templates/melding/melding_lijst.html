@@ -8,11 +8,12 @@
 {% block body %}
     <turbo-frame id="overview">
     <div data-controller="overview">
-        <form method="get"
+        <form method="post"
               action="{% url 'melding_lijst' %}"
               id="filterForm"
               data-controller="filter"
               data-turbo-action="advance">
+            {% csrf_token %}
             <div class="filter-header">
                 <div class="container__flex">
                     <h1 class="page-title">Meldingen</h1>
@@ -22,14 +23,17 @@
             </div>
             <div class="container__tools">
                 <div class="container__filter" data-filter-target="filterOverview">
+                    {{ form.foldout_states }}
                     {{ form.limit|render_rotterdam_formulier }}
                     {% for veld in form.filters %}
-                        <div class="container__multiselect">
+                        {% with foldout_name='foldout_filter-'|add:veld.name %}
+                        <div class="container__multiselect{% if foldout_name == form.foldout_states.value %} show{% endif %}">
                             <label class="visually-hidden">{{ veld.label }}</label>
-                            <button class="toggle js-toggle{% if veld.data|length > 0 %} active {% endif %}"
+                            <button data-action="filter#toggleFilterElements" data-filter-target="filterButton" data-foldout-name="{{ foldout_name }}" class="toggle js-toggle{% if veld.data|length > 0 %} active {% endif %}"
                                     type="button">{{ veld.label|capfirst }}</button>
                             <div class="wrapper">{{ veld|render_rotterdam_formulier }}</div>
                         </div>
+                        {% endwith %}
                     {% endfor %}
                 </div>
             </div>
