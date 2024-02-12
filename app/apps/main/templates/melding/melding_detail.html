@@ -51,7 +51,7 @@
                                 </span>
                             {% endif %}
                             {% if aantal_actieve_taken %}
-                                <span class="badge badge--darkblue">{{ aantal_actieve_taken }}
+                                <span class="badge badge--darkblue" data-testid="taakActief">{{ aantal_actieve_taken }}
                                     {% if aantal_actieve_taken > 1 %}
                                         taken
                                     {% else %}
@@ -59,10 +59,10 @@
                                     {% endif %}
                                 actief</span>
                             {% else %}
-                                <span class="badge badge--darkblue">0 taken actief</span>
+                                <span class="badge badge--darkblue" data-testid="taakActief">0 taken actief</span>
                             {% endif %}
                             {% if aantal_opgeloste_taken %}
-                                <span class="badge badge--darkblue">{{ aantal_opgeloste_taken }}
+                                <span class="badge badge--darkblue" data-testid="taakOpgelost">{{ aantal_opgeloste_taken }}
                                     {% if aantal_opgeloste_taken > 1 %}
                                         taken
                                     {% else %}
@@ -70,18 +70,16 @@
                                     {% endif %}
                                 opgelost</span>
                             {% else %}
-                                <span class="badge badge--darkblue">0 taken opgelost</span>
+                                <span class="badge badge--darkblue" data-testid="taakOpgelost">0 taken opgelost</span>
                             {% endif %}
                             {% if aantal_niet_opgeloste_taken %}
-                                <span class="badge badge--red">{{ aantal_niet_opgeloste_taken }}
+                                <span class="badge badge--red" data-testid="taakNietOpgelost">{{ aantal_niet_opgeloste_taken }}
                                     {% if aantal_niet_opgeloste_taken > 1 %}
                                         taken
                                     {% else %}
                                         taak
                                     {% endif %}
                                 niet opgelost</span>
-                            {% comment %} {% else %}
-                                <span class="badge badge--darkblue">0 taken niet opgelost</span> {% endcomment %}
                             {% endif %}
                         </div>
                     </div>
