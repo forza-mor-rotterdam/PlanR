@@ -379,14 +379,14 @@
                             </span>
                         </div>
                         {% endif %}
-
-                        {% if melding.status.naam != "afgehandeld" and melding.status.naam != "geannuleerd" %}
                             <section class="section--seperated">
                                 <turbo-frame id="informatie_toevoegen" src="{% url 'informatie_toevoegen' melding.uuid %}">
                                 </turbo-frame>
                             </section>
-                        {% endif %}
-                        <section class="section--seperated" data-testid="detailTijdlijn">
+                        <section
+                            class="section--seperated {% if melding.status.naam is 'afgehandeld' or melding.status.naam is not 'geannuleerd' %}no-padding{% endif %}"
+                            data-testid="detailTijdlijn"
+                        >
                             {% include "melding/part_tijdlijn.html" %}
                         </section>
                     </div>
