@@ -17,7 +17,13 @@
             <div class="filter-header">
                 <div class="container__flex">
                     <h1 class="page-title">Meldingen</h1>
-                    <span class="help-text">{{ form.pagina_eerste_melding }} - {{ form.pagina_laatste_melding }} van {{ data.count }} resultaten</span>
+                    <span class="help-text">
+                        {% if form.limit.value|add:0 <= data.count %}
+                            {{ form.pagina_eerste_melding }} - {{ form.pagina_laatste_melding }} van {{ data.count }} resultaten
+                        {% else %}
+                            {{ data.count }} resultaten
+                        {% endif %}
+                    </span>
                 </div>
                 <div class="container__search">{{ form.q|render_rotterdam_formulier }}</div>
             </div>
