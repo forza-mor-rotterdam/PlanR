@@ -11,7 +11,7 @@
                     aria-label="Sluit"
                     data-action="detail#closeModal"></button>
             <h1>
-                <span>Meer informatie nodig</span>
+                <span>Melding pauzeren</span>
             </h1>
             {% if not actieve_taken %}
             <div class="alert alert--info">
@@ -67,7 +67,7 @@
                           id="pauzeerForm"
                           novalidate>
                         {% csrf_token %}
-                        <div class="form-control">{{ form.status|render_rotterdam_formulier }}</div>
+                        <div class="form-control__no-border">{{ form.status|render_rotterdam_formulier }}</div>
                         <div class="form-control__with-helptext js-validation">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
                         <div class="form-row btn-row">
                             <button type="reset"
