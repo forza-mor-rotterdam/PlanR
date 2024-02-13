@@ -13,6 +13,7 @@
             <h1>
                 <span>Meer informatie nodig</span>
             </h1>
+            {% if not actieve_taken %}
             <div class="alert alert--info">
                 <span>
                     <svg width="24"
@@ -27,6 +28,7 @@
                     Geef de melding deze status als er meer informatie nodig is voordat er een taak kan worden gestart.
                 </div>
             </div>
+            {% endif %}
         </div>
         <div class="modal-body">
             <section class="section--seperated" data-testid="detailReporter">

@@ -36,7 +36,7 @@ VERTALINGEN = {
     "telefoon_melder": "Telefoonnummer",
     "terugkoppeling_gewenst": "Is terugkoppeling gewenst?",
     "wachten_melder": "Wachten op melder",
-    "pauze": "Wachten informatie",
+    "pauze": "Gepauzeerd",
 }
 
 MSB_WIJKEN = [
