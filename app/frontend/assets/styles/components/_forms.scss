@@ -644,6 +644,12 @@ textarea {
                         display: none;
                     }
                 }
+
+                .css--safari & {
+                    float: unset;
+                    display: inline-flex;
+                    line-height: 1rem;
+                }
             }
         }
     }
