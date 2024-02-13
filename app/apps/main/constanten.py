@@ -35,6 +35,8 @@ VERTALINGEN = {
     "naam_overledene": "Naam overledene",
     "telefoon_melder": "Telefoonnummer",
     "terugkoppeling_gewenst": "Is terugkoppeling gewenst?",
+    "wachten_melder": "Wachten op melder",
+    "pauze": "Wachten informatie",
 }
 
 MSB_WIJKEN = [
