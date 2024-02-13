@@ -36,7 +36,9 @@ from apps.main.views import (
     melding_afhandelen,
     melding_annuleren,
     melding_detail,
+    melding_hervatten,
     melding_lijst,
+    melding_pauzeren,
     melding_pdf_download,
     melding_verzonden,
     meldingen_bestand,
@@ -83,6 +85,16 @@ urlpatterns = [
         "part/melding/<uuid:id>/annuleren/",
         melding_annuleren,
         name="melding_annuleren",
+    ),
+    path(
+        "melding/<uuid:id>/pauzeren/",
+        melding_pauzeren,
+        name="melding_pauzeren",
+    ),
+    path(
+        "melding/<uuid:id>/hervatten/",
+        melding_hervatten,
+        name="melding_hervatten",
     ),
     path(
         "part/melding/<uuid:id>/taakstarten/",

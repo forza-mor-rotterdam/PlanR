@@ -476,6 +476,47 @@ class MeldingAnnulerenForm(forms.Form):
         )
 
 
+class MeldingPauzerenForm(forms.Form):
+    status = forms.ChoiceField(
+        label="Waar is het wachten op?",
+        widget=forms.RadioSelect(
+            attrs={
+                "class": "list--form-radio-input",
+            }
+        ),
+        choices=(
+            ("wachten_melder", "Wachten melder"),
+            ("pauze", "Een externe instantie of medewerker"),
+        ),
+        required=True,
+    )
+    omschrijving_intern = forms.CharField(
+        label="Interne opmerking",
+        help_text="Deze tekst wordt niet naar de melder verstuurd.",
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "rows": "4",
+            }
+        ),
+        required=False,
+    )
+
+
+class MeldingHervattenForm(forms.Form):
+    omschrijving_intern = forms.CharField(
+        label="Interne opmerking",
+        help_text="Deze tekst wordt niet naar de melder verstuurd.",
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "rows": "4",
+            }
+        ),
+        required=False,
+    )
+
+
 class LocatieAanpassenForm(forms.Form):
     omschrijving_intern = forms.CharField(
         label="Interne opmerking",

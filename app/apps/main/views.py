@@ -14,6 +14,8 @@ from apps.main.forms import (
     MeldingAanmakenForm,
     MeldingAfhandelenForm,
     MeldingAnnulerenForm,
+    MeldingHervattenForm,
+    MeldingPauzerenForm,
     MSBLoginForm,
     MSBMeldingZoekenForm,
     StandaardExterneOmschrijvingAanmakenForm,
@@ -414,6 +416,63 @@ def melding_annuleren(request, id):
             "bijlagen": bijlagen_flat,
             "actieve_taken": actieve_taken,
             "aantal_actieve_taken": len(actieve_taken),
+        },
+    )
+
+
+@permission_required("authorisatie.melding_pauzeren")
+def melding_pauzeren(request, id):
+    melding = MeldingenService().get_melding(id)
+    form = MeldingPauzerenForm()
+    actieve_taken = [
+        to
+        for to in melding.get("taakopdrachten_voor_melding", [])
+        if to.get("status", {}).get("naam") != "voltooid"
+    ]
+    if request.POST:
+        form = MeldingPauzerenForm(request.POST)
+        if form.is_valid():
+            MeldingenService().melding_status_aanpassen(
+                id,
+                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
+                gebruiker=request.user.email,
+                status=form.cleaned_data.get("status"),
+            )
+            return redirect("melding_detail", id=id)
+
+    return render(
+        request,
+        "melding/melding_pauzeren.html",
+        {
+            "form": form,
+            "melding": melding,
+            "actieve_taken": actieve_taken,
+        },
+    )
+
+
+@permission_required("authorisatie.melding_hervatten")
+def melding_hervatten(request, id):
+    melding = MeldingenService().get_melding(id)
+    form = MeldingHervattenForm()
+
+    if request.POST:
+        form = MeldingHervattenForm(request.POST)
+        if form.is_valid():
+            MeldingenService().melding_status_aanpassen(
+                id,
+                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
+                gebruiker=request.user.email,
+                status="openstaand",
+            )
+            return redirect("melding_detail", id=id)
+
+    return render(
+        request,
+        "melding/melding_hervatten.html",
+        {
+            "form": form,
+            "melding": melding,
         },
     )
 
