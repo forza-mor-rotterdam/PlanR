@@ -113,7 +113,7 @@
                 </div>
             </div>
         {% else %}
-        {% with signaal=melding.signalen_voor_melding %}
+        {% with signaal=melding.signalen_voor_melding.0 %}
             <div class="display--flex--md">
                 <ul class="list-clean incident-meta-list">
                     {% if signaal.melder.naam %}

@@ -105,8 +105,10 @@
                                                 <dt>Gebruiker</dt>
                                                 <dd>
                                                     <a href=""
-                                                       data-action="detail#openModal"
-                                                       data-detail-action-param="{% url 'gebruiker_info' gebruiker_email=row_data.mg.taakgebeurtenis.gebruiker %}">
+                                                        class="link link--email"
+                                                        data-action="detail#openModal"
+                                                        data-detail-action-param="{% url 'gebruiker_info' gebruiker_email=row_data.mg.taakgebeurtenis.gebruiker %}"
+                                                    >
                                                         <svg width="20"
                                                              height="20"
                                                              viewBox="0 0 20 20"
@@ -128,9 +130,12 @@
                                             {% if row_data.mg.gebruiker %}
                                                 <dt>Gewijzigd door</dt>
                                                 <dd>
-                                                    <a href="#"
-                                                       data-action="detail#openModal"
-                                                       data-detail-action-param="{% url 'gebruiker_info' gebruiker_email=row_data.mg.gebruiker %}">
+                                                    <a
+                                                        href="#"
+                                                        class="link link--email"
+                                                        data-action="detail#openModal"
+                                                        data-detail-action-param="{% url 'gebruiker_info' gebruiker_email=row_data.mg.gebruiker %}"
+                                                    >
                                                         <svg width="20"
                                                              height="20"
                                                              viewBox="0 0 20 20"
@@ -158,8 +163,10 @@
                                                 <dt>Uitvoerder</dt>
                                                 <dd>
                                                     <a href="#"
-                                                       data-action="detail#openModal"
-                                                       data-detail-action-param="{% url 'gebruiker_info' gebruiker_email=row_data.mg.taakgebeurtenis.additionele_informatie.uitvoerder %}">
+                                                        class="link link--email"
+                                                        data-action="detail#openModal"
+                                                        data-detail-action-param="{% url 'gebruiker_info' gebruiker_email=row_data.mg.taakgebeurtenis.additionele_informatie.uitvoerder %}"
+                                                    >
                                                         <svg width="20"
                                                              height="20"
                                                              viewBox="0 0 20 20"
@@ -176,8 +183,10 @@
                                                 <dt>Afgehandeld door</dt>
                                                 <dd>
                                                     <a href=""
-                                                       data-action="detail#openModal"
-                                                       data-detail-action-param="{% url 'gebruiker_info' gebruiker_email=row_data.mg.gebruiker %}">
+                                                        class="link link--email"
+                                                        data-action="detail#openModal"
+                                                        data-detail-action-param="{% url 'gebruiker_info' gebruiker_email=row_data.mg.gebruiker %}"
+                                                    >
                                                         <svg width="20"
                                                              height="20"
                                                              viewBox="0 0 20 20"
