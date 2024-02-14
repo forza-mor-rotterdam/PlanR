@@ -33,6 +33,12 @@ class Gebruiker(AbstractUser):
             f"rechten: <strong>{self.groups.all().first().name if self.groups.all() else '- geen rechten - '}</strong>"
         )
 
+    @property
+    def functie(self):
+        return mark_safe(
+            f"{self.groups.all().first().name if self.groups.all() else ''}"
+        )
+
     def serialized_instance(self):
         if not self.is_authenticated:
             return None
