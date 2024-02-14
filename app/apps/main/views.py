@@ -631,7 +631,7 @@ def gebruiker_info(request, gebruiker_email):
     functie = None
     email = gebruiker_email
 
-    # Get gebruiker info from mor-core
+    # Get gebruiker info from mor-core cache
     gebruiker_response = MeldingenService().get_gebruiker(
         gebruiker_email=email,
     )
