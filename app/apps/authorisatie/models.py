@@ -31,6 +31,16 @@ class MeldingenLijstBekijkenPermissie(BasisPermissie):
     codenaam = "melding_lijst_bekijken"
 
 
+class MeldingenPauzerenPermissie(BasisPermissie):
+    naam = "Melding pauzeren"
+    codenaam = "melding_pauzeren"
+
+
+class MeldingenHervattenPermissie(BasisPermissie):
+    naam = "Melding hervatten"
+    codenaam = "melding_hervatten"
+
+
 class TaakAanmakenPermissie(BasisPermissie):
     naam = "Taak aanmaken"
     codenaam = "taak_aanmaken"
@@ -201,6 +211,8 @@ gebruikersgroep_permissies = (
     MeldingAanmakenPermissie,
     MeldingBekijkenPermissie,
     MeldingenLijstBekijkenPermissie,
+    MeldingenPauzerenPermissie,
+    MeldingenHervattenPermissie,
     TaakAanmakenPermissie,
     TaakAfrondenPermissie,
     TaakAnnulerenPermissie,

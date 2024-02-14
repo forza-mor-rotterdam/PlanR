@@ -33,7 +33,7 @@ turbo-frame {
         position: fixed;
         z-index: 2001;
         box-sizing: border-box;
-        // pointer-events: none;
+        pointer-events: none;
         opacity: 0;
     }
     &:not([data-spinner="hide"])[busy] {
