@@ -156,6 +156,11 @@
             }
         }
 
+        .link--email,
+        .link--phone {
+            justify-content: end;
+        }
+
         &[open] {
             > summary {
                 &::before {
