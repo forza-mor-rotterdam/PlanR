@@ -1,5 +1,4 @@
 VERTALINGEN = {
-    "standaard": "Standaard",
     "status_wijziging": "Status wijziging",
     "melding_aangemaakt": "Melding aangemaakt",
     "taakopdracht_aangemaakt": "Taakopdracht aangemaakt",
@@ -37,6 +36,8 @@ VERTALINGEN = {
     "terugkoppeling_gewenst": "Is terugkoppeling gewenst?",
     "wachten_melder": "Wachten op melder",
     "pauze": "Gepauzeerd",
+    "standaard": "Opmerking/foto toegevoegd",
+    "signaal_toegevoegd": "Dubbele melding",
 }
 
 MSB_WIJKEN = [
