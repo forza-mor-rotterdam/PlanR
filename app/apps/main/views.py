@@ -14,6 +14,8 @@ from apps.main.forms import (
     MeldingAanmakenForm,
     MeldingAfhandelenForm,
     MeldingAnnulerenForm,
+    MeldingHervattenForm,
+    MeldingPauzerenForm,
     MSBLoginForm,
     MSBMeldingZoekenForm,
     StandaardExterneOmschrijvingAanmakenForm,
@@ -43,6 +45,7 @@ from apps.services.meldingen import MeldingenService, get_taaktypes
 from config.context_processors import general_settings
 from deepdiff import DeepDiff
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import (
     login_required,
     permission_required,
@@ -58,6 +61,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView, View
+from utils.diversen import gebruikersnaam as gebruikersnaam_basis
 from utils.rd_convert import rd_to_wgs
 
 logger = logging.getLogger(__name__)
@@ -107,25 +111,41 @@ def melding_lijst(request):
         "ordering": get_ordering(gebruiker),
     }
     actieve_filters = get_actieve_filters(gebruiker)
-    if request.GET:
-        logger.info(f"request GET data: {request.GET}")
+
+    qs = QueryDict("", mutable=True)
+    qs.update(request.GET)
+
+    # remove unused GET vars
+    allowed_querystring_params = list(actieve_filters.keys()) + [
+        "ordering",
+        "q",
+        "offset",
+    ]
+    qs_keys = list(qs.keys())
+    [qs.pop(k, None) for k in qs_keys if k not in allowed_querystring_params]
+
+    qs.update(request.POST)
+
+    if qs:
+        logger.info(f"request GET and/or POST data: {qs}")
         nieuwe_actieve_filters = {
-            k: request.GET.getlist(k, []) for k, v in actieve_filters.items()
+            k: qs.getlist(k, []) for k, v in actieve_filters.items()
         }
         standaard_waardes["ordering"] = set_ordering(
-            gebruiker, request.GET.get("ordering", standaard_waardes["ordering"])
+            gebruiker, qs.get("ordering", standaard_waardes["ordering"])
         )
+        standaard_waardes["foldout_states"] = qs.get("foldout_states")
 
         # reset pagination offset if meldingen count most likely will change by changing filters
-        if DeepDiff(actieve_filters, nieuwe_actieve_filters) or request.GET.get(
+        if DeepDiff(actieve_filters, nieuwe_actieve_filters) or qs.get(
             "q", ""
         ) != request.session.get("q", ""):
             request.session["offset"] = "0"
         else:
-            request.session["offset"] = request.GET.get("offset", "0")
+            request.session["offset"] = qs.get("offset", "0")
 
-        if request.GET.get("q"):
-            request.session["q"] = request.GET.get("q", "")
+        if qs.get("q"):
+            request.session["q"] = qs.get("q", "")
         elif request.session.get("q"):
             del request.session["q"]
 
@@ -133,17 +153,17 @@ def melding_lijst(request):
 
     standaard_waardes["offset"] = request.session.get("offset", "0")
 
-    query_dict = QueryDict("", mutable=True)
+    form_qs = QueryDict("", mutable=True)
     if request.session.get("q"):
-        query_dict.update({"q": request.session.get("q")})
-    query_dict.update(standaard_waardes)
+        form_qs.update({"q": request.session.get("q")})
+    form_qs.update(standaard_waardes)
 
     for k, v in actieve_filters.items():
         if v:
-            query_dict.setlist(k, v)
+            form_qs.setlist(k, v)
 
     meldingen_filter_query_dict = update_qd_met_standaard_meldingen_filter_qd(
-        query_dict, gebruiker_context
+        form_qs, gebruiker_context
     )
     logger.info(f"Meldingen query string: {meldingen_filter_query_dict.urlencode()}")
     meldingen_data = MeldingenService().get_melding_lijst(
@@ -152,7 +172,7 @@ def melding_lijst(request):
     logger.info(f"Meldingen data count: {meldingen_data.get('count', 0)}")
 
     form = FilterForm(
-        query_dict,
+        form_qs,
         gebruiker=gebruiker,
         meldingen_data=meldingen_data,
     )
@@ -402,6 +422,63 @@ def melding_annuleren(request, id):
     )
 
 
+@permission_required("authorisatie.melding_pauzeren")
+def melding_pauzeren(request, id):
+    melding = MeldingenService().get_melding(id)
+    form = MeldingPauzerenForm()
+    actieve_taken = [
+        to
+        for to in melding.get("taakopdrachten_voor_melding", [])
+        if to.get("status", {}).get("naam") != "voltooid"
+    ]
+    if request.POST:
+        form = MeldingPauzerenForm(request.POST)
+        if form.is_valid():
+            MeldingenService().melding_status_aanpassen(
+                id,
+                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
+                gebruiker=request.user.email,
+                status=form.cleaned_data.get("status"),
+            )
+            return redirect("melding_detail", id=id)
+
+    return render(
+        request,
+        "melding/melding_pauzeren.html",
+        {
+            "form": form,
+            "melding": melding,
+            "actieve_taken": actieve_taken,
+        },
+    )
+
+
+@permission_required("authorisatie.melding_hervatten")
+def melding_hervatten(request, id):
+    melding = MeldingenService().get_melding(id)
+    form = MeldingHervattenForm()
+
+    if request.POST:
+        form = MeldingHervattenForm(request.POST)
+        if form.is_valid():
+            MeldingenService().melding_status_aanpassen(
+                id,
+                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
+                gebruiker=request.user.email,
+                status="openstaand",
+            )
+            return redirect("melding_detail", id=id)
+
+    return render(
+        request,
+        "melding/melding_hervatten.html",
+        {
+            "form": form,
+            "melding": melding,
+        },
+    )
+
+
 @permission_required("authorisatie.taak_aanmaken")
 def taak_starten(request, id):
     melding = MeldingenService().get_melding(id)
@@ -543,6 +620,49 @@ def informatie_toevoegen(request, id):
             "melding": melding,
             "form": form,
             "tijdlijn_data": tijdlijn_data,
+        },
+    )
+
+
+@permission_required("authorisatie.melding_bekijken")
+def gebruiker_info(request, gebruiker_email):
+    full_name = None
+    telefoonnummer = None
+    functie = None
+    email = gebruiker_email
+
+    # Get gebruiker info from mor-core cache
+    gebruiker_response = MeldingenService().get_gebruiker(
+        gebruiker_email=email,
+    )
+
+    if gebruiker_response.status_code == 200:
+        mor_core_gebruiker = gebruiker_response.json()
+        telefoonnummer = mor_core_gebruiker.get("telefoonnummer")
+        full_name = gebruikersnaam_basis(mor_core_gebruiker)
+
+    # Get gebruiker info from the user model, pick mor-core info over local
+    user_model = get_user_model()
+    local_gebruiker = user_model.objects.filter(email=email).first()
+    if local_gebruiker:
+        full_name = (
+            gebruikersnaam_basis(local_gebruiker) if not full_name else full_name
+        )
+        telefoonnummer = (
+            local_gebruiker.telefoonnummer if not telefoonnummer else telefoonnummer
+        )
+        functie = local_gebruiker.functie
+
+    return render(
+        request,
+        "melding/part_gebruiker_info.html",
+        {
+            "gebruiker": {
+                "email": email,
+                "full_name": full_name,
+                "telefoonnummer": telefoonnummer,
+                "functie": functie,
+            },
         },
     )
 
@@ -914,9 +1034,11 @@ def locatie_aanpassen(request, id):
         )
 
         form_initial = {
-            "geometrie": highest_gewicht_locatie.get("geometrie", "")
-            if highest_gewicht_locatie
-            else "",
+            "geometrie": (
+                highest_gewicht_locatie.get("geometrie", "")
+                if highest_gewicht_locatie
+                else ""
+            ),
         }
 
         form = LocatieAanpassenForm(initial=form_initial)

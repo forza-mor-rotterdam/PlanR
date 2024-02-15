@@ -2,7 +2,7 @@
 {% load to_datetime from date_tags %}
 {% load taakopdracht from melding_tags %}
 {% load multiply previous next from list_tags %}
-{% load gebruiker_middels_email from gebruikers_tags %}
+{% load get_gebruiker_object_middels_email from gebruikers_tags %}
 {% load vertaal from vertaal_tags %}
 {% load rotterdam_formulier_html %}
 <ul class="list__mutations">
@@ -58,17 +58,14 @@
                                             {% endif %}
                                         {% endwith %}
                                     {% elif row_data.mg.locatie %}
-                                        Melding: locatie gewijzigd
+                                        Locatie aangepast
                                     {% else %}
-                                        Melding:
                                         {% if row_data.mg.status %}
-                                            {{ row_data.mg.status.naam }}
+                                            {{ row_data.mg.status.naam|vertaal }}
                                         {% elif row_data.mg.gebeurtenis_type %}
-                                            {{ row_data.mg.gebeurtenis_type }}
-                                            communicatie
+                                            {{ row_data.mg.gebeurtenis_type|vertaal }}
                                         {% endif %}
                                     {% endif %}
-
                                 </strong>
                             {% endif %}
                         </summary>
@@ -102,12 +99,7 @@
                                                     </dd>
                                                 {% endif %}
                                             {% endif %}
-                                            {% if row_data.mg.taakgebeurtenis.gebruiker %}
-                                                <dt>Gebruiker</dt>
-                                                <dd>
-                                                    {{ row_data.mg.taakgebeurtenis.gebruiker|gebruiker_middels_email }}
-                                                </dd>
-                                            {% endif %}
+                                            {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email tekst="Gebruiker" %}
                                             {% if row_data.mg.taakgebeurtenis.omschrijving_intern %}
                                                 <dt>Interne opmerking</dt>
                                                 <dd>
@@ -115,12 +107,7 @@
                                                 </dd>
                                             {% endif %}
                                         {% elif row_data.mg.locatie %}
-                                            {% if row_data.mg.gebruiker %}
-                                                <dt>Gewijzigd door</dt>
-                                                <dd>
-                                                    {{ row_data.mg.gebruiker|gebruiker_middels_email }}
-                                                </dd>
-                                            {% endif %}
+                                            {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email tekst="Gewijzigd door" %}
                                             {% if row_data.mg.aangemaakt_op %}
                                                 <dt>Datum</dt>
                                                 <dd>
@@ -133,19 +120,9 @@
                                                     {{ row_data.mg.omschrijving_intern }}
                                                 </dd>
                                             {% endif %}
-                                            {% if row_data.mg.taakgebeurtenis.additionele_informatie.uitvoerder %}
-                                                <dt>Uitvoerder</dt>
-                                                <dd>
-                                                    {{ row_data.mg.taakgebeurtenis.additionele_informatie.uitvoerder|gebruiker_middels_email }}
-                                                </dd>
-                                            {% endif %}
+                                            {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.taakgebeurtenis.additionele_informatie.uitvoerder|get_gebruiker_object_middels_email tekst="Uitvoerder" %}
                                         {% else %}
-                                            {% if row_data.mg.gebruiker %}
-                                                <dt>Afgehandeld door</dt>
-                                                <dd>
-                                                    {{ row_data.mg.gebruiker|gebruiker_middels_email }}
-                                                </dd>
-                                            {% endif %}
+                                            {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email tekst="Afgehandeld door" %}
                                             {% if row_data.mg.aangemaakt_op %}
                                                 <dt>Datum</dt>
                                                 <dd>
@@ -174,7 +151,7 @@
                                                         <li>
                                                             <div class="container__image">
                                                                 <div class="image"
-                                                                    style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url }}')">
+                                                                     style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url }}')">
                                                                 </div>
                                                             </div>
                                                         </li>
@@ -190,7 +167,7 @@
                                                         <li>
                                                             <div class="container__image">
                                                                 <div class="image"
-                                                                    style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url }}')">
+                                                                     style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url }}')">
                                                                 </div>
                                                             </div>
                                                         </li>
@@ -207,7 +184,7 @@
                                                         <li>
                                                             <div class="container__image">
                                                                 <div class="image"
-                                                                    style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url }}')">
+                                                                     style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url }}')">
                                                                 </div>
                                                             </div>
                                                         </li>

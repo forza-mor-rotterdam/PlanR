@@ -1,0 +1,38 @@
+.list-tabs {
+    @include list-clean();
+    margin: 0;
+    padding: 0 $input-padding-y;
+    background-color: $gray-tint02;
+
+    li {
+        display: inline;
+    }
+    .btn--tab {
+        display: inline-block;
+        width: auto;
+        background-color: transparent;
+        font-size: 16px;
+        font-weight: normal;
+        padding: 12px 4px;
+        color: $gray-tint11;
+
+        &.active {
+            border-bottom: 4px solid $green-tint01;
+        }
+    }
+}
+
+.container__tab-content {
+    padding: 0 $input-padding-y;
+    background-color: $gray-tint02;
+    width: 100%;
+    box-sizing: border-box;
+
+    .tab-content {
+        display: none;
+
+        &.active {
+            display: block;
+        }
+    }
+}

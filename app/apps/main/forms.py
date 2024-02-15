@@ -94,8 +94,21 @@ class FilterForm(forms.Form):
         label="Zoeken",
         required=False,
     )
+    foldout_states = forms.CharField(
+        widget=forms.HiddenInput(
+            attrs={
+                "data-filter-target": "foldoutStateField",
+            }
+        ),
+        initial="remove me",
+        required=False,
+    )
     ordering = forms.ChoiceField(
-        widget=KolommenRadioSelect(),
+        widget=KolommenRadioSelect(
+            attrs={
+                "data-action": "filter#onChangeFilter",
+            }
+        ),
         initial="-origineel_aangemaakt",
         required=False,
     )
@@ -104,6 +117,7 @@ class FilterForm(forms.Form):
         widget=PagineringRadioSelect(
             attrs={
                 "class": "list--form-check-input",
+                "data-action": "filter#onChangeFilter",
                 "hideLabel": True,
             }
         ),
@@ -205,6 +219,7 @@ class FilterForm(forms.Form):
                 widget=CheckboxSelectMultiple(
                     attrs={
                         "class": "list--form-check-input",
+                        "data-action": "filter#onChangeFilter",
                         "hideLabel": True,
                     }
                 ),
@@ -459,6 +474,47 @@ class MeldingAnnulerenForm(forms.Form):
             ),
             required=False,
         )
+
+
+class MeldingPauzerenForm(forms.Form):
+    status = forms.ChoiceField(
+        label="Wie is er om informatie gevraagd?",
+        widget=forms.RadioSelect(
+            attrs={
+                "class": "list--form-radio-input",
+            }
+        ),
+        choices=(
+            ("wachten_melder", "De melder"),
+            ("pauze", "Een collega of externe instantie"),
+        ),
+        required=True,
+    )
+    omschrijving_intern = forms.CharField(
+        label="Toelichting",
+        help_text="Omschrijf de informatie die nodig is om de melding op te pakken.",
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "rows": "4",
+            }
+        ),
+        required=False,
+    )
+
+
+class MeldingHervattenForm(forms.Form):
+    omschrijving_intern = forms.CharField(
+        label="Ontvangen informatie",
+        help_text="Als je informatie ontvangen hebt kun je die hier omschrijven.",
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "rows": "4",
+            }
+        ),
+        required=False,
+    )
 
 
 class LocatieAanpassenForm(forms.Form):

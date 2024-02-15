@@ -1,41 +1,44 @@
 import { Controller } from '@hotwired/stimulus'
 export default class extends Controller {
-  static targets = ['filterOverview']
+  static targets = ['filterOverview', 'filterButton', 'foldoutStateField']
 
   connect() {
-    const inputList = document.getElementsByTagName('input')
-    for (let i = 0; i < inputList.length; i++) {
-      inputList[i].addEventListener('change', this.onInputChange)
-    }
+    let self = this
+    self.containerSelector = '.container__multiselect'
+    self.showClass = 'show'
 
-    //hide dropdowns on click anywhere
-    document.addEventListener('click', this.toggleFilterElements)
+    window.addEventListener('click', self.clickOutsideHandler.bind(self))
   }
-
   disconnect() {
-    document.removeEventListener('click', this.toggleFilterElements)
+    document.removeEventListener('click', this.clickOutsideHandler)
   }
-
-  onInputChange() {
-    document.getElementById('filterForm').requestSubmit()
+  onChangeFilter(e) {
+    this.element.requestSubmit()
   }
-
-  toggleFilterElements(e) {
-    const container = e.target.closest('div')
-    if (e.target.classList.contains('js-toggle')) {
-      container.classList.toggle('show')
-
-      const elementsToHide = document.querySelectorAll('.show')
-      elementsToHide.forEach((element) => {
-        if (element !== container) {
-          element.classList.remove('show')
-        }
-      })
-    } else {
-      const elementsToHide = document.querySelectorAll('.show')
-      elementsToHide.forEach((element) => {
-        element.classList.remove('show')
-      })
+  clickOutsideHandler(e) {
+    let self = this
+    if (!e.target.closest(self.containerSelector)) {
+      self.foldoutStateFieldTarget.value = ''
+      self.filterButtonTargets.map((elem) =>
+        elem.closest(self.containerSelector).classList.remove(self.showClass)
+      )
     }
+  }
+  toggleFilterElements(e) {
+    let self = this
+    e.stopImmediatePropagation()
+
+    self.foldoutStateFieldTarget.value = ''
+    self.filterButtonTargets.map((elem) => {
+      const elemContainer = elem.closest(self.containerSelector)
+      if (elem == e.target) {
+        self.foldoutStateFieldTarget.value = e.target.dataset.foldoutName
+        elemContainer.classList[
+          elemContainer.classList.contains(self.showClass) ? 'remove' : 'add'
+        ](self.showClass)
+      } else {
+        elemContainer.classList.remove(self.showClass)
+      }
+    })
   }
 }

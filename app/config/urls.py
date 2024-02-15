@@ -28,6 +28,7 @@ from apps.main.views import (
     TaaktypeCategorieVerwijderenView,
     account,
     clear_melding_token_from_cache,
+    gebruiker_info,
     http_404,
     http_500,
     informatie_toevoegen,
@@ -36,7 +37,9 @@ from apps.main.views import (
     melding_afhandelen,
     melding_annuleren,
     melding_detail,
+    melding_hervatten,
     melding_lijst,
+    melding_pauzeren,
     melding_pdf_download,
     melding_verzonden,
     meldingen_bestand,
@@ -60,6 +63,11 @@ from rest_framework.authtoken import views
 urlpatterns = [
     path("", root, name="root"),
     path("account/", account, name="account"),
+    path(
+        "gebruikers/gebruiker_info/<str:gebruiker_email>/",
+        gebruiker_info,
+        name="gebruiker_info",
+    ),
     path("api-token-auth/", views.obtain_auth_token),
     path(
         "admin/clear-melding-token-from-cache/",
@@ -83,6 +91,16 @@ urlpatterns = [
         "part/melding/<uuid:id>/annuleren/",
         melding_annuleren,
         name="melding_annuleren",
+    ),
+    path(
+        "melding/<uuid:id>/pauzeren/",
+        melding_pauzeren,
+        name="melding_pauzeren",
+    ),
+    path(
+        "melding/<uuid:id>/hervatten/",
+        melding_hervatten,
+        name="melding_hervatten",
     ),
     path(
         "part/melding/<uuid:id>/taakstarten/",

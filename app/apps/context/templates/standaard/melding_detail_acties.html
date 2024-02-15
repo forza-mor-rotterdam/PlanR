@@ -1,20 +1,26 @@
 <div class="container__actions">
     <p>
-        {% if taaktypes and melding.status.naam != 'afgehandeld' and melding.status.naam != 'geannuleerd' %}
+        {% if perms.authorisatie.taak_aanmaken and taaktypes and melding.status.naam != 'afgehandeld' and melding.status.naam != 'geannuleerd'  and melding.status.naam != "pauze" and melding.status.naam != "wachten_melder" %}
         <button type="button" class="btn btn-{% if melding.status.naam == 'controle' %}tertiary{%else%}action{%endif%}" data-action="detail#openModal" data-detail-action-param="{% url 'taak_starten' melding.uuid %}"><span>Start taak</span></button>
         {% endif %}
-        {% if not melding.afgesloten_op %}
+        {% if perms.authorisatie.melding_hervatten and melding.status.naam == "pauze" or melding.status.naam == "wachten_melder" %}
+        <button type="button" class="btn btn-action" data-action="detail#openModal" data-detail-action-param="{% url 'melding_hervatten' melding.uuid %}"><span>Hervatten</span></button>
+        {% endif %}
+        {% if perms.authorisatie.melding_afhandelen and not melding.afgesloten_op %}
         <button type="button" class="btn btn-{% if melding.status.naam == 'controle' %}action{%else%}tertiary{%endif%}" data-action="detail#openModal" data-detail-action-param="{% url 'melding_afhandelen' melding.uuid %}"><span>Melding afhandelen</span></button>
         {% endif %}
     </p>
     <ul class="list-links">
         {% if open_taakopdrachten %}
+        {% if perms.authorisatie.taak_afronden %}
         <li>
             <button type="button" class="btn btn-icon btn-textlink" data-action="detail#openModal" data-detail-action-param="{% url 'taak_afronden' melding.uuid %}">
                 <svg width="18" height="18" viewBox="0 0 55 43" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M49.6439 0.0427246L23.0468 33.2845L4.96397 11.2844L0.317383 15.0798L23.0965 42.8261L54.3288 3.79295L49.6439 0.0427246Z" fill="#00811F"/>
                 </svg>Taak afronden</button>
         </li>
+        {% endif %}
+        {% if perms.authorisatie.taak_annuleren %}
         <li>
             <button type="button" class="btn btn-icon btn-textlink" data-action="detail#openModal" data-detail-action-param="{% url 'taak_annuleren' melding.uuid %}">
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -22,7 +28,9 @@
                 </svg>Taak annuleren</button>
         </li>
         {% endif %}
+        {% endif %}
         {% if not melding.afgesloten_op %}
+        {% if perms.authorisatie.melding_annuleren and melding.status.naam != "pauze" and melding.status.naam != "wachten_melder" %}
         <li>
             <button type="button" class="btn btn-icon btn-textlink" data-action="detail#openModal" data-detail-action-param="{% url 'melding_annuleren' melding.uuid %}">
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -30,6 +38,18 @@
                 </svg>Melding annuleren
             </button>
         </li>
+        {% endif %}
+        {% if perms.authorisatie.melding_pauzeren and melding.status.naam != "pauze" and melding.status.naam != "wachten_melder"%}
+        <li>
+            <button type="button" class="btn btn-icon btn-textlink" data-action="detail#openModal" data-detail-action-param="{% url 'melding_pauzeren' melding.uuid %}">
+                <svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 11.831V4H12V14H10L4.48389 10.9557L5.48389 9.22364L10 11.831Z" fill="#00811F"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M22 11C22 17.0751 17.0751 22 11 22C4.92487 22 0 17.0751 0 11C0 4.92487 4.92487 0 11 0C17.0751 0 22 4.92487 22 11ZM20 11C20 15.9706 15.9706 20 11 20C6.02944 20 2 15.9706 2 11C2 6.02944 6.02944 2 11 2C15.9706 2 20 6.02944 20 11Z" fill="#00811F"/>
+                </svg>Melding pauzeren
+            </button>
+        </li>
+        {% endif %}
+        {% if perms.authorisatie.locatie_aanpassen %}
         <li>
             <button type="button" class="btn btn-icon btn-textlink" data-action="detail#openModal" data-detail-action-param="{% url 'locatie_aanpassen' melding.uuid %}">
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -37,6 +57,7 @@
                 </svg>Locatie aanpassen
             </button>
         </li>
+        {% endif %}
         {% endif %}
     </ul>
 </div>
