@@ -12,23 +12,51 @@ def gebruikersnaam(value):
 
 
 @register.filter
-def gebruiker_middels_email(value):
+def get_field_from_gebruiker_middels_email(value, field_name=None):
+    # Leave field_name empty to return the name
     if not value:
         return ""
 
+    gebruiker = get_gebruiker_object_middels_email(value)
+
+    if field_name:
+        return gebruiker.get(field_name, "")
+    return gebruiker.get("full_name", "")
+
+
+@register.filter
+def get_gebruiker_object_middels_email(value):
+    if not value:
+        return None
     gebruiker_response = MeldingenService().get_gebruiker(
         gebruiker_email=value,
     )
     if gebruiker_response.status_code == 200:
         gebruiker = gebruiker_response.json()
-        first_name = gebruiker.get("first_name")
-        last_name = gebruiker.get("last_name")
-        name = [n for n in [first_name, last_name] if n]
-        if name:
-            return " ".join(name)
+        first_name = gebruiker.get("first_name", "")
+        last_name = gebruiker.get("last_name", "")
+        if full_name := f"{first_name} {last_name}".strip():
+            gebruiker["full_name"] = full_name
+    else:
+        gebruiker = {}
 
-    UserModel = get_user_model()
-    gebruiker = UserModel.objects.filter(email=value).first()
-    if gebruiker:
-        return gebruikersnaam_basis(gebruiker)
-    return value
+    user_model = get_user_model()
+    user_from_model = user_model.objects.filter(email=value).first()
+    if user_from_model:
+        if not gebruiker.get("first_name"):
+            gebruiker["first_name"] = user_from_model.first_name or ""
+        if not gebruiker.get("last_name"):
+            gebruiker["last_name"] = user_from_model.last_name or ""
+        if not gebruiker.get("email"):
+            gebruiker["email"] = user_from_model.email or ""
+        if not gebruiker.get("telefoonnummer"):
+            gebruiker["telefoonnummer"] = user_from_model.telefoonnummer or ""
+        if not gebruiker.get("full_name"):
+            first_name = (
+                user_from_model.first_name if user_from_model.first_name else ""
+            )
+            last_name = user_from_model.last_name if user_from_model.last_name else ""
+            full_name = f"{first_name} {last_name}".strip()
+            gebruiker["full_name"] = full_name or gebruiker["email"]
+
+    return gebruiker
