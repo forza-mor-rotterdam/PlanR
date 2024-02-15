@@ -243,13 +243,15 @@
         {% endif %}
         <div>
             <input type="{% if field.field.widget.attrs.typeOfInput %}{{ field.field.widget.attrs.typeOfInput }}{% else %}text{% endif %}"
-                   id="{{ field.auto_id }}"
-                   name="{{ field.html_name }}"
-                   {% if field.value != None %}value="{{ field.value|stringformat:'s' }}"{% endif %}
-                   class="form-control {% if field.errors %}is-invalid{% endif %}{% if field.field.required %}required{% endif %}"
-                   {% render_attrs field %}
-                   {% if field.field.required %}required{% endif %}>
-                   <p class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</p>
+                id="{{ field.auto_id }}"
+                name="{{ field.html_name }}"
+                {% if field.value != None %}value="{{ field.value|stringformat:'s' }}"{% endif %}
+                class="form-control {% if field.errors %}is-invalid{% endif %}{% if field.field.required %}required{% endif %}"
+                {% render_attrs field %}
+                {% if field.field.required %}required{% endif %}>
+                {% if field.field.widget.attrs.typeOfInput != 'search' %}
+                    <p class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</p>
+                {% endif %}
             {% for error in field.errors %}
                 <p class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</p>
             {% endfor %}

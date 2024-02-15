@@ -11,12 +11,18 @@ def absolute(request):
     return urls
 
 
-def gebruikersnaam(gebruiker):
-    if gebruiker.first_name or gebruiker.last_name:
+def gebruikersnaam(gebruiker, no_fallback=False):
+    if isinstance(gebruiker, dict):
+        first_name = gebruiker.get("first_name", "")
+        last_name = gebruiker.get("last_name", "")
+        full_name = f"{first_name} {last_name}".strip()
+        return full_name or (gebruiker.get("email", "") if not no_fallback else "")
+    elif hasattr(gebruiker, "first_name") or hasattr(gebruiker, "last_name"):
         first_name = gebruiker.first_name if gebruiker.first_name else ""
         last_name = gebruiker.last_name if gebruiker.last_name else ""
-        return f"{first_name} {last_name}".strip()
-    return gebruiker.email
+        full_name = f"{first_name} {last_name}".strip()
+        return full_name or (gebruiker.email if not no_fallback else "")
+    return ""
 
 
 def string_based_lookup(local_vars, lookup_str, separator=".", not_found_value="-"):

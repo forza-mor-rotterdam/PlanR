@@ -478,21 +478,21 @@ class MeldingAnnulerenForm(forms.Form):
 
 class MeldingPauzerenForm(forms.Form):
     status = forms.ChoiceField(
-        label="Waar is het wachten op?",
+        label="Wie is er om informatie gevraagd?",
         widget=forms.RadioSelect(
             attrs={
                 "class": "list--form-radio-input",
             }
         ),
         choices=(
-            ("wachten_melder", "Wachten melder"),
-            ("pauze", "Een externe instantie of medewerker"),
+            ("wachten_melder", "De melder"),
+            ("pauze", "Een collega of externe instantie"),
         ),
         required=True,
     )
     omschrijving_intern = forms.CharField(
-        label="Interne opmerking",
-        help_text="Deze tekst wordt niet naar de melder verstuurd.",
+        label="Toelichting",
+        help_text="Omschrijf de informatie die nodig is om de melding op te pakken.",
         widget=forms.Textarea(
             attrs={
                 "class": "form-control",
@@ -505,8 +505,8 @@ class MeldingPauzerenForm(forms.Form):
 
 class MeldingHervattenForm(forms.Form):
     omschrijving_intern = forms.CharField(
-        label="Interne opmerking",
-        help_text="Deze tekst wordt niet naar de melder verstuurd.",
+        label="Ontvangen informatie",
+        help_text="Als je informatie ontvangen hebt kun je die hier omschrijven.",
         widget=forms.Textarea(
             attrs={
                 "class": "form-control",

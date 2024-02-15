@@ -45,6 +45,7 @@ from apps.services.meldingen import MeldingenService, get_taaktypes
 from config.context_processors import general_settings
 from deepdiff import DeepDiff
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import (
     login_required,
     permission_required,
@@ -60,6 +61,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView, View
+from utils.diversen import gebruikersnaam as gebruikersnaam_basis
 from utils.rd_convert import rd_to_wgs
 
 logger = logging.getLogger(__name__)
@@ -623,6 +625,49 @@ def informatie_toevoegen(request, id):
 
 
 @permission_required("authorisatie.melding_bekijken")
+def gebruiker_info(request, gebruiker_email):
+    full_name = None
+    telefoonnummer = None
+    functie = None
+    email = gebruiker_email
+
+    # Get gebruiker info from mor-core cache
+    gebruiker_response = MeldingenService().get_gebruiker(
+        gebruiker_email=email,
+    )
+
+    if gebruiker_response.status_code == 200:
+        mor_core_gebruiker = gebruiker_response.json()
+        telefoonnummer = mor_core_gebruiker.get("telefoonnummer")
+        full_name = gebruikersnaam_basis(mor_core_gebruiker)
+
+    # Get gebruiker info from the user model, pick mor-core info over local
+    user_model = get_user_model()
+    local_gebruiker = user_model.objects.filter(email=email).first()
+    if local_gebruiker:
+        full_name = (
+            gebruikersnaam_basis(local_gebruiker) if not full_name else full_name
+        )
+        telefoonnummer = (
+            local_gebruiker.telefoonnummer if not telefoonnummer else telefoonnummer
+        )
+        functie = local_gebruiker.functie
+
+    return render(
+        request,
+        "melding/part_gebruiker_info.html",
+        {
+            "gebruiker": {
+                "email": email,
+                "full_name": full_name,
+                "telefoonnummer": telefoonnummer,
+                "functie": functie,
+            },
+        },
+    )
+
+
+@permission_required("authorisatie.melding_bekijken")
 def melding_pdf_download(request, id):
     melding = MeldingenService().get_melding(id)
     base_url = request.build_absolute_uri()
@@ -989,9 +1034,11 @@ def locatie_aanpassen(request, id):
         )
 
         form_initial = {
-            "geometrie": highest_gewicht_locatie.get("geometrie", "")
-            if highest_gewicht_locatie
-            else "",
+            "geometrie": (
+                highest_gewicht_locatie.get("geometrie", "")
+                if highest_gewicht_locatie
+                else ""
+            ),
         }
 
         form = LocatieAanpassenForm(initial=form_initial)
