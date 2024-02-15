@@ -58,14 +58,12 @@
                                             {% endif %}
                                         {% endwith %}
                                     {% elif row_data.mg.locatie %}
-                                        Melding: locatie gewijzigd
+                                        Locatie aangepast
                                     {% else %}
-                                        Melding:
                                         {% if row_data.mg.status %}
-                                            {{ row_data.mg.status.naam }}
+                                            {{ row_data.mg.status.naam|vertaal }}
                                         {% elif row_data.mg.gebeurtenis_type %}
-                                            {{ row_data.mg.gebeurtenis_type }}
-                                            communicatie
+                                            {{ row_data.mg.gebeurtenis_type|vertaal }}
                                         {% endif %}
                                     {% endif %}
                                 </strong>
