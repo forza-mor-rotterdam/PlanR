@@ -89,7 +89,13 @@ export default class extends Controller {
         this.element.style.display = 'block'
         for (let i = 0; i < subscriptions.length; i++) {
           let liElem = document.createElement('li')
-          liElem.textContent = `${subscriptions[i].payload.gebruiker.naam}`
+          let aElem = document.createElement('a')
+          aElem.href = ''
+          aElem.dataset.action = 'detail#openModal'
+          aElem.dataset.detailActionParam = `/gebruikers/gebruiker_info/${subscriptions[i].payload.gebruiker.email}`
+
+          aElem.textContent = `${subscriptions[i].payload.gebruiker.naam}`
+          liElem.appendChild(aElem)
           self.gebruikerLijstTarget.appendChild(liElem)
         }
       } else {
