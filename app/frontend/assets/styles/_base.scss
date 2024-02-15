@@ -344,6 +344,10 @@ ul {
                 top: calc(50% - 10px);
                 left: 0;
             }
+
+            a {
+                color: $green-tint01;
+            }
         }
     }
 }
