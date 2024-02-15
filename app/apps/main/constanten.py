@@ -37,7 +37,7 @@ VERTALINGEN = {
     "wachten_melder": "Wachten op melder",
     "pauze": "Gepauzeerd",
     "standaard": "Opmerking/foto toegevoegd",
-    "signaal_toegevoegd": "Dubbele melding",
+    "signaal_toegevoegd": "Melding samengevoegd",
 }
 
 MSB_WIJKEN = [
