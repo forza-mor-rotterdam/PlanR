@@ -331,6 +331,21 @@ ul {
             margin: 0.5rem 0;
         }
     }
+
+    &.list-persons {
+        @include list-clean();
+        padding-left: 0 !important;
+        li {
+            position: relative;
+            padding-left: 30px;
+            :before {
+                content: url("../icons/person.svg");
+                position: absolute;
+                top: calc(50% - 10px);
+                left: 0;
+            }
+        }
+    }
 }
 
 dl {
