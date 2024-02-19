@@ -185,6 +185,22 @@ class MeldingenService(BasisService):
             raw_response=False,
         )
 
+    def melding_spoed_aanpassen(self, id, urgentie, gebruiker):
+        response = self.do_request(
+            f"{self._api_path}/melding/{id}/urgentie-aanpassen/",
+            method="patch",
+            data={
+                "urgentie": urgentie,
+                "gebruiker": gebruiker,
+            },
+        )
+        if response.status_code == 200:
+            return response.json()
+        logger.error(response.text)
+        raise MeldingenService.DataOphalenFout(
+            f"signaal_aanmaken: Verwacht status code 200, kreeg status code '{response.status_code}'"
+        )
+
     def locatie_aanpassen(
         self,
         id,

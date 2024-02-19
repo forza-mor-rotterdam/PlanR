@@ -1,0 +1,20 @@
+{% load rotterdam_formulier_html %}
+{% load vind_in_dict from querystring_tags %}
+{% load json_encode from json_tags %}
+{% load context_template from context_tags %}
+<turbo-frame id="melding_spoed_veranderen_form">
+    <form action="{% url 'melding_spoed_veranderen' melding.uuid %}"
+            method="post"
+            class="form--horizontal"
+            data-turbo-frame="_top"
+            id="spoedVeranderenForm"
+            novalidate>
+        {% csrf_token %}
+        {{ form.urgentie }}
+        <div class="form-row btn-row">
+            <button type="submit" class="btn btn-action">
+                <span>{{ form.submit_label }}</span>
+            </button>
+        </div>
+    </form>
+</turbo-frame>

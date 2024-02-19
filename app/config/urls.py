@@ -41,6 +41,7 @@ from apps.main.views import (
     melding_lijst,
     melding_pauzeren,
     melding_pdf_download,
+    melding_spoed_veranderen,
     melding_verzonden,
     meldingen_bestand,
     msb_importeer_melding,
@@ -101,6 +102,11 @@ urlpatterns = [
         "melding/<uuid:id>/hervatten/",
         melding_hervatten,
         name="melding_hervatten",
+    ),
+    path(
+        "melding/<uuid:id>/spoed/",
+        melding_spoed_veranderen,
+        name="melding_spoed_veranderen",
     ),
     path(
         "part/melding/<uuid:id>/taakstarten/",
