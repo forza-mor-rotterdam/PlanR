@@ -58,14 +58,12 @@
                                             {% endif %}
                                         {% endwith %}
                                     {% elif row_data.mg.locatie %}
-                                        Melding: locatie gewijzigd
+                                        Locatie aangepast
                                     {% else %}
-                                        Melding:
                                         {% if row_data.mg.status %}
-                                            {{ row_data.mg.status.naam }}
+                                            {{ row_data.mg.status.naam|vertaal }}
                                         {% elif row_data.mg.gebeurtenis_type %}
-                                            {{ row_data.mg.gebeurtenis_type }}
-                                            communicatie
+                                            {{ row_data.mg.gebeurtenis_type|vertaal }}
                                         {% endif %}
                                     {% endif %}
                                 </strong>
@@ -123,6 +121,15 @@
                                                 </dd>
                                             {% endif %}
                                             {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.taakgebeurtenis.additionele_informatie.uitvoerder|get_gebruiker_object_middels_email tekst="Uitvoerder" %}
+                                        {% elif row_data.mg.urgentie %}
+                                            {% if row_data.mg.aangemaakt_op %}
+                                                <dt>Datum</dt>
+                                                <dd>
+                                                    {{ row_data.mg.aangemaakt_op|to_datetime }}
+                                                </dd>
+                                            {% endif %}
+                                            {% if row_data.mg.urgentie >= .5 %}Melding veranderd naar spoed{% else %}Melding veranderd naar standaard{% endif %}
+                                            {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email tekst="Uitvoerder" %}
                                         {% else %}
                                             {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email tekst="Afgehandeld door" %}
                                             {% if row_data.mg.aangemaakt_op %}

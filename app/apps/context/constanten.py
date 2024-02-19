@@ -3,6 +3,7 @@ import string
 from apps.main.constanten import VERTALINGEN
 from apps.services.onderwerpen import render_onderwerp
 from django.http import QueryDict
+from django.template.loader import get_template
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from utils.datetime import stringdatetime_naar_datetime
@@ -316,6 +317,19 @@ class MeldRNummerKolom(StandaardKolom):
         return bron_signaal_ids_joined
 
 
+class SpoedKolom(StandaardKolom):
+    _key = "spoed"
+    _kolom_hoofd = "Spoed"
+    _kolom_inhoud = "melding.urgentie"
+    _ordering_value = "urgentie"
+
+    def td_label(self):
+        if self.context.get("melding", {}).get("urgentie", 0) >= 0.5:
+            spoed_badge = get_template("badges/spoed.html")
+            return spoed_badge.render()
+        return ""
+
+
 class StandaardFilter:
     _key = None
 
@@ -386,6 +400,7 @@ KOLOMMEN = (
     OnderwerpKolom,
     OrigineelAangemaaktKolom,
     StatusKolom,
+    SpoedKolom,
 )
 KOLOM_KEYS = [f.key() for f in KOLOMMEN]
 KOLOM_CLASS_BY_KEY = {k.key(): k for k in KOLOMMEN}

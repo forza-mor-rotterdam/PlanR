@@ -16,6 +16,7 @@ from apps.main.forms import (
     MeldingAnnulerenForm,
     MeldingHervattenForm,
     MeldingPauzerenForm,
+    MeldingSpoedForm,
     MSBLoginForm,
     MSBMeldingZoekenForm,
     StandaardExterneOmschrijvingAanmakenForm,
@@ -472,6 +473,33 @@ def melding_hervatten(request, id):
     return render(
         request,
         "melding/melding_hervatten.html",
+        {
+            "form": form,
+            "melding": melding,
+        },
+    )
+
+
+@permission_required("authorisatie.melding_spoed_veranderen")
+def melding_spoed_veranderen(request, id):
+    melding = MeldingenService().get_melding(id)
+    form = MeldingSpoedForm(
+        initial={"urgentie": 0.5 if melding.get("urgentie", 0.2) == 0.2 else 0.2}
+    )
+
+    if request.POST:
+        form = MeldingSpoedForm(request.POST)
+        if form.is_valid():
+            MeldingenService().melding_spoed_aanpassen(
+                id,
+                urgentie=form.cleaned_data.get("urgentie"),
+                gebruiker=request.user.email,
+            )
+            return redirect("melding_detail", id=id)
+
+    return render(
+        request,
+        "melding/melding_spoed_veranderen.html",
         {
             "form": form,
             "melding": melding,

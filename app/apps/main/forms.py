@@ -517,6 +517,16 @@ class MeldingHervattenForm(forms.Form):
     )
 
 
+class MeldingSpoedForm(forms.Form):
+    urgentie = forms.FloatField(
+        widget=forms.HiddenInput(),
+        required=True,
+    )
+
+    def submit_label(self):
+        return "Naar spoed" if self.initial["urgentie"] >= 0.5 else "Verwijder spoed"
+
+
 class LocatieAanpassenForm(forms.Form):
     omschrijving_intern = forms.CharField(
         label="Interne opmerking",
