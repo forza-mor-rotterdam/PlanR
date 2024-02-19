@@ -1,11 +1,18 @@
 import { Controller } from '@hotwired/stimulus'
 export default class extends Controller {
-  static targets = ['filterOverview', 'filterButton', 'foldoutStateField']
+  static targets = ['filterOverview', 'filterButton', 'foldoutStateField', 'containerSearch']
 
   connect() {
     let self = this
     self.containerSelector = '.container__multiselect'
     self.showClass = 'show'
+
+    if (this.hasContainerSearchTarget) {
+      const searchInput = this.containerSearchTarget.querySelector('input[type=search]')
+      searchInput.addEventListener('search', function () {
+        self.element.requestSubmit()
+      })
+    }
 
     window.addEventListener('click', self.clickOutsideHandler.bind(self))
   }
