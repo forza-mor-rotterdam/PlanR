@@ -316,6 +316,13 @@ class MeldRNummerKolom(StandaardKolom):
         return bron_signaal_ids_joined
 
 
+class SpoedKolom(StandaardKolom):
+    _key = "spoed"
+    _kolom_hoofd = "Spoed"
+    _kolom_inhoud = "melding.urgentie"
+    _ordering_value = "urgentie"
+
+
 class StandaardFilter:
     _key = None
 
@@ -386,6 +393,7 @@ KOLOMMEN = (
     OnderwerpKolom,
     OrigineelAangemaaktKolom,
     StatusKolom,
+    SpoedKolom,
 )
 KOLOM_KEYS = [f.key() for f in KOLOMMEN]
 KOLOM_CLASS_BY_KEY = {k.key(): k for k in KOLOMMEN}
