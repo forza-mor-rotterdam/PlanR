@@ -38,6 +38,7 @@ VERTALINGEN = {
     "pauze": "Gepauzeerd",
     "standaard": "Opmerking/foto toegevoegd",
     "signaal_toegevoegd": "Melding samengevoegd",
+    "urgentie_aangepast": "Spoed aangepast",
 }
 
 MSB_WIJKEN = [
