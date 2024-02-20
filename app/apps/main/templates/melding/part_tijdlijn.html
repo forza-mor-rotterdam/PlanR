@@ -128,7 +128,16 @@
                                                     {{ row_data.mg.aangemaakt_op|to_datetime }}
                                                 </dd>
                                             {% endif %}
-                                            {% if row_data.mg.urgentie >= .5 %}Melding veranderd naar spoed{% else %}Melding veranderd naar standaard{% endif %}
+                                            {% if row_data.mg.omschrijving_intern %}
+                                                <dt>Interne opmerking</dt>
+                                                <dd>
+                                                    {{ row_data.mg.omschrijving_intern }}
+                                                </dd>
+                                            {% endif %}
+                                            <dt>Verandering</dt>
+                                            <dd>
+                                                {% if row_data.mg.urgentie >= .5 %}Melding veranderd naar spoed{% else %}Melding veranderd naar standaard{% endif %}
+                                            </dd>
                                             {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email tekst="Uitvoerder" %}
                                         {% else %}
                                             {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email tekst="Afgehandeld door" %}
