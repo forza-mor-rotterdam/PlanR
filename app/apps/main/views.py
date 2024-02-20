@@ -493,6 +493,7 @@ def melding_spoed_veranderen(request, id):
             MeldingenService().melding_spoed_aanpassen(
                 id,
                 urgentie=form.cleaned_data.get("urgentie"),
+                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
                 gebruiker=request.user.email,
             )
             return redirect("melding_detail", id=id)

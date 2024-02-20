@@ -185,13 +185,14 @@ class MeldingenService(BasisService):
             raw_response=False,
         )
 
-    def melding_spoed_aanpassen(self, id, urgentie, gebruiker):
+    def melding_spoed_aanpassen(self, id, urgentie, omschrijving_intern, gebruiker):
         response = self.do_request(
             f"{self._api_path}/melding/{id}/urgentie-aanpassen/",
             method="patch",
             data={
                 "urgentie": urgentie,
                 "gebruiker": gebruiker,
+                "omschrijving_intern": omschrijving_intern,
             },
         )
         if response.status_code == 200:
