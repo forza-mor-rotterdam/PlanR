@@ -41,6 +41,11 @@ class MeldingenHervattenPermissie(BasisPermissie):
     codenaam = "melding_hervatten"
 
 
+class MeldingenSpoedVeranderenPermissie(BasisPermissie):
+    naam = "Melding spoed veranderen"
+    codenaam = "melding_spoed_veranderen"
+
+
 class TaakAanmakenPermissie(BasisPermissie):
     naam = "Taak aanmaken"
     codenaam = "taak_aanmaken"
@@ -213,6 +218,7 @@ gebruikersgroep_permissies = (
     MeldingenLijstBekijkenPermissie,
     MeldingenPauzerenPermissie,
     MeldingenHervattenPermissie,
+    MeldingenSpoedVeranderenPermissie,
     TaakAanmakenPermissie,
     TaakAfrondenPermissie,
     TaakAnnulerenPermissie,

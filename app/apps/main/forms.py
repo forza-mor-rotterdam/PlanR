@@ -523,6 +523,18 @@ class MeldingSpoedForm(forms.Form):
         required=True,
     )
 
+    omschrijving_intern = forms.CharField(
+        label="Interne opmerking",
+        help_text="Deze tekst wordt niet naar de melder verstuurd.",
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "rows": "4",
+            }
+        ),
+        required=False,
+    )
+
     def submit_label(self):
         return "Naar spoed" if self.initial["urgentie"] >= 0.5 else "Verwijder spoed"
 
