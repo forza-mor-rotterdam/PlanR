@@ -493,6 +493,7 @@ def melding_spoed_veranderen(request, id):
             MeldingenService().melding_spoed_aanpassen(
                 id,
                 urgentie=form.cleaned_data.get("urgentie"),
+                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
                 gebruiker=request.user.email,
             )
             return redirect("melding_detail", id=id)
@@ -909,12 +910,6 @@ def msb_importeer_melding(request):
         huisletter = huisnummer
         huisnummer = None
 
-    omschrijving_kort = (
-        msb_data.get("omschrijving", "")
-        if msb_data.get("omschrijving")
-        else "- geen korte omschrijving beschikbaar -"
-    )
-
     post_data = {
         "signaal_url": "https://planr.rotterdam.nl/melding/signaal/42",
         "melder": {
@@ -926,7 +921,7 @@ def msb_importeer_melding(request):
         "onderwerpen": [
             f"{settings.MELDINGEN_URL}/api/v1/onderwerp/grofvuil-op-straat/"
         ],
-        "omschrijving_kort": omschrijving_kort[:500],
+        "omschrijving_kort": msb_data.get("omschrijving", "")[:500],
         "omschrijving": msb_data.get("aanvullendeInformatie", ""),
         "meta": msb_data,
         "meta_uitgebreid": {},
