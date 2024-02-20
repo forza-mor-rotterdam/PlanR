@@ -12,6 +12,9 @@ export default class extends Controller {
       searchInput.addEventListener('search', function () {
         self.element.requestSubmit()
       })
+      searchInput.addEventListener('blur', function () {
+        self.element.requestSubmit()
+      })
     }
 
     window.addEventListener('click', self.clickOutsideHandler.bind(self))
