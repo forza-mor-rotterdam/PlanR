@@ -353,6 +353,17 @@ class StandaardFilter:
 class StatusFilter(StandaardFilter):
     _key = "status"
 
+    def opties(self):
+        return [
+            ["afgehandeld", {"label": "Afgehandeld"}],
+            ["controle", {"label": "Controle"}],
+            ["geannuleerd", {"label": "Geannuleerd"}],
+            ["pauze", {"label": "Gepauzeerd"}],
+            ["in_behandeling", {"label": "In behandeling"}],
+            ["openstaand", {"label": "Openstaand"}],
+            ["wachten_melder", {"label": "Wachten op melder"}],
+        ]
+
 
 class BegraafplaatsFilter(StandaardFilter):
     _key = "begraafplaats"
