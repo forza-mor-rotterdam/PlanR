@@ -242,16 +242,14 @@
                                                         {% endif %}
                                                     </ul>
                                                     <ul class="list-clean">
+                                                        {% if signaal.omschrijving_kort %}
                                                         <li>
                                                             <h3 class="h5">Toelichting</h3>
                                                             <p>
-                                                                {% if signaal.omschrijving_kort %}
-                                                                    {{ signaal.omschrijving_kort }}
-                                                                {% else %}
-                                                                    -
-                                                                {% endif %}
+                                                                {{ signaal.omschrijving_kort }}
                                                             </p>
                                                         </li>
+                                                        {% endif %}
                                                         <li>
                                                             <h3 class="h5">Meer informatie</h3>
                                                             <p>
