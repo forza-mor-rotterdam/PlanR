@@ -1,3 +1,4 @@
+{% load laatste_slug_van_url from main_tags %}
 {% load vind_in_dict from querystring_tags %}
 {% load to_datetime from date_tags %}
 {% load taakopdracht from melding_tags %}
@@ -43,7 +44,7 @@
                                 {% endif %}
                             {% endfor %}
                             {% if not forloop.first %}
-                                <strong>
+                                <strong {% if row_data.mg.taakgebeurtenis %}{% with to=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}data-taak-uuid="{{to.taak_url|laatste_slug_van_url}}"{% endwith %}{% endif %}>
                                     {% if row_data.mg.taakgebeurtenis %}
                                         {% with taakopdracht=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}
                                             {{ taakopdracht.titel }}
