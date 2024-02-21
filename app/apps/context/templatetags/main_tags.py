@@ -20,3 +20,11 @@ def slice_iterable(input, start_int=None, end_int=None):
     if end_int is None:
         return input[start_int:]
     return input[start_int:end_int]
+
+
+@register.filter
+def laatste_slug_van_url(url):
+    qs_removed_from_url = url.split("?")[0]
+    stripped_url = qs_removed_from_url.strip("/")
+    last_part_from_url = stripped_url.split("/")[-1]
+    return last_part_from_url
