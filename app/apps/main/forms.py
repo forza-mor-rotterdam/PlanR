@@ -536,7 +536,11 @@ class MeldingSpoedForm(forms.Form):
     )
 
     def submit_label(self):
-        return "Naar spoed" if self.initial["urgentie"] >= 0.5 else "Verwijder spoed"
+        return (
+            "Geef melding spoed-status"
+            if self.initial["urgentie"] >= 0.5
+            else "Verwijder spoed-status"
+        )
 
 
 class LocatieAanpassenForm(forms.Form):

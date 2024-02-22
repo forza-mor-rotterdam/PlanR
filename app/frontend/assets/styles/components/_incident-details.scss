@@ -43,6 +43,14 @@
     .alert {
         display: flex;
     }
+
+    .btn-checkbox {
+        svg {
+            vertical-align: middle;
+            margin-right: 0;
+            transform: translateY(-3px);
+        }
+    }
 }
 
 .container__details {
