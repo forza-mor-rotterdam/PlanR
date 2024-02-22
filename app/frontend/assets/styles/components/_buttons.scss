@@ -238,6 +238,23 @@ textarea {
         white-space: nowrap;
     }
 
+    &-checkbox {
+        background-color: transparent;
+        border: 1px solid $gray-tint08;
+        padding: 10px 8px 4px;
+
+        &.checked {
+            border-color: rgba(237, 181, 0, 0.25);
+            background-color: rgba(237, 181, 0, 0.1);
+
+            svg {
+                path {
+                    fill: $alert-warning-color;
+                }
+            }
+        }
+    }
+
     &.btn-icon {
         svg {
             vertical-align: sub;
