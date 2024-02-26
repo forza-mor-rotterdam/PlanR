@@ -43,6 +43,7 @@
                     <th>Kolommen</th>
                     <th>Onderwerpen</th>
                     <th>Taaktypes</th>
+                    <th>Urgentie</th>
                     <th>Sjabloon</th>
                     <th>Aantal gebruikers</th>
                     <th></th>
@@ -93,6 +94,7 @@
                                 -
                             {% endif %}
                         </td>
+                        <td data-row-search-target="searchable">{{ object.urgentie_verbose }}</td>
                         <td data-row-search-target="searchable">{{ object.template }}</td>
                         <td data-row-search-target="searchable">{{ object.profielen_voor_context.all|length }}</td>
                         <td>

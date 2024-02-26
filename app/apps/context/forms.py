@@ -93,6 +93,16 @@ class ContextAanpassenForm(forms.ModelForm):
         required=False,
         choices=(),
     )
+    urgentie = forms.ChoiceField(
+        widget=forms.RadioSelect(
+            attrs={
+                "class": "list--form-radio-input",
+            }
+        ),
+        label="Urgentie",
+        required=True,
+        choices=(),
+    )
     taaktypes = forms.MultipleChoiceField(
         widget=CheckboxSelectMultiplePaths(
             attrs={
@@ -116,7 +126,7 @@ class ContextAanpassenForm(forms.ModelForm):
         )
 
     def __init__(self, *args, **kwargs):
-        kwargs.get("instance")
+        instance = kwargs.get("instance")
         super().__init__(*args, **kwargs)
         onderwerp_alias_list = (
             MeldingenService().onderwerp_alias_list().get("results", [])
@@ -139,6 +149,10 @@ class ContextAanpassenForm(forms.ModelForm):
             )
             for taaktype in taaktypes
         ]
+        self.fields["urgentie"].initial = Context.urgentie_choices()[0][0]
+        self.fields["urgentie"].choices = Context.urgentie_choices()
+        if instance:
+            self.fields["urgentie"].initial = instance.urgentie()
 
 
 class ContextAanmakenForm(ContextAanpassenForm):

@@ -1,3 +1,4 @@
+import json
 from urllib.parse import urlparse
 
 from apps.services.meldingen import MeldingenService
@@ -39,6 +40,42 @@ class Context(BasisModel):
             in self.standaard_filters.get("pre_onderwerp", [])
         ]
         return onderwerpen
+
+    @classmethod
+    def urgentie_choices(cls):
+        return (
+            (json.dumps({"urgentie_gte": 0.0}), "Alle meldingen"),
+            (json.dumps({"urgentie_gte": 0.5}), "Alleen spoed meldingen"),
+            (json.dumps({"urgentie_lt": 0.5}), "Alleen niet spoed meldingen"),
+        )
+
+    def urgentie(self):
+        urgentie_key_list = [
+            k for k in self.standaard_filters.keys() if k.startswith("urgentie_")
+        ]
+        instance_urgentie = None
+        if urgentie_key_list:
+            instance_urgentie = json.dumps(
+                {urgentie_key_list[0]: self.standaard_filters.get(urgentie_key_list[0])}
+            )
+        if instance_urgentie in [c[0] for c in Context.urgentie_choices()]:
+            return instance_urgentie
+        return Context.urgentie_choices()[0][0]
+
+    def urgentie_verbose(self):
+        urgentie_key_list = [
+            k for k in self.standaard_filters.keys() if k.startswith("urgentie_")
+        ]
+        instance_urgentie = Context.urgentie_choices()[0][0]
+        if urgentie_key_list:
+            instance_urgentie = json.dumps(
+                {urgentie_key_list[0]: self.standaard_filters.get(urgentie_key_list[0])}
+            )
+        if instance_urgentie in [c[0] for c in Context.urgentie_choices()]:
+            return {c[0]: c[1] for c in Context.urgentie_choices()}.get(
+                instance_urgentie
+            )
+        return Context.urgentie_choices()[0][1]
 
     def taaktype_namen(self):
         taakapplicaties = MeldingenService().taakapplicaties().get("results", [])
