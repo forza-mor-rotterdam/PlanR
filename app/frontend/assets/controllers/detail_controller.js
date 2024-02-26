@@ -16,7 +16,7 @@ export default class extends Controller {
     incidentY: String,
     areaList: String,
     currentDistrict: String,
-    incidentObject: Object,
+    signalenObject: String,
   }
   static targets = [
     'selectedImage',
@@ -41,7 +41,24 @@ export default class extends Controller {
       this.activateTabs(tabs, tabsContent, this)
     }
 
-    // this.deselectTabs()
+    this.signaalCoords = Array.from(JSON.parse(this.signalenObjectValue)).reduce(function (
+      _filtered,
+      signaal
+    ) {
+      console.log('>>> ', signaal.locaties_voor_signaal[0])
+      console.log('>>> >>> ', signaal.signaal_data.adressen[0]) //  oude meldingen
+      // const lat = signaal.locaties_voor_signaal[0]
+      //   ? signaal.locaties_voor_signaal[0].geometrie.coordinates[1]
+      //   : signaal.signaal_data.adressen.geometrie.coordinates[1]
+      // const long = signaal.locaties_voor_signaal[0]
+      //   ? signaal.locaties_voor_signaal[0].geometrie.coordinates[0]
+      //   : signaal.signaal_data.adressen.geometrie.coordinates[0]
+      // console.log('lat', signaal.locaties_voor_signaal)
+      // if (lat != undefined && long != undefined) {
+      //   _filtered.push([lat, long])
+      // }
+      return _filtered
+    }, [])
 
     if (this.hasThumbListTarget) {
       const element = this.thumbListTarget.getElementsByTagName('li')[0]
@@ -55,6 +72,7 @@ export default class extends Controller {
     const incidentXValue = this.incidentXValue
     const incidentYValue = this.incidentYValue
     const mapDiv = document.getElementById('incidentMap')
+    console.log('incidentXValue', this.incidentXValue)
     this.mapLayers = {
       containers: {
         layer: L.tileLayer.wms(
@@ -111,12 +129,20 @@ export default class extends Controller {
         attribution: '',
       }
       const incidentCoordinates = [
-        parseFloat(this.incidentXValue.replace(/,/g, '.')),
-        parseFloat(this.incidentYValue.replace(/,/g, '.')),
+        parseFloat(this.signaalCoords[0][0]),
+        parseFloat(this.signaalCoords[0][1]),
       ]
       this.map = L.map('incidentMap').setView(incidentCoordinates, 18)
       L.tileLayer(url, config).addTo(this.map)
-      L.marker(incidentCoordinates, { icon: markerMagenta }).addTo(this.map)
+
+      for (let i = 0; i < this.signaalCoords.length; i++) {
+        const lat = parseFloat(this.signaalCoords[i][0])
+        const long = parseFloat(this.signaalCoords[i][1])
+        new L.Marker([lat, long], { icon: markerMagenta }).addTo(this.map)
+      }
+
+      const bounds = new L.LatLngBounds(this.signaalCoords)
+      this.map.fitBounds(bounds)
     }
 
     document.addEventListener('keydown', (event) => {

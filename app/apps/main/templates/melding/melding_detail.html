@@ -13,8 +13,9 @@
     {% context_template "melding_detail_melder.html" as melder_template %}
     {% context_template "melding_detail_acties.html" as acties_template %}
     <turbo-frame id="overview">
+    {{ melding.signalen_voor_melding }}
     <div data-controller="detail"
-        data-detail-incident-object-value="{{ melding|json_encode }}"
+        data-detail-signalen-object-value="{{ melding.signalen_voor_melding|json_encode }}"
          {% with highest_weight_locatie=melding.locaties_voor_melding|dictsort:"gewicht"|last %}
          {% if highest_weight_locatie %} data-detail-incident-y-value="{{ highest_weight_locatie.geometrie.coordinates.0 }}" data-detail-incident-x-value="{{ highest_weight_locatie.geometrie.coordinates.1 }}" {% endif %}
          {% endwith %}>
