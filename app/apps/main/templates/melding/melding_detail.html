@@ -12,14 +12,15 @@
     {% context_template "melding_detail_titel.html" as titel_template %}
     {% context_template "melding_detail_melder.html" as melder_template %}
     {% context_template "melding_detail_acties.html" as acties_template %}
+
+    {% get_bijlagen melding as bijlagen %}
+    {% with locatie=melding.locaties_voor_melding.0 %}
+    {% with signalen=melding.signalen_voor_melding %}
     <turbo-frame id="overview">
-    {{ melding.signalen_voor_melding }}
     <div data-controller="detail"
-        data-detail-signalen-object-value="{{ melding.signalen_voor_melding|json_encode }}"
-         {% with highest_weight_locatie=melding.locaties_voor_melding|dictsort:"gewicht"|last %}
-         {% if highest_weight_locatie %} data-detail-incident-y-value="{{ highest_weight_locatie.geometrie.coordinates.0 }}" data-detail-incident-x-value="{{ highest_weight_locatie.geometrie.coordinates.1 }}" {% endif %}
-         {% endwith %}>
-        {% get_bijlagen melding as bijlagen %}
+        data-detail-locatie-value="{{ locatie|json_encode }}"
+        data-detail-signalen-value="{{ melding.signalen_voor_melding|json_encode }}"
+        >
         <div class="border-green print-only"></div>
         <div class="page__detail">
             <div>
@@ -171,18 +172,6 @@
                                 </h2>
                                 <div>
                                 {% if melding.signalen_voor_melding|length > 1 %}
-                                     <ul class="list-clean">
-                                        <li>
-                                            <h3 class="h5">Meldingnummer</h3>
-                                            <p>
-                                                {% if melding.id %}
-                                                    {{ melding.id }}
-                                                {% else %}
-                                                    -
-                                                {% endif %}
-                                            </p>
-                                        </li>
-                                    </ul>
                                     <div class="display--flex--md">
                                         <ul class="list-tabs" data-detail-target="tabs">
                                         {% for signaal in melding.signalen_voor_melding %}
@@ -399,4 +388,6 @@
         </div>
     </div>
     </turbo-frame>
+    {% endwith %}
+    {% endwith %}
 {% endblock body %}
