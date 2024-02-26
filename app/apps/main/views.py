@@ -212,14 +212,6 @@ def melding_detail(request, id):
         ]
         for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
     ]
-    # niet_opgeloste_taken = [
-    #     taakopdracht
-    #     for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
-    #     if taakopdracht.get("resolutie") != None or taakopdracht.get("resolutie") != "opgelost"
-    # ]
-    # print("= =  = = > ")
-    # print (bool(niet_opgeloste_taken))
-    # print("< = =  = = niet_opgeloste_taken")
 
     bijlagen_flat = [b for bl in melding_bijlagen for b in bl]
     form = InformatieToevoegenForm()
@@ -738,6 +730,7 @@ def melding_pdf_download(request, id):
     )
 
 
+@permission_required("authorisatie.melding_bekijken")
 def meldingen_bestand(request):
     url = f"{settings.MELDINGEN_URL}{request.path}"
     headers = {"Authorization": f"Token {MeldingenService().haal_token()}"}
