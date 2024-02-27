@@ -47,7 +47,7 @@
                                 <strong {% if row_data.mg.taakgebeurtenis %}{% with to=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}data-taak-uuid="{{to.taak_url|laatste_slug_van_url}}"{% endwith %}{% endif %}>
                                     {% if row_data.mg.taakgebeurtenis %}
                                         {% with taakopdracht=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}
-                                            {{ taakopdracht.titel }}
+                                           {{ taakopdracht.titel }}
                                             {% if row_data.mg.taakgebeurtenis.taakstatus.naam != "nieuw" %}
                                                 :
                                                 {% if row_data.mg.taakgebeurtenis.taakstatus.naam == "voltooid" %}
@@ -61,7 +61,8 @@
                                     {% elif row_data.mg.locatie %}
                                         Locatie aangepast
                                     {% else %}
-                                        {% if row_data.mg.status %}
+                                        {% comment %} {% if row_data.mg.status %} {% endcomment %}
+                                        {% if row_data.mg.status.naam == 'afgehandeld' %}
                                             {{ row_data.mg.status.naam|vertaal }}
                                         {% elif row_data.mg.gebeurtenis_type %}
                                             {{ row_data.mg.gebeurtenis_type|vertaal }}
@@ -76,31 +77,34 @@
                                     <dl>
                                         {% if row_data.mg.taakgebeurtenis %}
                                             {% if row_data.mg.taakgebeurtenis.taakstatus.naam|lower != "nieuw" %}
+                                                {% if row_data.mg.taakgebeurtenis.aangemaakt_op %}
+                                                    <dt>Taak afgehandeld</dt>
+                                                    <dd>
+                                                        {{ row_data.mg.taakgebeurtenis.aangemaakt_op|to_datetime }}
+                                                    </dd>
+                                                {% endif %}
+                                                {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
                                                 <dt>Status</dt>
                                                 <dd>
                                                     {% with taakopdracht=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}
                                                         {{ taakopdracht.resolutie|vertaal }}
                                                     {% endwith %}
                                                 </dd>
+
+                                            {% else %}
                                                 {% if row_data.mg.taakgebeurtenis.aangemaakt_op %}
-                                                    <dt>Afgehandeld op</dt>
+                                                    <dt>Taak aangemaakt</dt>
                                                     <dd>
                                                         {{ row_data.mg.taakgebeurtenis.aangemaakt_op|to_datetime }}
                                                     </dd>
                                                 {% endif %}
-                                            {% else %}
+                                                {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
                                                 <dt>Status</dt>
                                                 <dd>
                                                     {{ row_data.mg.taakgebeurtenis.taakstatus.naam }}
                                                 </dd>
-                                                {% if row_data.mg.taakgebeurtenis.aangemaakt_op %}
-                                                    <dt>Datum</dt>
-                                                    <dd>
-                                                        {{ row_data.mg.taakgebeurtenis.aangemaakt_op|to_datetime }}
-                                                    </dd>
-                                                {% endif %}
+
                                             {% endif %}
-                                            {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email tekst="Gebruiker" %}
                                             {% if row_data.mg.taakgebeurtenis.omschrijving_intern %}
                                                 <dt>Interne opmerking</dt>
                                                 <dd>
@@ -108,46 +112,42 @@
                                                 </dd>
                                             {% endif %}
                                         {% elif row_data.mg.locatie %}
-                                            {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email tekst="Gewijzigd door" %}
                                             {% if row_data.mg.aangemaakt_op %}
-                                                <dt>Datum</dt>
+                                                <dt>Locatie aangepast</dt>
                                                 <dd>
                                                     {{ row_data.mg.aangemaakt_op|to_datetime }}
                                                 </dd>
                                             {% endif %}
+                                            {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email %}
                                             {% if row_data.mg.omschrijving_intern %}
                                                 <dt>Interne opmerking</dt>
                                                 <dd>
                                                     {{ row_data.mg.omschrijving_intern }}
                                                 </dd>
                                             {% endif %}
-                                            {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.taakgebeurtenis.additionele_informatie.uitvoerder|get_gebruiker_object_middels_email tekst="Uitvoerder" %}
+                                            {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.taakgebeurtenis.additionele_informatie.uitvoerder|get_gebruiker_object_middels_email %}
                                         {% elif row_data.mg.urgentie %}
                                             {% if row_data.mg.aangemaakt_op %}
-                                                <dt>Datum</dt>
+                                                <dt>{% if row_data.mg.urgentie >= .5 %}Melding met spoed oppakken{% else %}Spoed-status geannuleerd{% endif %}</dt>
                                                 <dd>
                                                     {{ row_data.mg.aangemaakt_op|to_datetime }}
                                                 </dd>
                                             {% endif %}
+                                            {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email %}
                                             {% if row_data.mg.omschrijving_intern %}
                                                 <dt>Interne opmerking</dt>
                                                 <dd>
                                                     {{ row_data.mg.omschrijving_intern }}
                                                 </dd>
                                             {% endif %}
-                                            <dt>Verandering</dt>
-                                            <dd>
-                                                {% if row_data.mg.urgentie >= .5 %}Melding veranderd naar spoed{% else %}Melding veranderd naar standaard{% endif %}
-                                            </dd>
-                                            {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email tekst="Uitvoerder" %}
                                         {% else %}
-                                            {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email tekst="Afgehandeld door" %}
                                             {% if row_data.mg.aangemaakt_op %}
                                                 <dt>Datum</dt>
                                                 <dd>
                                                     {{ row_data.mg.aangemaakt_op|to_datetime }}
                                                 </dd>
                                             {% endif %}
+                                            {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email %}
                                             {% if row_data.mg.omschrijving_extern %}
                                                 <dt>Bericht voor de melder</dt>
                                                 <dd>
