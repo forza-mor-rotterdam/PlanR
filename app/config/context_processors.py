@@ -1,5 +1,6 @@
 import logging
 
+from apps.release_notes.models import ReleaseNote
 from apps.services.mercure import MercureService
 from django.conf import settings
 from django.urls import reverse
@@ -45,6 +46,12 @@ def general_settings(context):
             "timestamp": int(timezone.now().timestamp()),
         }
         subscriber_token = mercure_service.get_subscriber_token(payload)
+
+    # Add logic to calculate the count of unwatched release notes
+    unwatched_count = 0
+    if hasattr(context, "user") and context.user.is_authenticated:
+        unwatched_count = ReleaseNote.count_unwatched(context.user)
+
     return {
         "MELDINGEN_URL": settings.MELDINGEN_URL,
         "DEBUG": settings.DEBUG,
@@ -61,4 +68,5 @@ def general_settings(context):
         "MERCURE_SUBSCRIBER_TOKEN": subscriber_token,
         "GEBRUIKER": gebruiker,
         "GIT_SHA": settings.GIT_SHA,
+        "UNWATCHED_COUNT": unwatched_count,
     }

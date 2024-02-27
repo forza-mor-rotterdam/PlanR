@@ -146,3 +146,27 @@ class GebruikerBulkImportForm(forms.Form):
             )
             gebruiker.save()
         return aangemaakte_gebruikers
+
+
+class GebruikerProfielForm(forms.ModelForm):
+    telefoonnummer = forms.CharField(
+        label="Telefoonnummer",
+        required=False,
+        widget=forms.TextInput(attrs={"readonly": "readonly"}),
+    )
+
+    first_name = forms.CharField(
+        label="Voornaam",
+        required=False,
+        widget=forms.TextInput(attrs={"readonly": "readonly"}),
+    )
+
+    last_name = forms.CharField(
+        label="Achternaam",
+        required=False,
+        widget=forms.TextInput(attrs={"readonly": "readonly"}),
+    )
+
+    class Meta:
+        model = Gebruiker
+        fields = ("telefoonnummer", "first_name", "last_name")

@@ -732,7 +732,8 @@ def melding_pdf_download(request, id):
 
 @permission_required("authorisatie.melding_bekijken")
 def meldingen_bestand(request):
-    url = f"{settings.MELDINGEN_URL}{request.path}"
+    modified_path = request.path.replace(settings.MOR_CORE_URL_PREFIX, "")
+    url = f"{settings.MELDINGEN_URL}{modified_path}"
     headers = {"Authorization": f"Token {MeldingenService().haal_token()}"}
     response = requests.get(url, stream=True, headers=headers)
     return StreamingHttpResponse(
