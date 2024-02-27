@@ -106,7 +106,11 @@ textarea {
     font-weight: 700;
     margin-bottom: 0.5rem;
 
-    span {
+    .full-width & {
+        max-width: none;
+    }
+
+    span:not(.badge--unread-count) {
         padding: 0 16px;
     }
 
@@ -211,7 +215,7 @@ textarea {
 
         &--small {
             span {
-                padding: 0 2px;
+                padding: 0 2px !important;
             }
         }
     }
@@ -264,6 +268,26 @@ textarea {
 
     &:not(:disabled) {
         cursor: pointer;
+    }
+
+    &-togglemenu {
+        width: 56px;
+        height: 64px;
+        background: transparent;
+        margin-right: -16px;
+        padding-top: 16px;
+        position: relative;
+
+        .badge--unread-count {
+            width: 18px;
+            height: 18px;
+            line-height: 18px;
+            font-size: 10px;
+            position: absolute;
+            right: 5px;
+            top: 0;
+            transform: translateY(70%);
+        }
     }
 }
 
