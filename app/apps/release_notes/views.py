@@ -40,7 +40,7 @@ class ReleaseNoteListView(PermissionRequiredMixin, ReleaseNoteView, ListView):
             queryset = queryset.filter(
                 Q(titel__icontains=search) | Q(tekst__icontains=search)
             )
-        queryset = queryset.order_by("-aangemaakt_op")
+        queryset = queryset.order_by("-publicatie_datum", "-aangemaakt_op")
 
         return queryset
 
