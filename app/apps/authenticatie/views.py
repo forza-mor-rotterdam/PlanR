@@ -115,9 +115,14 @@ def gebruiker_bulk_import(request):
     form = GebruikerBulkImportForm()
     aangemaakte_gebruikers = None
     if request.POST:
-        form = GebruikerBulkImportForm(request.POST)
-        if form.is_valid() and request.POST.get("aanmaken"):
-            aangemaakte_gebruikers = form.submit()
+        form = GebruikerBulkImportForm(request.POST, request.FILES)
+        if form.is_valid():
+            request.session["valid_rows"] = form.cleaned_data.get("csv_file", {}).get(
+                "valid_rows", []
+            )
+        if request.session.get("valid_rows") and request.POST.get("aanmaken"):
+            aangemaakte_gebruikers = form.submit(request.session.get("valid_rows"))
+            del request.session["valid_rows"]
             form = None
     return render(
         request,
