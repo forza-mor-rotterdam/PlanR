@@ -11,6 +11,7 @@
         {% with previous_row_data=tijdlijn_data|previous:forloop.counter0 %}
             {% with next_row_data=tijdlijn_data|next:forloop.counter0 %}
                 <li data-controller="datetime">
+                {{ row_data }}
                     <details>
                         {% if not melding.afgesloten_op or not forloop.first %}
                             {% for cel in next_row_data.row %}
@@ -60,6 +61,8 @@
                                         {% endwith %}
                                     {% elif row_data.mg.locatie %}
                                         Locatie aangepast
+                                    {% elif row_data.mg.gebeurtenis_type == "status_wijziging" %}
+                                        Status {{ row_data.mg.status.naam|vertaal|lower }}
                                     {% else %}
                                         {% comment %} {% if row_data.mg.status %} {% endcomment %}
                                         {% if row_data.mg.status.naam == 'afgehandeld' %}
@@ -141,8 +144,13 @@
                                                 </dd>
                                             {% endif %}
                                         {% else %}
-                                            {% if row_data.mg.aangemaakt_op %}
+                                            {% if row_data.mg.aangemaakt_op and row_data.mg.gebeurtenis_type != "status_wijziging" %}
                                                 <dt>Datum</dt>
+                                                <dd>
+                                                    {{ row_data.mg.aangemaakt_op|to_datetime }}
+                                                </dd>
+                                            {% else %}
+                                                <dt>{{ row_data.mg.status.naam|vertaal }}</dt>
                                                 <dd>
                                                     {{ row_data.mg.aangemaakt_op|to_datetime }}
                                                 </dd>
