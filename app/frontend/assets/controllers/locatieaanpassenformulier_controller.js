@@ -189,7 +189,9 @@ export default class extends Controller {
     const query = {
       lat: coordinates[0],
       lon: coordinates[1],
+      rows: 20,
       fl: [
+        'id',
         'straatnaam',
         'postcode',
         'huisnummer',
@@ -198,6 +200,7 @@ export default class extends Controller {
         'woonplaatsnaam',
         'wijknaam',
         'buurtnaam',
+        'afstand',
       ],
     }
 
@@ -208,6 +211,11 @@ export default class extends Controller {
       }
 
       const data = await response.json()
+      data.response.docs.map((a) => {
+        console.log(
+          `${a.straatnaam} ${a.huisnummer} ${!!a.huisletter ? a.huisletter : ''} (${a.afstand})`
+        )
+      })
       const addressDetails = data.response.docs[0]
 
       // Convert the PDOK search result to a locatie object

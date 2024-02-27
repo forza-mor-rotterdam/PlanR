@@ -11,7 +11,7 @@
                     aria-label="Sluit"
                     data-action="detail#closeModal"></button>
             <h1>
-                <span>{% if melding.urgentie >= .5 %}Verwijder spoed{% else %}Naar spoed{% endif %}</span>
+                <span>Melding {% if melding.urgentie >= .5 %}niet {% endif %}met spoed oppakken</span>
             </h1>
         </div>
         <div class="modal-body">
@@ -37,7 +37,7 @@
                                     class="btn btn-tertiary"
                                     data-controller="detail"
                                     data-action="detail#closeModal"
-                                    data-detail-target="modalSpoedVeranderen">
+                                    data-detail-target="modalAfhandelen">
                                 <span>Annuleren</span>
                             </button>
                             <button type="submit" class="btn btn-action">

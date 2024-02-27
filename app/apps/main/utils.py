@@ -131,8 +131,12 @@ def update_qd_met_standaard_meldingen_filter_qd(qd, gebruiker_context=None):
     meldingen_filter_qd.update(qd)
     if gebruiker_context:
         for k, v in gebruiker_context.standaard_filters.items():
-            for vv in v:
-                meldingen_filter_qd.update({k: vv})
+            if isinstance(v, (list, tuple)):
+                for vv in v:
+                    meldingen_filter_qd.update({k: vv})
+            else:
+                meldingen_filter_qd.update({k: v})
+
     return meldingen_filter_qd
 
 
