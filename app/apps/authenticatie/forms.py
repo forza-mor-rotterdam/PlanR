@@ -1,3 +1,6 @@
+import csv
+from io import StringIO
+
 from apps.authenticatie.models import Profiel
 from apps.context.models import Context
 from django import forms
@@ -54,11 +57,16 @@ class GebruikerAanmakenForm(GebruikerAanpassenForm):
 
 
 class GebruikerBulkImportForm(forms.Form):
-    emailadressen = forms.CharField(
-        widget=forms.Textarea(),
-        label="E-mailaddressen",
-        help_text="Komma gescheiden email adressen van de gebruikers (123456@rotterdam, 234567@rotterdam)",
-        required=True,
+    csv_file = forms.FileField(
+        widget=forms.FileInput(
+            attrs={
+                "data-action": "change->bijlagen#updateImageDisplay",
+                "accept": ".csv",
+                "required_css_class": "required",
+                "button_text": "CSV bestand",
+            }
+        ),
+        label="CSV upload",
     )
     context = forms.ModelChoiceField(
         widget=forms.Select(attrs={"class": "form-control"}),
@@ -73,46 +81,61 @@ class GebruikerBulkImportForm(forms.Form):
         required=True,
     )
 
-    def clean_emailadressen(self):
-        emailadressen = self.cleaned_data["emailadressen"].split(",")
-        valide_emailadressen = []
-
-        def check_emailadres(emailadres):
-            is_emailadres = True
-            try:
-                validate_email(emailadres)
-            except ValidationError:
-                is_emailadres = False
-            bestaat_niet = not Gebruiker.objects.all().filter(email=emailadres)
-            if is_emailadres and bestaat_niet:
-                valide_emailadressen.append(emailadres)
-            return {
-                "bestaat_niet": bestaat_niet,
-                "is_emailadres": is_emailadres,
-                "emailadres": emailadres,
-            }
-
-        clean_emaillijst = [
-            check_emailadres(emailadres.strip())
-            for emailadres in emailadressen
-            if emailadres.strip()
-        ]
+    def clean_csv_file(self):
+        all_rows = []
+        valid_rows = []
+        csv_file = self.cleaned_data["csv_file"]
+        csv_fo = StringIO(csv_file.read().decode("utf-8"))
+        spamreader = csv.reader(csv_fo, delimiter=";", quotechar="|")
+        valid_checked_rows_email = []
+        for row in spamreader:
+            default_row = [row[r] if r < len(row) else None for r in range(0, 4)]
+            errors = []
+            if default_row[0] in valid_checked_rows_email:
+                errors.append(
+                    "Er is al een gebruiker met dit e-mailadres in deze lijst aanwezig"
+                )
+            row_is_not_valid = self.validate_row(default_row, errors)
+            if not row_is_not_valid:
+                valid_rows.append(default_row)
+                valid_checked_rows_email.append(default_row[0])
+            default_row.append(row_is_not_valid)
+            all_rows.append(default_row)
         return {
-            "validate_resultaat": clean_emaillijst,
-            "valide_emailadressen": valide_emailadressen,
+            "all_rows": all_rows,
+            "valid_rows": valid_rows,
         }
 
-    def submit(self):
-        if not self.cleaned_data:
-            return
+    def validate_row(self, row, errors=[]):
+        email = row[0]
+        first_name = row[1]
+        last_name = row[2]
+        telefoonnummer = row[3]
+        try:
+            validate_email(email.strip())
+        except ValidationError:
+            errors.append(f"{email} is geen e-mailadres")
+        if Gebruiker.objects.all().filter(email=email):
+            errors.append("Een gebruiker met dit e-mailadres bestaat reeds")
+        if first_name and len(first_name) > 150:
+            errors.append("voornaam mag niet langer zijn dan 150 karakters")
+        if last_name and len(last_name) > 150:
+            errors.append("achternaam mag niet langer zijn dan 150 karakters")
+        if telefoonnummer and len(telefoonnummer) > 17:
+            errors.append("telefoonnummer mag niet langer zijn dan 17 karakters")
+        return ", ".join(errors)
+
+    def submit(self, valid_rows):
+        gebruiker_fieldnames = [
+            "email",
+            "first_name",
+            "last_name",
+            "telefoonnummer",
+        ]
         aangemaakte_gebruikers = Gebruiker.objects.bulk_create(
             [
-                Gebruiker(
-                    email=emailadres,
-                )
-                for emailadres in self.cleaned_data.get("emailadressen", {}).get(
-                    "valide_emailadressen", []
-                )
+                Gebruiker(**{f: row[i] for i, f in enumerate(gebruiker_fieldnames)})
+                for row in valid_rows
             ]
         )
         for gebruiker in aangemaakte_gebruikers:
