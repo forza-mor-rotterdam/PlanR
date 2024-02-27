@@ -11,7 +11,6 @@
         {% with previous_row_data=tijdlijn_data|previous:forloop.counter0 %}
             {% with next_row_data=tijdlijn_data|next:forloop.counter0 %}
                 <li data-controller="datetime">
-                {{ row_data }}
                     <details>
                         {% if not melding.afgesloten_op or not forloop.first %}
                             {% for cel in next_row_data.row %}
