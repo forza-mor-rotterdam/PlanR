@@ -27,11 +27,9 @@
             <div class="grid-item">
                 <form action="."
                       method="post"
-                      novalidate
                       id="releaseNoteForm"
                       enctype="multipart/form-data"
-                      class="form--aanpassen"
-                      data-turbo-frame="_top">
+                      class="form--aanpassen">
                     {% csrf_token %}
                     {{ form.management_form }}
                     {{ form.media }}
