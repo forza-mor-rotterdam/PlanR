@@ -38,6 +38,7 @@ from apps.main.views import (
     melding_afhandelen,
     melding_annuleren,
     melding_detail,
+    melding_heropenen,
     melding_hervatten,
     melding_lijst,
     melding_pauzeren,
@@ -106,6 +107,11 @@ urlpatterns = [
         "melding/<uuid:id>/hervatten/",
         melding_hervatten,
         name="melding_hervatten",
+    ),
+    path(
+        "melding/<uuid:id>/heropenen/",
+        melding_heropenen,
+        name="melding_heropenen",
     ),
     path(
         "melding/<uuid:id>/spoed/",

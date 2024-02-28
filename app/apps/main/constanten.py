@@ -40,6 +40,7 @@ VERTALINGEN = {
     "standaard": "Opmerking/foto toegevoegd",
     "signaal_toegevoegd": "Melding samengevoegd",
     "urgentie_aangepast": "Spoed aangepast",
+    "melding_heropend": "Melding heropend",
 }
 
 MSB_WIJKEN = [
