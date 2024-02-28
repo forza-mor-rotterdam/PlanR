@@ -234,9 +234,11 @@ CSP_FRAME_SRC = (
     "iam.forzamor.nl",
 )
 CSP_SCRIPT_SRC = (
-    ("'self'", "'unsafe-eval'", "unpkg.com", "cdn.jsdelivr.net")
-    if not DEBUG
-    else ("'self'", "'unsafe-eval'", "unpkg.com", "'unsafe-inline'", "cdn.jsdelivr.net")
+    "'self'",
+    "'unsafe-inline'",
+    "'unsafe-eval'",
+    "unpkg.com",
+    "cdn.jsdelivr.net",
 )
 
 CSP_IMG_SRC = [
