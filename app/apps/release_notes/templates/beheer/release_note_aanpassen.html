@@ -29,7 +29,8 @@
                       method="post"
                       id="releaseNoteForm"
                       enctype="multipart/form-data"
-                      class="form--aanpassen">
+                      class="form--aanpassen"
+                      data-turbo-frame="_top">
                     {% csrf_token %}
                     {{ form.management_form }}
                     {{ form.media }}
