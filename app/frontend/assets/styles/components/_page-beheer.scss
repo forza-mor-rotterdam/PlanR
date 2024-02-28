@@ -1,6 +1,37 @@
 .page__beheer {
-    padding-top: 2rem;
-    h1 {
+    padding-top: 0.5rem;
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        padding-top: 2rem;
+    }
+
+    a.link--back {
+        margin-left: 30px;
+        min-height: 1em;
+
+        svg {
+            left: -30px;
+            path {
+                fill: $green-tint01;
+            }
+        }
+    }
+
+    .pagetitle,
+    h2 {
+        margin-bottom: 0.25em;
+
+        + .release-date {
+            margin-top: 0;
+        }
+    }
+
+    .pagetitle {
+        margin-top: 0;
+    }
+
+    ul.list--images li img {
+        max-width: map-get($container-max-widths, lg);
+        width: 100%;
     }
 
     .container__flex {
@@ -56,9 +87,35 @@
     }
 
     .form-row {
+        margin-bottom: 2rem;
         select + p,
         .list--form-check-input + p {
             margin-top: -16px;
+        }
+    }
+    li {
+        &.list-item {
+            border-bottom: 1px solid $gray-tint04;
+            padding-bottom: 1rem;
+
+            &.inactive {
+                * {
+                    opacity: 0.8;
+                }
+            }
+            > .description {
+                margin-top: 0;
+                margin-bottom: 0;
+                > a {
+                    padding-top: 1rem;
+                    padding-bottom: 1rem;
+                }
+                small {
+                    a {
+                        display: block;
+                    }
+                }
+            }
         }
     }
 }

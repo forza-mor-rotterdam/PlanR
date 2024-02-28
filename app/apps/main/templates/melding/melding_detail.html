@@ -5,6 +5,7 @@
 {% load vertaal from vertaal_tags %}
 {% load context_template from context_tags %}
 {% load slice_iterable from main_tags %}
+{% load mor_core_url from main_tags %}
 {% load render_onderwerp get_bijlagen from melding_tags %}
 {% load json_encode from json_tags %}
 {% block body %}
@@ -98,9 +99,9 @@
                                             <ul class="list-clean imageslider"
                                                 style="width: calc(100% * {{ bijlagen|length }})">
                                                 {% for bijlage in bijlagen %}
-                                                    <li class="container__image" tabindex="0">
+                                                    <li class="container__image" tabindex="0" >
                                                         <div class="image"
-                                                             style="background-image: url('{{ bijlage.afbeelding_relative_url }}')"
+                                                             style="background-image: url('{{ bijlage.afbeelding_relative_url|mor_core_url }}')"
                                                              data-detail-target="selectedImage">
                                                             <span>{{ bijlage.label }}</span>
                                                         </div>
@@ -118,7 +119,7 @@
                                                                     aria-label="Bekijk afbeelding">
                                                                 <div class="container__image">
                                                                     <div class="image"
-                                                                         style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url }}')">
+                                                                         style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url|mor_core_url }}')">
                                                                     </div>
                                                                 </div>
                                                             </button>
@@ -140,7 +141,7 @@
                                             {% for bijlage in bijlagen %}
                                                 <li class="container__image">
                                                     <div class="image">
-                                                        <img src="{{ bijlage.afbeelding_relative_url }}" alt="" />
+                                                        <img src="{{ bijlage.afbeelding_relative_url|mor_core_url }}" alt="" />
                                                         <span>Foto van melder</span>
                                                     </div>
                                                 </li>

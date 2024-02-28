@@ -107,6 +107,11 @@ h6,
     font-size: $h6-font-size;
 }
 
+p {
+    line-height: $line-height-base;
+    max-width: map-get($container-max-widths, lg);
+}
+
 @mixin has-icon {
     display: inline-block;
     margin-left: 25px;
@@ -200,6 +205,13 @@ a,
             top: 3px;
             padding-right: 20px;
         }
+    }
+
+    &.no--link {
+        text-decoration: none;
+        color: inherit;
+        outline: none !important;
+        display: inline-block;
     }
 
     &.link--file {
@@ -348,6 +360,27 @@ ul {
             a {
                 color: $green-tint01;
             }
+        }
+    }
+    &.list--images {
+        @include list-clean();
+        li {
+            margin-bottom: 1em;
+
+            img {
+                max-width: 100%;
+            }
+        }
+    }
+}
+li {
+    &.list-item {
+        border-bottom: 1px solid $gray-tint04;
+    }
+
+    .border-top & {
+        &:first-child {
+            border-top: 1px solid $gray-tint04;
         }
     }
 }
