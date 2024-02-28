@@ -60,6 +60,8 @@
                                         {% endwith %}
                                     {% elif row_data.mg.locatie %}
                                         Locatie aangepast
+                                    {% elif row_data.mg.gebeurtenis_type == "status_wijziging" %}
+                                        Status {{ row_data.mg.status.naam|vertaal|lower }}
                                     {% else %}
                                         {% comment %} {% if row_data.mg.status %} {% endcomment %}
                                         {% if row_data.mg.status.naam == 'afgehandeld' %}
@@ -141,8 +143,13 @@
                                                 </dd>
                                             {% endif %}
                                         {% else %}
-                                            {% if row_data.mg.aangemaakt_op %}
+                                            {% if row_data.mg.aangemaakt_op and row_data.mg.gebeurtenis_type != "status_wijziging" %}
                                                 <dt>Datum</dt>
+                                                <dd>
+                                                    {{ row_data.mg.aangemaakt_op|to_datetime }}
+                                                </dd>
+                                            {% else %}
+                                                <dt>{{ row_data.mg.status.naam|vertaal }}</dt>
                                                 <dd>
                                                     {{ row_data.mg.aangemaakt_op|to_datetime }}
                                                 </dd>

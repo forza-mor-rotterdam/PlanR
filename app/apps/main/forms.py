@@ -256,6 +256,7 @@ class InformatieToevoegenForm(forms.Form):
                 "accept": ".jpg, .jpeg, .png, .heic",
                 "data-action": "change->bijlagen#updateImageDisplay",
                 "data-bijlagen-target": "bijlagenExtra",
+                "multiple": "multiple",
             }
         ),
         label="Voeg één of meerdere foto's toe",
@@ -334,6 +335,7 @@ class TaakAfrondenForm(forms.Form):
                 "accept": ".jpg, .jpeg, .png, .heic",
                 "data-action": "change->bijlagen#updateImageDisplay",
                 "data-bijlagen-target": "bijlagenAfronden",
+                "multiple": "multiple",
             }
         ),
         label="Foto's",
@@ -744,6 +746,7 @@ class MeldingAanmakenForm(forms.Form):
                 "accept": ".jpg, .jpeg, .png, .heic",
                 "data-action": "change->bijlagen#updateImageDisplay",
                 "data-bijlagen-target": "bijlagenNieuw",
+                "multiple": "multiple",
             }
         ),
         label="Foto's",
