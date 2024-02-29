@@ -14,6 +14,7 @@ from apps.main.forms import (
     MeldingAanmakenForm,
     MeldingAfhandelenForm,
     MeldingAnnulerenForm,
+    MeldingHeropenenForm,
     MeldingHervattenForm,
     MeldingPauzerenForm,
     MeldingSpoedForm,
@@ -411,6 +412,30 @@ def melding_annuleren(request, id):
             "bijlagen": bijlagen_flat,
             "actieve_taken": actieve_taken,
             "aantal_actieve_taken": len(actieve_taken),
+        },
+    )
+
+
+@permission_required("authorisatie.melding_heropenen")
+def melding_heropenen(request, id):
+    melding = MeldingenService().get_melding(id)
+    form = MeldingHeropenenForm()
+    if request.POST:
+        form = MeldingHeropenenForm(request.POST)
+        if form.is_valid():
+            MeldingenService().melding_heropenen(
+                id,
+                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
+                gebruiker=request.user.email,
+            )
+            return redirect("melding_detail", id=id)
+
+    return render(
+        request,
+        "melding/melding_heropenen.html",
+        {
+            "form": form,
+            "melding": melding,
         },
     )
 

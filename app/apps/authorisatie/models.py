@@ -16,6 +16,11 @@ class MeldingAnnulerenPermissie(BasisPermissie):
     codenaam = "melding_annuleren"
 
 
+class MeldingHeropenenPermissie(BasisPermissie):
+    naam = "Melding heropenen"
+    codenaam = "melding_heropenen"
+
+
 class MeldingAanmakenPermissie(BasisPermissie):
     naam = "Melding aanmaken"
     codenaam = "melding_aanmaken"
@@ -239,6 +244,7 @@ class ReleaseNoteVerwijderenPermissie(BasisPermissie):
 gebruikersgroep_permissies = (
     MeldingAfhandelenPermissie,
     MeldingAnnulerenPermissie,
+    MeldingHeropenenPermissie,
     MeldingAanmakenPermissie,
     MeldingBekijkenPermissie,
     MeldingenLijstBekijkenPermissie,

@@ -12,7 +12,12 @@ export default class extends Controller {
     parentContext: String,
     standaardafhandelteksten: String,
   }
-  static targets = ['externalText', 'internalText', 'standardTextChoice']
+  static targets = [
+    'externalText',
+    'internalText',
+    'standardTextChoice',
+    'meldingBehandelFormulier',
+  ]
 
   connect() {
     if (this.hasExternalTextTarget) {
@@ -29,7 +34,7 @@ export default class extends Controller {
       }
     }
 
-    form = document.querySelector('#afhandelForm')
+    form = this.meldingBehandelFormulierTarget
     inputList = document.querySelectorAll('.js-validation textarea')
 
     for (const element of inputList) {

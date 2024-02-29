@@ -11,7 +11,7 @@
                     aria-label="Sluit"
                     data-action="detail#closeModal"></button>
             <h1>
-                <span>Melding annuleren</span>
+                <span>Melding heropenen</span>
             </h1>
             <div class="alert alert--info">
                 <span>
@@ -24,52 +24,21 @@
                     </svg>
                 </span>
                 <div>
-                    Door de melding te annuleren wordt de status van de melding aangepast naar ‘Geannuleerd.’ Er wordt geen bericht naar de melder verstuurd.
+                    {% comment %} Placeholder text {% endcomment %}
+                    Gebruik deze actie alleen als je de melding wilt heropenen, om bijvoorbeeld extra taken uit te laten voeren.
                 </div>
             </div>
         </div>
         <div class="modal-body">
             <section class="section--seperated" data-testid="detailReporter">
                 <div class="container__details">
-                    {% if aantal_actieve_taken > 0 %}
-                        <div class="alert alert--warning">
-                            <span>
-                                <svg width="32"
-                                     height="32"
-                                     viewBox="0 0 32 32"
-                                     fill="none"
-                                     xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M16.0001 6.21851L26.6516 26L5.34849 26L16.0001 6.21851ZM14.2391 5.2703C14.9943 3.8679 17.0059 3.86791 17.761 5.27031L28.4126 25.0518C29.13 26.3843 28.165 28 26.6516 28H5.34849C3.83514 28 2.87007 26.3842 3.58755 25.0518L14.2391 5.2703ZM15.0001 12H17.0001V20H15.0001V12ZM15.0001 24V22H17.0001V24H15.0001Z" fill="#A65600" />
-                                </svg>
-                            </span>
-                            <div>
-                                Deze melding bevat de volgende openstaande
-                                {% if aantal_actieve_taken == 1 %}
-                                    taak
-                                {% else %}
-                                    taken
-                                {% endif %}
-                                :
-                                <ul>
-                                    {% for taak in actieve_taken %}<li>{{ taak.titel }}</li>{% endfor %}
-                                </ul>
-                                <span>Als de melding wordt geannuleerd wordt de status van deze
-                                {% if aantal_actieve_taken == 1 %}
-                                    taak
-                                {% else %}
-                                    taken
-                                {% endif %}
-                                aangepast naar ‘Voltooid’.</span>
-                            </div>
-                        </div>
-                    {% endif %}
-                    <form action="{% url 'melding_annuleren' melding.uuid %}"
+                    <form action="{% url 'melding_heropenen' melding.uuid %}"
                           method="post"
                           class="form--horizontal"
                           data-controller="meldingbehandelformulier"
                           data-meldingbehandelformulier-target="meldingBehandelFormulier"
-                          data-turbo-frame="_top"
                           enctype="multipart/form-data"
+                          data-turbo-frame="_top"
                           novalidate>
                         {% csrf_token %}
                         <div class="form-control__with-helptext js-validation">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
@@ -81,7 +50,7 @@
                                 <span>Annuleren</span>
                             </button>
                             <button type="submit" class="btn btn-action">
-                                <span>Afhandelen</span>
+                                <span>Heropenen</span>
                             </button>
                         </div>
                     </form>
