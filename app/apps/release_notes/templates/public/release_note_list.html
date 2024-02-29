@@ -18,7 +18,7 @@
                                     {{ release_note.beschrijving|striptags|safe|truncate_text:200 }}
                                 {% endautoescape %}
                                 <br />
-                                <small><a href="{% url 'release_note_detail' release_note.pk %}" data-turbo-frame="_top" target="_top">Lees meer</a></small>
+                                <small><a href="{% url 'release_note_detail' release_note.pk %}" data-turbo-frame="_top">Lees meer</a></small>
                             </p>
                         </a>
                     </li>
