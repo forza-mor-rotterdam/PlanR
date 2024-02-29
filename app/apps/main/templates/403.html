@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+
+{% block body %}
+
+<turbo-frame id="overview">
+<div class="border-green print-only"></div>
+
+<div class="page__detail">
+    {% if request.user.is_authenticated %}
+    <div>
+        <div class="grid-container">
+            <div class="grid-item">
+                <div>
+                    <h1>Fout 403 - Verboden</h1>
+                    <p>
+                        Je bent ingelogd, maar je hebt niet genoeg rechten op deze pagina te bekijken.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="grid-container">
+            <div class="grid-item">
+                <section class="section--seperated">
+                    <div class="container__details">
+                        <h3>
+                            Relevante links
+                        </h3>
+                        Hieronder vindt je de belangrijkste links.
+                        <ul class="list--blocks-horizontal">
+                            <li><a href="{% url 'melding_lijst' %}">Meldingen overzicht</a></li>
+                            <li><a href="{% url 'beheer' %}">Beheer</a></li>
+                        </ul>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+        <div class="grid-container">
+            <div class="grid-item">
+                <section class="section--seperated">
+                    <div class="container__details">
+                        {% include "auth/rollen_rechten.html" %}
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+</turbo-frame>
+{% endblock body %}

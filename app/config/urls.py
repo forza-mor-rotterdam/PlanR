@@ -27,7 +27,6 @@ from apps.main.views import (
     TaaktypeCategorieAanpassenView,
     TaaktypeCategorieLijstView,
     TaaktypeCategorieVerwijderenView,
-    account,
     clear_melding_token_from_cache,
     gebruiker_info,
     http_404,
@@ -73,7 +72,6 @@ from rest_framework.authtoken import views
 
 urlpatterns = [
     path("", root, name="root"),
-    path("account/", account, name="account"),
     path("api-token-auth/", views.obtain_auth_token),
     path(
         "admin/clear-melding-token-from-cache/",
