@@ -36,9 +36,9 @@
                           method="post"
                           class="form--horizontal"
                           data-controller="meldingbehandelformulier"
+                          data-meldingbehandelformulier-target="meldingBehandelFormulier"
                           enctype="multipart/form-data"
                           data-turbo-frame="_top"
-                          id="heropenenForm"
                           novalidate>
                         {% csrf_token %}
                         <div class="form-control__with-helptext js-validation">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
