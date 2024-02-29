@@ -150,10 +150,39 @@ class MeldingenService(BasisService):
                 }
             )
         return self.do_request(
-            f"{self._api_path}/melding/{id}/status-aanpassen/"
-            if status
-            else f"{self._api_path}/melding/{id}/gebeurtenis-toevoegen/",
+            (
+                f"{self._api_path}/melding/{id}/status-aanpassen/"
+                if status
+                else f"{self._api_path}/melding/{id}/gebeurtenis-toevoegen/"
+            ),
             method="patch" if status else "post",
+            data=data,
+            raw_response=False,
+        )
+
+    def melding_heropenen(
+        self,
+        id,
+        bijlagen=[],
+        omschrijving_intern=None,
+        gebruiker=None,
+    ):
+        data = {
+            "bijlagen": bijlagen,
+            "omschrijving_intern": omschrijving_intern,
+            "gebruiker": gebruiker,
+        }
+        data.update(
+            {
+                "status": {
+                    "naam": "openstaand",
+                },
+                "resolutie": "niet_opgelost",
+            }
+        )
+        return self.do_request(
+            f"{self._api_path}/melding/{id}/heropenen/",
+            method="patch",
             data=data,
             raw_response=False,
         )
