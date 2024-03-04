@@ -1,6 +1,7 @@
 import csv
 from io import StringIO
 
+import chardet
 from apps.authenticatie.models import Profiel
 from apps.context.models import Context
 from django import forms
@@ -82,13 +83,26 @@ class GebruikerBulkImportForm(forms.Form):
     )
 
     def clean_csv_file(self):
+        csv_file = self.cleaned_data["csv_file"]
+        file_read = csv_file.read()
+
+        encoding = "utf-8"
+        auto_detect_encoding = chardet.detect(file_read)
+        if auto_detect_encoding.get("confidence") > 0.5:
+            encoding = auto_detect_encoding.get("encoding")
+
+        return self._get_rows(file_read.decode(encoding, "ignore"))
+
+    def _get_rows(self, str_data):
         all_rows = []
         valid_rows = []
-        csv_file = self.cleaned_data["csv_file"]
-        csv_fo = StringIO(csv_file.read().decode("utf-8"))
-        spamreader = csv.reader(csv_fo, delimiter=";", quotechar="|")
+        csv_fo = StringIO(str_data)
+
+        csvreader = csv.reader(csv_fo, delimiter=";", quotechar="|")
         valid_checked_rows_email = []
-        for row in spamreader:
+        for row in csvreader:
+            if len(row) and not row[0]:
+                continue
             default_row = [row[r] if r < len(row) else None for r in range(0, 4)]
             errors = []
             if default_row[0] in valid_checked_rows_email:
