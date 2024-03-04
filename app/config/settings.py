@@ -50,6 +50,8 @@ INSTALLED_APPS = (
     "drf_spectacular",
     "webpack_loader",
     "corsheaders",
+    "ckeditor",
+    "ckeditor_uploader",
     "mozilla_django_oidc",
     "health_check",
     "health_check.cache",
@@ -57,6 +59,7 @@ INSTALLED_APPS = (
     "health_check.contrib.migrations",
     "django_celery_beat",
     "django_celery_results",
+    "sorl.thumbnail",
     "django_select2",
     # Apps
     "apps.rotterdam_formulier_html",
@@ -65,6 +68,7 @@ INSTALLED_APPS = (
     "apps.authenticatie",
     "apps.context",
     "apps.beheer",
+    "apps.release_notes",
 )
 
 MIDDLEWARE = (
@@ -116,6 +120,8 @@ STATIC_ROOT = os.path.normpath(join(os.path.dirname(BASE_DIR), "static"))
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.normpath(join(os.path.dirname(BASE_DIR), "media"))
 
+MOR_CORE_URL_PREFIX = "/core"
+
 # Database settings
 DATABASE_NAME = os.getenv("DATABASE_NAME")
 DATABASE_USER = os.getenv("DATABASE_USER")
@@ -166,9 +172,11 @@ WEBPACK_LOADER = {
         "POLL_INTERVAL": 0.1,
         "IGNORE": [r".+\.hot-update.js", r".+\.map"],
         "LOADER_CLASS": "webpack_loader.loader.WebpackLoader",
-        "STATS_FILE": "/static/webpack-stats.json"
-        if not DEBUG
-        else "/app/frontend/public/build/webpack-stats.json",
+        "STATS_FILE": (
+            "/static/webpack-stats.json"
+            if not DEBUG
+            else "/app/frontend/public/build/webpack-stats.json"
+        ),
     }
 }
 DEV_SOCKET_PORT = os.getenv("DEV_SOCKET_PORT", "9000")
@@ -226,9 +234,11 @@ CSP_FRAME_SRC = (
     "iam.forzamor.nl",
 )
 CSP_SCRIPT_SRC = (
-    ("'self'", "'unsafe-eval'", "unpkg.com", "cdn.jsdelivr.net")
-    if not DEBUG
-    else ("'self'", "'unsafe-eval'", "unpkg.com", "'unsafe-inline'", "cdn.jsdelivr.net")
+    "'self'",
+    "'unsafe-inline'",
+    "'unsafe-eval'",
+    "unpkg.com",
+    "cdn.jsdelivr.net",
 )
 
 CSP_IMG_SRC = [
@@ -263,6 +273,7 @@ CSP_CONNECT_SRC = (
         "mercure.planr-test.forzamor.nl",
         "mercure.planr-acc.forzamor.nl",
         "mercure.planr.forzamor.nl",
+        "cke4.ckeditor.com",
     )
     if not DEBUG
     else (
@@ -270,6 +281,7 @@ CSP_CONNECT_SRC = (
         "ws:",
         "api.pdok.nl",
         "localhost:7002",
+        "cke4.ckeditor.com",
     )
 )
 
@@ -317,6 +329,12 @@ SESSION_EXPIRE_SECONDS = int(os.getenv("SESSION_EXPIRE_SECONDS", "3600"))
 SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD = int(
     os.getenv("SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD", "1800")
 )
+
+THUMBNAIL_BACKEND = "utils.images.ThumbnailBackend"
+THUMBNAIL_PREFIX = "afbeeldingen"
+THUMBNAIL_KLEIN = "128x128"
+THUMBNAIL_STANDAARD = "1480x1480"
+BESTANDEN_PREFIX = "bestanden"
 
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
@@ -461,3 +479,40 @@ MERCURE_PUBLISH_TARGETS = [
 ]
 
 USER_ACTIVITY_CACHE_KEY = "user_activity_cache_key"
+
+
+CKEDITOR_CONFIGS = {
+    "default": {
+        "toolbar": "Custom",  # change to Custom if you want the below settings
+        # create custom config here: https://ckeditor.com/latest/samples/toolbarconfigurator/index.html#advanced
+        "toolbar_Custom": [
+            {"name": "basicstyles", "items": ["Bold", "Italic", "Underline", "Strike"]},
+            {
+                "name": "paragraph",
+                "items": [
+                    "NumberedList",
+                    "BulletedList",
+                    "-",
+                    "Outdent",
+                    "Indent",
+                    "-",
+                    "-",
+                    "JustifyLeft",
+                    "JustifyCenter",
+                    "JustifyRight",
+                    "JustifyBlock",
+                    "-",
+                ],
+            },
+            "/",
+            {"name": "styles", "items": ["Format", "FontSize"]},
+            {"name": "links", "items": ["Link", "Unlink"]},
+            {"name": "format", "items": ["CopyFormatting", "RemoveFormat"]},
+        ],
+        "height": 300,
+    },
+}
+
+CKEDITOR_UPLOAD_PATH = "uploads/"
+
+EMAIL_BEHEER = os.getenv("EMAIL_BEHEER", "ForzaMOR@rotterdam.nl")

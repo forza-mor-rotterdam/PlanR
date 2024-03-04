@@ -14,8 +14,10 @@ from apps.main.forms import (
     MeldingAanmakenForm,
     MeldingAfhandelenForm,
     MeldingAnnulerenForm,
+    MeldingHeropenenForm,
     MeldingHervattenForm,
     MeldingPauzerenForm,
+    MeldingSpoedForm,
     MSBLoginForm,
     MSBMeldingZoekenForm,
     StandaardExterneOmschrijvingAanmakenForm,
@@ -81,24 +83,20 @@ def http_500(request):
     )
 
 
+@login_required
 def root(request):
     if request.user.has_perms(["authorisatie.melding_lijst_bekijken"]):
         return redirect(reverse("melding_lijst"))
     if request.user.has_perms(["authorisatie.beheer_bekijken"]):
         return redirect(reverse("beheer"))
-    return redirect(reverse("account"))
-
-
-@login_required
-def account(request):
     return render(
         request,
-        "auth/account.html",
+        "home.html",
         {},
     )
 
 
-@permission_required("authorisatie.melding_lijst_bekijken")
+@permission_required("authorisatie.melding_lijst_bekijken", raise_exception=True)
 def melding_lijst(request):
     MeldingenService().set_gebruiker(
         gebruiker=request.user.serialized_instance(),
@@ -192,7 +190,7 @@ def melding_lijst(request):
     )
 
 
-@permission_required("authorisatie.melding_bekijken")
+@permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def melding_detail(request, id):
     melding = MeldingenService().get_melding(id)
 
@@ -211,14 +209,6 @@ def melding_detail(request, id):
         ]
         for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
     ]
-    # niet_opgeloste_taken = [
-    #     taakopdracht
-    #     for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
-    #     if taakopdracht.get("resolutie") != None or taakopdracht.get("resolutie") != "opgelost"
-    # ]
-    # print("= =  = = > ")
-    # print (bool(niet_opgeloste_taken))
-    # print("< = =  = = niet_opgeloste_taken")
 
     bijlagen_flat = [b for bl in melding_bijlagen for b in bl]
     form = InformatieToevoegenForm()
@@ -283,13 +273,13 @@ def melding_detail(request, id):
     )
 
 
-@permission_required("authorisatie.melding_bekijken")
+@permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def publiceer_topic(request, id):
     publiceer_topic_met_subscriptions(reverse("melding_detail", args=[id]))
     return JsonResponse({})
 
 
-@permission_required("authorisatie.melding_afhandelen")
+@permission_required("authorisatie.melding_afhandelen", raise_exception=True)
 def melding_afhandelen(request, id):
     melding = MeldingenService().get_melding(id)
 
@@ -366,7 +356,7 @@ def melding_afhandelen(request, id):
     )
 
 
-@permission_required("authorisatie.melding_annuleren")
+@permission_required("authorisatie.melding_annuleren", raise_exception=True)
 def melding_annuleren(request, id):
     melding = MeldingenService().get_melding(id)
 
@@ -422,7 +412,31 @@ def melding_annuleren(request, id):
     )
 
 
-@permission_required("authorisatie.melding_pauzeren")
+@permission_required("authorisatie.melding_heropenen", raise_exception=True)
+def melding_heropenen(request, id):
+    melding = MeldingenService().get_melding(id)
+    form = MeldingHeropenenForm()
+    if request.POST:
+        form = MeldingHeropenenForm(request.POST)
+        if form.is_valid():
+            MeldingenService().melding_heropenen(
+                id,
+                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
+                gebruiker=request.user.email,
+            )
+            return redirect("melding_detail", id=id)
+
+    return render(
+        request,
+        "melding/melding_heropenen.html",
+        {
+            "form": form,
+            "melding": melding,
+        },
+    )
+
+
+@permission_required("authorisatie.melding_pauzeren", raise_exception=True)
 def melding_pauzeren(request, id):
     melding = MeldingenService().get_melding(id)
     form = MeldingPauzerenForm()
@@ -453,7 +467,7 @@ def melding_pauzeren(request, id):
     )
 
 
-@permission_required("authorisatie.melding_hervatten")
+@permission_required("authorisatie.melding_hervatten", raise_exception=True)
 def melding_hervatten(request, id):
     melding = MeldingenService().get_melding(id)
     form = MeldingHervattenForm()
@@ -479,7 +493,35 @@ def melding_hervatten(request, id):
     )
 
 
-@permission_required("authorisatie.taak_aanmaken")
+@permission_required("authorisatie.melding_spoed_veranderen", raise_exception=True)
+def melding_spoed_veranderen(request, id):
+    melding = MeldingenService().get_melding(id)
+    form = MeldingSpoedForm(
+        initial={"urgentie": 0.5 if melding.get("urgentie", 0.2) == 0.2 else 0.2}
+    )
+
+    if request.POST:
+        form = MeldingSpoedForm(request.POST)
+        if form.is_valid():
+            MeldingenService().melding_spoed_aanpassen(
+                id,
+                urgentie=form.cleaned_data.get("urgentie"),
+                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
+                gebruiker=request.user.email,
+            )
+            return redirect("melding_detail", id=id)
+
+    return render(
+        request,
+        "melding/melding_spoed_veranderen.html",
+        {
+            "form": form,
+            "melding": melding,
+        },
+    )
+
+
+@permission_required("authorisatie.taak_aanmaken", raise_exception=True)
 def taak_starten(request, id):
     melding = MeldingenService().get_melding(id)
 
@@ -509,7 +551,7 @@ def taak_starten(request, id):
     )
 
 
-@permission_required("authorisatie.taak_afronden")
+@permission_required("authorisatie.taak_afronden", raise_exception=True)
 def taak_afronden(request, melding_uuid):
     melding = MeldingenService().get_melding(melding_uuid)
 
@@ -553,7 +595,7 @@ def taak_afronden(request, melding_uuid):
     )
 
 
-@permission_required("authorisatie.taak_annuleren")
+@permission_required("authorisatie.taak_annuleren", raise_exception=True)
 def taak_annuleren(request, melding_uuid):
     melding = MeldingenService().get_melding(melding_uuid)
 
@@ -590,7 +632,7 @@ def taak_annuleren(request, melding_uuid):
     )
 
 
-@permission_required("authorisatie.melding_bekijken")
+@permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def informatie_toevoegen(request, id):
     melding = MeldingenService().get_melding(id)
 
@@ -624,7 +666,7 @@ def informatie_toevoegen(request, id):
     )
 
 
-@permission_required("authorisatie.melding_bekijken")
+@permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def gebruiker_info(request, gebruiker_email):
     full_name = None
     telefoonnummer = None
@@ -667,7 +709,7 @@ def gebruiker_info(request, gebruiker_email):
     )
 
 
-@permission_required("authorisatie.melding_bekijken")
+@permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def melding_pdf_download(request, id):
     melding = MeldingenService().get_melding(id)
     base_url = request.build_absolute_uri()
@@ -709,8 +751,10 @@ def melding_pdf_download(request, id):
     )
 
 
+@permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def meldingen_bestand(request):
-    url = f"{settings.MELDINGEN_URL}{request.path}"
+    modified_path = request.path.replace(settings.MOR_CORE_URL_PREFIX, "")
+    url = f"{settings.MELDINGEN_URL}{modified_path}"
     headers = {"Authorization": f"Token {MeldingenService().haal_token()}"}
     response = requests.get(url, stream=True, headers=headers)
     return StreamingHttpResponse(
@@ -721,7 +765,7 @@ def meldingen_bestand(request):
     )
 
 
-@permission_required("authorisatie.melding_aanmaken")
+@permission_required("authorisatie.melding_aanmaken", raise_exception=True)
 def melding_aanmaken(request):
     # Temporary initial form data
     initial_form = {
@@ -773,7 +817,7 @@ def melding_aanmaken(request):
     )
 
 
-@login_required
+@permission_required("authorisatie.melding_aanmaken", raise_exception=True)
 def melding_verzonden(request, signaal_uuid):
     return render(
         request,
@@ -781,7 +825,7 @@ def melding_verzonden(request, signaal_uuid):
     )
 
 
-@permission_required("authorisatie.msb_toegang")
+@permission_required("authorisatie.msb_toegang", raise_exception=True)
 def msb_login(request):
     form = MSBLoginForm()
     errors = None
@@ -807,7 +851,7 @@ def msb_login(request):
     return render(request, "msb/login.html", {"form": form, "errors": errors})
 
 
-@permission_required("authorisatie.msb_toegang")
+@permission_required("authorisatie.msb_toegang", raise_exception=True)
 def msb_melding_zoeken(request):
     if not request.session.get("msb_token"):
         return redirect(reverse("msb_login"))
@@ -848,7 +892,7 @@ def msb_melding_zoeken(request):
     )
 
 
-@permission_required("authorisatie.msb_toegang")
+@permission_required("authorisatie.msb_toegang", raise_exception=True)
 def msb_importeer_melding(request):
     if not request.session.get("msb_token"):
         return redirect(reverse("msb_login"))
@@ -881,12 +925,6 @@ def msb_importeer_melding(request):
         huisletter = huisnummer
         huisnummer = None
 
-    omschrijving_kort = (
-        msb_data.get("omschrijving", "")
-        if msb_data.get("omschrijving")
-        else "- geen korte omschrijving beschikbaar -"
-    )
-
     post_data = {
         "signaal_url": "https://planr.rotterdam.nl/melding/signaal/42",
         "melder": {
@@ -898,7 +936,7 @@ def msb_importeer_melding(request):
         "onderwerpen": [
             f"{settings.MELDINGEN_URL}/api/v1/onderwerp/grofvuil-op-straat/"
         ],
-        "omschrijving_kort": omschrijving_kort[:500],
+        "omschrijving_kort": msb_data.get("omschrijving", "")[:500],
         "omschrijving": msb_data.get("aanvullendeInformatie", ""),
         "meta": msb_data,
         "meta_uitgebreid": {},
@@ -1021,7 +1059,7 @@ class StandaardExterneOmschrijvingVerwijderenView(
 # Locatie views
 
 
-@permission_required("authorisatie.locatie_aanpassen")
+@permission_required("authorisatie.locatie_aanpassen", raise_exception=True)
 def locatie_aanpassen(request, id):
     try:
         melding = MeldingenService().get_melding(id)

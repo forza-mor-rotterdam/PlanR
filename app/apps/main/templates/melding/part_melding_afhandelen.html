@@ -56,9 +56,9 @@
                           method="post"
                           class="form--horizontal"
                           data-controller="meldingbehandelformulier"
+                          data-meldingbehandelformulier-target="meldingBehandelFormulier"
                           data-turbo-frame="_top"
                           enctype="multipart/form-data"
-                          id="afhandelForm"
                           novalidate>
                         {% csrf_token %}
                         <div class="form-control__with-helptext js-validation">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
@@ -66,7 +66,6 @@
                         <div class="form-row btn-row">
                             <button type="reset"
                                     class="btn btn-tertiary"
-                                    data-controller="detail"
                                     data-action="detail#closeModal"
                                     data-detail-target="modalAfhandelen">
                                 <span>Annuleren</span>

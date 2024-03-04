@@ -5,6 +5,7 @@
 {% load vertaal from vertaal_tags %}
 {% load context_template from context_tags %}
 {% load slice_iterable from main_tags %}
+{% load mor_core_url from main_tags %}
 {% load render_onderwerp get_bijlagen from melding_tags %}
 {% load json_encode from json_tags %}
 {% block body %}
@@ -12,13 +13,15 @@
     {% context_template "melding_detail_titel.html" as titel_template %}
     {% context_template "melding_detail_melder.html" as melder_template %}
     {% context_template "melding_detail_acties.html" as acties_template %}
+
+    {% get_bijlagen melding as bijlagen %}
+    {% with locatie=melding.locaties_voor_melding.0 %}
+    {% with signalen=melding.signalen_voor_melding %}
     <turbo-frame id="overview">
     <div data-controller="detail"
-        data-detail-incident-object-value="{{ melding|json_encode }}"
-         {% with highest_weight_locatie=melding.locaties_voor_melding|dictsort:"gewicht"|last %}
-         {% if highest_weight_locatie %} data-detail-incident-y-value="{{ highest_weight_locatie.geometrie.coordinates.0 }}" data-detail-incident-x-value="{{ highest_weight_locatie.geometrie.coordinates.1 }}" {% endif %}
-         {% endwith %}>
-        {% get_bijlagen melding as bijlagen %}
+        data-detail-locatie-value="{{ locatie|json_encode }}"
+        data-detail-signalen-value="{{ melding.signalen_voor_melding|json_encode }}"
+        >
         <div class="border-green print-only"></div>
         <div class="page__detail">
             <div>
@@ -96,9 +99,9 @@
                                             <ul class="list-clean imageslider"
                                                 style="width: calc(100% * {{ bijlagen|length }})">
                                                 {% for bijlage in bijlagen %}
-                                                    <li class="container__image" tabindex="0">
+                                                    <li class="container__image" tabindex="0" >
                                                         <div class="image"
-                                                             style="background-image: url('{{ bijlage.afbeelding_relative_url }}')"
+                                                             style="background-image: url('{{ bijlage.afbeelding_relative_url|mor_core_url }}')"
                                                              data-detail-target="selectedImage">
                                                             <span>{{ bijlage.label }}</span>
                                                         </div>
@@ -116,7 +119,7 @@
                                                                     aria-label="Bekijk afbeelding">
                                                                 <div class="container__image">
                                                                     <div class="image"
-                                                                         style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url }}')">
+                                                                         style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url|mor_core_url }}')">
                                                                     </div>
                                                                 </div>
                                                             </button>
@@ -138,7 +141,7 @@
                                             {% for bijlage in bijlagen %}
                                                 <li class="container__image">
                                                     <div class="image">
-                                                        <img src="{{ bijlage.afbeelding_relative_url }}" alt="" />
+                                                        <img src="{{ bijlage.afbeelding_relative_url|mor_core_url }}" alt="" />
                                                         <span>Foto van melder</span>
                                                     </div>
                                                 </li>
@@ -170,18 +173,6 @@
                                 </h2>
                                 <div>
                                 {% if melding.signalen_voor_melding|length > 1 %}
-                                     <ul class="list-clean">
-                                        <li>
-                                            <h3 class="h5">Meldingnummer</h3>
-                                            <p>
-                                                {% if melding.id %}
-                                                    {{ melding.id }}
-                                                {% else %}
-                                                    -
-                                                {% endif %}
-                                            </p>
-                                        </li>
-                                    </ul>
                                     <div class="display--flex--md">
                                         <ul class="list-tabs" data-detail-target="tabs">
                                         {% for signaal in melding.signalen_voor_melding %}
@@ -242,16 +233,14 @@
                                                         {% endif %}
                                                     </ul>
                                                     <ul class="list-clean">
+                                                        {% if signaal.omschrijving_kort %}
                                                         <li>
                                                             <h3 class="h5">Toelichting</h3>
                                                             <p>
-                                                                {% if signaal.omschrijving_kort %}
-                                                                    {{ signaal.omschrijving_kort }}
-                                                                {% else %}
-                                                                    -
-                                                                {% endif %}
+                                                                {{ signaal.omschrijving_kort }}
                                                             </p>
                                                         </li>
+                                                        {% endif %}
                                                         <li>
                                                             <h3 class="h5">Meer informatie</h3>
                                                             <p>
@@ -400,4 +389,6 @@
         </div>
     </div>
     </turbo-frame>
+    {% endwith %}
+    {% endwith %}
 {% endblock body %}

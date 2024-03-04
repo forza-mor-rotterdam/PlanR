@@ -4,6 +4,7 @@
 {% load render_th_tags from melding_tags %}
 {% load render_td_tags from melding_tags %}
 {% load get_bijlagen from melding_tags %}
+{% load mor_core_url from main_tags %}
 {% load rotterdam_formulier_html %}
 {% block body %}
     <turbo-frame id="overview">
@@ -25,7 +26,7 @@
                         {% endif %}
                     </span>
                 </div>
-                <div class="container__search">{{ form.q|render_rotterdam_formulier }}</div>
+                <div class="container__search" data-filter-target="containerSearch">{{ form.q|render_rotterdam_formulier }}</div>
             </div>
             <div class="container__tools">
                 <div class="container__filter" data-filter-target="filterOverview">
@@ -55,11 +56,11 @@
                                 <td width="80">
                                     {% if melding.bijlage.afbeelding_verkleind_relative_url %}
                                         <div class="container__thumbnail"
-                                             style="background-image: url('{{ melding.bijlage.afbeelding_verkleind_relative_url }}')">
+                                             style="background-image: url('{{ melding.bijlage.afbeelding_verkleind_relative_url|mor_core_url }}')">
                                         </div>
                                     {% elif melding.bijlage.bestand_relative_url %}
                                         <div class="container__thumbnail"
-                                             style="background-image: url('{{ melding.bijlage.bestand_relative_url }}')">
+                                             style="background-image: url('{{ melding.bijlage.bestand_relative_url|mor_core_url }}')">
                                         </div>
                                     {% else %}
                                         <div class="background-image"></div>

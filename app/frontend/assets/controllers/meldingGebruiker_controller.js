@@ -92,9 +92,9 @@ export default class extends Controller {
           let aElem = document.createElement('a')
           aElem.href = ''
           aElem.dataset.action = 'detail#openModal'
-          aElem.dataset.detailActionParam = `/gebruikers/gebruiker_info/${subscriptions[i].payload.gebruiker.email}`
+          aElem.dataset.detailActionParam = `/gebruiker/gebruiker_info/${subscriptions[i].payload.gebruiker.email}`
 
-          aElem.textContent = `${subscriptions[i].payload.gebruiker.naam}`
+          aElem.textContent = `${subscriptions[i].payload.gebruiker.naam}, ${subscriptions[i].payload.gebruiker.email}`
           liElem.appendChild(aElem)
           self.gebruikerLijstTarget.appendChild(liElem)
         }

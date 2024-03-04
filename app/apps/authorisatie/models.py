@@ -16,6 +16,11 @@ class MeldingAnnulerenPermissie(BasisPermissie):
     codenaam = "melding_annuleren"
 
 
+class MeldingHeropenenPermissie(BasisPermissie):
+    naam = "Melding heropenen"
+    codenaam = "melding_heropenen"
+
+
 class MeldingAanmakenPermissie(BasisPermissie):
     naam = "Melding aanmaken"
     codenaam = "melding_aanmaken"
@@ -39,6 +44,11 @@ class MeldingenPauzerenPermissie(BasisPermissie):
 class MeldingenHervattenPermissie(BasisPermissie):
     naam = "Melding hervatten"
     codenaam = "melding_hervatten"
+
+
+class MeldingenSpoedVeranderenPermissie(BasisPermissie):
+    naam = "Melding spoed veranderen"
+    codenaam = "melding_spoed_veranderen"
 
 
 class TaakAanmakenPermissie(BasisPermissie):
@@ -205,14 +215,42 @@ class TaaktypeCategorieVerwijderenPermissie(BasisPermissie):
     codenaam = "taaktype_categorie_verwijderen"
 
 
+# Rechten voor release notes
+class ReleaseNoteLijstBekijkenPermissie(BasisPermissie):
+    naam = "Release notes bekijken"
+    codenaam = "release_note_lijst_bekijken"
+
+
+class ReleaseNoteAanmakenPermissie(BasisPermissie):
+    naam = "Release note aanmaken"
+    codenaam = "release_note_aanmaken"
+
+
+class ReleaseNoteBekijkenPermissie(BasisPermissie):
+    naam = "Release note bekijken"
+    codenaam = "release_note_bekijken"
+
+
+class ReleaseNoteAanpassenPermissie(BasisPermissie):
+    naam = "Release note aanpassen"
+    codenaam = "release_note_aanpassen"
+
+
+class ReleaseNoteVerwijderenPermissie(BasisPermissie):
+    naam = "Release note verwijderen"
+    codenaam = "release_note_verwijderen"
+
+
 gebruikersgroep_permissies = (
     MeldingAfhandelenPermissie,
     MeldingAnnulerenPermissie,
+    MeldingHeropenenPermissie,
     MeldingAanmakenPermissie,
     MeldingBekijkenPermissie,
     MeldingenLijstBekijkenPermissie,
     MeldingenPauzerenPermissie,
     MeldingenHervattenPermissie,
+    MeldingenSpoedVeranderenPermissie,
     TaakAanmakenPermissie,
     TaakAfrondenPermissie,
     TaakAnnulerenPermissie,
@@ -244,6 +282,11 @@ gebruikersgroep_permissies = (
     TaaktypeCategorieBekijkenPermissie,
     TaaktypeCategorieAanpassenPermissie,
     TaaktypeCategorieVerwijderenPermissie,
+    ReleaseNoteLijstBekijkenPermissie,
+    ReleaseNoteAanmakenPermissie,
+    ReleaseNoteBekijkenPermissie,
+    ReleaseNoteAanpassenPermissie,
+    ReleaseNoteVerwijderenPermissie,
 )
 
 gebruikersgroep_permissie_opties = [

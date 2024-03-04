@@ -256,6 +256,7 @@ class InformatieToevoegenForm(forms.Form):
                 "accept": ".jpg, .jpeg, .png, .heic",
                 "data-action": "change->bijlagen#updateImageDisplay",
                 "data-bijlagen-target": "bijlagenExtra",
+                "multiple": "multiple",
             }
         ),
         label="Voeg één of meerdere foto's toe",
@@ -334,6 +335,7 @@ class TaakAfrondenForm(forms.Form):
                 "accept": ".jpg, .jpeg, .png, .heic",
                 "data-action": "change->bijlagen#updateImageDisplay",
                 "data-bijlagen-target": "bijlagenAfronden",
+                "multiple": "multiple",
             }
         ),
         label="Foto's",
@@ -476,6 +478,23 @@ class MeldingAnnulerenForm(forms.Form):
         )
 
 
+class MeldingHeropenenForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["omschrijving_intern"] = forms.CharField(
+            label="Interne opmerking",
+            help_text="Deze tekst wordt niet naar de melder verstuurd.",
+            widget=forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": "4",
+                    "data-meldingbehandelformulier-target": "internalText",
+                }
+            ),
+            required=True,
+        )
+
+
 class MeldingPauzerenForm(forms.Form):
     status = forms.ChoiceField(
         label="Wie is er om informatie gevraagd?",
@@ -515,6 +534,32 @@ class MeldingHervattenForm(forms.Form):
         ),
         required=False,
     )
+
+
+class MeldingSpoedForm(forms.Form):
+    urgentie = forms.FloatField(
+        widget=forms.HiddenInput(),
+        required=True,
+    )
+
+    omschrijving_intern = forms.CharField(
+        label="Interne opmerking",
+        help_text="Deze tekst wordt niet naar de melder verstuurd.",
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "rows": "4",
+            }
+        ),
+        required=False,
+    )
+
+    def submit_label(self):
+        return (
+            "Geef melding spoed-status"
+            if self.initial["urgentie"] >= 0.5
+            else "Verwijder spoed-status"
+        )
 
 
 class LocatieAanpassenForm(forms.Form):
@@ -718,6 +763,7 @@ class MeldingAanmakenForm(forms.Form):
                 "accept": ".jpg, .jpeg, .png, .heic",
                 "data-action": "change->bijlagen#updateImageDisplay",
                 "data-bijlagen-target": "bijlagenNieuw",
+                "multiple": "multiple",
             }
         ),
         label="Foto's",

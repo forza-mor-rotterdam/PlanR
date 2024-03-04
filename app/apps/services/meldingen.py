@@ -150,10 +150,39 @@ class MeldingenService(BasisService):
                 }
             )
         return self.do_request(
-            f"{self._api_path}/melding/{id}/status-aanpassen/"
-            if status
-            else f"{self._api_path}/melding/{id}/gebeurtenis-toevoegen/",
+            (
+                f"{self._api_path}/melding/{id}/status-aanpassen/"
+                if status
+                else f"{self._api_path}/melding/{id}/gebeurtenis-toevoegen/"
+            ),
             method="patch" if status else "post",
+            data=data,
+            raw_response=False,
+        )
+
+    def melding_heropenen(
+        self,
+        id,
+        bijlagen=[],
+        omschrijving_intern=None,
+        gebruiker=None,
+    ):
+        data = {
+            "bijlagen": bijlagen,
+            "omschrijving_intern": omschrijving_intern,
+            "gebruiker": gebruiker,
+        }
+        data.update(
+            {
+                "status": {
+                    "naam": "openstaand",
+                },
+                "resolutie": "niet_opgelost",
+            }
+        )
+        return self.do_request(
+            f"{self._api_path}/melding/{id}/heropenen/",
+            method="patch",
             data=data,
             raw_response=False,
         )
@@ -183,6 +212,23 @@ class MeldingenService(BasisService):
             method="patch",
             data=data,
             raw_response=False,
+        )
+
+    def melding_spoed_aanpassen(self, id, urgentie, omschrijving_intern, gebruiker):
+        response = self.do_request(
+            f"{self._api_path}/melding/{id}/urgentie-aanpassen/",
+            method="patch",
+            data={
+                "urgentie": urgentie,
+                "gebruiker": gebruiker,
+                "omschrijving_intern": omschrijving_intern,
+            },
+        )
+        if response.status_code == 200:
+            return response.json()
+        logger.error(response.text)
+        raise MeldingenService.DataOphalenFout(
+            f"signaal_aanmaken: Verwacht status code 200, kreeg status code '{response.status_code}'"
         )
 
     def locatie_aanpassen(

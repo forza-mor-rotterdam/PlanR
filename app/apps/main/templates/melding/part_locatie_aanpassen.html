@@ -68,7 +68,6 @@
                           data-locatieaanpassenformulier-locatie-value="{{ melding.locaties_voor_melding|dictsort:'gewicht'|last|json_encode }}"
                           data-turbo-frame="overview"
                           enctype="multipart/form-data"
-                          id="afhandelForm"
                           novalidate>
                         {% csrf_token %}
                         <div class="container__map">
@@ -95,7 +94,6 @@
                             <div class="form-row btn-row">
                                 <button type="reset"
                                         class="btn btn-tertiary"
-                                        data-controller="detail"
                                         data-detail-target="modalAfhandelen"
                                         data-action="detail#closeModal">
                                     <span>Annuleren</span>
