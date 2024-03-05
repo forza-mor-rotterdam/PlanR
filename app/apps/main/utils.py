@@ -52,12 +52,21 @@ def melding_naar_tijdlijn(melding: dict):
 
         tg = mg.get("taakgebeurtenis", {}) if mg.get("taakgebeurtenis", {}) else {}
         taakstatus_is_voltooid = (
-            tg and tg.get("taakstatus", {}).get("naam") == "voltooid"
+            tg
+            and tg.get("taakstatus")
+            and tg.get("taakstatus", {}).get("naam") == "voltooid"
         )
-        taakstatus_event = tg and tg.get("taakstatus", {}).get("naam") in [
-            "toegewezen",
-            "openstaand",
-        ]
+        taakstatus_event = (
+            tg
+            and tg.get("taakstatus")
+            and tg.get("taakstatus", {}).get("naam")
+            in [
+                "toegewezen",
+                "openstaand",
+            ]
+            or tg
+            and tg.get("gebeurtenis_type") == "gedeeld"
+        )
         t_id = tg.get("taakopdracht")
         if t_id and t_id not in t_ids:
             try:

@@ -49,8 +49,10 @@
                                 <strong {% if row_data.mg.taakgebeurtenis %}{% with to=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}data-taak-uuid="{{to.taak_url|laatste_slug_van_url}}"{% endwith %}{% endif %}>
                                     {% if row_data.mg.taakgebeurtenis %}
                                         {% with taakopdracht=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}
-                                           {{ taakopdracht.titel }}
-                                            {% if row_data.mg.taakgebeurtenis.taakstatus.naam != "nieuw" %}
+                                            {{ taakopdracht.titel }}
+                                            {% if row_data.mg.taakgebeurtenis.gebeurtenis_type == "gedeeld" %}
+                                                : gedeeld
+                                            {% elif row_data.mg.taakgebeurtenis.taakstatus.naam != "nieuw" %}
                                                 :
                                                 {% if row_data.mg.taakgebeurtenis.taakstatus.naam == "voltooid" %}
                                                     {{ taakopdracht.resolutie|vertaal }}
@@ -80,7 +82,13 @@
                                 <div class="wrapper">
                                     <dl>
                                         {% if row_data.mg.taakgebeurtenis %}
-                                            {% if row_data.mg.taakgebeurtenis.taakstatus.naam|lower != "nieuw" %}
+                                            {% if row_data.mg.taakgebeurtenis.gebeurtenis_type == "gedeeld" %}
+                                                <dt>Datum</dt>
+                                                <dd>
+                                                    {{ row_data.mg.taakgebeurtenis.aangemaakt_op|to_datetime }}
+                                                </dd>
+                                                {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
+                                            {% elif row_data.mg.taakgebeurtenis.taakstatus.naam|lower != "nieuw" %}
                                                 {% if row_data.mg.taakgebeurtenis.aangemaakt_op %}
                                                     <dt>Taak afgehandeld</dt>
                                                     <dd>
