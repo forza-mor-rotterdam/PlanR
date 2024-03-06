@@ -8,6 +8,7 @@
 {% load mor_core_url from main_tags %}
 {% load render_onderwerp get_bijlagen from melding_tags %}
 {% load json_encode from json_tags %}
+{% block title %}Melding {{ melding.id }} | PlanR{% endblock %}
 {% block body %}
     {% context_template "melding_detail_locaties.html" as locatie_template %}
     {% context_template "melding_detail_titel.html" as titel_template %}
