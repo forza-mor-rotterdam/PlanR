@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 {% load rotterdam_formulier_html %}
+{% block title %}
+    {% if object %}
+    Rechtengroep '{{ object.name }}' aanpassen
+    {% else %}
+    Rechtengroep aanmaken
+    {% endif %} | Beheer | PlanR{% endblock %}
 {% block body %}
     <turbo-frame id="beheer">
     <div class="page__beheer" data-turbo-action="advance">
