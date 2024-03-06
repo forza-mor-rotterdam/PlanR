@@ -3,7 +3,7 @@
 {% load json_encode from main_tags %}
 {% load get_field_from_gebruiker_middels_email from gebruikers_tags %}
 {% block title %}
-    PlanR
+    {{ object.email|get_field_from_gebruiker_middels_email }} | Profiel | PlanR
 {% endblock title %}
 {% block body %}
     <turbo-frame id="gebruiker_profiel">
