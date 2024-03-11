@@ -18,10 +18,24 @@ export default class extends Controller {
       this.groupCheckboxTarget.classList.add('half-checked')
     }
   }
+  connect() {
+    let self = this
+    self.element[self.identifier] = self
+    self.filterController = document.querySelector('[data-controller="filter"]').filter
+  }
   checkboxChangeHandler(e) {
     this.subCheckboxTargets.map((checkbox) => {
       checkbox.checked = this.groupCheckboxTarget.checked
     })
     this.element.closest('form').submit()
+  }
+  toggleGroupElements(e) {
+    let self = this
+    e.stopImmediatePropagation()
+    if (self.filterController && e.target.hasAttribute('open')) {
+      self.filterController.addToFoldoutStates([e.params.foldoutId])
+    } else if (self.filterController) {
+      self.filterController.removeFromFoldoutStates([e.params.foldoutId])
+    }
   }
 }

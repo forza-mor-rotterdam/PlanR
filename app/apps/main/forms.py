@@ -102,7 +102,7 @@ class FilterForm(forms.Form):
                 "data-filter-target": "foldoutStateField",
             }
         ),
-        initial="remove me",
+        initial="[]",
         required=False,
     )
     ordering = forms.ChoiceField(
@@ -223,6 +223,7 @@ class FilterForm(forms.Form):
                         "class": "list--form-check-input",
                         "data-action": "filter#onChangeFilter",
                         "hideLabel": True,
+                        "foldout_states": self.data["foldout_states"],
                     }
                 ),
                 choices=v.get("opties", []),

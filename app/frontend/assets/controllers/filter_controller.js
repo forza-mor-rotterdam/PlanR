@@ -4,6 +4,7 @@ export default class extends Controller {
 
   connect() {
     let self = this
+    self.element[self.identifier] = self
     self.containerSelector = '.container__multiselect'
     self.showClass = 'show'
 
@@ -34,15 +35,33 @@ export default class extends Controller {
       )
     }
   }
+  addToFoldoutStates(foldout_ids) {
+    let self = this
+    let foldoutStates = JSON.parse(
+      self.foldoutStateFieldTarget.value ? self.foldoutStateFieldTarget.value : '[]'
+    )
+    let d = foldoutStates.concat(foldout_ids)
+    let set = new Set(d)
+    d = Array.from(set)
+    self.foldoutStateFieldTarget.value = JSON.stringify(d)
+  }
+  removeFromFoldoutStates(foldout_ids) {
+    let self = this
+    let foldoutStates = JSON.parse(
+      self.foldoutStateFieldTarget.value ? self.foldoutStateFieldTarget.value : '[]'
+    )
+    foldoutStates = foldoutStates.filter((id) => !foldout_ids.includes(id))
+    self.foldoutStateFieldTarget.value = JSON.stringify(foldoutStates)
+  }
   toggleFilterElements(e) {
     let self = this
     e.stopImmediatePropagation()
 
-    self.foldoutStateFieldTarget.value = ''
+    self.removeFromFoldoutStates(self.filterButtonTargets.map((f) => f.dataset.foldoutName))
     self.filterButtonTargets.map((elem) => {
       const elemContainer = elem.closest(self.containerSelector)
       if (elem == e.target) {
-        self.foldoutStateFieldTarget.value = e.target.dataset.foldoutName
+        self.addToFoldoutStates([e.target.dataset.foldoutName])
         elemContainer.classList[
           elemContainer.classList.contains(self.showClass) ? 'remove' : 'add'
         ](self.showClass)

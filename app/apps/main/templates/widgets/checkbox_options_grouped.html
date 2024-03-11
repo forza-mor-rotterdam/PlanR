@@ -1,15 +1,19 @@
+{% load json_encode from main_tags %}
 {% with id=widget.attrs.id %}
 <div {% if id %} id="{{ id }}"{% endif %} {% if widget.attrs.class %} class="{{ widget.attrs.class }}"{% endif %}>
     <div>
         {% for group, options, index in widget.optgroups %}
             {% if group %}
-            <details data-controller="subSelect">
+            {% with group_id='foldout_group-'|add:group|slugify %}
+            <details data-action="subSelect#toggleGroupElements" data-controller="subSelect" data-subSelect-foldout-id-param="{{ group_id }}" {% if group_id in widget.attrs.foldout_states|json_encode %} open{% endif %}>
                 <summary class="form-check">
                     <input type="checkbox" data-subSelect-target="groupCheckbox" data-action="subSelect#checkboxChangeHandler">
                     <label class="form-check-label">
                         {{group}}<span data-subSelect-target="selectedCount"></span>
                     </label>
                 </summary>
+
+            {% endwith %}
             {% endif %}
             <ul class="list--form-check-input">
                 {% for option in options %}

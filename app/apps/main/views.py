@@ -107,6 +107,7 @@ def melding_lijst(request):
     standaard_waardes = {
         "limit": "10",
         "ordering": get_ordering(gebruiker),
+        "foldout_states": "[]",
     }
     actieve_filters = get_actieve_filters(gebruiker)
 
