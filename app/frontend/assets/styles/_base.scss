@@ -27,7 +27,8 @@ main,
 header {
     margin: 0 auto;
 
-    > .container {
+    > .container,
+    > .container--env .container {
         display: block;
         max-width: map-get($container-max-widths, xxl);
         margin: 0 auto;
