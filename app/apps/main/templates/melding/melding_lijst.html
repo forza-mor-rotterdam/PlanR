@@ -39,7 +39,7 @@
                             <label class="visually-hidden">{{ veld.label }}</label>
                             <button data-action="filter#toggleFilterElements" data-filter-target="filterButton" data-foldout-name="{{ foldout_name }}" class="toggle js-toggle{% if veld.data|length > 0 %} active {% endif %}"
                                     type="button">{{ veld.label|capfirst }}</button>
-                            <div class="wrapper">{{ veld|render_rotterdam_formulier }}</div>
+                            <div class="wrapper">{{ veld }}</div>
                         </div>
                         {% endwith %}
                     {% endfor %}

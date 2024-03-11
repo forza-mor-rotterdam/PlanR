@@ -1,0 +1,32 @@
+{% with id=widget.attrs.id %}
+<div {% if id %} id="{{ id }}"{% endif %} {% if widget.attrs.class %} class="{{ widget.attrs.class }}"{% endif %}>
+    <div>
+        {% for group, options, index in widget.optgroups %}
+            {% if group %}
+            <details data-controller="subSelect">
+                <summary class="form-check">
+                    <input type="checkbox" data-subSelect-target="groupCheckbox" data-action="subSelect#checkboxChangeHandler">
+                    <label class="form-check-label">
+                        {{group}}<span data-subSelect-target="selectedCount"></span>
+                    </label>
+                </summary>
+            {% endif %}
+            <ul class="list--form-check-input">
+                {% for option in options %}
+                    <li class="">
+                        <div class="form-check">
+                            <input id="{{ option.attrs.id }}" data-subSelect-target="subCheckbox" type="{{ option.type }}" name="{{ option.name }}"{% if option.value != None %} value="{{ option.value|stringformat:'s' }}"{% endif %} {% for name, value in option.attrs.items %}{% if value is not False %} {{ name }}{% if value is not True %}="{{ value|stringformat:'s' }}"{% endif %}{% endif %}{% endfor %}>
+                            <label class="form-check-label" for="{{ option.attrs.id }}">
+                                {{ option.label }}
+                            </label>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+            {% if group %}
+            </details>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endwith %}

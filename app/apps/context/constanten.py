@@ -332,6 +332,7 @@ class SpoedKolom(StandaardKolom):
 
 class StandaardFilter:
     _key = None
+    _group = False
 
     def __init__(self, context):
         self.context = context
@@ -344,8 +345,35 @@ class StandaardFilter:
         return f"{VERTALINGEN.get(optie_data[0], optie_data[0])}"
 
     def opties(self):
+        if self._group:
+            groups = list(
+                set([v[1] for k, v in self.context.items() if len(v) > 1 and v[1]])
+            )
+            return [
+                [
+                    g,
+                    [
+                        [
+                            k,
+                            {
+                                "label": self.optie_label(v),
+                                "item_count": v[1],
+                            },
+                        ]
+                        for k, v in self.context.items()
+                        if len(v) > 1 and g == v[1]
+                    ],
+                ]
+                for g in groups
+            ]
         return [
-            [k, {"label": self.optie_label(v), "item_count": v[1]}]
+            [
+                k,
+                {
+                    "label": self.optie_label(v),
+                    "item_count": v[1],
+                },
+            ]
             for k, v in self.context.items()
         ]
 
@@ -384,6 +412,7 @@ class WijkFilter(StandaardFilter):
 
 class BuurtFilter(StandaardFilter):
     _key = "buurt"
+    _group = True
 
 
 FILTERS = (

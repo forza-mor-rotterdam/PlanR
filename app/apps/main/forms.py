@@ -19,6 +19,8 @@ logger = logging.getLogger(__name__)
 
 
 class CheckboxSelectMultiple(forms.CheckboxSelectMultiple):
+    template_name = "widgets/checkbox_options_grouped.html"
+
     def create_option(self, *args, **kwargs):
         args = list(args)
         option_data = args[2]
