@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load rotterdam_formulier_html %}
 {% load json_encode from json_tags %}
+{% block title %}Beheer | PlanR{% endblock %}
 {% block body %}
     <turbo-frame id="beheer" data-turbo-action="advance">
     <h1>Beheer</h1>
@@ -19,6 +20,9 @@
         </li>
         <li>
             <a href="{% url 'taaktype_categorie_lijst' %}">Taaktype categorieën</a>
+        </li>
+        <li>
+            <a href="{% url 'release_note_lijst' %}">Release notes</a>
         </li>
     </ul>
     <h2>Andere Forzamor beheer productie omgevingen</h2>

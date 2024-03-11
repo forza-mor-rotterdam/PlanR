@@ -49,6 +49,14 @@ fieldset {
     border: 0;
     min-width: 0;
 
+    &.no-margin-bottom {
+        > div {
+            &:last-child {
+                margin-bottom: 0 !important;
+            }
+        }
+    }
+
     legend.divided {
         width: 100%;
         padding-bottom: $input-padding-x;
@@ -94,6 +102,24 @@ fieldset {
     }
 }
 
+.form-control[readonly],
+.form-select[readonly] {
+    background-color: $gray-tint01;
+    opacity: 1;
+    color: $gray-tint08;
+    ~ .form-check-label {
+        color: $gray-tint08;
+    }
+    &:checked {
+        border-color: $gray-tint08;
+    }
+
+    &:hover {
+        border: 1px solid #7c8b90 !important;
+        box-shadow: none !important;
+    }
+}
+
 .is-invalid:is(.form-control, .form-select):hover:not(:focus):not([disabled]):not([read-only]) {
     box-shadow:
         0 1px 0 $invalid-color,
@@ -117,6 +143,7 @@ fieldset {
 
     .invalid-text {
         margin-top: 0.5rem;
+        margin-bottom: 0.25rem;
         padding-left: 1rem;
         position: relative;
 
@@ -124,6 +151,7 @@ fieldset {
             content: url("../icons/warning_triangle.svg");
             position: absolute;
             left: 0;
+            top: 1px;
         }
     }
 }
@@ -132,10 +160,11 @@ fieldset {
     border-color: #404b4f;
 }
 
-.help-block {
-    font-size: $h6-font-size;
-    margin: 0.25rem 0 1.5rem;
+.help-block:not(.invalid-text) {
+    font-size: $h5-font-size;
+    margin: 0.25rem 0;
     display: block;
+    color: $gray-tint09;
 }
 
 $form-search-indicator: url("data:image/svg+xml,<svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'> <path fill-rule='evenodd' clip-rule='evenodd' d='M19.5005 9.75C19.5005 6.825 17.1755 4.5 14.2505 4.5C11.3255 4.5 9.00046 6.825 9.00046 9.75C9.00046 12.675 11.3255 15 14.2505 15C17.1755 15 19.5005 12.675 19.5005 9.75ZM7.50046 9.75C7.50046 6 10.5005 3 14.2505 3C18.0005 3 21.0005 6 21.0005 9.75C21.0005 13.5 18.0005 16.5 14.2505 16.5C12.6478 16.5 11.1822 15.9521 10.0292 15.0319L4.25792 20.8031L3.19727 19.7425L8.96853 13.9712C8.04835 12.8182 7.50046 11.3526 7.50046 9.75Z' fill='#{$gray-tint09}'/> </svg>");
@@ -673,4 +702,41 @@ textarea {
 body > .select2-container--default,
 .modal > .select2-container--default {
     margin-top: 0 !important;
+}
+
+.label-strong {
+    label {
+        font-weight: 700;
+    }
+}
+
+.wrapper--flex-order {
+    display: flex;
+    flex-direction: column;
+
+    > div {
+        flex: 1;
+
+        input {
+            ~ .form-check-label {
+                line-height: 1.5rem;
+                min-height: 48px;
+            }
+        }
+    }
+}
+
+.django-ckeditor-widget {
+    width: 100%;
+}
+
+.form--aanpassen {
+    .wrapper--flex-order {
+        img {
+            margin-bottom: 1em;
+        }
+        input[type="checkbox"] {
+            @include form-check-input();
+        }
+    }
 }

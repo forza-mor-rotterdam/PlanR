@@ -2,6 +2,7 @@ from apps.authenticatie.views import (
     GebruikerAanmakenView,
     GebruikerAanpassenView,
     GebruikerLijstView,
+    GebruikerProfielView,
     gebruiker_bulk_import,
 )
 from apps.authorisatie.views import (
@@ -26,7 +27,6 @@ from apps.main.views import (
     TaaktypeCategorieAanpassenView,
     TaaktypeCategorieLijstView,
     TaaktypeCategorieVerwijderenView,
-    account,
     clear_melding_token_from_cache,
     gebruiker_info,
     http_404,
@@ -37,6 +37,7 @@ from apps.main.views import (
     melding_afhandelen,
     melding_annuleren,
     melding_detail,
+    melding_heropenen,
     melding_hervatten,
     melding_lijst,
     melding_pauzeren,
@@ -53,6 +54,14 @@ from apps.main.views import (
     taak_annuleren,
     taak_starten,
 )
+from apps.release_notes.views import (
+    ReleaseNoteAanmakenView,
+    ReleaseNoteAanpassenView,
+    ReleaseNoteDetailView,
+    ReleaseNoteListView,
+    ReleaseNoteListViewPublic,
+    ReleaseNoteVerwijderenView,
+)
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -63,12 +72,6 @@ from rest_framework.authtoken import views
 
 urlpatterns = [
     path("", root, name="root"),
-    path("account/", account, name="account"),
-    path(
-        "gebruikers/gebruiker_info/<str:gebruiker_email>/",
-        gebruiker_info,
-        name="gebruiker_info",
-    ),
     path("api-token-auth/", views.obtain_auth_token),
     path(
         "admin/clear-melding-token-from-cache/",
@@ -102,6 +105,11 @@ urlpatterns = [
         "melding/<uuid:id>/hervatten/",
         melding_hervatten,
         name="melding_hervatten",
+    ),
+    path(
+        "melding/<uuid:id>/heropenen/",
+        melding_heropenen,
+        name="melding_heropenen",
     ),
     path(
         "melding/<uuid:id>/spoed/",
@@ -238,6 +246,48 @@ urlpatterns = [
         TaaktypeCategorieVerwijderenView.as_view(),
         name="taaktype_categorie_verwijderen",
     ),
+    # Release notes
+    path(
+        "release-notes/",
+        ReleaseNoteListViewPublic.as_view(),
+        name="release_note_lijst_public",
+    ),
+    path(
+        "release-notes/<int:pk>/",
+        ReleaseNoteDetailView.as_view(),
+        name="release_note_detail",
+    ),
+    path(
+        "beheer/release-notes/",
+        ReleaseNoteListView.as_view(),
+        name="release_note_lijst",
+    ),
+    path(
+        "beheer/release-notes/aanmaken/",
+        ReleaseNoteAanmakenView.as_view(),
+        name="release_note_aanmaken",
+    ),
+    path(
+        "beheer/release-notes/<int:pk>/aanpassen/",
+        ReleaseNoteAanpassenView.as_view(),
+        name="release_note_aanpassen",
+    ),
+    path(
+        "beheer/release-notes/<int:pk>/verwijderen/",
+        ReleaseNoteVerwijderenView.as_view(),
+        name="release_note_verwijderen",
+    ),
+    # Gebruikers
+    path(
+        "gebruiker/gebruiker_info/<str:gebruiker_email>/",
+        gebruiker_info,
+        name="gebruiker_info",
+    ),
+    path(
+        "gebruiker/profiel/",
+        GebruikerProfielView.as_view(),
+        name="gebruiker_profiel",
+    ),
     ### Locatie
     path(
         "part/melding/<uuid:id>/locatie_aanpassen/",
@@ -245,7 +295,7 @@ urlpatterns = [
         name="locatie_aanpassen",
     ),
     path("select2/", include(select2_urls)),
-    re_path(r"media/", meldingen_bestand, name="meldingen_bestand"),
+    re_path(r"core/media/", meldingen_bestand, name="meldingen_bestand"),
 ]
 
 if settings.OIDC_ENABLED:
@@ -276,6 +326,7 @@ else:
 
 
 if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += [
         path("404/", http_404, name="404"),
         path("500/", http_500, name="500"),

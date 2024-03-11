@@ -12,7 +12,7 @@ VERTALINGEN = {
     "in_behandeling": "In behandeling",
     "openstaand": "Openstaand",
     "controle": "Controle",
-    "afgehandeld": "Melding afgehandeld",
+    "afgehandeld": "Afgehandeld",
     "geannuleerd": "Geannuleerd",
     "nieuw": "Nieuw",
     "bezig": "Bezig",
@@ -38,8 +38,9 @@ VERTALINGEN = {
     "wachten_melder": "Wachten melder",
     "pauze": "Pauze",
     "standaard": "Opmerking/foto toegevoegd",
-    "signaal_toegevoegd": "Melding samengevoegd",
+    "signaal_toegevoegd": "Samengevoegd",
     "urgentie_aangepast": "Spoed aangepast",
+    "melding_heropend": "Heropend",
 }
 
 MSB_WIJKEN = [
