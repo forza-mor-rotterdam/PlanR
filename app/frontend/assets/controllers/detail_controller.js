@@ -39,12 +39,15 @@ export default class extends Controller {
     this.coordinates =
       JSON.parse(this.locatieValue).geometrie &&
       JSON.parse(this.locatieValue).geometrie.coordinates.reverse()
-    this.signalen = JSON.parse(this.signalenValue).filter(
-      (signaal) =>
-        signaal.locaties_voor_signaal.length > 0 &&
-        signaal.locaties_voor_signaal[0].geometrie &&
-        signaal.locaties_voor_signaal[0].geometrie.coordinates
-    )
+    this.signalen =
+      JSON.parse(this.signalenValue).length > 1
+        ? JSON.parse(this.signalenValue).filter(
+            (signaal) =>
+              signaal.locaties_voor_signaal.length > 0 &&
+              signaal.locaties_voor_signaal[0].geometrie &&
+              signaal.locaties_voor_signaal[0].geometrie.coordinates
+          )
+        : []
 
     if (this.hasThumbListTarget) {
       const element = this.thumbListTarget.getElementsByTagName('li')[0]
