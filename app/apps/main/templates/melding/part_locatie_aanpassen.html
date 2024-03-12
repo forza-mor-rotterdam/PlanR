@@ -70,6 +70,16 @@
                           enctype="multipart/form-data"
                           novalidate>
                         {% csrf_token %}
+                        {{ form.geometrie }}
+                        {{ form.straatnaam }}
+                        {{ form.huisnummer }}
+                        {{ form.huisletter }}
+                        {{ form.toevoeging }}
+                        {{ form.postcode }}
+                        {{ form.plaatsnaam }}
+                        {{ form.wijknaam }}
+                        {{ form.buurtnaam }}
+
                         <div class="container__map">
                             <div class="map"
                                  id="aanpassenMap"
@@ -80,15 +90,18 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-control__with-helptext js-validation">{{ form.geometrie|render_rotterdam_formulier }}</div>
-                        <div class="container--flex">
-                            <div class="form-control__with-helptext js-validation">{{ form.straatnaam|render_rotterdam_formulier }}</div>
-                            <div class="form-control__with-helptext js-validation">{{ form.huisnummer|render_rotterdam_formulier }}</div>
-                            <div class="form-control__with-helptext js-validation">{{ form.postcode|render_rotterdam_formulier }}</div>
-                            <div class="form-control__with-helptext js-validation">{{ form.plaatsnaam|render_rotterdam_formulier }}</div>
-                            <div class="form-control__with-helptext js-validation">{{ form.wijknaam|render_rotterdam_formulier }}</div>
-                            <div class="form-control__with-helptext js-validation">{{ form.buurtnaam|render_rotterdam_formulier }}</div>
+
+                        <strong>Huidige adres</strong>
+                        <p>
+                            {{melding.locaties_voor_melding.0.straatnaam}} {{melding.locaties_voor_melding.0.huisnummer}}{{melding.locaties_voor_melding.0.huisletter}}<br>
+                            {{melding.locaties_voor_melding.0.wijknaam}} {{melding.locaties_voor_melding.0.buurtnaam}}<br>
+                            <small><span data-locatieaanpassenformulier-target="currentAddressDistance"></span> meter vanaf huidige locatie</small>
+                        </p>
+                        <div class="form-control">
+                            <label>Zoek in adressen</label>
+                            <input type="text" data-action="locatieaanpassenformulier#searchAddressHandler" />
                         </div>
+                        <ul data-locatieaanpassenformulier-target="adresResultList"></ul>
                         <div class="form-control__with-helptext js-validation">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
                         <div class="form--horizontal">
                             <div class="form-row btn-row">
@@ -98,7 +111,7 @@
                                         data-action="detail#closeModal">
                                     <span>Annuleren</span>
                                 </button>
-                                <button type="submit" class="btn btn-action">
+                                <button disabled data-locatieaanpassenformulier-target="submitButton" type="submit" class="btn btn-action">
                                     <span>Opslaan</span>
                                 </button>
                             </div>
