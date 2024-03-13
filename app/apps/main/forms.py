@@ -18,6 +18,8 @@ logger = logging.getLogger(__name__)
 
 
 class CheckboxSelectMultiple(forms.CheckboxSelectMultiple):
+    template_name = "widgets/checkbox_options_grouped.html"
+
     def create_option(self, *args, **kwargs):
         args = list(args)
         option_data = args[2]
@@ -99,7 +101,7 @@ class FilterForm(forms.Form):
                 "data-filter-target": "foldoutStateField",
             }
         ),
-        initial="remove me",
+        initial="[]",
         required=False,
     )
     ordering = forms.ChoiceField(
@@ -132,7 +134,7 @@ class FilterForm(forms.Form):
 
     def filters(self):
         for field_name in self.fields:
-            if field_name in [f.get("naam") for f in self.filter_velden]:
+            if field_name in [f.get("key") for f in self.filter_velden]:
                 yield self[field_name]
 
     def pagina_eerste_melding(self):
@@ -187,7 +189,8 @@ class FilterForm(forms.Form):
     def _get_filter_choices(self, filter_classes, filter_options):
         return [
             {
-                "naam": cls.key(),
+                "key": cls.key(),
+                "naam": cls.label(),
                 "opties": cls(filter_options.get(cls.key(), {})).opties(),
                 "aantal_actief": len(self.data.getlist(cls.key(), [])),
             }
@@ -213,13 +216,16 @@ class FilterForm(forms.Form):
         )
 
         for v in self.filter_velden:
-            self.fields[v.get("naam")] = MultipleChoiceField(
+            self.fields[v.get("key")] = MultipleChoiceField(
                 label=f"{v.get('naam')} ({v.get('aantal_actief')}/{len(v.get('opties', []))})",
                 widget=CheckboxSelectMultiple(
                     attrs={
                         "class": "list--form-check-input",
                         "data-action": "filter#onChangeFilter",
                         "hideLabel": True,
+                        "foldout_states": self.data["foldout_states"],
+                        "has_group": v.get("opties", [])
+                        and isinstance(v.get("opties", [])[0][1], (list, tuple)),
                     }
                 ),
                 choices=v.get("opties", []),
