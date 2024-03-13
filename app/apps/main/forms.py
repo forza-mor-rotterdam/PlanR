@@ -224,6 +224,8 @@ class FilterForm(forms.Form):
                         "data-action": "filter#onChangeFilter",
                         "hideLabel": True,
                         "foldout_states": self.data["foldout_states"],
+                        "has_group": v.get("opties", [])
+                        and isinstance(v.get("opties", [])[0][1], (list, tuple)),
                     }
                 ),
                 choices=v.get("opties", []),
