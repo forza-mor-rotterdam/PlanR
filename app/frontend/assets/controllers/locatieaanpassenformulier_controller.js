@@ -201,10 +201,11 @@ export default class extends Controller {
   getAddressVerbose(address) {
     const cleanValue = (value) => (value ? value : '')
     return (
-      `<span data-locatieaanpassenformulier-target="searchable">${address.straatnaam} ${
-        address.huisnummer
-      }${cleanValue(address.huisletter)}${cleanValue(address.toevoeging)}</span>` +
-      `<br><span data-locatieaanpassenformulier-target="searchable">${address.buurtnaam} ${address.wijknaam}</span>`
+      `<span data-locatieaanpassenformulier-target="searchable" class="address">
+      ${address.straatnaam} ${address.huisnummer}` +
+      (address.current ? `<small class="active">&nbsp;(Huidige adres)</small>` : ``) +
+      `${cleanValue(address.huisletter)}${cleanValue(address.toevoeging)}</span>` +
+      `<br><span data-locatieaanpassenformulier-target="searchable" class="area">${address.buurtnaam} ${address.wijknaam}</span>`
     )
   }
   searchAddressHandler(e) {
@@ -275,18 +276,19 @@ export default class extends Controller {
         `<li data-locatieaanpassenformulier-target="address" class="new-address ${currentAddressClass(
           address
         )}">` +
-        `<input ${checked(address)} type="radio" id="id_${address.id}" value="${
+        `<input ${checked(address)} type="radio" class="form-radio-input" tabindex="0" id="id_${
+          address.id
+        }" value="${
           address.id
         }" name="nieuwe_adres" data-action="locatieaanpassenformulier#addressSelectHandler" data-locatieaanpassenformulier-locatie-data-param='${
           address.stringified
         }' />` +
         `<label for="id_${address.id}">` +
         `<span>${address.verbose}</span>` +
-        `&nbsp;<small>` +
-        `(${Math.round(address.afstand)} meter vanaf huidige locatie)` +
+        `<small class="distance">` +
+        `${Math.round(address.afstand)} meter vanaf huidige locatie` +
         `</small>` +
-        (address.current ? `<span style="color: red";>Huidige adres</span>` : ``) +
-        `<label>` +
+        `</label>` +
         `</li>`
       var div = document.createElement('div')
       div.innerHTML = resultHTML.trim()

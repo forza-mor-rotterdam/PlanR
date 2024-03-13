@@ -1,0 +1,99 @@
+.container__locations {
+    display: flex;
+
+    h3 {
+        img {
+            vertical-align: middle;
+        }
+    }
+    .card {
+        padding: $input-padding-y;
+        background-color: $gray-tint02;
+        display: inline-block;
+        min-width: 75%;
+        font-size: 16px;
+
+        p {
+            margin: 0;
+        }
+    }
+    > div {
+        flex: 1 1 50%;
+    }
+
+    .search-control {
+        border: none;
+        padding-left: 0;
+        padding-right: 0;
+        margin: 0 0 $input-padding-y;
+        display: flex;
+        gap: 12px;
+        vertical-align: middle;
+
+        &:hover {
+            border: 0 !important;
+            box-shadow: none !important;
+        }
+
+        label {
+            font-weight: 400;
+            font-size: 16px;
+            flex: 0 1 auto;
+        }
+        input {
+            width: auto;
+            flex: auto;
+        }
+    }
+
+    .list-scroll {
+        padding: $input-padding-y 0;
+        border-top: 1px solid $gray-tint04;
+        border-bottom: 1px solid $gray-tint04;
+        max-height: 320px;
+        overflow: auto;
+    }
+
+    .list--address-change {
+        margin: 0;
+        padding: 0;
+        .new-address {
+            margin-bottom: $input-padding-y;
+            border: 1px solid $gray-tint08;
+            position: relative;
+            input {
+                position: absolute;
+                left: 12px;
+                top: 48%;
+                transform: translateY(-50%);
+            }
+
+            label {
+                display: block;
+                padding: $input-padding-y $input-padding-y $input-padding-y 44px;
+                font-size: 16px;
+                font-weight: 400;
+                line-height: $line-height-base;
+                &:hover {
+                    cursor: pointer;
+                    background: $gray-tint02;
+                }
+                span,
+                small {
+                    display: inline-block;
+                }
+                .address {
+                    font-weight: 700;
+                }
+
+                .distance {
+                    color: $gray-tint08;
+                    display: block;
+                }
+            }
+            input:checked ~ label {
+                background-color: $gray-tint02;
+            }
+        }
+    }
+}
