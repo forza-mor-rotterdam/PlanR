@@ -1,7 +1,7 @@
 {% load json_encode from main_tags %}
 {% with id=widget.attrs.id %}
 <div {% if id %} id="{{ id }}"{% endif %} {% if widget.attrs.class %} class="{{ widget.attrs.class }}"{% endif %}>
-    <div>
+    <div {% if widget.has_group %}class="container__details-list"{% endif %}>
         {% for group, options, index in widget.optgroups %}
             {% if group %}
             {% with group_id='foldout_group-'|add:group|slugify %}
