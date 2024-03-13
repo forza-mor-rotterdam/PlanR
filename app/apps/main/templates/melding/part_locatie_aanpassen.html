@@ -23,7 +23,7 @@
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M21.9 12C21.9 6.5 17.5 2.1 12 2.1C6.5 2.1 2.1 6.5 2.1 12C2.1 17.5 6.5 21.9 12 21.9C17.5 21.9 21.9 17.5 21.9 12ZM0 12C0 5.4 5.4 0 12 0C18.6 0 24 5.4 24 12C24 18.6 18.6 24 12 24C5.4 24 0 18.6 0 12ZM13 7V5H11V7H13ZM13 19V9H11V19H13Z" fill="#00689E" />
                     </svg>
                 </span>
-                <div>Sleep de pin naar de juiste plek of klik op de kaart.</div>
+                <div>Sleep het blauwe bolletje naar de juiste plek of klik op de kaart. Selecteer daarna het meest toepasselijke adres bij de coördinaten.</div>
             </div>
         </div>
         <div class="modal-body">
@@ -70,6 +70,16 @@
                           enctype="multipart/form-data"
                           novalidate>
                         {% csrf_token %}
+                        {{ form.geometrie }}
+                        {{ form.straatnaam }}
+                        {{ form.huisnummer }}
+                        {{ form.huisletter }}
+                        {{ form.toevoeging }}
+                        {{ form.postcode }}
+                        {{ form.plaatsnaam }}
+                        {{ form.wijknaam }}
+                        {{ form.buurtnaam }}
+
                         <div class="container__map">
                             <div class="map"
                                  id="aanpassenMap"
@@ -80,14 +90,33 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-control__with-helptext js-validation">{{ form.geometrie|render_rotterdam_formulier }}</div>
-                        <div class="container--flex">
-                            <div class="form-control__with-helptext js-validation">{{ form.straatnaam|render_rotterdam_formulier }}</div>
-                            <div class="form-control__with-helptext js-validation">{{ form.huisnummer|render_rotterdam_formulier }}</div>
-                            <div class="form-control__with-helptext js-validation">{{ form.postcode|render_rotterdam_formulier }}</div>
-                            <div class="form-control__with-helptext js-validation">{{ form.plaatsnaam|render_rotterdam_formulier }}</div>
-                            <div class="form-control__with-helptext js-validation">{{ form.wijknaam|render_rotterdam_formulier }}</div>
-                            <div class="form-control__with-helptext js-validation">{{ form.buurtnaam|render_rotterdam_formulier }}</div>
+
+                        <div class="container__locations">
+                            <div>
+                                <h3>
+                                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMy43NzgzIDYuMjI0MTJDMTkuNTAwMyAxLjk0NjEzIDEyLjQ5OTkgMS45NDYxMyA4LjIyMTkzIDYuMjI0MTJDMy45NDM5MyAxMC41MDIxIDMuOTQzOTMgMTcuNTAyNSA4LjIyMTkzIDIxLjc4MDVMMTYuMDAwMSAyOS41NTg2TDIzLjc3ODMgMjEuNzgwNUMyOC4wNTYzIDE3LjUwMjUgMjguMDU2MyAxMC41MDIxIDIzLjc3ODMgNi4yMjQxMlpNMTYuMDAwMSAxOC4wMDIzQzE4LjIwOTIgMTguMDAyMyAyMC4wMDAxIDE2LjIxMTQgMjAuMDAwMSAxNC4wMDIzQzIwLjAwMDEgMTEuNzkzMiAxOC4yMDkyIDEwLjAwMjMgMTYuMDAwMSAxMC4wMDIzQzEzLjc5MSAxMC4wMDIzIDEyLjAwMDEgMTEuNzkzMiAxMi4wMDAxIDE0LjAwMjNDMTIuMDAwMSAxNi4yMTE0IDEzLjc5MSAxOC4wMDIzIDE2LjAwMDEgMTguMDAyM1oiIGZpbGw9IiNDOTM2NzUiLz4KPC9zdmc+Cg==" alt=""/>
+                                    Oud adres
+                                </h3>
+                                <div class="card">
+                                    <p>
+                                        {{melding.locaties_voor_melding.0.straatnaam}} {{melding.locaties_voor_melding.0.huisnummer}}{{melding.locaties_voor_melding.0.huisletter}}<br>
+                                        {{melding.locaties_voor_melding.0.wijknaam}} {{melding.locaties_voor_melding.0.buurtnaam}}<br>
+                                        <small><span data-locatieaanpassenformulier-target="currentAddressDistance"></span> meter vanaf huidige locatie</small>
+                                    </p>
+                                </div>
+                            </div>
+                            <div>
+                                <h3>
+                                    Nieuw adres
+                                </h3>
+                                <div class="form-control search-control">
+                                    <label>Zoek in adressen</label>
+                                    <input type="text" data-action="locatieaanpassenformulier#searchAddressHandler" />
+                                </div>
+                                <div class="list-scroll">
+                                    <ul data-locatieaanpassenformulier-target="adresResultList" class="list-clean list--address-change"></ul>
+                                </div>
+                            </div>
                         </div>
                         <div class="form-control__with-helptext js-validation">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
                         <div class="form--horizontal">
@@ -98,7 +127,7 @@
                                         data-action="detail#closeModal">
                                     <span>Annuleren</span>
                                 </button>
-                                <button type="submit" class="btn btn-action">
+                                <button disabled data-locatieaanpassenformulier-target="submitButton" type="submit" class="btn btn-action">
                                     <span>Opslaan</span>
                                 </button>
                             </div>

@@ -1,5 +1,4 @@
 import base64
-import json
 import logging
 import math
 import uuid
@@ -586,101 +585,69 @@ class LocatieAanpassenForm(forms.Form):
         required=True,
     )
     plaatsnaam = forms.CharField(
-        label="Plaatsnaam",
-        widget=forms.TextInput(
+        widget=forms.HiddenInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "plaatsnaam",
-                "readonly": "readonly",
             }
         ),
         required=True,
     )
     straatnaam = forms.CharField(
-        label="Straatnaam",
-        widget=forms.TextInput(
+        widget=forms.HiddenInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "straatnaam",
-                "readonly": "readonly",
             }
         ),
         required=True,
     )
     huisnummer = forms.IntegerField(
-        label="Huisnummer",
-        widget=forms.TextInput(
+        widget=forms.HiddenInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "huisnummer",
-                "readonly": "readonly",
             }
         ),
         required=True,
     )
     huisletter = forms.CharField(
-        label="Huisletter",
-        widget=forms.TextInput(
+        widget=forms.HiddenInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "huisletter",
-                "readonly": "readonly",
             }
         ),
         required=False,
     )
     toevoeging = forms.CharField(
-        label="Toevoeging",
-        widget=forms.TextInput(
+        widget=forms.HiddenInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "toevoeging",
-                "readonly": "readonly",
             }
         ),
         required=False,
     )
     postcode = forms.CharField(
-        label="Postcode",
-        widget=forms.TextInput(
+        widget=forms.HiddenInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "postcode",
-                "readonly": "readonly",
             }
         ),
         required=True,
     )
     wijknaam = forms.CharField(
-        label="Wijknaam",
-        widget=forms.TextInput(
+        widget=forms.HiddenInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "wijknaam",
-                "readonly": "readonly",
             }
         ),
         required=True,
     )
     buurtnaam = forms.CharField(
-        label="Buurtnaam",
-        widget=forms.TextInput(
+        widget=forms.HiddenInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "buurtnaam",
-                "readonly": "readonly",
             }
         ),
         required=True,
     )
-
-    def clean_geometrie(self):
-        new_geometrie = self.cleaned_data.get("geometrie")
-        current_geometrie = self.initial.get("geometrie", "")
-
-        try:
-            new_geometrie_dict = json.loads(new_geometrie)
-        except json.JSONDecodeError:
-            new_geometrie_dict = {}
-
-        if new_geometrie_dict == current_geometrie:
-            raise forms.ValidationError(
-                "Het is niet toegestaan om de locatie aan te passen met dezelfde coordinaten."
-            )
-
-        return new_geometrie
 
 
 class MeldingAanmakenForm(forms.Form):
