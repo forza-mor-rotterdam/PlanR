@@ -135,7 +135,7 @@ class FilterForm(forms.Form):
 
     def filters(self):
         for field_name in self.fields:
-            if field_name in [f.get("naam") for f in self.filter_velden]:
+            if field_name in [f.get("key") for f in self.filter_velden]:
                 yield self[field_name]
 
     def pagina_eerste_melding(self):
@@ -190,7 +190,8 @@ class FilterForm(forms.Form):
     def _get_filter_choices(self, filter_classes, filter_options):
         return [
             {
-                "naam": cls.key(),
+                "key": cls.key(),
+                "naam": cls.label(),
                 "opties": cls(filter_options.get(cls.key(), {})).opties(),
                 "aantal_actief": len(self.data.getlist(cls.key(), [])),
             }
@@ -216,7 +217,7 @@ class FilterForm(forms.Form):
         )
 
         for v in self.filter_velden:
-            self.fields[v.get("naam")] = MultipleChoiceField(
+            self.fields[v.get("key")] = MultipleChoiceField(
                 label=f"{v.get('naam')} ({v.get('aantal_actief')}/{len(v.get('opties', []))})",
                 widget=CheckboxSelectMultiple(
                     attrs={

@@ -333,6 +333,7 @@ class SpoedKolom(StandaardKolom):
 class StandaardFilter:
     _key = None
     _group = False
+    _label = None
 
     def __init__(self, context):
         self.context = context
@@ -340,6 +341,10 @@ class StandaardFilter:
     @classmethod
     def key(cls):
         return cls._key
+
+    @classmethod
+    def label(cls):
+        return cls._label if cls._label else cls._key
 
     def optie_label(self, optie_data):
         return f"{VERTALINGEN.get(optie_data[0], optie_data[0])}"
@@ -413,14 +418,15 @@ class WijkFilter(StandaardFilter):
 class BuurtFilter(StandaardFilter):
     _key = "buurt"
     _group = True
+    _label = "Wijk en buurt"
 
 
 FILTERS = (
+    BuurtFilter,
     StatusFilter,
     BegraafplaatsFilter,
     OnderwerpFilter,
     WijkFilter,
-    BuurtFilter,
 )
 
 FILTER_KEYS = [f.key() for f in FILTERS]
