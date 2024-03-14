@@ -64,10 +64,10 @@ details {
 
     .list--form-check-input & {
         summary {
-            padding: 24px 40px 24px 16px;
+            padding: 12px 40px 12px 8px;
             margin-bottom: 0;
             &::before {
-                top: 28px;
+                top: 17px;
                 left: calc(100% - 24px);
             }
         }

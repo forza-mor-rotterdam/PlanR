@@ -229,6 +229,7 @@ textarea {
 
 @mixin form-check-input {
     @extend %disable-platform-appearance;
+    flex: 0 0 auto;
     width: 1.5em;
     height: 1.5em;
     vertical-align: top;
