@@ -61,4 +61,25 @@ details {
             }
         }
     }
+
+    .list--form-check-input & {
+        summary {
+            padding: 24px 40px 24px 16px;
+            margin-bottom: 0;
+            &::before {
+                top: 28px;
+                left: calc(100% - 24px);
+            }
+        }
+
+        &[open] {
+            &::before {
+                left: calc(100% - 24px);
+            }
+        }
+
+        .list--form-check-input {
+            padding-left: 12px;
+        }
+    }
 }

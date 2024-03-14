@@ -332,6 +332,8 @@ class SpoedKolom(StandaardKolom):
 
 class StandaardFilter:
     _key = None
+    _group = False
+    _label = None
 
     def __init__(self, context):
         self.context = context
@@ -340,12 +342,43 @@ class StandaardFilter:
     def key(cls):
         return cls._key
 
+    @classmethod
+    def label(cls):
+        return cls._label if cls._label else cls._key
+
     def optie_label(self, optie_data):
         return f"{VERTALINGEN.get(optie_data[0], optie_data[0])}"
 
     def opties(self):
+        if self._group:
+            groups = list(
+                set([v[1] for k, v in self.context.items() if len(v) > 1 and v[1]])
+            )
+            return [
+                [
+                    g,
+                    [
+                        [
+                            k,
+                            {
+                                "label": self.optie_label(v),
+                                "item_count": v[1],
+                            },
+                        ]
+                        for k, v in self.context.items()
+                        if len(v) > 1 and g == v[1]
+                    ],
+                ]
+                for g in groups
+            ]
         return [
-            [k, {"label": self.optie_label(v), "item_count": v[1]}]
+            [
+                k,
+                {
+                    "label": self.optie_label(v),
+                    "item_count": v[1],
+                },
+            ]
             for k, v in self.context.items()
         ]
 
@@ -384,14 +417,16 @@ class WijkFilter(StandaardFilter):
 
 class BuurtFilter(StandaardFilter):
     _key = "buurt"
+    _group = True
+    _label = "Wijk en buurt"
 
 
 FILTERS = (
+    BuurtFilter,
     StatusFilter,
     BegraafplaatsFilter,
     OnderwerpFilter,
     WijkFilter,
-    BuurtFilter,
 )
 
 FILTER_KEYS = [f.key() for f in FILTERS]

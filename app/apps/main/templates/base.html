@@ -83,5 +83,12 @@
         </main>
         <div class="spinner"></div>
         {% include "auth/session_timer.html" %}
+        {% if APP_ENV != "productie" %}
+        <div class="container--env">
+            <div class="container">
+                <span class="badge badge--red">{{ APP_ENV }}</span>
+            </div>
+        </div>
+        {% endif %}
     </body>
 </html>
