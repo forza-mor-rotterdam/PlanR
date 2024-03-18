@@ -705,6 +705,8 @@ def gebruiker_info(request, gebruiker_email):
                 "full_name": full_name,
                 "telefoonnummer": telefoonnummer,
                 "functie": functie,
+                "mor_core_gebruiker": mor_core_gebruiker,
+                "local_gebruiker": local_gebruiker,
             },
         },
     )
