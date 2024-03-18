@@ -20,7 +20,7 @@ export default class extends Controller {
         externeOmschrijvingTekstMaxCharacter,
         this.externeOmschrijvingTekstTarget.nextSibling
       )
-      externeOmschrijvingTekstMaxCharacter.classList.add('help-block', 'no-margins')
+      externeOmschrijvingTekstMaxCharacter.classList.add('help-block', 'no-margin')
       externeOmschrijvingTekstMaxCharacter.innerHTML = `${externeOmschrijvingTekstMaxCharacterPrefix}${this.externeOmschrijvingTekstTarget.value.length}/${this.externeOmschrijvingTekstTarget.maxLength}`
 
       if (this.externeOmschrijvingTekstTarget.textContent.length > 0) {

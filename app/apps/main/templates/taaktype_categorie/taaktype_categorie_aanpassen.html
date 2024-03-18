@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% load rotterdam_formulier_html %}
 {% load json_encode from json_tags %}
-{% block title %}Wijzig Taaktype Categorie | Beheer | PlanR{% endblock %}
+{% block title %}
+    Wijzig Taaktype Categorie | Beheer | PlanR
+{% endblock title %}
 {% block body %}
     <turbo-frame id="beheer" data-turbo-action="advance">
     <div class="page__beheer">
@@ -34,7 +36,9 @@
                     {% csrf_token %}
                     <fieldset>
                         <div class="form-control__with-helptext padding--bottom js-validation">{{ form.naam|render_rotterdam_formulier }}</div>
-                        <div class="form-control__with-helptext padding--bottom js-validation">{{ form.taaktypes|render_rotterdam_formulier }}</div>
+                        <div class="form-control__with-helptext padding--bottom js-validation">
+                            {{ form.taaktypes|render_rotterdam_formulier }}
+                        </div>
                     </fieldset>
                     <div class="form-row container__button">
                         <div class="form-row btn-row">

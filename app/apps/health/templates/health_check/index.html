@@ -1,9 +1,18 @@
-<html>
-<head>
-  <title>{% block title %}System status{% endblock title %}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex">
-  <style>
+<!DOCTYPE html>
+<html lang="nl">
+    <head>
+        <meta name="description"
+              content="Applicatie voor midoffice medewerkers om regie uit te voeren op de MOR-keten">
+        <meta name="keywords"
+              content="MOR, Meldingen openbare ruimte, gemeente Rotterdam, PlanR, midoffice, regie, meldingen">
+        <title>
+            {% block title %}
+                System status
+            {% endblock title %}
+        </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noindex">
+        <style>
     html, body {
       margin: 0 auto;
       font-family: sans-serif;
@@ -43,38 +52,39 @@
       text-align: center;
       width: 50px;
     }
-  </style>
-  {% block extra_head %}{% endblock extra_head %}
-</head>
-<body>
-  {% block content %}
-    <h1>System status</h1>
-    <small>git sha: {{ GIT_SHA }}</small>
-    <table>
-      <thead>
-        <th colspan="2">Service</th>
-        <th>Status</th>
-        <th class="align-right">Time Taken</th>
-      </thead>
-      <tbody>
-        {% for plugin in plugins %}
-          <tr>
-            <td class="icons">
-              <span aria-hidden="true">
-                {% if plugin.status %}
-                  &#9989;
-                {% else %}
-                  &#10060;
-                {% endif %}
-              </span>
-            </td>
-            <td>{{ plugin.identifier }}</td>
-            <td>{{ plugin.pretty_status | linebreaks }}</td>
-            <td class="align-right">{{ plugin.time_taken|floatformat:4 }} seconds</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% endblock content %}
-</body>
+        </style>
+        {% block extra_head %}
+        {% endblock extra_head %}
+    </head>
+    <body>
+        {% block content %}
+            <h1>System status</h1>
+            <small>git sha: {{ GIT_SHA }}</small>
+            <table>
+                <thead>
+                    <th colspan="2">Service</th>
+                    <th>Status</th>
+                    <th class="align-right">Time Taken</th>
+                </thead>
+                <tbody>
+                    {% for plugin in plugins %}
+                        <tr>
+                            <td class="icons">
+                                <span aria-hidden="true">
+                                    {% if plugin.status %}
+                                        &#9989;
+                                    {% else %}
+                                        &#10060;
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td>{{ plugin.identifier }}</td>
+                            <td>{{ plugin.pretty_status | linebreaks }}</td>
+                            <td class="align-right">{{ plugin.time_taken|floatformat:4 }} seconds</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endblock content %}
+    </body>
 </html>
