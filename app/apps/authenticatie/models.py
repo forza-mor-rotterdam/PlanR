@@ -48,7 +48,9 @@ class Gebruiker(AbstractUser):
         dict_instance.update(
             {
                 "naam": self.__str__(),
-                "rol": self.profiel.context.naam if self.profiel.context else None,
+                "rol": self.profiel.context.naam
+                if self.profiel and self.profiel.context
+                else None,
                 "rechten": self.groups.all().first().name
                 if self.groups.all()
                 else None,
