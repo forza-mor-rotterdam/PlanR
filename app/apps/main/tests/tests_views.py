@@ -42,6 +42,7 @@ class StandaardExterneOmschrijvingTests(TestCase):
     @requests_mock.Mocker()
     def test_standaard_externe_omschrijving_aanmaken_view(self, m):
         m.post("http://mock.com/api/v1/gebruiker/", json={}, status_code=200)
+        m.post("http://mock.com/api-token-auth/", json={}, status_code=200)
         self.client.force_login(self.user)
         response = self.client.get(reverse("standaard_externe_omschrijving_aanmaken"))
         self.assertEqual(response.status_code, 200)
