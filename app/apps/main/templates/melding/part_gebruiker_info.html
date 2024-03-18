@@ -1,4 +1,3 @@
-{% load json_encode from json_tags %}
 <turbo-frame id="melding_actie_form">
 <div class="modal-dialog">
     <div class="modal-content">
@@ -6,17 +5,16 @@
             <h1>
                 <span>{{ gebruiker.full_name }}</span>
             </h1>
-            <h2>Mor Core Gebruiker</h2>
-            <p>{{ mor_core_gebruiker|json_encode }}</p>
-            <h2>Local gebruiker</h2>
-            <p>obj: {{ local_gebruiker }}, first {{ local_gebruiker.first_name }}, last {{ local_gebruiker.last_name }}</p>
             <button type="button"
                     class="btn-close"
                     aria-label="Sluit"
                     data-action="detail#closeModal"></button>
         </div>
         <div class="modal-body">
-            {% if gebruiker.functie %}<p>{{ gebruiker.functie }}</p>{% endif %}
+            <p>
+                {% if gebruiker.rechtengroep %}{{ gebruiker.rechtengroep }} |{% endif %}
+                {% if gebruiker.rol %}{{ gebruiker.rol }}{% endif %}
+            </p>
             <ul class="list-clean">
                 {% if gebruiker.telefoonnummer %}
                     <li class="padding--bottom">
