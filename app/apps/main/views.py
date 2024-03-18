@@ -682,7 +682,7 @@ def gebruiker_info(request, gebruiker_email):
     if gebruiker_response.status_code == 200:
         mor_core_gebruiker = gebruiker_response.json()
         telefoonnummer = mor_core_gebruiker.get("telefoonnummer")
-        full_name = gebruikersnaam_basis(mor_core_gebruiker)
+        full_name = gebruikersnaam_basis(mor_core_gebruiker, no_fallback=True)
 
     # Get gebruiker info from the user model, pick mor-core info over local
     user_model = get_user_model()
@@ -695,6 +695,8 @@ def gebruiker_info(request, gebruiker_email):
             local_gebruiker.telefoonnummer if not telefoonnummer else telefoonnummer
         )
         functie = local_gebruiker.functie
+    if not full_name:
+        full_name = email
 
     return render(
         request,

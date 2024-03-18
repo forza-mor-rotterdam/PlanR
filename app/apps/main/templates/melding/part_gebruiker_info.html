@@ -1,4 +1,3 @@
-{% load json_encode from json_tags %}
 <turbo-frame id="melding_actie_form">
 <div class="modal-dialog">
     <div class="modal-content">
@@ -6,10 +5,12 @@
             <h1>
                 <span>{{ gebruiker.full_name }}</span>
             </h1>
+            <h2>Email</h2>
+            <p>{{ gebruiker.email }}</p>
             <h2>Mor Core Gebruiker</h2>
-            <p>{{ mor_core_gebruiker|json_encode }}</p>
+            <p>{{ gebruiker.mor_core_gebruiker }}</p>
             <h2>Local gebruiker</h2>
-            <p>obj: {{ local_gebruiker }}, first {{ local_gebruiker.first_name }}, last {{ local_gebruiker.last_name }}</p>
+            <p>obj: {{ gebruiker.local_gebruiker }}, first {{ gebruiker.local_gebruiker.first_name }}, last {{ gebruiker.local_gebruiker.last_name }}</p>
             <button type="button"
                     class="btn-close"
                     aria-label="Sluit"
