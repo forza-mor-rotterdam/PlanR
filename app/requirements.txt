@@ -26,3 +26,4 @@ Pillow==9.4.0
 pillow-heif==0.13.0
 sorl-thumbnail==12.8.0
 chardet==5.2.0
+requests_mock==1.11.0
