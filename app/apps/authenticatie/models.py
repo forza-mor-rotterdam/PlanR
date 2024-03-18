@@ -49,7 +49,7 @@ class Gebruiker(AbstractUser):
             {
                 "naam": self.__str__(),
                 "rol": self.profiel.context.naam
-                if self.profiel and self.profiel.context
+                if hasattr(self, "profiel") and hasattr(self.profiel, "context")
                 else None,
                 "rechten": self.groups.all().first().name
                 if self.groups.all()
