@@ -31,6 +31,7 @@ from apps.main.forms import (
     TaaktypeCategorieSearchForm,
 )
 from apps.main.models import StandaardExterneOmschrijving, TaaktypeCategorie
+from apps.main.templatetags.gebruikers_tags import get_gebruiker_object_middels_email
 from apps.main.utils import (
     get_actieve_filters,
     get_open_taakopdrachten,
@@ -47,7 +48,6 @@ from apps.services.meldingen import MeldingenService, get_taaktypes
 from config.context_processors import general_settings
 from deepdiff import DeepDiff
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import (
     login_required,
     permission_required,
@@ -63,7 +63,6 @@ from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView, View
-from utils.diversen import gebruikersnaam as gebruikersnaam_basis
 from utils.rd_convert import rd_to_wgs
 
 logger = logging.getLogger(__name__)
@@ -669,48 +668,12 @@ def informatie_toevoegen(request, id):
 
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def gebruiker_info(request, gebruiker_email):
-    full_name = None
-    telefoonnummer = None
-    functie = None
-    email = gebruiker_email
-
-    # Get gebruiker info from mor-core cache
-    gebruiker_response = MeldingenService().get_gebruiker(
-        gebruiker_email=email,
-    )
-
-    if gebruiker_response.status_code == 200:
-        mor_core_gebruiker = gebruiker_response.json()
-        telefoonnummer = mor_core_gebruiker.get("telefoonnummer")
-        full_name = gebruikersnaam_basis(mor_core_gebruiker, no_fallback=True)
-
-    # Get gebruiker info from the user model, pick mor-core info over local
-    user_model = get_user_model()
-    local_gebruiker = user_model.objects.filter(email=email).first()
-    if local_gebruiker:
-        full_name = (
-            gebruikersnaam_basis(local_gebruiker) if not full_name else full_name
-        )
-        telefoonnummer = (
-            local_gebruiker.telefoonnummer if not telefoonnummer else telefoonnummer
-        )
-        functie = local_gebruiker.functie
-    if not full_name:
-        full_name = email
+    gebruiker = get_gebruiker_object_middels_email(gebruiker_email)
 
     return render(
         request,
         "melding/part_gebruiker_info.html",
-        {
-            "gebruiker": {
-                "email": email,
-                "full_name": full_name,
-                "telefoonnummer": telefoonnummer,
-                "functie": functie,
-                "mor_core_gebruiker": mor_core_gebruiker,
-                "local_gebruiker": local_gebruiker,
-            },
-        },
+        {"gebruiker": gebruiker},
     )
 
 

@@ -34,10 +34,14 @@ class Gebruiker(AbstractUser):
         )
 
     @property
-    def functie(self):
+    def rechtengroep(self):
         return mark_safe(
             f"{self.groups.all().first().name if self.groups.all() else ''}"
         )
+
+    @property
+    def rol(self):
+        return mark_safe(f"{self.profiel.context.naam if self.profiel.context else ''}")
 
     def serialized_instance(self):
         if not self.is_authenticated:
@@ -49,9 +53,9 @@ class Gebruiker(AbstractUser):
             {
                 "naam": self.__str__(),
                 "rol": self.profiel.context.naam if self.profiel.context else None,
-                "rechten": self.groups.all().first().name
-                if self.groups.all()
-                else None,
+                "rechten": (
+                    self.groups.all().first().name if self.groups.all() else None
+                ),
             }
         )
 

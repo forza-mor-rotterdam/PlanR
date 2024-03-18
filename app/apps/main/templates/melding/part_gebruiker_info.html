@@ -5,19 +5,16 @@
             <h1>
                 <span>{{ gebruiker.full_name }}</span>
             </h1>
-            <h2>Email</h2>
-            <p>{{ gebruiker.email }}</p>
-            <h2>Mor Core Gebruiker</h2>
-            <p>{{ gebruiker.mor_core_gebruiker }}</p>
-            <h2>Local gebruiker</h2>
-            <p>obj: {{ gebruiker.local_gebruiker }}, first {{ gebruiker.local_gebruiker.first_name }}, last {{ gebruiker.local_gebruiker.last_name }}</p>
             <button type="button"
                     class="btn-close"
                     aria-label="Sluit"
                     data-action="detail#closeModal"></button>
         </div>
         <div class="modal-body">
-            {% if gebruiker.functie %}<p>{{ gebruiker.functie }}</p>{% endif %}
+            <p>
+                {% if gebruiker.rechtengroep %}{{ gebruiker.rechtengroep }} |{% endif %}
+                {% if gebruiker.rol %}{{ gebruiker.rol }}{% endif %}
+            </p>
             <ul class="list-clean">
                 {% if gebruiker.telefoonnummer %}
                     <li class="padding--bottom">
