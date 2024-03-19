@@ -23,8 +23,8 @@ def publiseer_melding_gebruikers_activiteiten(self):
     mercure_service = None
     try:
         mercure_service = MercureService()
-    except MercureService.ConfigException:
-        return "MercureService.ConfigException error"
+    except MercureService.ConfigException as e:
+        return f"MercureService.ConfigException: e={e}"
 
     alle_subscriptions = mercure_service.get_subscriptions().get("subscriptions", [])
 
@@ -37,7 +37,6 @@ def publiseer_melding_gebruikers_activiteiten(self):
             ]
         )
     )
-    print(topics)
     for topic in topics:
         publiceer_topic_met_subscriptions(topic, alle_subscriptions)
 

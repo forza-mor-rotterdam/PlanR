@@ -6,6 +6,6 @@ register = template.Library()
 
 @register.filter
 def to_datetime(value):
-    if not value:
-        return
-    return stringdatetime_naar_datetime(value)
+    if value and isinstance(value, str):
+        return stringdatetime_naar_datetime(value)
+    return value

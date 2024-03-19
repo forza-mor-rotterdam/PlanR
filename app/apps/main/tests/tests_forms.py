@@ -27,5 +27,4 @@ class MeldingAfhandelenFormTest(TestCase):
             "standaard_omschrijvingen": self.standaard_omschrijving,
         }
         form = MeldingAfhandelenForm(data=form_data)
-        print(form.errors)
         self.assertTrue(form.is_valid())

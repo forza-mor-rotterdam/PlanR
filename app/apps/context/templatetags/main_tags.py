@@ -1,10 +1,12 @@
 import json
-from datetime import datetime
+import logging
+from datetime import date, datetime
 
 from django import template
 from django.conf import settings
 
 register = template.Library()
+logger = logging.getLogger(__name__)
 
 
 @register.simple_tag
@@ -55,21 +57,12 @@ def vind_in_dict(op_zoek_dict, key):
 
 
 @register.filter
-def to_date(value):
-    try:
-        return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f%z")
-    except Exception as e:
-        print(e)
-    try:
-        return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S%z")
-    except Exception as e:
-        print(e)
-    return value
-
-
-@register.filter
 def to_timestamp(value):
+    if isinstance(value, date):
+        value = datetime(value.year, value.month, value.day)
+    if not isinstance(value, datetime):
+        return value
     try:
         return int(value.timestamp())
-    except Exception:
-        print("No datatime instance")
+    except Exception as e:
+        logger.warning(f"No datatime instance: e={e}")

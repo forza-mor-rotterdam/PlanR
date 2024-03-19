@@ -125,7 +125,6 @@ def melding_lijst(request):
     qs.update(request.POST)
 
     if qs:
-        logger.info(f"request GET and/or POST data: {qs}")
         nieuwe_actieve_filters = {
             k: qs.getlist(k, []) for k, v in actieve_filters.items()
         }
@@ -163,11 +162,9 @@ def melding_lijst(request):
     meldingen_filter_query_dict = update_qd_met_standaard_meldingen_filter_qd(
         form_qs, gebruiker_context
     )
-    logger.info(f"Meldingen query string: {meldingen_filter_query_dict.urlencode()}")
     meldingen_data = MeldingenService().get_melding_lijst(
         query_string=meldingen_filter_query_dict.urlencode()
     )
-    logger.info(f"Meldingen data count: {meldingen_data.get('count', 0)}")
 
     form = FilterForm(
         form_qs,
@@ -762,11 +759,9 @@ def melding_aanmaken(request):
         is_valid = form.is_valid()
         if is_valid:
             signaal_data = form.signaal_data(file_names)
-            logger.info(signaal_data)
             signaal_response = MeldingenService().signaal_aanmaken(
                 data=signaal_data,
             )
-            logger.info(signaal_response)
             return redirect(
                 reverse(
                     "melding_verzonden",
@@ -808,7 +803,6 @@ def msb_login(request):
                 "pwd": form.cleaned_data["wachtwoord"],
             }
             response = requests.post(url=url, data=login_data)
-            logger.info("msb_login=%s", response.status_code)
             if response.status_code == 200:
                 request.session["msb_token"] = response.json().get("result")
                 request.session["msb_base_url"] = msb_base_url
@@ -830,16 +824,11 @@ def msb_melding_zoeken(request):
         is_valid = form.is_valid()
         if is_valid:
             url = f"{request.session['msb_base_url']}/sbmob/api/msb/melding/{form.cleaned_data.get('msb_nummer')}"
-            logger.info("msb melding url=%s", url)
             response = requests.get(
                 url,
                 headers={
                     "Authorization": f"Bearer {request.session.get('msb_token')}",
                 },
-            )
-            logger.info(
-                "msb melding zoeken response.status_code=%s",
-                response.status_code,
             )
             if response.status_code == 200:
                 msb_data = response.json().get("result", {"test": "test"})
@@ -938,9 +927,7 @@ def msb_importeer_melding(request):
         logger.error("rd x=%s", msb_data.get("locatie", {}).get("x", 0))
         logger.error("rd y=%s", msb_data.get("locatie", {}).get("y", 0))
 
-    logger.info("signaal aanmaken data=%s", post_data)
     foto_urls = [f"{msb_base_url}{f.get('url')}" for f in msb_data.get("fotos", [])]
-    logger.info("msb foto urls=%s", foto_urls)
 
     post_data["bijlagen"] = []
     for f in foto_urls:
@@ -951,14 +938,12 @@ def msb_importeer_melding(request):
             },
             stream=True,
         )
-        logger.info("foto_response.status_code=%s", f_response.status_code)
         b64 = _to_base64(f_response.content)
         post_data["bijlagen"].append({"bestand": b64})
 
-    signaal_response = MeldingenService().signaal_aanmaken(
+    MeldingenService().signaal_aanmaken(
         data=post_data,
     )
-    logger.info("signaal aanmaken response=%s", signaal_response)
     del request.session["msb_melding"]
     return render(
         request,

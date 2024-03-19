@@ -39,17 +39,13 @@ class MercureService:
             logger.warning(logentry)
             raise MercureService.ConfigException(logentry)
 
-        logger.info(f"Public url: {settings.APP_MERCURE_PUBLIC_URL}")
-        logger.info(f"Internal url: {settings.APP_MERCURE_INTERNAL_URL}")
         self._mercure_url = settings.APP_MERCURE_INTERNAL_URL
-        logger.info(f"_mercure_url: {self._mercure_url}")
         self._mercure_publisher_jwt_key = settings.MERCURE_PUBLISHER_JWT_KEY
         self._mercure_publisher_jwt_alg = settings.MERCURE_PUBLISHER_JWT_ALG
         self._mercure_subscriber_jwt_key = settings.MERCURE_SUBSCRIBER_JWT_KEY
         self._mercure_subscriber_jwt_alg = settings.MERCURE_SUBSCRIBER_JWT_ALG
 
     def _get_headers(self, token):
-        logger.info(f"Auth token token: {token}")
         return {
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/x-www-form-urlencoded",
@@ -71,9 +67,6 @@ class MercureService:
         )
 
     def publish(self, topic: str, data=[]):
-        logger.info(f"Publish with topic: {topic}")
-        logger.info(f"Publish with data: {data}")
-
         data = {
             "topic": topic,
             "data": json.dumps(data),
@@ -85,8 +78,6 @@ class MercureService:
             headers=self._get_headers(self.get_publisher_token()),
         )
         response.raise_for_status()
-        logger.info(f"Publish response status_code: {response.status_code}")
-        logger.info(f"Publish response text: {response.text}")
 
         return response
 
@@ -95,8 +86,6 @@ class MercureService:
             f"{self._mercure_url}/subscriptions",
             headers=self._get_headers(self.get_subscriber_token()),
         )
-        logger.info(f"Subscriptions response status_code: {response.status_code}")
-        logger.info(f"Subscriptions response text: {response.text}")
         response.raise_for_status()
         return response.json()
 
