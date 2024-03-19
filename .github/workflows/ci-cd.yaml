@@ -14,6 +14,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
       - name: Set up Python
         uses: actions/setup-python@v3.1.2
         with:
@@ -21,8 +22,8 @@ jobs:
       - name: Linting
         run: bash bin/cleanup_pre_commit.sh
 
-  docker-build-and-test:
-    name: Create Docker image and test
+  create-docker-test-image-and-test:
+    name: Create Docker test image and testing
     runs-on: ubuntu-latest
     needs: django-lint
     steps:
@@ -41,15 +42,10 @@ jobs:
       - name: Run Tests
         run: docker compose -f docker-compose.test.yaml run app python manage.py test
 
-  deploy-acc:
-    name: Acceptance release
-    if: github.ref == 'refs/heads/develop'
-    needs: docker-build-and-test
+  build-and-push-docker-image:
+    name: Build and push Docker image
     runs-on: ubuntu-latest
-    environment: acc
-    permissions:
-      contents: read
-      packages: write
+    needs: create-docker-test-image-and-test
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -80,6 +76,44 @@ jobs:
           build-args: |
             GIT_SHA=${{ github.sha }}
 
+  deploy-acc:
+    name: Acceptance release
+    if: github.ref == 'refs/heads/develop'
+    needs: build-and-push-docker-image
+    runs-on: ubuntu-latest
+    environment: acc
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Start rollout on k8s platform
+        uses: actions-hub/kubectl@master
+        env:
+          KUBE_HOST: ${{ vars.KUBE_HOST }}
+          KUBE_CERTIFICATE: ${{ vars.KUBE_CERTIFICATE }}
+          KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
+        with:
+          args: rollout restart deployment/app --namespace=${{ vars.KUBE_NAMESPACE }}
+
+      - name: Status rollout on k8s platform
+        uses: actions-hub/kubectl@master
+        env:
+          KUBE_HOST: ${{ vars.KUBE_HOST }}
+          KUBE_CERTIFICATE: ${{ vars.KUBE_CERTIFICATE }}
+          KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
+        with:
+          args: rollout status deployment/app --namespace=${{ vars.KUBE_NAMESPACE }}
+
+  deploy-test:
+    name: Test release
+    if: github.ref == 'refs/heads/develop'
+    needs: build-and-push-docker-image
+    runs-on: ubuntu-latest
+    environment: test
+    permissions:
+      contents: read
+      packages: write
+    steps:
       - name: Start rollout on k8s platform
         uses: actions-hub/kubectl@master
         env:

@@ -15,32 +15,32 @@
         Tijdlijn
     </h2>
     {% if melding.status.naam != "afgehandeld" and melding.status.naam != "geannuleerd" %}
-    <div>
         <div>
-            <details class="details-form">
-                <summary>Voeg een opmerking of foto toe</summary>
-                <form class="form--aside"
-                      action="{% url 'informatie_toevoegen' melding.uuid %}"
-                      method="post"
-                      enctype="multipart/form-data"
-                      data-turbo-frame="_top">
-                    {% csrf_token %}
-                    {{ form.opmerking|render_rotterdam_formulier }}
-                    <div data-controller="bijlagen">{{ form.bijlagen_extra|render_rotterdam_formulier }}</div>
-                    <div class="form-row">
-                        <button type="submit" class="btn btn-secondary">
-                            <span>Toevoegen</span>
-                        </button>
-                        <button type="reset"
-                                class="btn btn-tertiary"
-                                data-action="detail#cancelInformatieToevoegen">
-                            <span>Annuleren</span>
-                        </button>
-                    </div>
-                </form>
-            </details>
+            <div>
+                <details class="details-form">
+                    <summary>Voeg een opmerking of foto toe</summary>
+                    <form class="form--aside"
+                          action="{% url 'informatie_toevoegen' melding.uuid %}"
+                          method="post"
+                          enctype="multipart/form-data"
+                          data-turbo-frame="_top">
+                        {% csrf_token %}
+                        {{ form.opmerking|render_rotterdam_formulier }}
+                        <div data-controller="bijlagen">{{ form.bijlagen_extra|render_rotterdam_formulier }}</div>
+                        <div class="form-row">
+                            <button type="submit" class="btn btn-secondary">
+                                <span>Toevoegen</span>
+                            </button>
+                            <button type="reset"
+                                    class="btn btn-tertiary"
+                                    data-action="detail#cancelInformatieToevoegen">
+                                <span>Annuleren</span>
+                            </button>
+                        </div>
+                    </form>
+                </details>
+            </div>
         </div>
-    </div>
     {% endif %}
 </div>
 </turbo-frame>

@@ -354,23 +354,29 @@ class StandaardFilter:
             groups = list(
                 set([v[1] for k, v in self.context.items() if len(v) > 1 and v[1]])
             )
-            return [
+            return sorted(
                 [
-                    g,
                     [
-                        [
-                            k,
-                            {
-                                "label": self.optie_label(v),
-                                "item_count": v[1],
-                            },
-                        ]
-                        for k, v in self.context.items()
-                        if len(v) > 1 and g == v[1]
-                    ],
-                ]
-                for g in groups
-            ]
+                        g,
+                        sorted(
+                            [
+                                [
+                                    k,
+                                    {
+                                        "label": self.optie_label(v),
+                                        "item_count": v[1],
+                                    },
+                                ]
+                                for k, v in self.context.items()
+                                if len(v) > 1 and g == v[1]
+                            ],
+                            key=lambda b: b[1].get("label"),
+                        ),
+                    ]
+                    for g in groups
+                ],
+                key=lambda b: b[0],
+            )
         return [
             [
                 k,
@@ -422,11 +428,11 @@ class BuurtFilter(StandaardFilter):
 
 
 FILTERS = (
-    BuurtFilter,
     StatusFilter,
     BegraafplaatsFilter,
     OnderwerpFilter,
     WijkFilter,
+    BuurtFilter,
 )
 
 FILTER_KEYS = [f.key() for f in FILTERS]

@@ -32,7 +32,7 @@
         </div>
         <form>
             <div class="form-row">
-                <label class="" for="id_zoeken">Zoeken</label>
+                <label for="id_zoeken">Zoeken</label>
                 <div>
                     <input type="text"
                            id="id_zoeken"
@@ -60,15 +60,13 @@
                         <td data-row-search-target="searchable">{{ object.naam }}</td>
                         <td data-row-search-target="searchable">{{ object.taaktype_namen|join:", " }}</td>
                         <td>
-                            <a href="{% url 'taaktype_categorie_aanpassen' object.pk %}" aria-label="Aanpassen">
-                                {% include "icons/edit.svg" %}
-                            </a>
+                            <a href="{% url 'taaktype_categorie_aanpassen' object.pk %}"
+                               aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
                         </td>
                         <td>
                             <a href="{% url 'taaktype_categorie_verwijderen' object.pk %}"
-                               onclick="return confirm('Weet je zeker dat je deze taaktype categorie wil verwijderen?')" aria-label="Verwijderen">
-                                {% include "icons/bin.svg" %}
-                            </a>
+                               onclick="return confirm('Weet je zeker dat je deze taaktype categorie wil verwijderen?')"
+                               aria-label="Verwijderen">{% include "icons/bin.svg" %}</a>
                         </td>
                     </tr>
                 {% endfor %}

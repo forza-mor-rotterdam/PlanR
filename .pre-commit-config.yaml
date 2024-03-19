@@ -12,7 +12,7 @@ repos:
       - id: autoflake
         args: ['--in-place', '--remove-all-unused-imports', '--remove-unused-variable']
   -   repo: https://github.com/timothycrosley/isort
-      rev: '5.12.0'
+      rev: '5.13.2'
       hooks:
       - id: isort
   -   repo: https://github.com/ambv/black
@@ -31,3 +31,9 @@ repos:
         additional_dependencies:
           - prettier@3.0.3
         files: '\.(js|ts|jsx|tsx|scss|css)$'
+  - repo: https://github.com/djlint/djLint
+    rev: v1.34.1
+    hooks:
+      - id: djlint-reformat-django
+      - id: djlint-django
+        args: ["--ignore", "H006,H013,H023"]

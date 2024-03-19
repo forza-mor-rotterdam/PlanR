@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% load rotterdam_formulier_html %}
 {% load json_encode from json_tags %}
-{% block title %}Nieuw melding | PlanR{% endblock %}
+{% block title %}
+    Nieuw melding | PlanR
+{% endblock title %}
 {% block body %}
     <h1>Nieuwe melding</h1>
     <turbo-frame id="melding_aanmaken">
@@ -18,7 +20,7 @@
           method="post"
           novalidate>
         {% csrf_token %}
-        {{form.errors}}
+        {{ form.errors }}
         <fieldset>
             {% include "snippets/legend.html" with title="Locatie" icon_name="pin_filled" only %}
             {{ form.melding|render_rotterdam_formulier }}

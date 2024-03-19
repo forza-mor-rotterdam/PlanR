@@ -46,26 +46,30 @@
         {% endfor %}
         {% if field.help_text %}<p class="help-block">{{ field.help_text|safe }}</p>{% endif %}
     </div>
-    {% elif field|is_datetime_input %}
-    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }} {% if field.field.show_hidden_initial %} hidden{% endif %}">
+{% elif field|is_datetime_input %}
+    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }} {% if field.field.show_hidden_initial %}hidden{% endif %}">
         {% if classes.icon %}
-            {% include 'rotterdam_formulier_html/field_icon.html' %}
+            {% include "rotterdam_formulier_html/field_icon.html" %}
         {% endif %}
         {% if field.auto_id %}
-            <label class="{% if field.field.required %}{{ form.required_css_class }}{% endif %}" for="{{ field.auto_id }}">{{ field.field.label }}{% if not field.field.required %} <small>(Niet verplicht)</small>{% endif %}</label>
+            <label class="{% if field.field.required %}{{ form.required_css_class }}{% endif %}"
+                   for="{{ field.auto_id }}">
+                {{ field.field.label }}
+                {% if not field.field.required %}<small>(Niet verplicht)</small>{% endif %}
+            </label>
         {% endif %}
         <div>
-            <input type="datetime-local" id="{{ field.auto_id }}" name="{{ field.html_name }}" value="{% if field.value %}{{ field.value|date:'c' }}{% endif %}"
-            class="form-control {% if field.errors %}is-invalid{% endif %}" {% render_attrs field %}{% if field.field.required %}required{% endif %}>
-
+            <input type="datetime-local"
+                   id="{{ field.auto_id }}"
+                   name="{{ field.html_name }}"
+                   value="{% if field.value %}{{ field.value|date:'c' }}{% endif %}"
+                   class="form-control {% if field.errors %}is-invalid{% endif %}"
+                   {% render_attrs field %}
+                   {% if field.field.required %}required{% endif %}>
             {% for error in field.errors %}
                 <p class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</p>
             {% endfor %}
-            {% if field.help_text %}
-                <p class="help-block">
-                    {{ field.help_text|safe }}
-                </p>
-            {% endif %}
+            {% if field.help_text %}<p class="help-block">{{ field.help_text|safe }}</p>{% endif %}
         </div>
     </div>
     {% comment %} Werkt nog niet met optgroups {% endcomment %}
@@ -114,7 +118,7 @@
                         {% if field.field.required %}required{% endif %}>
                     {% for choice in field %}{{ choice.tag }}{% endfor %}
                 </select>
-                <p class="help-block invalid-text" style="margin:0;"></p>
+                <p class="help-block invalid-text no-margin"></p>
                 {% for error in field.errors %}
                     <span class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</span>
                 {% endfor %}
@@ -189,7 +193,7 @@
                       name="{{field.html_name}}"
                       {% render_attrs field %}
                       {% if field.field.required %}required{% endif %}>{% if field.value %}{{ field.value }}{% endif %}</textarea>
-            <p class="help-block invalid-text" style="margin:0;"></p>
+            <p class="help-block invalid-text no-margin"></p>
             {% for error in field.errors %}
                 <p class="help-block invalid-text {{ form.error_css_class }}">{{ error }}</p>
             {% endfor %}
@@ -207,7 +211,7 @@
                 {% if not field.field.required %}<small>(Niet verplicht)</small>{% endif %}
             </label>
         {% endif %}
-        <div class="">
+        <div>
             <button type="button"
                     class="btn btn-secondary btn-files"
                     id="buttonFile_{{ field.auto_id }}"

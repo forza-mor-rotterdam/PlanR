@@ -26,7 +26,7 @@ export default class extends Controller {
         externalTextMaxCharacter,
         this.externalTextTarget.nextSibling
       )
-      externalTextMaxCharacter.classList.add('help-block', 'no-margins')
+      externalTextMaxCharacter.classList.add('help-block', 'no-margin')
       externalTextMaxCharacter.innerHTML = `${externalTextMaxCharacterPrefix}${this.externalTextTarget.value.length}/${this.externalTextTarget.maxLength}`
 
       if (this.externalTextTarget.textContent.length > 0) {

@@ -39,7 +39,7 @@
             <div class="grid-item">
                 <form action="." method="post" data-turbo-frame="_top">
                     {% csrf_token %}
-                    <div class="">
+                    <div>
                         <h2 class="h5 ">E-mailadres</h2>
                         <p class="no-margin-top">{{ object.email }}</p>
                     </div>
@@ -50,7 +50,7 @@
                             {{ form.last_name|render_rotterdam_formulier }}
                         </fieldset>
                     {% else %}
-                        <div class="">
+                        <div>
                             <h2 class="h5 ">Telefoonnummer</h2>
                             <p class="no-margin-top">{{ object.telefoonnummer }}</p>
                             <h2 class="h5 ">Voornaam</h2>

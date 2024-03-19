@@ -7,7 +7,6 @@
 {% load get_gebruiker_object_middels_email from gebruikers_tags %}
 {% load vertaal from vertaal_tags %}
 {% load rotterdam_formulier_html %}
-
 <ul class="list__mutations">
     {% for row_data in tijdlijn_data %}
         {% with previous_row_data=tijdlijn_data|previous:forloop.counter0 %}
@@ -46,7 +45,7 @@
                                 {% endif %}
                             {% endfor %}
                             {% if not forloop.first %}
-                                <strong {% if row_data.mg.taakgebeurtenis %}{% with to=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}data-taak-uuid="{{to.taak_url|laatste_slug_van_url}}"{% endwith %}{% endif %}>
+                                <strong {% if row_data.mg.taakgebeurtenis %}{% with to=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}data-taak-uuid="{{ to.taak_url|laatste_slug_van_url }}"{% endwith %}{% endif %}>
                                     {% if row_data.mg.taakgebeurtenis %}
                                         {% with taakopdracht=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}
                                             {{ taakopdracht.titel }}
@@ -102,7 +101,6 @@
                                                         {{ taakopdracht.resolutie|vertaal }}
                                                     {% endwith %}
                                                 </dd>
-
                                             {% else %}
                                                 {% if row_data.mg.taakgebeurtenis.aangemaakt_op %}
                                                     <dt>Taak aangemaakt</dt>
@@ -115,7 +113,6 @@
                                                 <dd>
                                                     {{ row_data.mg.taakgebeurtenis.taakstatus.naam }}
                                                 </dd>
-
                                             {% endif %}
                                             {% if row_data.mg.taakgebeurtenis.omschrijving_intern %}
                                                 <dt>Interne opmerking</dt>
@@ -140,7 +137,13 @@
                                             {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.taakgebeurtenis.additionele_informatie.uitvoerder|get_gebruiker_object_middels_email %}
                                         {% elif row_data.mg.urgentie %}
                                             {% if row_data.mg.aangemaakt_op %}
-                                                <dt>{% if row_data.mg.urgentie >= .5 %}Melding met spoed oppakken{% else %}Spoed-status geannuleerd{% endif %}</dt>
+                                                <dt>
+                                                    {% if row_data.mg.urgentie >= .5 %}
+                                                        Melding met spoed oppakken
+                                                    {% else %}
+                                                        Spoed-status geannuleerd
+                                                    {% endif %}
+                                                </dt>
                                                 <dd>
                                                     {{ row_data.mg.aangemaakt_op|to_datetime }}
                                                 </dd>
