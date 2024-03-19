@@ -37,18 +37,12 @@ export default class extends Controller {
       this.activateTabs(tabs, tabsContent, this)
     }
 
-    this.coordinates =
-      JSON.parse(this.locatieValue).geometrie &&
-      JSON.parse(this.locatieValue).geometrie.coordinates.reverse()
+    this.coordinates = JSON.parse(this.locatieValue)?.geometrie?.coordinates?.reverse()
+
     this.signalen =
-      JSON.parse(this.signalenValue).length > 1
-        ? JSON.parse(this.signalenValue).filter(
-            (signaal) =>
-              signaal.locaties_voor_signaal.length > 0 &&
-              signaal.locaties_voor_signaal[0].geometrie &&
-              signaal.locaties_voor_signaal[0].geometrie.coordinates
-          )
-        : []
+      JSON.parse(this.signalenValue)?.filter(
+        (signaal) => signaal.locaties_voor_signaal?.[0]?.geometrie?.coordinates
+      ) ?? []
 
     if (this.hasThumbListTarget) {
       const element = this.thumbListTarget.getElementsByTagName('li')[0]
@@ -121,13 +115,11 @@ export default class extends Controller {
       this.map = L.map('incidentMap').setView(this.coordinates, 18)
       L.tileLayer(url, config).addTo(this.map)
 
-      for (let i = 0; i < this.signalen.length; i++) {
-        const marker = new L.Marker(
-          this.signalen[i].locaties_voor_signaal[0].geometrie.coordinates.reverse(),
-          { icon: markerMagenta }
-        )
+      for (const signaal of this.signalen) {
+        const coordinates = signaal.locaties_voor_signaal[0].geometrie.coordinates.reverse()
+        const marker = new L.Marker(coordinates, { icon: markerMagenta })
         marker.addTo(this.map)
-        let popupContent = `<div></div><div class="container__content"><p>${this.signalen[i].bron_signaal_id}</p></div>`
+        const popupContent = `<div></div><div class="container__content"><p>${signaal.bron_signaal_id}</p></div>`
         marker.bindPopup(popupContent)
       }
       const bounds = new L.LatLngBounds(

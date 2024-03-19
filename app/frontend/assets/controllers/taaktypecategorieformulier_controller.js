@@ -38,8 +38,7 @@ export default class extends Controller {
     formData = new FormData(form)
     this.initializeSelect2()
 
-    for (let i = 0; i < inputList.length; i++) {
-      const input = inputList[i]
+    for (const input of inputList) {
       const error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
 
       input.addEventListener('input', () => {
