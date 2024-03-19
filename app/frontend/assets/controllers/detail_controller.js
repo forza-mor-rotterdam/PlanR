@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus'
+import { visit } from '@hotwired/turbo'
 import L from 'leaflet'
 
 let lastFocussedItem = null
@@ -196,8 +197,7 @@ export default class extends Controller {
         this.urlParams.set('tabIndex', tab.dataset.index)
         const targetUrl = `${window.location.pathname}?${this.urlParams}`
         detailScrollY = document.documentElement.scrollTop
-        // eslint-disable-next-line no-undef
-        Turbo.visit(targetUrl)
+        visit(targetUrl)
       })
     })
   }
