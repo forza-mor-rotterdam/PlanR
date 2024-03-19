@@ -32,7 +32,7 @@ export default class extends Controller {
   disconnect() {
     document.removeEventListener('click', this.clickOutsideHandler)
   }
-  onChangeFilter(e) {
+  onChangeFilter() {
     this.element.requestSubmit()
   }
   clickOutsideHandler(e) {

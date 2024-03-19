@@ -2,10 +2,11 @@ import { Controller } from '@hotwired/stimulus'
 import { capitalize } from 'lodash'
 import L from 'leaflet'
 
+// eslint-disable-next-line no-unused-vars
 let inputList = null
-let markerBlue, markerMagenta, markerIcon
+// eslint-disable-next-line no-unused-vars
 let initialGeometry = {}
-const defaultErrorMessage = 'Vul a.u.b. dit veld in.'
+let markerBlue, markerMagenta, markerIcon
 
 export default class extends Controller {
   static values = {
@@ -191,7 +192,7 @@ export default class extends Controller {
     return this.getHash(this.getAddressString(address))
   }
   getAddressString(address) {
-    const cleanValue = (value) => (value ? value : '')
+    const cleanValue = (value) => value || ''
     return `${cleanValue(address.straatnaam)}_${cleanValue(address.huisnummer)}${cleanValue(
       address.huisletter
     )}${cleanValue(address.toevoeging)}${cleanValue(address.buurtnaam)}${cleanValue(
@@ -199,7 +200,7 @@ export default class extends Controller {
     )}${cleanValue(address.postcode)}`
   }
   getAddressVerbose(address) {
-    const cleanValue = (value) => (value ? value : '')
+    const cleanValue = (value) => value || ''
     return (
       `<span data-locatieaanpassenformulier-target="searchable" class="address">
       ${address.straatnaam} ${address.huisnummer}` +
@@ -290,7 +291,7 @@ export default class extends Controller {
         `</small>` +
         `</label>` +
         `</li>`
-      var div = document.createElement('div')
+      let div = document.createElement('div')
       div.innerHTML = resultHTML.trim()
       this.adresResultListTarget.append(div.firstChild)
     })
