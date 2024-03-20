@@ -265,12 +265,15 @@ export default class extends Controller {
     )
   }
 
-  selectImage(e) {
-    console.log(e.params.imageIndex)
+  imageScrollInView(index) {
     this.imageSliderContainerTarget.scrollTo({
-      left: Number(e.params.imageIndex) * this.imageSliderContainerTarget.offsetWidth,
+      left: Number(index) * this.imageSliderContainerTarget.offsetWidth,
       top: 0,
     })
+  }
+
+  selectImage(e) {
+    this.imageScrollInView(e.params.imageIndex)
     this.deselectThumbs(e.target.closest('ul'))
     e.target.closest('li').classList.add('selected')
   }
@@ -311,6 +314,7 @@ export default class extends Controller {
       this.selectedImageModalTarget.style.backgroundImage = `url('/core${imagesList[selectedImageIndex]}')`
     }
     this.showHideImageNavigation()
+    this.imageScrollInView(selectedImageIndex)
   }
 
   showNextImageInModal() {
@@ -319,6 +323,7 @@ export default class extends Controller {
       this.selectedImageModalTarget.style.backgroundImage = `url('/core${imagesList[selectedImageIndex]}')`
     }
     this.showHideImageNavigation()
+    this.imageScrollInView(selectedImageIndex)
   }
 
   showHideImageNavigation() {
