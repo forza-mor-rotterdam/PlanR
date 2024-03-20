@@ -63,12 +63,10 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta_app
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-app
-          tags: |
-            type=raw,develop
-            type=raw,test
+
       - name: Build and push app Docker image
         uses: docker/build-push-action@v3
         with:
