@@ -72,7 +72,9 @@ jobs:
         with:
           context: "{{defaultContext}}:app"
           push: true
-          tags: ${{ steps.meta_app.outputs.tags }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-app:develop
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-app:test
           labels: ${{ steps.meta_app.outputs.labels }}
           build-args: |
             GIT_SHA=${{ github.sha }}
