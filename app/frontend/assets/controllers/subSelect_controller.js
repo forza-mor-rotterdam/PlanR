@@ -23,7 +23,7 @@ export default class extends Controller {
     self.element[self.identifier] = self
     self.filterController = document.querySelector('[data-controller="filter"]').filter
   }
-  checkboxChangeHandler(e) {
+  checkboxChangeHandler() {
     this.subCheckboxTargets.map((checkbox) => {
       checkbox.checked = this.groupCheckboxTarget.checked
     })

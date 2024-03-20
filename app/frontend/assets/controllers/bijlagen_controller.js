@@ -10,7 +10,7 @@ export default class extends Controller {
   }
 
   removeDuplicates(arr) {
-    var unique = []
+    let unique = []
     arr.forEach((element) => {
       if (!unique.includes(element)) {
         unique.push(element)
@@ -19,7 +19,7 @@ export default class extends Controller {
     return unique
   }
 
-  showFileInput(e) {
+  showFileInput() {
     const inputContainer = this.fileInput.parentElement
     inputContainer.classList.toggle('hidden')
   }

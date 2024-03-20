@@ -137,7 +137,7 @@
         top: calc(100% - 1px);
         left: 0;
         height: 0;
-        min-width: 220px;
+        min-width: 238px;
         overflow: hidden;
         background-color: #fff;
         display: none;
@@ -180,11 +180,11 @@
         .container__details-list {
             display: flex;
             flex-wrap: wrap;
-            min-width: 960px;
+            min-width: 1100px;
 
             > details {
                 flex: 0 0 24%;
-                min-width: 230px;
+                min-width: 250px;
                 margin: 4px;
                 font-size: 0.889em;
 
