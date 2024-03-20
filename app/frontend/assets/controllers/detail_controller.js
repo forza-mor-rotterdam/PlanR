@@ -7,21 +7,28 @@ let markerIcon,
   sliderContainerWidth,
   imageSliderWidth,
   imageSliderThumbContainer = null,
-  detailScrollY = 0
+  detailScrollY = 0,
+  selectedImageIndex = 0,
+  imagesList = null
 
 export default class extends Controller {
   static values = {
     signalen: String,
     locatie: String,
+    afbeeldingen: String,
   }
   static targets = [
     'selectedImage',
+    'selectedImageModal',
     'thumbList',
     'imageSliderContainer',
     'imageSliderThumbContainer',
     'turboActionModal',
     'modalAfhandelen',
+    'modalImages',
     'imageSliderWidth',
+    'navigateImagesLeft',
+    'navigateImagesRight',
   ]
 
   initialize() {
@@ -38,6 +45,10 @@ export default class extends Controller {
     }
 
     this.coordinates = JSON.parse(this.locatieValue)?.geometrie?.coordinates?.reverse()
+
+    imagesList = JSON.parse(this.afbeeldingenValue).map(
+      (bestand) => bestand.afbeelding_relative_url
+    )
 
     this.signalen =
       JSON.parse(this.signalenValue)?.filter(
@@ -135,6 +146,12 @@ export default class extends Controller {
       if (event.key === 'Escape') {
         this.closeModal()
       }
+      if (event.key === 'ArrowLeft') {
+        this.showPreviousImageInModal()
+      }
+      if (event.key === 'ArrowRight') {
+        this.showNextImageInModal()
+      }
     })
     if (this.hasThumbListTarget) {
       const resizeObserver = new ResizeObserver(() => {
@@ -229,6 +246,7 @@ export default class extends Controller {
   closeModal() {
     const modalBackdrop = document.querySelector('.modal-backdrop')
     this.modalAfhandelenTarget.classList.remove('show')
+    this.modalImagesTarget.classList.remove('show')
     modalBackdrop.classList.remove('show')
     document.body.classList.remove('show-modal')
     if (lastFocussedItem) {
@@ -248,8 +266,9 @@ export default class extends Controller {
   }
 
   selectImage(e) {
+    console.log(e.params.imageIndex)
     this.imageSliderContainerTarget.scrollTo({
-      left: (Number(e.params.imageIndex) - 1) * this.imageSliderContainerTarget.offsetWidth,
+      left: Number(e.params.imageIndex) * this.imageSliderContainerTarget.offsetWidth,
       top: 0,
     })
     this.deselectThumbs(e.target.closest('ul'))
@@ -284,5 +303,44 @@ export default class extends Controller {
     // form.find(input["type=file"]).value=null
     form.reset()
     e.target.closest('details').open = false
+  }
+
+  showPreviousImageInModal() {
+    if (selectedImageIndex > 0) {
+      selectedImageIndex--
+      this.selectedImageModalTarget.style.backgroundImage = `url('/core${imagesList[selectedImageIndex]}')`
+    }
+    this.showHideImageNavigation()
+  }
+
+  showNextImageInModal() {
+    if (selectedImageIndex < imagesList.length - 1) {
+      selectedImageIndex++
+      this.selectedImageModalTarget.style.backgroundImage = `url('/core${imagesList[selectedImageIndex]}')`
+    }
+    this.showHideImageNavigation()
+  }
+
+  showHideImageNavigation() {
+    this.navigateImagesLeftTarget.classList.remove('inactive')
+    this.navigateImagesRightTarget.classList.remove('inactive')
+    if (selectedImageIndex === 0) {
+      this.navigateImagesLeftTarget.classList.add('inactive')
+    }
+    if (selectedImageIndex === imagesList.length - 1) {
+      this.navigateImagesRightTarget.classList.add('inactive')
+    }
+  }
+
+  showImageInModal(e) {
+    selectedImageIndex = e.params.imageIndex
+    const modal = this.modalImagesTarget
+    const modalBackdrop = document.querySelector('.modal-backdrop')
+    modal.classList.add('show')
+    modalBackdrop.classList.add('show')
+    document.body.classList.add('show-modal')
+    // @TODO replace '/core'
+    this.selectedImageModalTarget.style.backgroundImage = `url('/core${imagesList[selectedImageIndex]}')`
+    this.showHideImageNavigation()
   }
 }
