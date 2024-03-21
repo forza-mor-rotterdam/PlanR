@@ -161,30 +161,32 @@ body.show-modal--first-filter {
                 background-position: 50% 50%;
                 background-repeat: no-repeat;
                 background-color: $gray-tint02;
+                cursor: zoom-in;
+
+                &.fullSize {
+                    background-size: cover;
+                    cursor: zoom-out;
+                }
             }
         }
 
         .container__navigate-images {
-            // position: relative;
-
             .navigate-images--left,
             .navigate-images--right {
                 cursor: pointer;
                 position: absolute;
-                top: 0;
-                bottom: 0;
-                width: 25%;
+                width: 80px;
+                height: 80px;
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
 
                 opacity: 1;
                 transition: opacity 0.25s ease-in;
 
                 span {
                     display: block;
-                    width: 80px;
-                    height: 80px;
-                    position: absolute;
-                    top: 50%;
-                    transform: translateY(-50%);
+
                     background-color: $black;
 
                     svg {
@@ -205,8 +207,6 @@ body.show-modal--first-filter {
             .navigate-images--left {
                 left: 0;
                 span {
-                    left: 0;
-
                     svg {
                         transform: rotate(180deg);
                     }
@@ -215,9 +215,6 @@ body.show-modal--first-filter {
 
             .navigate-images--right {
                 right: 0;
-                span {
-                    right: 0;
-                }
             }
         }
     }

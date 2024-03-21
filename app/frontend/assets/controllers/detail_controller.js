@@ -9,7 +9,8 @@ let markerIcon,
   imageSliderThumbContainer = null,
   detailScrollY = 0,
   selectedImageIndex = 0,
-  imagesList = null
+  imagesList = null,
+  fullSizeImageContainer = null
 
 export default class extends Controller {
   static values = {
@@ -38,6 +39,7 @@ export default class extends Controller {
       const tabsContent = this.tabsContentTarget.querySelectorAll('.tab-content')
       this.activateTabs(tabs, tabsContent, this)
     }
+
     if (this.hasTabs2Target && this.hasTabsContent2Target) {
       const tabs = this.tabs2Target.querySelectorAll('.btn--tab')
       const tabsContent = this.tabsContent2Target.querySelectorAll('.tab-content')
@@ -164,7 +166,6 @@ export default class extends Controller {
 
   connect() {
     document.documentElement.scrollTop = detailScrollY
-
     this.urlParams = new URLSearchParams(window.location.search)
     this.tabIndex = Number(this.urlParams.get('tabIndex'))
     this.selectTab(this.tabIndex || 1)
@@ -255,6 +256,7 @@ export default class extends Controller {
     if (this.hasTurboActionModalTarget) {
       this.turboActionModalTarget.innerHTML = ''
     }
+    window.removeEventListener('mousemove', this.getRelativeCoordinates, true)
   }
 
   onScrollSlider() {
@@ -311,19 +313,52 @@ export default class extends Controller {
   showPreviousImageInModal() {
     if (selectedImageIndex > 0) {
       selectedImageIndex--
-      this.selectedImageModalTarget.style.backgroundImage = `url('/core${imagesList[selectedImageIndex]}')`
+      this.showImage()
     }
-    this.showHideImageNavigation()
-    this.imageScrollInView(selectedImageIndex)
   }
 
   showNextImageInModal() {
     if (selectedImageIndex < imagesList.length - 1) {
       selectedImageIndex++
-      this.selectedImageModalTarget.style.backgroundImage = `url('/core${imagesList[selectedImageIndex]}')`
+      this.showImage()
     }
+  }
+
+  showImage() {
+    // @TODO replace '/core'
+    this.selectedImageModalTarget.style.backgroundImage = `url('/core${imagesList[selectedImageIndex]}')`
     this.showHideImageNavigation()
-    this.imageScrollInView(selectedImageIndex)
+    this.imageScrollInView(selectedImageIndex) //image in detailpage
+    fullSizeImageContainer = this.selectedImageModalTarget
+    this.showNormal()
+    window.addEventListener('mousemove', this.getRelativeCoordinates, true)
+    this.selectedImageModalTarget.addEventListener('click', this.showLarge)
+  }
+
+  getRelativeCoordinates(e) {
+    if (fullSizeImageContainer.classList.contains('fullSize')) {
+      fullSizeImageContainer.style.backgroundPosition = `
+        ${(e.clientX * 100) / window.innerWidth}%
+        ${(e.clientY * 100) / window.innerHeight}%
+        `
+    }
+  }
+
+  showLarge() {
+    if (fullSizeImageContainer.classList.contains('fullSize')) {
+      fullSizeImageContainer.classList.remove('fullSize')
+      fullSizeImageContainer.style.backgroundPosition = '50% 50%'
+      window.removeEventListener('mousemove', this.getRelativeCoordinates, true)
+    } else {
+      fullSizeImageContainer.classList.add('fullSize')
+      window.addEventListener('mousemove', this.getRelativeCoordinates, true)
+    }
+  }
+
+  showNormal() {
+    fullSizeImageContainer.classList.remove('fullSize')
+    fullSizeImageContainer.style.backgroundPosition = '50% 50%'
+    window.removeEventListener('mousemove', this.getRelativeCoordinates, true)
   }
 
   showHideImageNavigation() {
@@ -344,8 +379,7 @@ export default class extends Controller {
     modal.classList.add('show')
     modalBackdrop.classList.add('show')
     document.body.classList.add('show-modal')
-    // @TODO replace '/core'
-    this.selectedImageModalTarget.style.backgroundImage = `url('/core${imagesList[selectedImageIndex]}')`
-    this.showHideImageNavigation()
+
+    this.showImage()
   }
 }
