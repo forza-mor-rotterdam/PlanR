@@ -23,6 +23,7 @@
             <div data-controller="detail"
                  data-detail-locatie-value="{{ locatie|json_encode }}"
                  data-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
+                 data-detail-url-prefix-value="{{ MOR_CORE_URL_PREFIX }}"
                  data-detail-signalen-value="{{ melding.signalen_voor_melding|json_encode }}">
                 <div class="border-green print-only"></div>
                 <div class="page__detail">
@@ -401,6 +402,7 @@
                             </div>
                             <div class="modal-body">
                                 <div class="image" data-detail-target="selectedImageModal"></div>
+                                <div class="image-counter" data-detail-target="imageCounter"></div>
                                 <div class="container__navigate-images">
                                     <div class="navigate-images--left inactive"
                                          data-detail-target="navigateImagesLeft"

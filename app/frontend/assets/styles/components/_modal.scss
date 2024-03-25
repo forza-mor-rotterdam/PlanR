@@ -141,7 +141,7 @@ body.show-modal--first-filter {
             }
 
             .modal-body {
-                padding: 1%;
+                padding: 1% 1% 40px;
             }
 
             .modal-content,
@@ -167,6 +167,10 @@ body.show-modal--first-filter {
                     background-size: cover;
                     cursor: zoom-out;
                 }
+            }
+
+            .image-counter {
+                line-height: 40px;
             }
         }
 

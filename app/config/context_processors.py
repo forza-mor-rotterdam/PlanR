@@ -70,4 +70,5 @@ def general_settings(context):
         "GIT_SHA": settings.GIT_SHA,
         "UNWATCHED_COUNT": unwatched_count,
         "APP_ENV": settings.APP_ENV,
+        "MOR_CORE_URL_PREFIX": settings.MOR_CORE_URL_PREFIX,
     }

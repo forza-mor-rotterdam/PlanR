@@ -17,6 +17,7 @@ export default class extends Controller {
     signalen: String,
     locatie: String,
     afbeeldingen: String,
+    urlPrefix: String,
   }
   static targets = [
     'selectedImage',
@@ -30,6 +31,7 @@ export default class extends Controller {
     'imageSliderWidth',
     'navigateImagesLeft',
     'navigateImagesRight',
+    'imageCounter',
   ]
 
   initialize() {
@@ -325,9 +327,9 @@ export default class extends Controller {
   }
 
   showImage() {
-    // @TODO replace '/core'
-    this.selectedImageModalTarget.style.backgroundImage = `url('/core${imagesList[selectedImageIndex]}')`
+    this.selectedImageModalTarget.style.backgroundImage = `url('${this.urlPrefixValue}${imagesList[selectedImageIndex]}')`
     this.showHideImageNavigation()
+    this.imageCounterTarget.innerHTML = `Foto ${selectedImageIndex + 1} van ${imagesList.length}`
     this.imageScrollInView(selectedImageIndex) //image in detailpage
     fullSizeImageContainer = this.selectedImageModalTarget
     this.showNormal()
