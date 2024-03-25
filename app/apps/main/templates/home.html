@@ -1,37 +1,35 @@
 {% extends "base.html" %}
-
-
+{% block title %}
+    Home | PlanR
+{% endblock title %}
 {% block body %}
-
-<turbo-frame id="overview">
-<div class="border-green print-only"></div>
-
-<div class="page__detail">
-    <div data-controller="detail">
-        <div class="grid-container">
-            <div class="grid-item">
-                <div>
-                    <h1>Home</h1>
+    <turbo-frame id="overview">
+    <div class="border-green print-only"></div>
+    <div class="page__detail">
+        <div data-controller="detail">
+            <div class="grid-container">
+                <div class="grid-item">
+                    <div>
+                        <h1>Home</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-container">
+                <div class="grid-item">
+                    <section class="section--seperated">
+                        <div class="container__details">
+                            <h2>Om te beginnen</h2>
+                            <p>
+                                Je bent wel ingelogt, maar je account heeft nog wat aandacht nodig om gebruik te maken van PlanR.
+                                <br>
+                                Hieronder vindt je de instellingen zoals je nu bij ons bekent bent.
+                            </p>
+                            {% include "auth/rollen_rechten.html" %}
+                        </div>
+                    </section>
                 </div>
             </div>
         </div>
-        <div class="grid-container">
-            <div class="grid-item">
-                <section class="section--seperated">
-                    <div class="container__details">
-                        <h2>
-                            Om te beginnen
-                        </h2>
-                        <p>
-                            Je bent wel ingelogt, maar je account heeft nog wat aandacht nodig om gebruik te maken van PlanR.<br>
-                            Hieronder vindt je de instellingen zoals je nu bij ons bekent bent.
-                        </p>
-                        {% include "auth/rollen_rechten.html" %}
-                    </div>
-                </section>
-            </div>
-        </div>
     </div>
-
-</turbo-frame>
+    </turbo-frame>
 {% endblock body %}

@@ -31,6 +31,7 @@ from apps.main.forms import (
     TaaktypeCategorieSearchForm,
 )
 from apps.main.models import StandaardExterneOmschrijving, TaaktypeCategorie
+from apps.main.templatetags.gebruikers_tags import get_gebruiker_object_middels_email
 from apps.main.utils import (
     get_actieve_filters,
     get_open_taakopdrachten,
@@ -47,7 +48,6 @@ from apps.services.meldingen import MeldingenService, get_taaktypes
 from config.context_processors import general_settings
 from deepdiff import DeepDiff
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import (
     login_required,
     permission_required,
@@ -63,7 +63,6 @@ from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView, View
-from utils.diversen import gebruikersnaam as gebruikersnaam_basis
 from utils.rd_convert import rd_to_wgs
 
 logger = logging.getLogger(__name__)
@@ -96,6 +95,7 @@ def root(request):
     )
 
 
+@login_required
 @permission_required("authorisatie.melding_lijst_bekijken", raise_exception=True)
 def melding_lijst(request):
     MeldingenService().set_gebruiker(
@@ -107,6 +107,7 @@ def melding_lijst(request):
     standaard_waardes = {
         "limit": "10",
         "ordering": get_ordering(gebruiker),
+        "foldout_states": "[]",
     }
     actieve_filters = get_actieve_filters(gebruiker)
 
@@ -190,6 +191,7 @@ def melding_lijst(request):
     )
 
 
+@login_required
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def melding_detail(request, id):
     melding = MeldingenService().get_melding(id)
@@ -273,12 +275,14 @@ def melding_detail(request, id):
     )
 
 
+@login_required
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def publiceer_topic(request, id):
     publiceer_topic_met_subscriptions(reverse("melding_detail", args=[id]))
     return JsonResponse({})
 
 
+@login_required
 @permission_required("authorisatie.melding_afhandelen", raise_exception=True)
 def melding_afhandelen(request, id):
     melding = MeldingenService().get_melding(id)
@@ -356,6 +360,7 @@ def melding_afhandelen(request, id):
     )
 
 
+@login_required
 @permission_required("authorisatie.melding_annuleren", raise_exception=True)
 def melding_annuleren(request, id):
     melding = MeldingenService().get_melding(id)
@@ -412,6 +417,7 @@ def melding_annuleren(request, id):
     )
 
 
+@login_required
 @permission_required("authorisatie.melding_heropenen", raise_exception=True)
 def melding_heropenen(request, id):
     melding = MeldingenService().get_melding(id)
@@ -436,6 +442,7 @@ def melding_heropenen(request, id):
     )
 
 
+@login_required
 @permission_required("authorisatie.melding_pauzeren", raise_exception=True)
 def melding_pauzeren(request, id):
     melding = MeldingenService().get_melding(id)
@@ -467,6 +474,7 @@ def melding_pauzeren(request, id):
     )
 
 
+@login_required
 @permission_required("authorisatie.melding_hervatten", raise_exception=True)
 def melding_hervatten(request, id):
     melding = MeldingenService().get_melding(id)
@@ -493,6 +501,7 @@ def melding_hervatten(request, id):
     )
 
 
+@login_required
 @permission_required("authorisatie.melding_spoed_veranderen", raise_exception=True)
 def melding_spoed_veranderen(request, id):
     melding = MeldingenService().get_melding(id)
@@ -521,6 +530,7 @@ def melding_spoed_veranderen(request, id):
     )
 
 
+@login_required
 @permission_required("authorisatie.taak_aanmaken", raise_exception=True)
 def taak_starten(request, id):
     melding = MeldingenService().get_melding(id)
@@ -551,6 +561,7 @@ def taak_starten(request, id):
     )
 
 
+@login_required
 @permission_required("authorisatie.taak_afronden", raise_exception=True)
 def taak_afronden(request, melding_uuid):
     melding = MeldingenService().get_melding(melding_uuid)
@@ -595,6 +606,7 @@ def taak_afronden(request, melding_uuid):
     )
 
 
+@login_required
 @permission_required("authorisatie.taak_annuleren", raise_exception=True)
 def taak_annuleren(request, melding_uuid):
     melding = MeldingenService().get_melding(melding_uuid)
@@ -632,6 +644,7 @@ def taak_annuleren(request, melding_uuid):
     )
 
 
+@login_required
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def informatie_toevoegen(request, id):
     melding = MeldingenService().get_melding(id)
@@ -666,49 +679,19 @@ def informatie_toevoegen(request, id):
     )
 
 
+@login_required
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def gebruiker_info(request, gebruiker_email):
-    full_name = None
-    telefoonnummer = None
-    functie = None
-    email = gebruiker_email
-
-    # Get gebruiker info from mor-core cache
-    gebruiker_response = MeldingenService().get_gebruiker(
-        gebruiker_email=email,
-    )
-
-    if gebruiker_response.status_code == 200:
-        mor_core_gebruiker = gebruiker_response.json()
-        telefoonnummer = mor_core_gebruiker.get("telefoonnummer")
-        full_name = gebruikersnaam_basis(mor_core_gebruiker)
-
-    # Get gebruiker info from the user model, pick mor-core info over local
-    user_model = get_user_model()
-    local_gebruiker = user_model.objects.filter(email=email).first()
-    if local_gebruiker:
-        full_name = (
-            gebruikersnaam_basis(local_gebruiker) if not full_name else full_name
-        )
-        telefoonnummer = (
-            local_gebruiker.telefoonnummer if not telefoonnummer else telefoonnummer
-        )
-        functie = local_gebruiker.functie
+    gebruiker = get_gebruiker_object_middels_email(gebruiker_email)
 
     return render(
         request,
         "melding/part_gebruiker_info.html",
-        {
-            "gebruiker": {
-                "email": email,
-                "full_name": full_name,
-                "telefoonnummer": telefoonnummer,
-                "functie": functie,
-            },
-        },
+        {"gebruiker": gebruiker},
     )
 
 
+@login_required
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def melding_pdf_download(request, id):
     melding = MeldingenService().get_melding(id)
@@ -751,6 +734,7 @@ def melding_pdf_download(request, id):
     )
 
 
+@login_required
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def meldingen_bestand(request):
     modified_path = request.path.replace(settings.MOR_CORE_URL_PREFIX, "")
@@ -765,6 +749,7 @@ def meldingen_bestand(request):
     )
 
 
+@login_required
 @permission_required("authorisatie.melding_aanmaken", raise_exception=True)
 def melding_aanmaken(request):
     # Temporary initial form data
@@ -817,6 +802,7 @@ def melding_aanmaken(request):
     )
 
 
+@login_required
 @permission_required("authorisatie.melding_aanmaken", raise_exception=True)
 def melding_verzonden(request, signaal_uuid):
     return render(
@@ -825,6 +811,7 @@ def melding_verzonden(request, signaal_uuid):
     )
 
 
+@login_required
 @permission_required("authorisatie.msb_toegang", raise_exception=True)
 def msb_login(request):
     form = MSBLoginForm()
@@ -851,6 +838,7 @@ def msb_login(request):
     return render(request, "msb/login.html", {"form": form, "errors": errors})
 
 
+@login_required
 @permission_required("authorisatie.msb_toegang", raise_exception=True)
 def msb_melding_zoeken(request):
     if not request.session.get("msb_token"):
@@ -892,6 +880,7 @@ def msb_melding_zoeken(request):
     )
 
 
+@login_required
 @permission_required("authorisatie.msb_toegang", raise_exception=True)
 def msb_importeer_melding(request):
     if not request.session.get("msb_token"):
@@ -1059,6 +1048,7 @@ class StandaardExterneOmschrijvingVerwijderenView(
 # Locatie views
 
 
+@login_required
 @permission_required("authorisatie.locatie_aanpassen", raise_exception=True)
 def locatie_aanpassen(request, id):
     try:
@@ -1128,6 +1118,7 @@ def locatie_aanpassen(request, id):
         )
 
 
+@login_required
 @user_passes_test(lambda u: u.is_superuser)
 def clear_melding_token_from_cache(request):
     cache.delete("meldingen_token")

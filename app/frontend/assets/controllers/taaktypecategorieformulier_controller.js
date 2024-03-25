@@ -38,8 +38,7 @@ export default class extends Controller {
     formData = new FormData(form)
     this.initializeSelect2()
 
-    for (let i = 0; i < inputList.length; i++) {
-      const input = inputList[i]
+    for (const input of inputList) {
       const error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
 
       input.addEventListener('input', () => {
@@ -65,14 +64,17 @@ export default class extends Controller {
   }
 
   checkValids() {
-    let errorCount = 0
-    Array.from(this.element.querySelectorAll('input[type="text"], select')).map((input) => {
+    const inputList = document.querySelectorAll('input[type="text"], select')
+    let count = 0
+    for (const input of inputList) {
       let error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
       let invalid = input.value.length == 0 && input.hasAttribute('required')
       error.textContent = invalid ? this.defaultErrorMessage : ''
       input.closest('.form-row').classList[invalid ? 'add' : 'remove']('is-invalid')
-      errorCount += invalid ? 1 : 0
-    })
-    return errorCount == 0
+      if (invalid) {
+        count++
+      }
+    }
+    return count === 0
   }
 }

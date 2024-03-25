@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% load rotterdam_formulier_html %}
 {% load json_encode from json_tags %}
+{% block title %}
+    Gebruiker aanmaken | Beheer | PlanR
+{% endblock title %}
 {% block body %}
     <turbo-frame id="beheer" data-turbo-action="advance">
     <div class="page__beheer">
@@ -37,8 +40,7 @@
                                 class="btn btn-tertiary"
                                 data-controller="utils"
                                 data-action="utils#goToUrl"
-                                data-utils-url-param="{% url 'gebruiker_lijst' %}"
-                            >
+                                data-utils-url-param="{% url 'gebruiker_lijst' %}">
                             <span>Annuleren</span>
                         </button>
                         <button type="submit" class="btn btn-action">

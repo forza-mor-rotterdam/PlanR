@@ -2,11 +2,11 @@ import { Controller } from '@hotwired/stimulus'
 import { capitalize } from 'lodash'
 import L from 'leaflet'
 
-let form = null
+// eslint-disable-next-line no-unused-vars
 let inputList = null
-let markerBlue, markerMagenta, markerIcon
+// eslint-disable-next-line no-unused-vars
 let initialGeometry = {}
-const defaultErrorMessage = 'Vul a.u.b. dit veld in.'
+let markerBlue, markerMagenta, markerIcon
 
 export default class extends Controller {
   static values = {
@@ -25,40 +25,41 @@ export default class extends Controller {
     'geometrie',
     'internalText',
     'map',
+    'adresResultList',
+    'submitButton',
+    'address',
+    'currentAddressDistance',
+    'searchable',
   ]
 
   connect() {
-    form = document.querySelector('#afhandelForm')
+    let self = this
     inputList = document.querySelectorAll('.js-validation textarea')
     const locatie = JSON.parse(this.locatieValue)
+    this.address = JSON.parse(this.locatieValue)
+    this.initial = true
+    this.geometrie = {
+      type: 'Point',
+      coordinates: [locatie.geometrie.coordinates[0], locatie.geometrie.coordinates[1]],
+    }
+    this.currentHash = this.getHash(
+      `${this.getAddressString(locatie)}${this.geometrie.coordinates[0]}${
+        this.geometrie.coordinates[1]
+      }`
+    )
     initialGeometry = locatie.geometrie
     this.initializeMap(locatie)
     this.updateFormFields(locatie)
 
-    for (const element of inputList) {
-      const input = element
-      const error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
-      input.addEventListener('input', () => {
-        if (input.validity.valid) {
-          input.closest('.form-row').classList.remove('is-invalid')
-          error.textContent = ''
-        } else {
-          error.textContent = defaultErrorMessage
-          input.closest('.form-row').classList.add('is-invalid')
-        }
-      })
-    }
-
-    form.addEventListener('submit', (event) => {
-      const coordinatesValid = !this.checkSameCoordinates()
-
-      if (!coordinatesValid) {
-        window.alert('Het is niet toegestaan om de locatie aan te passen met dezelfde coordinaten.')
+    self.element.addEventListener('submit', (event) => {
+      if (!this.dataHasChanged()) {
         event.preventDefault()
       } else {
         document.body.classList.remove('show-modal')
       }
     })
+
+    this.updateAddressDetails([locatie.geometrie.coordinates[1], locatie.geometrie.coordinates[0]])
   }
 
   initializeMap(locatie) {
@@ -155,7 +156,7 @@ export default class extends Controller {
     this.constructor.targets.forEach((key) => {
       if (this[`has${capitalize(key)}Target`]) {
         if (key === 'geometrie') {
-          this[`${key}Target`].value = JSON.stringify(locatie[key])
+          this[`${key}Target`].value = JSON.stringify(this[key])
         } else {
           this[`${key}Target`].value = locatie[key]
         }
@@ -165,6 +166,7 @@ export default class extends Controller {
 
   searchResultToLocatie(result) {
     const mapping = {
+      afstand: 'afstand',
       straatnaam: 'straatnaam',
       postcode: 'postcode',
       huisnummer: 'huisnummer',
@@ -183,7 +185,120 @@ export default class extends Controller {
 
     return locatie
   }
+  getHash(str) {
+    return str.split('').reduce((prev, curr) => ((prev << 5) - prev + curr.charCodeAt(0)) | 0, 0)
+  }
+  getAddressId(address) {
+    return this.getHash(this.getAddressString(address))
+  }
+  getAddressString(address) {
+    const cleanValue = (value) => value || ''
+    return `${cleanValue(address.straatnaam)}_${cleanValue(address.huisnummer)}${cleanValue(
+      address.huisletter
+    )}${cleanValue(address.toevoeging)}${cleanValue(address.buurtnaam)}${cleanValue(
+      address.wijknaam
+    )}${cleanValue(address.postcode)}`
+  }
+  getAddressVerbose(address) {
+    const cleanValue = (value) => value || ''
+    return (
+      `<span data-locatieaanpassenformulier-target="searchable" class="address">
+      ${address.straatnaam} ${address.huisnummer}` +
+      `${cleanValue(address.huisletter)}${cleanValue(address.toevoeging)}</span>` +
+      (address.current ? `<small class="active">&nbsp;(Huidig adres)</small>` : ``) +
+      `<br><span data-locatieaanpassenformulier-target="searchable" class="area">${address.buurtnaam} ${address.wijknaam}</span>`
+    )
+  }
+  searchAddressHandler(e) {
+    this.addressTargets.forEach((address) => {
+      address.style.display = 'none'
+    })
 
+    this.searchableTargets.forEach((elem) => {
+      const re = new RegExp(e.target.value, 'gi')
+      let newContent = elem.dataset.value
+      if (re.test(elem.dataset.value)) {
+        elem.closest('.new-address').style.display = 'list-item'
+        newContent = newContent.replace(re, function (match) {
+          return '<mark>' + match + '</mark>'
+        })
+      }
+      elem.innerHTML = newContent
+    })
+    // this.addressTargets.forEach((address) => {
+    //   const re = new RegExp(e.target.value, 'gi')
+    //   let newContent = address.dataset.searchContent
+    //   if (re.test(address.dataset.searchContent)) {
+    //     address.style.display = 'list-item'
+    //     newContent = newContent.replace(re, function (match) {
+    //       return '<mark>' + match + '</mark>'
+    //     })
+    //   }
+    //   address.querySelector('label span').innerHTML = newContent
+    // })
+  }
+  addressSelectHandler(e) {
+    Array.from(this.adresResultListTarget.querySelectorAll('.new-address')).map((elem) =>
+      elem.classList.remove('selected-address')
+    )
+    e.target.closest('.new-address').classList.add('selected-address')
+    this.updateFormFields(e.params.locatieData)
+    this.address = e.params.locatieData
+    this.submitButtonTarget.disabled = !this.dataHasChanged()
+  }
+  prepareResponseData(responseData) {
+    let self = this
+    const currentAddressId = this.getAddressId(JSON.parse(this.locatieValue))
+    return responseData.map((address) => {
+      address = self.searchResultToLocatie(address)
+      address.id = this.getAddressId(address)
+      address.current = address.id === currentAddressId
+      address.isFirst = this.getAddressId(responseData[0]) === address.id
+      address.selected = !self.initial ? address.isFirst : address.current
+      address.stringified = JSON.stringify(address)
+      address.verbose = this.getAddressVerbose(address)
+      if (address.selected) {
+        this.updateFormFields(address)
+        this.address = address
+      }
+      if (self.initial && address.isFirst) {
+        this.currentAddressDistanceTarget.textContent = Math.round(address.afstand)
+      }
+
+      return address
+    })
+  }
+  updateAdresResultList(addressList) {
+    const currentAddressClass = (address) => (address.current ? ' current-address ' : '')
+    const checked = (address) => (address.selected ? 'checked' : '')
+    this.adresResultListTarget.innerHTML = ''
+    addressList.map((address) => {
+      let resultHTML =
+        `<li data-locatieaanpassenformulier-target="address" class="new-address ${currentAddressClass(
+          address
+        )}">` +
+        `<input ${checked(address)} type="radio" class="form-radio-input" tabindex="0" id="id_${
+          address.id
+        }" value="${
+          address.id
+        }" name="nieuwe_adres" data-action="locatieaanpassenformulier#addressSelectHandler" data-locatieaanpassenformulier-locatie-data-param='${
+          address.stringified
+        }' />` +
+        `<label for="id_${address.id}">` +
+        `<span>${address.verbose}</span>` +
+        `<small class="distance">` +
+        `${Math.round(address.afstand)} meter vanaf huidige locatie` +
+        `</small>` +
+        `</label>` +
+        `</li>`
+      let div = document.createElement('div')
+      div.innerHTML = resultHTML.trim()
+      this.adresResultListTarget.append(div.firstChild)
+    })
+    this.searchableTargets.forEach((elem) => {
+      elem.dataset.value = elem.textContent
+    })
+  }
   async updateAddressDetails(coordinates) {
     const pdokUrl = 'https://api.pdok.nl/bzk/locatieserver/search/v3_1/reverse'
     const query = {
@@ -209,36 +324,26 @@ export default class extends Controller {
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`)
       }
-
-      const data = await response.json()
-      data.response.docs.map((a) => {
-        console.log(
-          `${a.straatnaam} ${a.huisnummer} ${!!a.huisletter ? a.huisletter : ''} (${a.afstand})`
-        )
-      })
-      const addressDetails = data.response.docs[0]
-
-      // Convert the PDOK search result to a locatie object
-      const locatie = this.searchResultToLocatie(addressDetails)
-      locatie['geometrie'] = {
+      this.geometrie = {
         type: 'Point',
         coordinates: [coordinates[1], coordinates[0]],
       }
-
-      // Update your form fields or perform other actions with locatie
-      this.updateFormFields(locatie)
+      const data = await response.json()
+      this.updateAdresResultList(this.prepareResponseData(data.response.docs))
+      this.submitButtonTarget.disabled = !this.dataHasChanged()
+      this.initial = false
     } catch (error) {
       console.error('Error fetching address details:', error.message)
     }
   }
 
-  checkSameCoordinates() {
-    const newGeometry = JSON.parse(document.querySelector('#id_geometrie').value)
-    const sameCoordinates =
-      initialGeometry.coordinates[0] === newGeometry.coordinates[0] &&
-      initialGeometry.coordinates[1] === newGeometry.coordinates[1]
-
-    return sameCoordinates
+  dataHasChanged() {
+    this.newHash = this.getHash(
+      `${this.getAddressString(this.address)}${this.geometrie.coordinates[0]}${
+        this.geometrie.coordinates[1]
+      }`
+    )
+    return this.newHash != this.currentHash
   }
 
   cancelHandle() {

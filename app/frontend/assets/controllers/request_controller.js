@@ -35,8 +35,7 @@ export default class extends Controller {
     //check radiobutton
     document.getElementById('id_specifiek_graf_0').click()
 
-    for (let i = 0; i < inputList.length; i++) {
-      const input = inputList[i]
+    for (const input of inputList) {
       const error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
 
       input.addEventListener('input', () => {
@@ -50,9 +49,7 @@ export default class extends Controller {
       })
     }
 
-    for (let i = 0; i < checkboxList.length; i++) {
-      const cb = checkboxList[i]
-
+    for (const cb of checkboxList) {
       cb.addEventListener('input', () => {
         this.checkCheckBoxes()
       })
@@ -94,13 +91,14 @@ export default class extends Controller {
   sessionTimer() {}
 
   checkValids() {
-    //check all inputfields (except checkboxes) for validity
-    // if 1 or more fields is invalid, don't send the form (return false)
-    inputList = document.querySelectorAll('[type="text"], [type="radio"], select, textarea')
+    // Check all input fields (except checkboxes) for validity
+    // If one or more fields are invalid, don't send the form (return false)
+    const inputList = document.querySelectorAll('[type="text"], [type="radio"], select, textarea')
     let count = 0
-    for (let i = 0; i < inputList.length; i++) {
-      const input = inputList[i]
+
+    for (const input of inputList) {
       const error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
+
       if (input.validity.valid) {
         error.textContent = ''
         input.closest('.form-row').classList.remove('is-invalid')
@@ -110,12 +108,10 @@ export default class extends Controller {
         count++
       }
     }
-    if (count > 0) {
-      return false
-    } else {
-      return true
-    }
+
+    return count === 0
   }
+
   checkCheckBoxes() {
     const cbRequired = document.getElementsByClassName('form-row cb-required')[0]
     if (cbRequired) {
@@ -168,9 +164,9 @@ export default class extends Controller {
     } else {
       //find nested inputs
       const inputList = field.getElementsByTagName('input')
-      for (let i = 0; i < inputList.length; i++) {
-        inputList[i].removeAttribute('required')
-      }
+      inputList.forEach((input) => {
+        input.removeAttribute('required')
+      })
     }
   }
 

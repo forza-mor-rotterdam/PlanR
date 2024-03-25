@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% block title %}
+    Rechtengroepen | Beheer | PlanR
+{% endblock title %}
 {% block body %}
     <turbo-frame id="beheer" data-turbo-action="advance">
     <div class="page__beheer" data-controller="row-search">
@@ -31,7 +34,7 @@
         </div>
         <!-- <form>
             <div class="form-row">
-                <label class="" for="id_zoeken">Zoeken</label>
+                <label for="id_zoeken">Zoeken</label>
                 <div>
                     <input type="text" id="id_zoeken" name="zoeken" class="form-control " data-action="row-search#search">
                 </div>
@@ -60,16 +63,14 @@
                         </td>
                         <td data-row-search-target="searchable">{{ object.user_set.all|length }}</td>
                         <td>
-                            <a href="{% url 'rechtengroep_aanpassen' object.pk %}" aria-label="Aanpassen">
-                                {% include "icons/edit.svg" %}
-                            </a>
+                            <a href="{% url 'rechtengroep_aanpassen' object.pk %}"
+                               aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
                         </td>
                         <td>
                             {% if not object.user_set.all %}
                                 <a href="{% url 'rechtengroep_verwijderen' object.pk %}"
-                                    onclick="return confirm('Weet je zeker dat je deze rechtengroep wil verwijderen?')" aria-label="Verwijderen">
-                                    {% include "icons/bin.svg" %}
-                                </a>
+                                   onclick="return confirm('Weet je zeker dat je deze rechtengroep wil verwijderen?')"
+                                   aria-label="Verwijderen">{% include "icons/bin.svg" %}</a>
                             {% endif %}
                         </td>
                     </tr>

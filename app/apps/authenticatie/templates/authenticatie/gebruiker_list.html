@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% load rotterdam_formulier_html %}
 {% load json_encode from json_tags %}
+{% block title %}
+    Gebruikerslijst | Beheer | PlanR
+{% endblock title %}
 {% block body %}
     <turbo-frame id="beheer" data-turbo-action="advance">
     <div class="page__beheer" data-controller="row-search">
@@ -23,20 +26,20 @@
             <div class="container__flex flex--end">
                 <a class="btn btn-tertiary" href="{% url 'gebruiker_bulk_import' %}">
                     <svg width="24"
-                        height="24"
-                        viewBox="0 0 32 32"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                         height="24"
+                         viewBox="0 0 32 32"
+                         fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#00811f"></path>
                     </svg>
                     Bulk import
                 </a>
                 <a class="btn btn-action" href="{% url 'gebruiker_aanmaken' %}">
                     <svg width="24"
-                        height="24"
-                        viewBox="0 0 32 32"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                         height="24"
+                         viewBox="0 0 32 32"
+                         fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#ffffff"></path>
                     </svg>
                     Nieuwe gebruiker
@@ -109,9 +112,8 @@
                                 {% endif %}
                             </td>
                             <td>
-                                <a href="{% url 'gebruiker_aanpassen' object.pk %}" aria-label="Aanpassen">
-                                    {% include "icons/edit.svg" %}
-                                </a>
+                                <a href="{% url 'gebruiker_aanpassen' object.pk %}"
+                                   aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
                             </td>
                         </tr>
                     {% endfor %}
@@ -175,9 +177,8 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{% url 'gebruiker_aanpassen' object.pk %}" aria-label="Aanpassen">
-                                {% include "icons/edit.svg" %}
-                            </a>
+                            <a href="{% url 'gebruiker_aanpassen' object.pk %}"
+                               aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
                         </td>
                     </tr>
                 {% endfor %}

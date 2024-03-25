@@ -43,11 +43,11 @@
                                     {% for taak in actieve_taken %}<li>{{ taak.titel }}</li>{% endfor %}
                                 </ul>
                                 <span>Als de melding wordt afgehandeld wordt de status van deze
-                                {% if aantal_actieve_taken == 1 %}
-                                    taak
-                                {% else %}
-                                    taken
-                                {% endif %}
+                                    {% if aantal_actieve_taken == 1 %}
+                                        taak
+                                    {% else %}
+                                        taken
+                                    {% endif %}
                                 aangepast naar ‘Voltooid’.</span>
                             </div>
                         </div>

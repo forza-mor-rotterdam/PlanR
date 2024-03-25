@@ -2,27 +2,26 @@
 {% with id=widget.attrs.id %}
     <ul {% if id %}id="{{ id }}"{% endif %} class="list--form-check-input">
         {% for group in widget.optgroups %}
-                {% for option in group.1 %}
-                    <li>
-                        <label {% if option.attrs.id %}for="{{ option.attrs.id }}"{% endif %}
-                                {% if option.hide %}style="display: none;"{% endif %}>
-                            <input type="{{ option.type }}"
-                                    name="{{ option.name }}"
-                                    {% if option.value != None %}value="{{ option.value|stringformat:'s' }}"{% endif %}
-                                    {% include "django/forms/widgets/attrs.html" with widget=option %}
-                                    class="list--form-check-input"
-                                    hidelabel
-                                    >
-                            {{ option.label }}
-                        </label>
-                    </li>
-                {% endfor %}
-                {% with next_group=widget.optgroups|next:forloop.counter0 %}
+            {% for option in group.1 %}
+                <li>
+                    <label {% if option.attrs.id %}for="{{ option.attrs.id }}"{% endif %}
+                           {% if option.hide %}style="display: none;"{% endif %}>
+                        <input type="{{ option.type }}"
+                               name="{{ option.name }}"
+                               {% if option.value != None %}value="{{ option.value|stringformat:'s' }}"{% endif %}
+                               {% include "django/forms/widgets/attrs.html" with widget=option %}
+                               class="list--form-check-input"
+                               hidelabel>
+                        {{ option.label }}
+                    </label>
+                </li>
+            {% endfor %}
+            {% with next_group=widget.optgroups|next:forloop.counter0 %}
                 {% if next_group and next_group.1.0.label|add:"0" != group.1.0.label|add:"1" %}
-                <li>...</li>
-                {% comment %} <li>.{{next_group.1.0.label|add:"0"}}={{group.1.0.label|add:"1"}}.</li> {% endcomment %}
+                    <li>...</li>
+                    {% comment %} <li>.{{next_group.1.0.label|add:"0"}}={{group.1.0.label|add:"1"}}.</li> {% endcomment %}
                 {% endif %}
-                {% endwith %}
+            {% endwith %}
         {% endfor %}
     </ul>
 {% endwith %}

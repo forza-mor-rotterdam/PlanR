@@ -1,6 +1,8 @@
 {% extends "base_beheer.html" %}
 {% load rotterdam_formulier_html %}
-{% block title %}Nieuw in PlanR{% endblock %}
+{% block title %}
+    {{ release_note.titel|capfirst }} | Nieuw in PlanR | PlanR
+{% endblock title %}
 {% block body %}
     <turbo-frame id="release_notes" data-turbo-action="advance">
     <div class="page__beheer" data-controller="row-search">
@@ -22,11 +24,11 @@
             <ul class="list--images">
                 {% for bijlage in release_note.bijlagen.all %}
                     {% if bijlage.mimetype == "image/gif" and bijlage.bestand %}
-                        <li class="">
+                        <li>
                             <img src="{{ bijlage.bestand.url }}" alt="GIF">
                         </li>
                     {% elif bijlage.afbeelding %}
-                        <li class="">
+                        <li>
                             <img src="{{ bijlage.afbeelding.url }}" alt="Afbeelding">
                         </li>
                     {% endif %}

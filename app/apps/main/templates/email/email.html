@@ -1,10 +1,13 @@
 <!DOCTYPE html>
-<html lang="en"
+<html lang="nl"
       xmlns="http://www.w3.org/1999/xhtml"
       xmlns:o="urn:schemas-microsoft-com:office:office">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width,initial-scale=1">
+        <meta name="description" content="Email Serviceverzoek Begraven & Cremeren">
+        <meta name="keywords"
+              content="MOR, Meldingen openbare ruimte, gemeente Rotterdam, Serviceverzoek Begraven & Cremeren">
         <meta name="x-apple-disable-message-reformatting">
         <title>Serviceverzoek</title>
         <!--[if mso]>
@@ -23,15 +26,10 @@
         {% comment %} table, td {border:2px solid #000000 !important;} {% endcomment %}
         </style>
     </head>
-    <body style="margin:0;padding:0;">
-        <table role="presentation"
-               style="width:100%;
-                      border-collapse:collapse;
-                      border:0;
-                      border-spacing:0;
-                      background:#ffffff">
+    <body class="no-padding no-margin">
+        <table role="presentation" class="email-table">
             <tr>
-                <td align="left" style="padding:0 20px;">
+                <td align="left" class="p-0-20">
                     <?xml version="1.0" standalone="no"?>
                     <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
                     <svg version="1.0"
@@ -68,31 +66,27 @@
                 </td>
             </tr>
             <tr>
-                <td align="left" style="padding:0 20px;">
+                <td align="left" class="p-0-20">
                     <h1>Serviceverzoek Begraven & Cremeren</h1>
                 </td>
             </tr>
             <tr>
-                <td align="left" style="padding:0 20px;">
+                <td align="left" class="p-0-20">
                     <p>Geachte heer, mevrouw,</p>
                     <p>Hartelijk dank voor het indienen van het serviceverzoek.</p>
                     <p>Wij hebben de volgende gegevens van u ontvangen:</p>
                 </td>
             </tr>
             <tr>
-                <td align="left" style="padding:0 20px;">
-                    <table style="width:100%;
-                                  border-collapse:collapse;
-                                  border:0;
-                                  border-spacing:0;
-                                  background:#ffffff">
-                        <tr style="border-bottom: 1px solid #d3d3d3">
-                            <td style="padding: 8px 0 4px;">Begraafplaats</td>
-                            <td style="padding: 8px 0 4px;">{{ begraafplaats }}</td>
+                <td align="left" class="p-0-20">
+                    <table class="email-table">
+                        <tr class="email-border-bottom">
+                            <td class="p-8-0-4">Begraafplaats</td>
+                            <td class="p-8-0-4">{{ begraafplaats }}</td>
                         </tr>
-                        <tr style="border-bottom: 1px solid #d3d3d3">
-                            <td style="padding: 8px 0 4px;">Grafnummer</td>
-                            <td style="padding: 8px 0 4px;">
+                        <tr class="email-border-bottom">
+                            <td class="p-8-0-4">Grafnummer</td>
+                            <td class="p-8-0-4">
                                 {% if grafnummer %}
                                     {{ grafnummer }}
                                 {% else %}
@@ -100,9 +94,9 @@
                                 {% endif %}
                             </td>
                         </tr>
-                        <tr style="border-bottom: 1px solid #d3d3d3">
-                            <td style="padding: 8px 0 4px;">Vak</td>
-                            <td style="padding: 8px 0 4px;">
+                        <tr class="email-border-bottom">
+                            <td class="p-8-0-4">Vak</td>
+                            <td class="p-8-0-4">
                                 {% if vak %}
                                     {{ vak }}
                                 {% else %}
@@ -110,9 +104,9 @@
                                 {% endif %}
                             </td>
                         </tr>
-                        <tr style="border-bottom: 1px solid #d3d3d3">
-                            <td style="padding: 8px 0 4px;">Naam overledene</td>
-                            <td style="padding: 8px 0 4px;">
+                        <tr class="email-border-bottom">
+                            <td class="p-8-0-4">Naam overledene</td>
+                            <td class="p-8-0-4">
                                 {% if naam_overledene %}
                                     {{ naam_overledene }}
                                 {% else %}
@@ -120,13 +114,13 @@
                                 {% endif %}
                             </td>
                         </tr>
-                        <tr style="border-bottom: 1px solid #d3d3d3">
-                            <td style="padding: 8px 0 4px;">Categorie</td>
-                            <td style="padding: 8px 0 4px;">{{ categorie }}</td>
+                        <tr class="email-border-bottom">
+                            <td class="p-8-0-4">Categorie</td>
+                            <td class="p-8-0-4">{{ categorie }}</td>
                         </tr>
-                        <tr style="border-bottom: 1px solid #d3d3d3">
-                            <td style="padding: 8px 0 4px;">Omschrijving andere oorzaken</td>
-                            <td style="padding: 8px 0 4px;">
+                        <tr class="email-border-bottom">
+                            <td class="p-8-0-4">Omschrijving andere oorzaken</td>
+                            <td class="p-8-0-4">
                                 {% if omschrijving_andere_oorzaken %}
                                     {{ omschrijving_andere_oorzaken }}
                                 {% else %}
@@ -134,9 +128,9 @@
                                 {% endif %}
                             </td>
                         </tr>
-                        <tr style="border-bottom: 1px solid #d3d3d3">
-                            <td style="padding: 8px 0 4px;">Toelichting</td>
-                            <td style="padding: 8px 0 4px;">
+                        <tr class="email-border-bottom">
+                            <td class="p-8-0-4">Toelichting</td>
+                            <td class="p-8-0-4">
                                 {% if toelichting %}
                                     {{ toelichting }}
                                 {% else %}
@@ -144,9 +138,9 @@
                                 {% endif %}
                             </td>
                         </tr>
-                        <tr style="border-bottom: 1px solid #d3d3d3">
-                            <td style="padding: 8px 0 4px;">Foto's</td>
-                            <td style="padding: 8px 0 4px;">
+                        <tr class="email-border-bottom">
+                            <td class="p-8-0-4">Foto's</td>
+                            <td class="p-8-0-4">
                                 {% if fotos %}
                                     {{ fotos }}
                                 {% else %}
@@ -154,9 +148,9 @@
                                 {% endif %}
                             </td>
                         </tr>
-                        <tr style="border-bottom: 1px solid #d3d3d3">
-                            <td style="padding: 8px 0 4px;">Naam melder</td>
-                            <td style="padding: 8px 0 4px;">
+                        <tr class="email-border-bottom">
+                            <td class="p-8-0-4">Naam melder</td>
+                            <td class="p-8-0-4">
                                 {% if naam_melder %}
                                     {{ naam_melder }}
                                 {% else %}
@@ -164,9 +158,9 @@
                                 {% endif %}
                             </td>
                         </tr>
-                        <tr style="border-bottom: 1px solid #d3d3d3">
-                            <td style="padding: 8px 0 4px;">Telefoonnummer melder</td>
-                            <td style="padding: 8px 0 4px;">
+                        <tr class="email-border-bottom">
+                            <td class="p-8-0-4">Telefoonnummer melder</td>
+                            <td class="p-8-0-4">
                                 {% if telefoon_melder %}
                                     {{ telefoon_melder }}
                                 {% else %}
@@ -174,9 +168,9 @@
                                 {% endif %}
                             </td>
                         </tr>
-                        <tr style="border-bottom: 1px solid #d3d3d3">
-                            <td style="padding: 8px 0 4px;">E-mailadres melder</td>
-                            <td style="padding: 8px 0 4px;">
+                        <tr class="email-border-bottom">
+                            <td class="p-8-0-4">E-mailadres melder</td>
+                            <td class="p-8-0-4">
                                 {% if email_melder %}
                                     {{ email_melder }}
                                 {% else %}
@@ -184,9 +178,9 @@
                                 {% endif %}
                             </td>
                         </tr>
-                        <tr style="border-bottom: 1px solid #d3d3d3">
-                            <td style="padding: 8px 0 4px;">Is deze persoon de rechthebbende?</td>
-                            <td style="padding: 8px 0 4px;">
+                        <tr class="email-border-bottom">
+                            <td class="p-8-0-4">Is deze persoon de rechthebbende?</td>
+                            <td class="p-8-0-4">
                                 {% if rechthebbende == "1" %}
                                     Ja
                                 {% elif rechthebbende == "2" %}
@@ -196,9 +190,9 @@
                                 {% endif %}
                             </td>
                         </tr>
-                        <tr style="border-bottom: 1px solid #d3d3d3">
-                            <td style="padding: 8px 0 4px;">Is terugkoppeling gewenst?</td>
-                            <td style="padding: 8px 0 4px;">
+                        <tr class="email-border-bottom">
+                            <td class="p-8-0-4">Is terugkoppeling gewenst?</td>
+                            <td class="p-8-0-4">
                                 {% if terugkoppeling_gewenst == "1" %}
                                     Ja
                                 {% else %}
@@ -210,7 +204,7 @@
                 </td>
             </tr>
             <tr>
-                <td align="left" style="padding: 50px 20px;">
+                <td align="left" class="p-50-20">
                     <p>We gaan zo snel mogelijk uw verzoek aan de slag.</p>
                     <p>Met vriendelijke groet,</p>
                     <p>Medewerker Begraven & cremeren</p>

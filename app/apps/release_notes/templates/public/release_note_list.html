@@ -1,6 +1,8 @@
 {% extends "base_beheer.html" %}
 {% load rotterdam_formulier_html %}
-{% block title %}Nieuw in PlanR{% endblock %}
+{% block title %}
+    Nieuw in PlanR | PlanR
+{% endblock title %}
 {% block body %}
     <turbo-frame id="release_notes" data-turbo-action="advance">
     <div class="page__beheer" data-controller="row-search">
@@ -18,7 +20,8 @@
                                     {{ release_note.beschrijving|striptags|safe|truncate_text:200 }}
                                 {% endautoescape %}
                                 <br />
-                                <small><a href="{% url 'release_note_detail' release_note.pk %}" data-turbo-frame="_top">Lees meer</a></small>
+                                <small><a href="{% url 'release_note_detail' release_note.pk %}"
+   data-turbo-frame="_top">Lees meer</a></small>
                             </p>
                         </a>
                     </li>

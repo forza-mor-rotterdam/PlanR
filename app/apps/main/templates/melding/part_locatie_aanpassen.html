@@ -23,7 +23,9 @@
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M21.9 12C21.9 6.5 17.5 2.1 12 2.1C6.5 2.1 2.1 6.5 2.1 12C2.1 17.5 6.5 21.9 12 21.9C17.5 21.9 21.9 17.5 21.9 12ZM0 12C0 5.4 5.4 0 12 0C18.6 0 24 5.4 24 12C24 18.6 18.6 24 12 24C5.4 24 0 18.6 0 12ZM13 7V5H11V7H13ZM13 19V9H11V19H13Z" fill="#00689E" />
                     </svg>
                 </span>
-                <div>Sleep de pin naar de juiste plek of klik op de kaart.</div>
+                <div>
+                    Sleep het blauwe bolletje naar de juiste plek of klik op de kaart. Selecteer daarna het meest toepasselijke adres bij de coördinaten.
+                </div>
             </div>
         </div>
         <div class="modal-body">
@@ -52,11 +54,11 @@
                                     {% for taak in actieve_taken %}<li>{{ taak.titel }}</li>{% endfor %}
                                 </ul>
                                 <span>Als de locatie wordt aangepast wordt de locatie van deze
-                                {% if aantal_actieve_taken == 1 %}
-                                    taak
-                                {% else %}
-                                    taken
-                                {% endif %}
+                                    {% if aantal_actieve_taken == 1 %}
+                                        taak
+                                    {% else %}
+                                        taken
+                                    {% endif %}
                                 ook bijgewerkt.</span>
                             </div>
                         </div>
@@ -70,6 +72,15 @@
                           enctype="multipart/form-data"
                           novalidate>
                         {% csrf_token %}
+                        {{ form.geometrie }}
+                        {{ form.straatnaam }}
+                        {{ form.huisnummer }}
+                        {{ form.huisletter }}
+                        {{ form.toevoeging }}
+                        {{ form.postcode }}
+                        {{ form.plaatsnaam }}
+                        {{ form.wijknaam }}
+                        {{ form.buurtnaam }}
                         <div class="container__map">
                             <div class="map"
                                  id="aanpassenMap"
@@ -80,14 +91,41 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-control__with-helptext js-validation">{{ form.geometrie|render_rotterdam_formulier }}</div>
-                        <div class="container--flex">
-                            <div class="form-control__with-helptext js-validation">{{ form.straatnaam|render_rotterdam_formulier }}</div>
-                            <div class="form-control__with-helptext js-validation">{{ form.huisnummer|render_rotterdam_formulier }}</div>
-                            <div class="form-control__with-helptext js-validation">{{ form.postcode|render_rotterdam_formulier }}</div>
-                            <div class="form-control__with-helptext js-validation">{{ form.plaatsnaam|render_rotterdam_formulier }}</div>
-                            <div class="form-control__with-helptext js-validation">{{ form.wijknaam|render_rotterdam_formulier }}</div>
-                            <div class="form-control__with-helptext js-validation">{{ form.buurtnaam|render_rotterdam_formulier }}</div>
+                        <div class="container__locations">
+                            <div>
+                                <h3>
+                                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMy43NzgzIDYuMjI0MTJDMTkuNTAwMyAxLjk0NjEzIDEyLjQ5OTkgMS45NDYxMyA4LjIyMTkzIDYuMjI0MTJDMy45NDM5MyAxMC41MDIxIDMuOTQzOTMgMTcuNTAyNSA4LjIyMTkzIDIxLjc4MDVMMTYuMDAwMSAyOS41NTg2TDIzLjc3ODMgMjEuNzgwNUMyOC4wNTYzIDE3LjUwMjUgMjguMDU2MyAxMC41MDIxIDIzLjc3ODMgNi4yMjQxMlpNMTYuMDAwMSAxOC4wMDIzQzE4LjIwOTIgMTguMDAyMyAyMC4wMDAxIDE2LjIxMTQgMjAuMDAwMSAxNC4wMDIzQzIwLjAwMDEgMTEuNzkzMiAxOC4yMDkyIDEwLjAwMjMgMTYuMDAwMSAxMC4wMDIzQzEzLjc5MSAxMC4wMDIzIDEyLjAwMDEgMTEuNzkzMiAxMi4wMDAxIDE0LjAwMjNDMTIuMDAwMSAxNi4yMTE0IDEzLjc5MSAxOC4wMDIzIDE2LjAwMDEgMTguMDAyM1oiIGZpbGw9IiNDOTM2NzUiLz4KPC9zdmc+Cg=="
+                                         alt="" />
+                                    Oud adres
+                                </h3>
+                                <div class="card">
+                                    <p>
+                                        {{ melding.locaties_voor_melding.0.straatnaam }} {{ melding.locaties_voor_melding.0.huisnummer }}{{ melding.locaties_voor_melding.0.huisletter }}
+                                        <br>
+                                        {{ melding.locaties_voor_melding.0.wijknaam }} {{ melding.locaties_voor_melding.0.buurtnaam }}
+                                        <br>
+                                        <small><span data-locatieaanpassenformulier-target="currentAddressDistance"></span> meter vanaf huidige locatie</small>
+                                    </p>
+                                </div>
+                            </div>
+                            <div>
+                                <h3>
+                                    <img class="marker--blue"
+                                         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAATESURBVHgBrVZNTGNVFL7vp9AfCB0mpAOSoRgdGUQcI8yiCYImGjXExBBYGbshcdGiKxHHhSVRdG+M0YWrccUC4qSz0EQT2RATiNHEBFKcjnYmg6BtLfa/7/qdx72vr50OU+qc5OTed9895zvn3HPOvYw1SZxzL/gt8Br4Bq8Szb8HB8F+9qAolUqdgcIIOMmbowj7vwQlg3XeNUu/5XK5wZN0Kw3AFBCDoN/pdH6HJb/8t3GTsWu7nEV3GbuZOl4b9TH2BPjKhMIGvDWqboCfA8dJ34nAApRjqmK+J0FTecY+2uDs0x/ZiRS6fGxAl7MKnkgkxvr7+5NCr0VqjRX4GYlE1Eql8r4d9KWr9wcloj0vY286by0N9vX1vWl6A6dqsOpkFSTTw11dXTG58M63zYHaKQzPP37eUp3c2tq6MDY29hfmltdqnRGqw+F4Vi7QOZ4WlIhkKB8EeUdGRoICS7kncFtb2+tyYWWDs1aIpKK7lqyiadpkQ2ARf2JdVdUB+fOXO6xlurZTnUPnaG9vr+Mu4OXlZWV4eFjr7u52YNN5+fPnP1nL9Hu6Bvh8qVTSCENiKjYD2sAueP+3FOj4sLVQS8WZ9ywHqU7P+v3+3Pj4eGl1dbVios/OziqoNaWzs1ODZQm5e6CLtUzUVCShPP/AoMbjcRWg5poJjA+lUChomUxGQ8f6VQpMX2At06gNGLpvsWpyKcz2wQ4ODszF/f19q4CmH1NYK0RS7z5TDXMsFltj1WO1gPnU1BTr6emhA+VLS0trCE2Gfk4gv0Pj7NQUuqzUHNP6+jo5owDDArfqGJlnAkej0X9g4Vdy/Qosf9LHmiYK8dJE9XtnZ+fzlZWVREdHh0HfcNLEMYEnJycNAWwg+yoLCwtX8/n8bfpHDf/6awoLjze4yhp4Snu94pKgsx0aGvoMo3F0dGTgOI16GTKAtp/BVUh1/Hg4HH4FiXbLfsnGU5y/8bXBA18Y3PPBMQ9/YvC3vzH4D/HaC5lkQ6HQNDrhsMvl6odOL8rJSZeQHZicoTruBJ9rb29/FOOl+fn5V7PZ7G1+SiIZkkXfvwQ9j4B9ON8OgXFX4DS0NTdq+SzmA7D0IsYxcGB7e/tL6DPuB4gekKG9gUDgBYA+DdmLIoLdYBdhSGClLtw6uB3shoDHMAw39FE3cwSDwYdmZmaeQud50ePxnEP4ekkIIb2TTCZje3t7Py0uLl7f3NxMAxQ2lHL4nQX/K8YCuMTE1VgtNlwUc3Nz1Fl0r9frKhaLLoTMTUZAERmjQ5nOqjcayXJd15VyuUxJw7GvjLGMfQSSdbvdWSICRXc0W6X9bOvPmsLhEMnmFCFyQmmbBCcwKQtQGgi4QsAClN4gOTwo8um0+R4hTyvM9hDQ2L3J9AJhNaDMIAKggeZSxrQCNkehlDiP7zyOIIfkzEEmjzIqoG5L6NGGHbSRx5JUVj1zh2DTY5y9jhrXoFyFXtNArBlYq8DIIi79IhKzdHh4SMaUpQPNAtuvS4qKhnKgm0vHm0yzGcbRkTiaAxehLKNWyUOaUxUY9a/LZsl8Dglw8tiJ65PO3CPZ5/N5qAzZcT44RJTU+ldlS0RKhCIz/Dg3XY7IVjMiYrSSrhmPWqFGcqcK6X9czfgLQYqNowAAAABJRU5ErkJggg=="
+                                         alt="" />
+                                    Nieuw adres
+                                </h3>
+                                <div class="form-control search-control">
+                                    <label>Zoek in adressen</label>
+                                    <input type="text"
+                                           data-action="locatieaanpassenformulier#searchAddressHandler" />
+                                </div>
+                                <div class="list-scroll">
+                                    <ul data-locatieaanpassenformulier-target="adresResultList"
+                                        class="list-clean list--address-change">
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                         <div class="form-control__with-helptext js-validation">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
                         <div class="form--horizontal">
@@ -98,7 +136,10 @@
                                         data-action="detail#closeModal">
                                     <span>Annuleren</span>
                                 </button>
-                                <button type="submit" class="btn btn-action">
+                                <button disabled
+                                        data-locatieaanpassenformulier-target="submitButton"
+                                        type="submit"
+                                        class="btn btn-action">
                                     <span>Opslaan</span>
                                 </button>
                             </div>

@@ -1,10 +1,9 @@
 import { Controller } from '@hotwired/stimulus'
-
+import { visit } from '@hotwired/turbo'
 export default class extends Controller {
   navigate(e) {
     if (!e.target.closest('a')) {
-      // eslint-disable-next-line no-undef
-      Turbo.visit(e.params.targeturl)
+      visit(e.params.targeturl)
     }
   }
 

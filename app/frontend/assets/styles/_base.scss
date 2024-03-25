@@ -27,7 +27,8 @@ main,
 header {
     margin: 0 auto;
 
-    > .container {
+    > .container,
+    > .container--env .container {
         display: block;
         max-width: map-get($container-max-widths, xxl);
         margin: 0 auto;
@@ -458,9 +459,6 @@ section {
 
 // HELPER-CLASSES
 
-.no-margins {
-    margin: 0 !important;
-}
 .foldout {
     height: auto;
     overflow: hidden;
@@ -581,4 +579,28 @@ section {
     margin-top: -1.5em;
     margin-left: 1em;
     font-size: 0.75rem;
+}
+
+.p-0-20 {
+    padding: 0 20px;
+}
+
+.p-8-0-4 {
+    padding: 8px 0 4px;
+}
+
+.p-50-20 {
+    padding: 50px 20px;
+}
+
+.email-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 0;
+    border-spacing: 0;
+    background: #ffffff;
+}
+
+.email-border-bottom {
+    border-bottom: 1px solid #d3d3d3;
 }

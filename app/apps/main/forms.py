@@ -1,5 +1,4 @@
 import base64
-import json
 import logging
 import math
 import uuid
@@ -19,6 +18,8 @@ logger = logging.getLogger(__name__)
 
 
 class CheckboxSelectMultiple(forms.CheckboxSelectMultiple):
+    template_name = "widgets/checkbox_options_grouped.html"
+
     def create_option(self, *args, **kwargs):
         args = list(args)
         option_data = args[2]
@@ -100,7 +101,7 @@ class FilterForm(forms.Form):
                 "data-filter-target": "foldoutStateField",
             }
         ),
-        initial="remove me",
+        initial="[]",
         required=False,
     )
     ordering = forms.ChoiceField(
@@ -133,7 +134,7 @@ class FilterForm(forms.Form):
 
     def filters(self):
         for field_name in self.fields:
-            if field_name in [f.get("naam") for f in self.filter_velden]:
+            if field_name in [f.get("key") for f in self.filter_velden]:
                 yield self[field_name]
 
     def pagina_eerste_melding(self):
@@ -188,7 +189,8 @@ class FilterForm(forms.Form):
     def _get_filter_choices(self, filter_classes, filter_options):
         return [
             {
-                "naam": cls.key(),
+                "key": cls.key(),
+                "naam": cls.label(),
                 "opties": cls(filter_options.get(cls.key(), {})).opties(),
                 "aantal_actief": len(self.data.getlist(cls.key(), [])),
             }
@@ -214,13 +216,16 @@ class FilterForm(forms.Form):
         )
 
         for v in self.filter_velden:
-            self.fields[v.get("naam")] = MultipleChoiceField(
+            self.fields[v.get("key")] = MultipleChoiceField(
                 label=f"{v.get('naam')} ({v.get('aantal_actief')}/{len(v.get('opties', []))})",
                 widget=CheckboxSelectMultiple(
                     attrs={
                         "class": "list--form-check-input",
                         "data-action": "filter#onChangeFilter",
                         "hideLabel": True,
+                        "foldout_states": self.data["foldout_states"],
+                        "has_group": v.get("opties", [])
+                        and isinstance(v.get("opties", [])[0][1], (list, tuple)),
                     }
                 ),
                 choices=v.get("opties", []),
@@ -586,101 +591,69 @@ class LocatieAanpassenForm(forms.Form):
         required=True,
     )
     plaatsnaam = forms.CharField(
-        label="Plaatsnaam",
-        widget=forms.TextInput(
+        widget=forms.HiddenInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "plaatsnaam",
-                "readonly": "readonly",
             }
         ),
         required=True,
     )
     straatnaam = forms.CharField(
-        label="Straatnaam",
-        widget=forms.TextInput(
+        widget=forms.HiddenInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "straatnaam",
-                "readonly": "readonly",
             }
         ),
         required=True,
     )
     huisnummer = forms.IntegerField(
-        label="Huisnummer",
-        widget=forms.TextInput(
+        widget=forms.HiddenInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "huisnummer",
-                "readonly": "readonly",
             }
         ),
         required=True,
     )
     huisletter = forms.CharField(
-        label="Huisletter",
-        widget=forms.TextInput(
+        widget=forms.HiddenInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "huisletter",
-                "readonly": "readonly",
             }
         ),
         required=False,
     )
     toevoeging = forms.CharField(
-        label="Toevoeging",
-        widget=forms.TextInput(
+        widget=forms.HiddenInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "toevoeging",
-                "readonly": "readonly",
             }
         ),
         required=False,
     )
     postcode = forms.CharField(
-        label="Postcode",
-        widget=forms.TextInput(
+        widget=forms.HiddenInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "postcode",
-                "readonly": "readonly",
             }
         ),
         required=True,
     )
     wijknaam = forms.CharField(
-        label="Wijknaam",
-        widget=forms.TextInput(
+        widget=forms.HiddenInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "wijknaam",
-                "readonly": "readonly",
             }
         ),
         required=True,
     )
     buurtnaam = forms.CharField(
-        label="Buurtnaam",
-        widget=forms.TextInput(
+        widget=forms.HiddenInput(
             attrs={
                 "data-locatieaanpassenformulier-target": "buurtnaam",
-                "readonly": "readonly",
             }
         ),
         required=True,
     )
-
-    def clean_geometrie(self):
-        new_geometrie = self.cleaned_data.get("geometrie")
-        current_geometrie = self.initial.get("geometrie", "")
-
-        try:
-            new_geometrie_dict = json.loads(new_geometrie)
-        except json.JSONDecodeError:
-            new_geometrie_dict = {}
-
-        if new_geometrie_dict == current_geometrie:
-            raise forms.ValidationError(
-                "Het is niet toegestaan om de locatie aan te passen met dezelfde coordinaten."
-            )
-
-        return new_geometrie
 
 
 class MeldingAanmakenForm(forms.Form):

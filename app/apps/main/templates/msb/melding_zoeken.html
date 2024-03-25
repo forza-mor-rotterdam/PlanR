@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% load rotterdam_formulier_html %}
 {% load json_encode from json_tags %}
+{% block title %}
+    MSB Melding zoeken | PlanR
+{% endblock title %}
 {% block body %}
     <h1>MSB Melding zoeken</h1>
     {% if msb_data %}

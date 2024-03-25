@@ -1,5 +1,13 @@
 {% extends "base.html" %}
 {% load rotterdam_formulier_html %}
+{% block title %}
+    {% if object %}
+        Rechtengroep '{{ object.name }}' aanpassen
+    {% else %}
+        Rechtengroep aanmaken
+    {% endif %}
+    | Beheer | PlanR
+{% endblock title %}
 {% block body %}
     <turbo-frame id="beheer">
     <div class="page__beheer" data-turbo-action="advance">
@@ -51,13 +59,11 @@
                     </fieldset>
                     <div class="form-row container__button">
                         <div class="form-row btn-row">
-                            <button
-                                type="reset"
-                                class="btn btn-tertiary"
-                                data-controller="utils"
-                                data-action="utils#goToUrl"
-                                data-utils-url-param="{% url 'rechtengroep_lijst' %}"
-                            >
+                            <button type="reset"
+                                    class="btn btn-tertiary"
+                                    data-controller="utils"
+                                    data-action="utils#goToUrl"
+                                    data-utils-url-param="{% url 'rechtengroep_lijst' %}">
                                 <span>Annuleren</span>
                             </button>
                             <button type="submit" class="btn btn-action">

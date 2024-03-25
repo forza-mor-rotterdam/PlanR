@@ -4,6 +4,7 @@ import $ from 'jquery' // Import jQuery
 import Select2 from 'select2'
 
 let form = null
+// eslint-disable-next-line no-unused-vars
 let inputList = null
 // eslint-disable-next-line no-unused-vars
 let formData = null
@@ -67,12 +68,11 @@ export default class extends Controller {
   }
 
   checkValids() {
-    //check all inputfields (except checkboxes) for validity
-    // if 1 or more fields is invalid, don't send the form (return false)
-    inputList = this.element.querySelectorAll('select')
+    // Check all input fields (except checkboxes) for validity
+    // If one or more fields are invalid, don't send the form (return false)
+    const inputList = document.querySelectorAll('select')
     let count = 0
-    for (let i = 0; i < inputList.length; i++) {
-      const input = inputList[i]
+    for (const input of inputList) {
       const error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
       if (input.validity.valid) {
         error.textContent = ''
@@ -83,10 +83,6 @@ export default class extends Controller {
         count++
       }
     }
-    if (count > 0) {
-      return false
-    } else {
-      return true
-    }
+    return count === 0
   }
 }

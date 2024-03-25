@@ -1,5 +1,8 @@
 {% extends "base_beheer.html" %}
 {% load rotterdam_formulier_html %}
+{% block title %}
+    Release notes | PlanR
+{% endblock title %}
 {% block body %}
     <turbo-frame id="beheer" data-turbo-action="advance">
     <div class="page__beheer" data-controller="row-search">
@@ -31,7 +34,7 @@
         </div>
         <form>
             <div class="form-row">
-                <label class="" for="id_zoeken">Zoeken</label>
+                <label for="id_zoeken">Zoeken</label>
                 <div>
                     <input type="text"
                            id="id_zoeken"

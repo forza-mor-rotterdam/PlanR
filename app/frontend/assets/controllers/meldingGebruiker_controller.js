@@ -14,7 +14,7 @@ export default class extends Controller {
     self.lastEventId = null
     this.initMessages()
     this.publiceerTopic(self.meldingIdValue)
-    window.addEventListener('beforeunload', (event) => {
+    window.addEventListener('beforeunload', () => {
       self.eventSource.close()
       self.publiceerTopic(self.meldingIdValue)
     })
@@ -74,6 +74,7 @@ export default class extends Controller {
       console.error('Error fetching address details:', error.message)
     }
   }
+
   updateGebruikerActiviteit() {
     const self = this
     if (
@@ -87,14 +88,13 @@ export default class extends Controller {
       )
       if (subscriptions.length > 0) {
         this.element.style.display = 'block'
-        for (let i = 0; i < subscriptions.length; i++) {
+        for (const subscription of subscriptions) {
           let liElem = document.createElement('li')
           let aElem = document.createElement('a')
           aElem.href = ''
           aElem.dataset.action = 'detail#openModal'
-          aElem.dataset.detailActionParam = `/gebruiker/gebruiker_info/${subscriptions[i].payload.gebruiker.email}`
-
-          aElem.textContent = `${subscriptions[i].payload.gebruiker.naam}, ${subscriptions[i].payload.gebruiker.email}`
+          aElem.dataset.detailActionParam = `/gebruiker/gebruiker_info/${subscription.payload.gebruiker.email}`
+          aElem.textContent = `${subscription.payload.gebruiker.naam}, ${subscription.payload.gebruiker.email}`
           liElem.appendChild(aElem)
           self.gebruikerLijstTarget.appendChild(liElem)
         }
@@ -103,6 +103,7 @@ export default class extends Controller {
       }
     }
   }
+
   disconnect() {
     this.eventSource.close()
     this.publiceerTopic(this.meldingIdValue)

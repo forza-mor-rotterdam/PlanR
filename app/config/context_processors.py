@@ -69,4 +69,5 @@ def general_settings(context):
         "GEBRUIKER": gebruiker,
         "GIT_SHA": settings.GIT_SHA,
         "UNWATCHED_COUNT": unwatched_count,
+        "APP_ENV": settings.APP_ENV,
     }

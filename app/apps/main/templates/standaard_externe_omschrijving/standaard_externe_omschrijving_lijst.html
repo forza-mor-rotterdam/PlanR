@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% load rotterdam_formulier_html %}
 {% load json_encode from json_tags %}
+{% block title %}
+    Standaard Externe Omschrijving | Beheer | PlanR
+{% endblock title %}
 {% block body %}
     <turbo-frame id="beheer" data-turbo-action="advance">
     <div class="page__beheer" data-controller="row-search">
@@ -32,7 +35,7 @@
         </div>
         <form>
             <div class="form-row">
-                <label class="" for="id_zoeken">Zoeken</label>
+                <label for="id_zoeken">Zoeken</label>
                 <div>
                     <input type="text"
                            id="id_zoeken"
@@ -60,15 +63,13 @@
                         <td data-row-search-target="searchable">{{ object.titel }}</td>
                         <td data-row-search-target="searchable">{{ object.tekst|truncate_text:200 }}</td>
                         <td>
-                            <a href="{% url 'standaard_externe_omschrijving_aanpassen' object.pk %}" aria-label="Aanpassen">
-                                {% include "icons/edit.svg" %}
-                            </a>
+                            <a href="{% url 'standaard_externe_omschrijving_aanpassen' object.pk %}"
+                               aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
                         </td>
                         <td>
                             <a href="{% url 'standaard_externe_omschrijving_verwijderen' object.pk %}"
-                               onclick="return confirm('Weet je zeker dat je deze standaard tekst wil verwijderen?')" aria-label="Verwijderen">
-                                {% include "icons/bin.svg" %}
-                            </a>
+                               onclick="return confirm('Weet je zeker dat je deze standaard tekst wil verwijderen?')"
+                               aria-label="Verwijderen">{% include "icons/bin.svg" %}</a>
                         </td>
                     </tr>
                 {% endfor %}

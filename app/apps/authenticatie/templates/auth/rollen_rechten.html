@@ -1,20 +1,21 @@
-                        <h3>
-                            Rol & rechten
-                        </h3>
-                        <div class="display--flex--md">
-                            <dl>
-                                <dt>
-                                    Rol
-                                </dt>
-                                <dd>
-                                    {% if request.user.profiel.context %}{{ request.user.profiel.context.naam }}{% else %}- geen rol -{% endif %}
-                                </dd>
-                                <dt>
-                                    Rechten
-                                </dt>
-                                <dd>
-                                    {% if request.user.groups.all %}{{ request.user.groups.all.0.name }}{% else %}- geen rechten -{% endif %}
-                                </dd>
-
-                            </dl>
-                        </div>
+<h3>Rol & rechten</h3>
+<div class="display--flex--md">
+    <dl>
+        <dt>Rol</dt>
+        <dd>
+            {% if request.user.profiel.context %}
+                {{ request.user.profiel.context.naam }}
+            {% else %}
+                - geen rol -
+            {% endif %}
+        </dd>
+        <dt>Rechten</dt>
+        <dd>
+            {% if request.user.groups.all %}
+                {{ request.user.groups.all.0.name }}
+            {% else %}
+                - geen rechten -
+            {% endif %}
+        </dd>
+    </dl>
+</div>

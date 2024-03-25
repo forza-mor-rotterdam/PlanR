@@ -17,12 +17,10 @@
         <div>
             {% with hoogste_gewicht_locatie=melding.locaties_voor_melding|dictsort:"gewicht"|last %}
                 {% if hoogste_gewicht_locatie %}
-                    {% if melding.locaties_voor_melding|length > 1 %}
-                    <h4>Huidige Locatie</h4>
-                    {% endif %}
+                    {% if melding.locaties_voor_melding|length > 1 %}<h4>Huidige Locatie</h4>{% endif %}
                     <div class="locatie-container">
                         <div class="display--flex--md">
-                            <ul class="list-clean {% if melding.locaties_voor_melding|length == 1 %} has-padding{% endif %}">
+                            <ul class="list-clean {% if melding.locaties_voor_melding|length == 1 %}has-padding{% endif %}">
                                 <li>
                                     <h3 class="h5">Ter hoogte van</h3>
                                     <p>
@@ -49,7 +47,7 @@
                                     </p>
                                 </li>
                             </ul>
-                            <ul class="list-clean {% if melding.locaties_voor_melding|length == 1 %} has-padding{% endif %}">
+                            <ul class="list-clean {% if melding.locaties_voor_melding|length == 1 %}has-padding{% endif %}">
                                 <li>
                                     <h3 class="h5">Buurt</h3>
                                     <p>
@@ -65,13 +63,14 @@
                         {% if hoogste_gewicht_locatie.geometrie.coordinates %}
                             <div>
                                 <label for="egd_id">
-                                    <input id="egd_id" type="checkbox" data-detail-map-layer-type-param="EGD" data-action="detail#onMapLayerChange">
+                                    <input id="egd_id"
+                                           type="checkbox"
+                                           data-detail-map-layer-type-param="EGD"
+                                           data-action="detail#onMapLayerChange">
                                     Toon EGD-kaartlaag
                                 </label>
                                 <div class="container__uitklapper">
-                                    <span class="">
-                                        {% include "icons/info.svg" %}
-                                    </span>
+                                    <span>{% include "icons/info.svg" %}</span>
                                     <div class="legenda">
                                         <ul class="list-clean">
                                             <li>
