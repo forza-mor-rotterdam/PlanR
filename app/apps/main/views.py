@@ -1,5 +1,6 @@
 import base64
 import logging
+import math
 
 import requests
 import weasyprint
@@ -63,6 +64,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView, View
+from utils.diversen import get_index
 from utils.rd_convert import rd_to_wgs
 
 logger = logging.getLogger(__name__)
@@ -208,6 +210,26 @@ def melding_lijst(request):
 def melding_detail(request, id):
     melding = MeldingenService().get_melding(id)
 
+    if (
+        request.GET.get("melding_ids")
+        and request.GET.get("offset")
+        and request.GET.get("melding_count")
+    ):
+        request.session["pagina_melding_ids"] = request.GET.get("melding_ids").split(
+            ","
+        )
+        request.session["offset"] = int(request.GET.get("offset"))
+        request.session["melding_count"] = int(request.GET.get("melding_count"))
+        return redirect(reverse("melding_detail", args=[id]))
+
+    try:
+        index = request.session.get("pagina_melding_ids", []).index(str(id))
+    except Exception:
+        index = -1
+    meldingen_index = (
+        int(request.session.get("offset", 0)) + index + 1 if index >= 0 else None
+    )
+
     open_taakopdrachten = get_open_taakopdrachten(melding)
     tijdlijn_data = melding_naar_tijdlijn(melding)
     taaktypes = get_taaktypes(melding, request.user)
@@ -283,6 +305,101 @@ def melding_detail(request, id):
             "aantal_niet_opgeloste_taken": aantal_niet_opgeloste_taken,
             "tijdlijn_data": tijdlijn_data,
             "open_taakopdrachten": open_taakopdrachten,
+            "meldingen_index": meldingen_index,
+        },
+    )
+
+
+@login_required
+@permission_required("authorisatie.melding_bekijken", raise_exception=True)
+def melding_next(request, id, richting):
+    melding_id = str(id)
+    frame_id = "melding_next_volgend" if richting > 0 else "melding_next_vorige"
+    label = "Volgende" if richting > 0 else "Vorige"
+
+    pagina_item_aantal = 10
+    next_melding_url = None
+    pagina = int(request.session.get("offset", "0"))
+    melding_count = request.session.get("melding_count", 0)
+    laatste_pagina = math.floor(melding_count / pagina_item_aantal)
+    gebruiker = request.user
+    gebruiker_context = get_gebruiker_context(gebruiker)
+
+    pagina_melding_ids = request.session.get("pagina_melding_ids", [])
+
+    index = get_index(pagina_melding_ids, melding_id)
+    if (index == 0 and pagina == 0 and richting < 0) or (
+        index == len(pagina_melding_ids) - 1
+        and pagina == (laatste_pagina * pagina_item_aantal)
+        and richting > 0
+    ):
+        # eerste of laatste melding in meldingen lijst over alle pagina's
+        return render(
+            request,
+            "melding/melding_next.html",
+            {
+                "frame_id": frame_id,
+            },
+        )
+
+    if (index == 0 and richting < 0) or (
+        index == pagina_item_aantal - 1 and richting > 0
+    ):
+        # als huidige melding zich aan het begin of aan het eind van de pagina bevindt, haal dan respectievelijk de vorige of volgende pagina op
+        actieve_filters = get_actieve_filters(gebruiker)
+        standaard_waardes = {
+            "limit": f"{pagina_item_aantal}",
+            "ordering": get_ordering(gebruiker),
+            "q": request.session.get("q", ""),
+            "offset": (int(pagina / pagina_item_aantal) + richting)
+            * pagina_item_aantal,
+        }
+        standaard_waardes.update(actieve_filters)
+
+        pagina = (int(pagina / pagina_item_aantal) + richting) * pagina_item_aantal
+        standaard_waardes["offset"] = pagina
+
+        form_qs = QueryDict("", mutable=True)
+        form_qs.update(standaard_waardes)
+
+        print(form_qs)
+        for k, v in actieve_filters.items():
+            if v:
+                form_qs.setlist(k, v)
+        # print(form_qs)
+
+        meldingen_filter_query_dict = update_qd_met_standaard_meldingen_filter_qd(
+            form_qs, gebruiker_context
+        )
+        meldingen_data = MeldingenService().get_melding_lijst(
+            query_string=meldingen_filter_query_dict.urlencode()
+        )
+
+        pagina_melding_ids = [r.get("uuid") for r in meldingen_data.get("results")]
+        melding_count = meldingen_data.get("count")
+
+        index = get_index(pagina_melding_ids, melding_id)
+        nieuwe_melding_id = None
+        if index == -1 and pagina_melding_ids:
+            # in de happy flow zal vorige of volgende melding zich op vorige of volgende pagina bevinden
+            nieuwe_melding_id = (
+                pagina_melding_ids[0] if richting > 0 else pagina_melding_ids[-1]
+            )
+        if nieuwe_melding_id:
+            next_melding_url = f"{reverse('melding_detail', args=[nieuwe_melding_id])}?melding_ids={','.join(pagina_melding_ids)}&offset={pagina}&melding_count={melding_count}"
+
+    elif index != -1:
+        next_melding_url = reverse(
+            "melding_detail", args=[pagina_melding_ids[index + richting]]
+        )
+
+    return render(
+        request,
+        "melding/melding_next.html",
+        {
+            "frame_id": frame_id,
+            "next_melding_url": next_melding_url,
+            "label": label,
         },
     )
 
