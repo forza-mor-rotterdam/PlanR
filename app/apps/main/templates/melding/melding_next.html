@@ -1,0 +1,7 @@
+<turbo-frame id="{{ frame_id }}">
+{% if next_melding_url %}
+    <a href="{{ next_melding_url }}"
+       data-turbo-frame="overview"
+       data-turbo-action="advance">{{ label }}</a>
+{% endif %}
+</turbo-frame>
