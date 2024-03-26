@@ -1,9 +1,21 @@
+.section--imageslider {
+    position: relative;
+    > svg {
+        padding: 4px;
+        background-color: #fff;
+        position: absolute;
+        top: 30px;
+        right: 12px;
+        pointer-events: none;
+    }
+}
 .container__imageslider {
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     width: 100%;
     -webkit-overflow-scrolling: touch;
+    cursor: zoom-in;
 
     .imageslider {
         display: flex;

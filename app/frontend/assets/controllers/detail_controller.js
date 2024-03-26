@@ -7,21 +7,31 @@ let markerIcon,
   sliderContainerWidth,
   imageSliderWidth,
   imageSliderThumbContainer = null,
-  detailScrollY = 0
+  detailScrollY = 0,
+  selectedImageIndex = 0,
+  imagesList = null,
+  fullSizeImageContainer = null
 
 export default class extends Controller {
   static values = {
     signalen: String,
     locatie: String,
+    afbeeldingen: String,
+    urlPrefix: String,
   }
   static targets = [
     'selectedImage',
+    'selectedImageModal',
     'thumbList',
     'imageSliderContainer',
     'imageSliderThumbContainer',
     'turboActionModal',
     'modalAfhandelen',
+    'modalImages',
     'imageSliderWidth',
+    'navigateImagesLeft',
+    'navigateImagesRight',
+    'imageCounter',
   ]
 
   initialize() {
@@ -31,6 +41,7 @@ export default class extends Controller {
       const tabsContent = this.tabsContentTarget.querySelectorAll('.tab-content')
       this.activateTabs(tabs, tabsContent, this)
     }
+
     if (this.hasTabs2Target && this.hasTabsContent2Target) {
       const tabs = this.tabs2Target.querySelectorAll('.btn--tab')
       const tabsContent = this.tabsContent2Target.querySelectorAll('.tab-content')
@@ -38,6 +49,10 @@ export default class extends Controller {
     }
 
     this.coordinates = JSON.parse(this.locatieValue)?.geometrie?.coordinates?.reverse()
+
+    imagesList = JSON.parse(this.afbeeldingenValue).map(
+      (bestand) => bestand.afbeelding_relative_url
+    )
 
     this.signalen =
       JSON.parse(this.signalenValue)?.filter(
@@ -135,6 +150,12 @@ export default class extends Controller {
       if (event.key === 'Escape') {
         this.closeModal()
       }
+      if (event.key === 'ArrowLeft') {
+        this.showPreviousImageInModal()
+      }
+      if (event.key === 'ArrowRight') {
+        this.showNextImageInModal()
+      }
     })
     if (this.hasThumbListTarget) {
       const resizeObserver = new ResizeObserver(() => {
@@ -147,7 +168,6 @@ export default class extends Controller {
 
   connect() {
     document.documentElement.scrollTop = detailScrollY
-
     this.urlParams = new URLSearchParams(window.location.search)
     this.tabIndex = Number(this.urlParams.get('tabIndex'))
     this.selectTab(this.tabIndex || 1)
@@ -229,6 +249,7 @@ export default class extends Controller {
   closeModal() {
     const modalBackdrop = document.querySelector('.modal-backdrop')
     this.modalAfhandelenTarget.classList.remove('show')
+    this.modalImagesTarget.classList.remove('show')
     modalBackdrop.classList.remove('show')
     document.body.classList.remove('show-modal')
     if (lastFocussedItem) {
@@ -237,6 +258,7 @@ export default class extends Controller {
     if (this.hasTurboActionModalTarget) {
       this.turboActionModalTarget.innerHTML = ''
     }
+    window.removeEventListener('mousemove', this.getRelativeCoordinates, true)
   }
 
   onScrollSlider() {
@@ -247,11 +269,15 @@ export default class extends Controller {
     )
   }
 
-  selectImage(e) {
+  imageScrollInView(index) {
     this.imageSliderContainerTarget.scrollTo({
-      left: (Number(e.params.imageIndex) - 1) * this.imageSliderContainerTarget.offsetWidth,
+      left: Number(index) * this.imageSliderContainerTarget.offsetWidth,
       top: 0,
     })
+  }
+
+  selectImage(e) {
+    this.imageScrollInView(e.params.imageIndex)
     this.deselectThumbs(e.target.closest('ul'))
     e.target.closest('li').classList.add('selected')
   }
@@ -284,5 +310,78 @@ export default class extends Controller {
     // form.find(input["type=file"]).value=null
     form.reset()
     e.target.closest('details').open = false
+  }
+
+  showPreviousImageInModal() {
+    if (selectedImageIndex > 0) {
+      selectedImageIndex--
+      this.showImage()
+    }
+  }
+
+  showNextImageInModal() {
+    if (selectedImageIndex < imagesList.length - 1) {
+      selectedImageIndex++
+      this.showImage()
+    }
+  }
+
+  showImage() {
+    this.selectedImageModalTarget.style.backgroundImage = `url('${this.urlPrefixValue}${imagesList[selectedImageIndex]}')`
+    this.showHideImageNavigation()
+    this.imageCounterTarget.innerHTML = `Foto ${selectedImageIndex + 1} van ${imagesList.length}`
+    this.imageScrollInView(selectedImageIndex) //image in detailpage
+    fullSizeImageContainer = this.selectedImageModalTarget
+    this.showNormal()
+    window.addEventListener('mousemove', this.getRelativeCoordinates, true)
+    this.selectedImageModalTarget.addEventListener('click', this.showLarge)
+  }
+
+  getRelativeCoordinates(e) {
+    if (fullSizeImageContainer.classList.contains('fullSize')) {
+      fullSizeImageContainer.style.backgroundPosition = `
+        ${(e.clientX * 100) / window.innerWidth}%
+        ${(e.clientY * 100) / window.innerHeight}%
+        `
+    }
+  }
+
+  showLarge() {
+    if (fullSizeImageContainer.classList.contains('fullSize')) {
+      fullSizeImageContainer.classList.remove('fullSize')
+      fullSizeImageContainer.style.backgroundPosition = '50% 50%'
+      window.removeEventListener('mousemove', this.getRelativeCoordinates, true)
+    } else {
+      fullSizeImageContainer.classList.add('fullSize')
+      window.addEventListener('mousemove', this.getRelativeCoordinates, true)
+    }
+  }
+
+  showNormal() {
+    fullSizeImageContainer.classList.remove('fullSize')
+    fullSizeImageContainer.style.backgroundPosition = '50% 50%'
+    window.removeEventListener('mousemove', this.getRelativeCoordinates, true)
+  }
+
+  showHideImageNavigation() {
+    this.navigateImagesLeftTarget.classList.remove('inactive')
+    this.navigateImagesRightTarget.classList.remove('inactive')
+    if (selectedImageIndex === 0) {
+      this.navigateImagesLeftTarget.classList.add('inactive')
+    }
+    if (selectedImageIndex === imagesList.length - 1) {
+      this.navigateImagesRightTarget.classList.add('inactive')
+    }
+  }
+
+  showImageInModal(e) {
+    selectedImageIndex = e.params.imageIndex
+    const modal = this.modalImagesTarget
+    const modalBackdrop = document.querySelector('.modal-backdrop')
+    modal.classList.add('show')
+    modalBackdrop.classList.add('show')
+    document.body.classList.add('show-modal')
+
+    this.showImage()
   }
 }
