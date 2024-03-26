@@ -856,7 +856,6 @@ class MeldingAanmakenForm(forms.Form):
         for cf in choice_fields:
             data[cf] = self.get_verbose_value_from_field(cf, data[cf])
         bron_signaal_id = str(uuid.uuid4())
-        logger.info(f"Signaal aanmaken met uuid: {bron_signaal_id}")
         post_data = {
             "signaal_url": f"https://planr.rotterdam.nl/melding/signaal/{bron_signaal_id}",
             "melder": {
