@@ -56,6 +56,7 @@ INSTALLED_APPS = (
     "mozilla_django_oidc",
     "health_check",
     "health_check.cache",
+    "health_check.storage",
     "health_check.db",
     "health_check.contrib.migrations",
     "django_celery_beat",
