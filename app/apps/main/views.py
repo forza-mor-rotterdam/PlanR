@@ -351,22 +351,20 @@ def melding_next(request, id, richting):
             "limit": f"{pagina_item_aantal}",
             "ordering": get_ordering(gebruiker),
             "q": request.session.get("q", ""),
-            "offset": (int(pagina / pagina_item_aantal) + richting)
-            * pagina_item_aantal,
+            "offset": str(
+                (int(pagina / pagina_item_aantal) + richting) * pagina_item_aantal
+            ),
         }
-        standaard_waardes.update(actieve_filters)
 
         pagina = (int(pagina / pagina_item_aantal) + richting) * pagina_item_aantal
-        standaard_waardes["offset"] = pagina
+        standaard_waardes["offset"] = str(pagina)
 
         form_qs = QueryDict("", mutable=True)
         form_qs.update(standaard_waardes)
 
-        print(form_qs)
         for k, v in actieve_filters.items():
             if v:
                 form_qs.setlist(k, v)
-        # print(form_qs)
 
         meldingen_filter_query_dict = update_qd_met_standaard_meldingen_filter_qd(
             form_qs, gebruiker_context
@@ -377,7 +375,6 @@ def melding_next(request, id, richting):
 
         pagina_melding_ids = [r.get("uuid") for r in meldingen_data.get("results")]
         melding_count = meldingen_data.get("count")
-
         index = get_index(pagina_melding_ids, melding_id)
         nieuwe_melding_id = None
         if index == -1 and pagina_melding_ids:
@@ -773,9 +770,6 @@ def taak_annuleren(request, melding_uuid):
 @login_required
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def informatie_toevoegen(request, id):
-    melding = MeldingenService().get_melding(id)
-
-    tijdlijn_data = melding_naar_tijdlijn(melding)
     form = InformatieToevoegenForm()
     if request.POST:
         form = InformatieToevoegenForm(request.POST)
@@ -798,9 +792,8 @@ def informatie_toevoegen(request, id):
         request,
         "melding/part_informatie_toevoegen.html",
         {
-            "melding": melding,
+            "melding_uuid": id,
             "form": form,
-            "tijdlijn_data": tijdlijn_data,
         },
     )
 
