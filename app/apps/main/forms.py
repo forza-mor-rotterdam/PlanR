@@ -867,8 +867,8 @@ class MeldingAanmakenForm(forms.Form):
             "bron_signaal_id": bron_signaal_id,
             "origineel_aangemaakt": now.isoformat(),
             "onderwerpen": [{"bron_url": data.get("onderwerp", [])}],
-            "omschrijving_kort": data.get("toelichting", "")[:200],
-            "omschrijving": data.get("toelichting", ""),
+            "omschrijving_melder": data.get("toelichting", "")[:200],
+            "aanvullende_informatie": data.get("toelichting", ""),
             "meta": data,
             "meta_uitgebreid": labels,
             "adressen": [

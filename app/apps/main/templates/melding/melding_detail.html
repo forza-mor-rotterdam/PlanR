@@ -7,7 +7,7 @@
 {% load slice_iterable from main_tags %}
 {% load mor_core_url from main_tags %}
 {% load render_onderwerp get_bijlagen from melding_tags %}
-{% load json_encode from json_tags %}
+{% load json_encode json_loads from json_tags %}
 {% block title %}
     Melding {{ melding.id }} | PlanR
 {% endblock title %}
@@ -237,22 +237,30 @@
                                                                     {% endif %}
                                                                 </ul>
                                                                 <ul class="list-clean">
-                                                                    {% if signaal.omschrijving_kort %}
+                                                                    {% comment %} @TODO @Remco omschrijving_kort -> omschrijving_melder  {% endcomment %}
+                                                                    {% if signaal.omschrijving_melder and signaal.omschrijving_melder != "- geen korte omschrijving beschikbaar -" %}
                                                                         <li>
-                                                                            <h3 class="h5">Toelichting</h3>
-                                                                            <p>{{ signaal.omschrijving_kort }}</p>
+                                                                            <h3 class="h5">Omschrijving</h3>
+                                                                            <p>{{ signaal.omschrijving_melder }}</p>
                                                                         </li>
                                                                     {% endif %}
-                                                                    <li>
-                                                                        <h3 class="h5">Meer informatie</h3>
-                                                                        <p>
-                                                                            {% if signaal.omschrijving %}
-                                                                                {{ signaal.omschrijving }}
-                                                                            {% else %}
-                                                                                -
-                                                                            {% endif %}
-                                                                        </p>
-                                                                    </li>
+                                                                    {% comment %} @TODO @Remco aanvullende_vragen toegevoegd, dit is een json formatted string. {% endcomment %}
+                                                                    {% if signaal.aanvullende_vragen %}
+                                                                        {% with aanvullende_vragen=signaal.aanvullende_vragen|safe|json_loads %}
+                                                                            {% for vraag in aanvullende_vragen %}
+                                                                                <li>
+                                                                                    <h3 class="h5">{{ vraag.question }}</h3>
+                                                                                    <p>{{ vraag.answer }}</p>
+                                                                                </li>
+                                                                            {% endfor %}
+                                                                        {% endwith %}
+                                                                    {% elif signaal.aanvullende_informatie %}
+                                                                        <li>
+                                                                            {% comment %} @TODO @Remco omschrijving -> aanvullende_informatie. Moet dit oude veld nog migreren naar aanvullende_vragen jsonfield  {% endcomment %}
+                                                                            <h3 class="h5">Aanvullende informatie</h3>
+                                                                            <p>{{ signaal.aanvullende_informatie }}</p>
+                                                                        </li>
+                                                                    {% endif %}
                                                                 </ul>
                                                             </div>
                                                         </div>
@@ -313,26 +321,30 @@
                                                                 {% endfor %} {% endcomment %}
                                                             </p>
                                                         </li>
-                                                        <li>
-                                                            <h3 class="h5">Toelichting kort</h3>
-                                                            <p>
-                                                                {% if melding.omschrijving_kort %}
-                                                                    {{ melding.omschrijving_kort }}
-                                                                {% else %}
-                                                                    -
-                                                                {% endif %}
-                                                            </p>
-                                                        </li>
-                                                        <li>
-                                                            <h3 class="h5">Toelichting</h3>
-                                                            <p>
-                                                                {% if melding.omschrijving %}
-                                                                    {{ melding.omschrijving }}
-                                                                {% else %}
-                                                                    -
-                                                                {% endif %}
-                                                            </p>
-                                                        </li>
+                                                        {% comment %} @TODO @Remco omschrijving_kort -> omschrijving_melder  {% endcomment %}
+                                                        {% if melding.omschrijving_melder and melding.omschrijving_melder != "- geen korte omschrijving beschikbaar -" %}
+                                                            <li>
+                                                                <h3 class="h5">Omschrijving</h3>
+                                                                <p>{{ melding.omschrijving_melder }}</p>
+                                                            </li>
+                                                        {% endif %}
+                                                        {% comment %} @TODO @Remco aanvullende_vragen toegevoegd, dit is een json formatted string. {% endcomment %}
+                                                        {% if melding.aanvullende_vragen %}
+                                                            {% with aanvullende_vragen=melding.aanvullende_vragen|safe|json_loads %}
+                                                                {% for vraag in aanvullende_vragen %}
+                                                                    <li>
+                                                                        <h3 class="h5">{{ vraag.question }}</h3>
+                                                                        <p>{{ vraag.answer }}</p>
+                                                                    </li>
+                                                                {% endfor %}
+                                                            {% endwith %}
+                                                        {% elif melding.aanvullende_informatie %}
+                                                            <li>
+                                                                {% comment %} @TODO @Remco omschrijving -> aanvullende_informatie. Moet dit oude veld nog migreren naar aanvullende_vragen jsonfield  {% endcomment %}
+                                                                <h3 class="h5">Aanvullende informatie</h3>
+                                                                <p>{{ melding.aanvullende_informatie }}</p>
+                                                            </li>
+                                                        {% endif %}
                                                     </ul>
                                                 </div>
                                             {% endif %}

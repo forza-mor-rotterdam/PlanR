@@ -925,8 +925,8 @@ def msb_importeer_melding(request):
         "onderwerpen": [
             f"{settings.MELDINGEN_URL}/api/v1/onderwerp/grofvuil-op-straat/"
         ],
-        "omschrijving_kort": msb_data.get("omschrijving", "")[:500],
-        "omschrijving": msb_data.get("aanvullendeInformatie", ""),
+        "omschrijving_melder": msb_data.get("omschrijving", "")[:500],
+        "aanvullende_informatie": msb_data.get("aanvullendeInformatie", ""),
         "meta": msb_data,
         "meta_uitgebreid": {},
         "adressen": [
