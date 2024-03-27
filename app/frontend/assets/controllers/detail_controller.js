@@ -329,7 +329,7 @@ export default class extends Controller {
   showImage() {
     this.selectedImageModalTarget.style.backgroundImage = `url('${this.urlPrefixValue}${imagesList[selectedImageIndex]}')`
     this.showHideImageNavigation()
-    this.imageCounterTarget.innerHTML = `Foto ${selectedImageIndex + 1} van ${imagesList.length}`
+    this.imageCounterTarget.textContent = `Foto ${selectedImageIndex + 1} van ${imagesList.length}`
     this.imageScrollInView(selectedImageIndex) //image in detailpage
     fullSizeImageContainer = this.selectedImageModalTarget
     this.showNormal()
