@@ -115,6 +115,58 @@
     }
 }
 
+.container__meldingnavigatie {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    min-width: 174px;
+
+    span,
+    a {
+        flex: 1;
+        display: inline-block;
+    }
+
+    span {
+        white-space: nowrap;
+        line-height: 48px;
+        align-self: flex-start;
+    }
+
+    .melding-navigatie {
+        display: inline-block;
+        width: 48px;
+        height: 48px;
+        border: 1px solid $gray-tint08;
+        background-color: transparent;
+        position: relative;
+
+        svg {
+            position: absolute;
+            top: calc(50% - 12px);
+            left: 12px;
+            width: 24px;
+            height: 24px;
+            path {
+                fill: $gray-tint11;
+            }
+        }
+    }
+
+    #melding_next_vorige .melding-navigatie {
+        svg {
+            transform: rotate(180deg);
+        }
+    }
+    span.melding-navigatie {
+        background-color: $gray-tint04;
+        border-color: $gray-tint04;
+    }
+}
+
 .no-image {
     background-color: $gray-tint02;
     height: 40px;

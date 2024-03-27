@@ -1,7 +1,11 @@
 <turbo-frame id="{{ frame_id }}">
 {% if next_melding_url %}
-    <a href="{{ next_melding_url }}"
+    <a class="melding-navigatie"
+       href="{{ next_melding_url }}"
        data-turbo-frame="overview"
-       data-turbo-action="advance">{{ label }}</a>
+       data-turbo-action="advance"
+       aria-label="{{ label }}">{% include "icons/arrow-right.svg" %}</a>
+{% else %}
+    <span class="melding-navigatie" aria-label="{{ label }}">{% include "icons/arrow-right.svg" %}</span>
 {% endif %}
 </turbo-frame>

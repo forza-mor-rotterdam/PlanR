@@ -400,6 +400,7 @@ def melding_next(request, id, richting):
             "frame_id": frame_id,
             "next_melding_url": next_melding_url,
             "label": label,
+            "richting": richting,
         },
     )
 
