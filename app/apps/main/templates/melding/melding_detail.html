@@ -44,6 +44,11 @@
                     <div id="id_maincontent">
                         <div class="grid-container">
                             <div class="grid-item" data-detail-target="imageSliderWidth">
+                                {% if meldingen_index %}
+                                    <turbo-frame style="display: inline;" id="melding_next_vorige" src="{% url 'melding_next_vorige' melding.uuid %}"></turbo-frame>
+                                    {{ meldingen_index }}/{{ request.session.melding_count }}
+                                    <turbo-frame style="display: inline;" id="melding_next_volgend" src="{% url 'melding_next_volgend' melding.uuid %}"></turbo-frame>
+                                {% endif %}
                                 <div>{% include titel_template %}</div>
                             </div>
                             <div class="grid-item bottom-left">
