@@ -117,12 +117,12 @@
 
 .container__meldingnavigatie {
     position: absolute;
-    top: 0;
+    top: 16px;
     right: 0;
     display: flex;
     justify-content: flex-end;
     gap: 8px;
-    min-width: 174px;
+    min-width: 182px;
 
     span,
     a {
@@ -132,7 +132,7 @@
 
     span {
         white-space: nowrap;
-        line-height: 48px;
+        line-height: 60px;
         align-self: flex-start;
     }
 
