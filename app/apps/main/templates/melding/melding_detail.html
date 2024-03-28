@@ -332,6 +332,11 @@
                                                                 <h3 class="h5">Omschrijving</h3>
                                                                 <p>{{ melding.signalen_voor_melding.0.omschrijving_melder }}</p>
                                                             </li>
+                                                        {% elif melding.meta.omschrijving_kort and melding.meta.omschrijving_kort != "- geen korte omschrijving beschikbaar -" %}
+                                                            <li>
+                                                                <h3 class="h5">Omschrijving</h3>
+                                                                <p>{{ melding.meta.omschrijving_kort }}</p>
+                                                            </li>
                                                         {% endif %}
                                                         {% comment %} @TODO @Remco aanvullende_vragen toegevoegd, dit is een json formatted string. {% endcomment %}
                                                         {% with aanvullende_vragen=melding.signalen_voor_melding.0.aanvullende_vragen|safe|json_loads %}
@@ -352,6 +357,12 @@
                                                                     {% comment %} @TODO @Remco omschrijving -> aanvullende_informatie. Moet dit oude veld nog migreren naar aanvullende_vragen jsonfield  {% endcomment %}
                                                                     <h3 class="h5">Aanvullende informatie</h3>
                                                                     <p>{{ melding.signalen_voor_melding.0.aanvullende_informatie|replace_n|safe }}</p>
+                                                                </li>
+                                                            {% elif melding.meta.omschrijving %}
+                                                                <li>
+                                                                    {% comment %} @TODO @Remco omschrijving -> aanvullende_informatie. Moet dit oude veld nog migreren naar aanvullende_vragen jsonfield  {% endcomment %}
+                                                                    <h3 class="h5">Aanvullende informatie</h3>
+                                                                    <p>{{ melding.meta.omschrijving|replace_n|safe }}</p>
                                                                 </li>
                                                             {% endif %}
                                                         {% endwith %}
