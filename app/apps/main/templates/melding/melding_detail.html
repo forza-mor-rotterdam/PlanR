@@ -245,22 +245,27 @@
                                                                         </li>
                                                                     {% endif %}
                                                                     {% comment %} @TODO @Remco aanvullende_vragen toegevoegd, dit is een json formatted string. {% endcomment %}
-                                                                    {% if signaal.aanvullende_vragen %}
-                                                                        {% with aanvullende_vragen=signaal.aanvullende_vragen|safe|json_loads %}
+                                                                    {% with aanvullende_vragen=signaal.aanvullende_vragen|safe|json_loads %}
+                                                                        {% if aanvullende_vragen %}
                                                                             {% for vraag in aanvullende_vragen %}
                                                                                 <li>
                                                                                     <h3 class="h5">{{ vraag.question }}</h3>
-                                                                                    <p>{{ vraag.answer }}</p>
+                                                                                    <p>
+                                                                                        {% for answer in vraag.answers %}
+                                                                                            {{ answer }}
+                                                                                            {% if not forloop.last %},{% endif %}
+                                                                                        {% endfor %}
+                                                                                    </p>
                                                                                 </li>
                                                                             {% endfor %}
-                                                                        {% endwith %}
-                                                                    {% elif signaal.aanvullende_informatie %}
-                                                                        <li>
-                                                                            {% comment %} @TODO @Remco omschrijving -> aanvullende_informatie. Moet dit oude veld nog migreren naar aanvullende_vragen jsonfield  {% endcomment %}
-                                                                            <h3 class="h5">Aanvullende informatie</h3>
-                                                                            <p>{{ signaal.aanvullende_informatie }}</p>
-                                                                        </li>
-                                                                    {% endif %}
+                                                                        {% elif signaal.aanvullende_informatie %}
+                                                                            <li>
+                                                                                {% comment %} @TODO @Remco omschrijving -> aanvullende_informatie. Moet dit oude veld nog migreren naar aanvullende_vragen jsonfield  {% endcomment %}
+                                                                                <h3 class="h5">Aanvullende informatie</h3>
+                                                                                <p>{{ signaal.aanvullende_informatie|safe }}</p>
+                                                                            </li>
+                                                                        {% endif %}
+                                                                    {% endwith %}
                                                                 </ul>
                                                             </div>
                                                         </div>
@@ -329,22 +334,27 @@
                                                             </li>
                                                         {% endif %}
                                                         {% comment %} @TODO @Remco aanvullende_vragen toegevoegd, dit is een json formatted string. {% endcomment %}
-                                                        {% if melding.aanvullende_vragen %}
-                                                            {% with aanvullende_vragen=melding.aanvullende_vragen|safe|json_loads %}
+                                                        {% with aanvullende_vragen=melding.aanvullende_vragen|safe|json_loads %}
+                                                            {% if aanvullende_vragen %}
                                                                 {% for vraag in aanvullende_vragen %}
                                                                     <li>
                                                                         <h3 class="h5">{{ vraag.question }}</h3>
-                                                                        <p>{{ vraag.answer }}</p>
+                                                                        <p>
+                                                                            {% for answer in vraag.answers %}
+                                                                                {{ answer }}
+                                                                                {% if not forloop.last %},{% endif %}
+                                                                            {% endfor %}
+                                                                        </p>
                                                                     </li>
                                                                 {% endfor %}
-                                                            {% endwith %}
-                                                        {% elif melding.aanvullende_informatie %}
-                                                            <li>
-                                                                {% comment %} @TODO @Remco omschrijving -> aanvullende_informatie. Moet dit oude veld nog migreren naar aanvullende_vragen jsonfield  {% endcomment %}
-                                                                <h3 class="h5">Aanvullende informatie</h3>
-                                                                <p>{{ melding.aanvullende_informatie }}</p>
-                                                            </li>
-                                                        {% endif %}
+                                                            {% elif melding.aanvullende_informatie %}
+                                                                <li>
+                                                                    {% comment %} @TODO @Remco omschrijving -> aanvullende_informatie. Moet dit oude veld nog migreren naar aanvullende_vragen jsonfield  {% endcomment %}
+                                                                    <h3 class="h5">Aanvullende informatie</h3>
+                                                                    <p>{{ melding.aanvullende_informatie|safe }}</p>
+                                                                </li>
+                                                            {% endif %}
+                                                        {% endwith %}
                                                     </ul>
                                                 </div>
                                             {% endif %}
