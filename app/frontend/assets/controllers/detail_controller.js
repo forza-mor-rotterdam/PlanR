@@ -10,7 +10,8 @@ let markerIcon,
   detailScrollY = 0,
   selectedImageIndex = 0,
   imagesList = null,
-  fullSizeImageContainer = null
+  fullSizeImageContainer = null,
+  keyFunctions = null
 
 export default class extends Controller {
   static values = {
@@ -49,10 +50,6 @@ export default class extends Controller {
     }
 
     this.coordinates = JSON.parse(this.locatieValue)?.geometrie?.coordinates?.reverse()
-
-    imagesList = JSON.parse(this.afbeeldingenValue).map(
-      (bestand) => bestand.afbeelding_relative_url
-    )
 
     this.signalen =
       JSON.parse(this.signalenValue)?.filter(
@@ -146,17 +143,6 @@ export default class extends Controller {
       new L.Marker(this.coordinates, { icon: markerGreen }).addTo(this.map)
     }
 
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {
-        this.closeModal()
-      }
-      if (event.key === 'ArrowLeft') {
-        this.showPreviousImageInModal()
-      }
-      if (event.key === 'ArrowRight') {
-        this.showNextImageInModal()
-      }
-    })
     if (this.hasThumbListTarget) {
       const resizeObserver = new ResizeObserver(() => {
         sliderContainerWidth = imageSliderWidth.offsetWidth
@@ -171,8 +157,29 @@ export default class extends Controller {
     this.urlParams = new URLSearchParams(window.location.search)
     this.tabIndex = Number(this.urlParams.get('tabIndex'))
     this.selectTab(this.tabIndex || 1)
+
+    imagesList = JSON.parse(this.afbeeldingenValue).map(
+      (bestand) => bestand.afbeelding_relative_url
+    )
+
+    keyFunctions = (e) => {
+      if (e.key === 'Escape') {
+        this.closeModal()
+      }
+      if (e.key === 'ArrowLeft') {
+        this.showPreviousImageInModal()
+      }
+      if (e.key === 'ArrowRight') {
+        this.showNextImageInModal()
+      }
+    }
+
+    document.addEventListener('keyup', keyFunctions)
   }
 
+  disconnect() {
+    document.removeEventListener('keyup', keyFunctions)
+  }
   selectTab(tabIndex) {
     this.deselectTabs()
     const tabs = Array.from(this.element.querySelectorAll('.btn--tab'))

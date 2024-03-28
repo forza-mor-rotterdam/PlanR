@@ -144,7 +144,9 @@
                                             <div class="background-image"></div>
                                         {% endif %}
                                     </div>
-                                    {% include "icons/expand.svg" %}
+                                    {% if bijlagen|length > 0 %}
+                                        {% include "icons/expand.svg" %}
+                                    {% endif %}
                                 </section>
                                 {% if bijlagen|length > 0 %}
                                     <section class="section--seperated section--imagelist print-only">
