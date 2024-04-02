@@ -675,6 +675,26 @@ class MeldingAanmakenForm(forms.Form):
         label="Huisnummer",
         required=False,
     )
+    huisletter = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+            }
+        ),
+        label="Huisnummer",
+        required=False,
+        max_length=1,
+    )
+    toevoeging = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+            }
+        ),
+        label="Huisnummer",
+        required=False,
+        max_length=4,
+    )
     wijknaam = forms.CharField(
         widget=forms.TextInput(
             attrs={
@@ -875,9 +895,9 @@ class MeldingAanmakenForm(forms.Form):
                 {
                     "plaatsnaam": "Rotterdam",
                     "straatnaam": data.get("straatnaam"),
-                    "huisnummer": data.get("huisnummer")
-                    if data.get("huisnummer")
-                    else 0,
+                    "huisnummer": data.get("huisnummer", 0),
+                    "huisletter": data.get("huisletter"),
+                    "toevoeging": data.get("toevoeging"),
                     "wijknaam": data.get("wijknaam"),
                     "buurtnaam": data.get("buurtnaam"),
                     "geometrie": {

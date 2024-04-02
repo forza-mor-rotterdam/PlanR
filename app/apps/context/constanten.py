@@ -128,8 +128,13 @@ class AdresKolom(StandaardKolom):
         ):
             straatnaam = locatie.get("straatnaam", "")
             huisnummer = locatie.get("huisnummer", "")
+            huisletter = locatie.get("huisletter", "")
+            toevoeging = locatie.get("toevoeging", "")
+
             return (
-                f"{string.capwords(straatnaam)} {huisnummer}" if straatnaam else default
+                f"{string.capwords(straatnaam)} {huisnummer}{huisletter} {toevoeging}".strip()
+                if straatnaam
+                else default
             )
 
         return default
@@ -151,6 +156,12 @@ class AdresBuurtWijkKolom(StandaardKolom):
             huisnummer = (
                 f' {locatie.get("huisnummer")}' if locatie.get("huisnummer") else ""
             )
+            huisletter = (
+                f'{locatie.get("huisletter")}' if locatie.get("huisletter") else ""
+            )
+            toevoeging = (
+                f' {locatie.get("toevoeging")}' if locatie.get("toevoeging") else ""
+            )
             wijk = locatie.get("wijknaam", "")
             buurt = locatie.get("buurtnaam", "")
 
@@ -161,7 +172,7 @@ class AdresBuurtWijkKolom(StandaardKolom):
                 lijst.append(buurt)
 
             return (
-                f"{string.capwords(straatnaam)}{huisnummer}<br>{', '.join(lijst)}"
+                f"{string.capwords(straatnaam)}{huisnummer}{huisletter}{toevoeging}<br>{', '.join(lijst)}"
                 if straatnaam
                 else default
             )
