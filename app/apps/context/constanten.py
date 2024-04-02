@@ -172,7 +172,7 @@ class AdresBuurtWijkKolom(StandaardKolom):
                 lijst.append(buurt)
 
             return (
-                f"{string.capwords(straatnaam)}{huisnummer}{huisletter}{toevoeging}<br>{', '.join(lijst)}"
+                f"{string.capwords(straatnaam)}{huisnummer}{huisletter}{toevoeging}<br>{', '.join(lijst)}".strip()
                 if straatnaam
                 else default
             )
