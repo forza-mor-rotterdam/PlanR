@@ -276,16 +276,25 @@ class StatusKolom(StandaardKolom):
             "in_behandeling": "darkblue",
             "geannuleerd": "red",
         }
-        aantal_actieve_taken = string_based_lookup(
-            self.context, "melding.aantal_actieve_taken", not_found_value=""
+        taakopdrachten_voor_melding = [
+            taak
+            for taak in string_based_lookup(
+                self.context, "melding.taakopdrachten_voor_melding", not_found_value=[]
+            )
+            if taak.get("status", {}).get("naam", "")
+            not in ["voltooid", "niet_voltooid"]
+        ]
+
+        taakopdrachten_voor_melding = (
+            f"({len(taakopdrachten_voor_melding)})"
+            if taakopdrachten_voor_melding
+            else ""
         )
-        if aantal_actieve_taken:
-            aantal_actieve_taken = f"({aantal_actieve_taken})"
         status_naam = string_based_lookup(
             self.context, self._kolom_inhoud, not_found_value=""
         )
         return mark_safe(
-            f'<span class="display--flex--center badge badge--{colors.get(status_naam, "lightblue")}">{VERTALINGEN.get(status_naam, status_naam)}{aantal_actieve_taken}</span>'
+            f'<span class="display--flex--center badge badge--{colors.get(status_naam, "lightblue")}">{VERTALINGEN.get(status_naam, status_naam)}{taakopdrachten_voor_melding}</span>'
         )
 
 

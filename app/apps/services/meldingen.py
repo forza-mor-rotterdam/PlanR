@@ -88,10 +88,14 @@ class MeldingenService(BasisService):
         return headers
 
     def get_melding_lijst(self, query_string=""):
-        return self.do_request(
+        response = self.do_request(
             f"{self._api_path}/melding/?{query_string}",
-            raw_response=False,
+            raw_response=True,
         )
+        logger.info(
+            f"Melding list: time={response.elapsed.total_seconds()}, size={len(response.content)}, qs={query_string}"
+        )
+        return self.naar_json(response)
 
     def get_melding(self, id, query_string=""):
         return self.do_request(
