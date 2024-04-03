@@ -30,7 +30,11 @@
                                             onbekend
                                         {% endif %}
                                         {% if hoogste_gewicht_locatie.huisnummer %}
-                                            {{ hoogste_gewicht_locatie.huisnummer }}
+                                            {% spaceless %}
+                                                <span>{{ hoogste_gewicht_locatie.huisnummer }}</span>
+                                                {% if hoogste_gewicht_locatie.huisletter %}<span>{{ hoogste_gewicht_locatie.huisletter }}</span>{% endif %}
+                                            {% endspaceless %}
+                                            {% if hoogste_gewicht_locatie.toevoeging %}<span>{{ hoogste_gewicht_locatie.toevoeging }}</span>{% endif %}
                                         {% else %}
                                             onbekend
                                         {% endif %}
@@ -136,7 +140,11 @@
                                                 onbekend
                                             {% endif %}
                                             {% if locatie.huisnummer %}
-                                                {{ locatie.huisnummer }}
+                                                {% spaceless %}
+                                                    <span>{{ locatie.huisnummer }}</span>
+                                                    {% if locatie.huisletter %}<span>{{ locatie.huisletter }}</span>{% endif %}
+                                                {% endspaceless %}
+                                                {% if locatie.toevoeging %}<span>{{ locatie.toevoeging }}</span>{% endif %}
                                             {% else %}
                                                 onbekend
                                             {% endif %}

@@ -128,8 +128,13 @@ class AdresKolom(StandaardKolom):
         ):
             straatnaam = locatie.get("straatnaam", "")
             huisnummer = locatie.get("huisnummer", "")
+            huisletter = locatie.get("huisletter", "")
+            toevoeging = locatie.get("toevoeging", "")
+
             return (
-                f"{string.capwords(straatnaam)} {huisnummer}" if straatnaam else default
+                f"{string.capwords(straatnaam)} {huisnummer}{huisletter} {toevoeging}".strip()
+                if straatnaam
+                else default
             )
 
         return default
@@ -151,6 +156,12 @@ class AdresBuurtWijkKolom(StandaardKolom):
             huisnummer = (
                 f' {locatie.get("huisnummer")}' if locatie.get("huisnummer") else ""
             )
+            huisletter = (
+                f'{locatie.get("huisletter")}' if locatie.get("huisletter") else ""
+            )
+            toevoeging = (
+                f' {locatie.get("toevoeging")}' if locatie.get("toevoeging") else ""
+            )
             wijk = locatie.get("wijknaam", "")
             buurt = locatie.get("buurtnaam", "")
 
@@ -161,7 +172,7 @@ class AdresBuurtWijkKolom(StandaardKolom):
                 lijst.append(buurt)
 
             return (
-                f"{string.capwords(straatnaam)}{huisnummer}<br>{', '.join(lijst)}"
+                f"{string.capwords(straatnaam)}{huisnummer}{huisletter}{toevoeging}<br>{', '.join(lijst)}".strip()
                 if straatnaam
                 else default
             )
@@ -276,16 +287,25 @@ class StatusKolom(StandaardKolom):
             "in_behandeling": "darkblue",
             "geannuleerd": "red",
         }
-        aantal_actieve_taken = string_based_lookup(
-            self.context, "melding.aantal_actieve_taken", not_found_value=""
+        taakopdrachten_voor_melding = [
+            taak
+            for taak in string_based_lookup(
+                self.context, "melding.taakopdrachten_voor_melding", not_found_value=[]
+            )
+            if taak.get("status", {}).get("naam", "")
+            not in ["voltooid", "niet_voltooid"]
+        ]
+
+        taakopdrachten_voor_melding = (
+            f"({len(taakopdrachten_voor_melding)})"
+            if taakopdrachten_voor_melding
+            else ""
         )
-        if aantal_actieve_taken:
-            aantal_actieve_taken = f"({aantal_actieve_taken})"
         status_naam = string_based_lookup(
             self.context, self._kolom_inhoud, not_found_value=""
         )
         return mark_safe(
-            f'<span class="display--flex--center badge badge--{colors.get(status_naam, "lightblue")}">{VERTALINGEN.get(status_naam, status_naam)}{aantal_actieve_taken}</span>'
+            f'<span class="display--flex--center badge badge--{colors.get(status_naam, "lightblue")}">{VERTALINGEN.get(status_naam, status_naam)}{taakopdrachten_voor_melding}</span>'
         )
 
 

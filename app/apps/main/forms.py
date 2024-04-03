@@ -675,6 +675,26 @@ class MeldingAanmakenForm(forms.Form):
         label="Huisnummer",
         required=False,
     )
+    huisletter = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+            }
+        ),
+        label="Huisnummer",
+        required=False,
+        max_length=1,
+    )
+    toevoeging = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+            }
+        ),
+        label="Huisnummer",
+        required=False,
+        max_length=4,
+    )
     wijknaam = forms.CharField(
         widget=forms.TextInput(
             attrs={
@@ -856,7 +876,6 @@ class MeldingAanmakenForm(forms.Form):
         for cf in choice_fields:
             data[cf] = self.get_verbose_value_from_field(cf, data[cf])
         bron_signaal_id = str(uuid.uuid4())
-        logger.info(f"Signaal aanmaken met uuid: {bron_signaal_id}")
         post_data = {
             "signaal_url": f"https://planr.rotterdam.nl/melding/signaal/{bron_signaal_id}",
             "melder": {
@@ -868,17 +887,17 @@ class MeldingAanmakenForm(forms.Form):
             "bron_signaal_id": bron_signaal_id,
             "origineel_aangemaakt": now.isoformat(),
             "onderwerpen": [{"bron_url": data.get("onderwerp", [])}],
-            "omschrijving_kort": data.get("toelichting", "")[:200],
-            "omschrijving": data.get("toelichting", ""),
+            "omschrijving_melder": data.get("toelichting", "")[:500],
+            "aanvullende_informatie": data.get("aanvullende_informatie", "")[:5000],
             "meta": data,
             "meta_uitgebreid": labels,
             "adressen": [
                 {
                     "plaatsnaam": "Rotterdam",
                     "straatnaam": data.get("straatnaam"),
-                    "huisnummer": data.get("huisnummer")
-                    if data.get("huisnummer")
-                    else 0,
+                    "huisnummer": data.get("huisnummer", 0),
+                    "huisletter": data.get("huisletter"),
+                    "toevoeging": data.get("toevoeging"),
                     "wijknaam": data.get("wijknaam"),
                     "buurtnaam": data.get("buurtnaam"),
                     "geometrie": {

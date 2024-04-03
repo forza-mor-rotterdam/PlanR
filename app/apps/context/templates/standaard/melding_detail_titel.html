@@ -3,7 +3,11 @@
     {% with hoogste_gewicht_locatie=melding.locaties_voor_melding|dictsort:"gewicht"|last %}
         {% if hoogste_gewicht_locatie.straatnaam %}
             {{ hoogste_gewicht_locatie.straatnaam }}
-            {% if hoogste_gewicht_locatie.huisnummer %}{{ hoogste_gewicht_locatie.huisnummer }}{% endif %}
+            {% spaceless %}
+                {% if hoogste_gewicht_locatie.huisnummer %}<span>{{ hoogste_gewicht_locatie.huisnummer }}</span>{% endif %}
+                {% if hoogste_gewicht_locatie.huisletter %}<span>{{ hoogste_gewicht_locatie.huisletter }}</span>{% endif %}
+            {% endspaceless %}
+            {% if hoogste_gewicht_locatie.toevoeging %}<span>{{ hoogste_gewicht_locatie.toevoeging }}</span>{% endif %}
         {% else %}
             Melding {{ melding.id }}
         {% endif %}

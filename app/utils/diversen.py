@@ -47,3 +47,10 @@ def string_based_lookup(local_vars, lookup_str, separator=".", not_found_value="
         result = not_found_value
 
     return result if result else not_found_value
+
+
+def get_index(lookup_list: (list | tuple), lookup_value):
+    try:
+        return lookup_list.index(lookup_value)
+    except ValueError:
+        return -1

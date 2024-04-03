@@ -63,12 +63,9 @@ class Bijlage(BasisModel):
         return new_file_name
 
     def aanmaken_afbeelding_versies(self):
-        logger.info("aanmaken_afbeelding_versies")
         mt = mimetypes.guess_type(self.bestand.path, strict=True)
-        logger.info(mt)
 
         if exists(self.bestand.path):
-            logger.info(self.bestand.path)
             bestand = self.bestand.path
             self.is_afbeelding = self._is_afbeelding()
             if mt:
@@ -77,7 +74,6 @@ class Bijlage(BasisModel):
                 bestand = self._heic_to_jpeg(self.bestand)
                 self.is_afbeelding = True
 
-            logger.info(f"is afbeelding: {self.is_afbeelding}")
             # Dont convert to jpeg if the image is a gif.
             if self.mimetype == "image/gif":
                 return

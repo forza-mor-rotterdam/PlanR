@@ -44,6 +44,11 @@ def json_encode(value):
     return json.dumps(value)
 
 
+@register.filter
+def replace_n(value):
+    return value.replace("\\n", "<br/>").replace("?", "?<br/>")
+
+
 @register.simple_tag
 def vind_in_dict(op_zoek_dict, key):
     if not isinstance(op_zoek_dict, dict):

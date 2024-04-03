@@ -5,7 +5,7 @@
 {% load vertaal from vertaal_tags %}
 {% load context_template from context_tags %}
 {% load slice_iterable from main_tags %}
-{% load mor_core_url from main_tags %}
+{% load mor_core_url replace_n from main_tags %}
 {% load render_onderwerp get_bijlagen from melding_tags %}
 {% load json_encode from json_tags %}
 {% block title %}
@@ -22,6 +22,8 @@
             <turbo-frame id="overview">
             <div data-controller="detail"
                  data-detail-locatie-value="{{ locatie|json_encode }}"
+                 data-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
+                 data-detail-url-prefix-value="{{ MOR_CORE_URL_PREFIX }}"
                  data-detail-signalen-value="{{ melding.signalen_voor_melding|json_encode }}">
                 <div class="border-green print-only"></div>
                 <div class="page__detail">
@@ -45,6 +47,13 @@
                                 <div>{% include titel_template %}</div>
                             </div>
                             <div class="grid-item bottom-left">
+                                <div class="container__meldingnavigatie">
+                                    {% if meldingen_index %}
+                                        <span class="help-text">{{ meldingen_index }} van {{ request.session.melding_count }}</span>
+                                        <turbo-frame style="display: inline;" id="melding_next_vorige" src="{% url 'melding_next_vorige' melding.uuid %}" data-spinner="hide"></turbo-frame>
+                                        <turbo-frame style="display: inline;" id="melding_next_volgend" src="{% url 'melding_next_volgend' melding.uuid %}" data-spinner="hide"></turbo-frame>
+                                    {% endif %}
+                                </div>
                                 <div>
                                     {% if melding.status %}
                                         <span class="badge badge--{% if melding.status.naam == 'afgehandeld' %}green{% elif melding.status.naam == 'controle' %}yellow{% elif melding.status.naam == 'in_behandeling' %}darkblue{% elif melding.status.naam == 'geannuleerd' %}red{% else %}lightblue{% endif %}">{{ melding.status.naam|vertaal }}
@@ -102,7 +111,9 @@
                                                         <li class="container__image" tabindex="0">
                                                             <div class="image"
                                                                  style="background-image: url('{{ bijlage.afbeelding_relative_url|mor_core_url }}')"
-                                                                 data-detail-target="selectedImage">
+                                                                 data-detail-target="selectedImage"
+                                                                 data-action="click->detail#showImageInModal"
+                                                                 data-detail-image-index-param="{{ forloop.counter|add:'-1' }}">
                                                                 <span>{{ bijlage.label }}</span>
                                                             </div>
                                                         </li>
@@ -116,7 +127,7 @@
                                                         {% for bijlage in bijlagen %}
                                                             <li>
                                                                 <button data-action="click->detail#selectImage"
-                                                                        data-detail-image-index-param="{{ forloop.counter }}"
+                                                                        data-detail-image-index-param="{{ forloop.counter|add:'-1' }}"
                                                                         aria-label="Bekijk afbeelding">
                                                                     <div class="container__image">
                                                                         <div class="image"
@@ -133,6 +144,9 @@
                                             <div class="background-image"></div>
                                         {% endif %}
                                     </div>
+                                    {% if bijlagen|length > 0 %}
+                                        {% include "icons/expand.svg" %}
+                                    {% endif %}
                                 </section>
                                 {% if bijlagen|length > 0 %}
                                     <section class="section--seperated section--imagelist print-only">
@@ -232,22 +246,42 @@
                                                                     {% endif %}
                                                                 </ul>
                                                                 <ul class="list-clean">
-                                                                    {% if signaal.omschrijving_kort %}
+                                                                    {% if signaal.omschrijving_melder and signaal.omschrijving_melder != "- geen korte omschrijving beschikbaar -" %}
                                                                         <li>
-                                                                            <h3 class="h5">Toelichting</h3>
-                                                                            <p>{{ signaal.omschrijving_kort }}</p>
+                                                                            <h3 class="h5">Omschrijving</h3>
+                                                                            <p>{{ signaal.omschrijving_melder }}</p>
+                                                                        </li>
+                                                                    {% elif signaal.meta.omschrijvingField and signaal.meta.omschrijvingField != "- geen korte omschrijving beschikbaar -" %}
+                                                                        <li>
+                                                                            <h3 class="h5">Omschrijving</h3>
+                                                                            <p>{{ signaal.meta.omschrijvingField }}</p>
                                                                         </li>
                                                                     {% endif %}
-                                                                    <li>
-                                                                        <h3 class="h5">Meer informatie</h3>
-                                                                        <p>
-                                                                            {% if signaal.omschrijving %}
-                                                                                {{ signaal.omschrijving }}
-                                                                            {% else %}
-                                                                                -
-                                                                            {% endif %}
-                                                                        </p>
-                                                                    </li>
+                                                                    {% with aanvullende_vragen=signaal.aanvullende_vragen %}
+                                                                        {% if aanvullende_vragen %}
+                                                                            {% for vraag in aanvullende_vragen %}
+                                                                                <li>
+                                                                                    <h3 class="h5">{{ vraag.question }}</h3>
+                                                                                    <p>
+                                                                                        {% for answer in vraag.answers %}
+                                                                                            {{ answer }}
+                                                                                            {% if not forloop.last %},{% endif %}
+                                                                                        {% endfor %}
+                                                                                    </p>
+                                                                                </li>
+                                                                            {% endfor %}
+                                                                        {% elif signaal.aanvullende_informatie %}
+                                                                            <li>
+                                                                                <h3 class="h5">Aanvullende informatie</h3>
+                                                                                <p>{{ signaal.aanvullende_informatie|replace_n|safe }}</p>
+                                                                            </li>
+                                                                        {% elif signaal.meta.aanvullendeInformatieField %}
+                                                                            <li>
+                                                                                <h3 class="h5">Aanvullende informatie</h3>
+                                                                                <p>{{ signaal.meta.aanvullendeInformatieField|replace_n|safe }}</p>
+                                                                            </li>
+                                                                        {% endif %}
+                                                                    {% endwith %}
                                                                 </ul>
                                                             </div>
                                                         </div>
@@ -301,33 +335,44 @@
                                                                     {% render_onderwerp onderwerp %}
                                                                     {% if not forloop.last %},{% endif %}
                                                                 {% endfor %}
-                                                                {% comment %} {{ melding.meta.onderwerp.omschrijving }}
-                                                        {% for onderwerp in signaal.onderwerpen %}
-                                                            {{ onderwerp.naam }}
-                                                            {% if not forloop.last %},{% endif %}
-                                                                {% endfor %} {% endcomment %}
                                                             </p>
                                                         </li>
-                                                        <li>
-                                                            <h3 class="h5">Toelichting kort</h3>
-                                                            <p>
-                                                                {% if melding.omschrijving_kort %}
-                                                                    {{ melding.omschrijving_kort }}
-                                                                {% else %}
-                                                                    -
-                                                                {% endif %}
-                                                            </p>
-                                                        </li>
-                                                        <li>
-                                                            <h3 class="h5">Toelichting</h3>
-                                                            <p>
-                                                                {% if melding.omschrijving %}
-                                                                    {{ melding.omschrijving }}
-                                                                {% else %}
-                                                                    -
-                                                                {% endif %}
-                                                            </p>
-                                                        </li>
+                                                        {% if melding.signalen_voor_melding.0.omschrijving_melder and melding.signalen_voor_melding.0.omschrijving_melder != "- geen korte omschrijving beschikbaar -" %}
+                                                            <li>
+                                                                <h3 class="h5">Omschrijving</h3>
+                                                                <p>{{ melding.signalen_voor_melding.0.omschrijving_melder }}</p>
+                                                            </li>
+                                                        {% elif melding.meta.omschrijvingField and melding.meta.omschrijvingField != "- geen korte omschrijving beschikbaar -" %}
+                                                            <li>
+                                                                <h3 class="h5">Omschrijving</h3>
+                                                                <p>{{ melding.meta.omschrijvingField }}</p>
+                                                            </li>
+                                                        {% endif %}
+                                                        {% with aanvullende_vragen=melding.signalen_voor_melding.0.aanvullende_vragen %}
+                                                            {% if aanvullende_vragen %}
+                                                                {% for vraag in aanvullende_vragen %}
+                                                                    <li>
+                                                                        <h3 class="h5">{{ vraag.question }}</h3>
+                                                                        <p>
+                                                                            {% for answer in vraag.answers %}
+                                                                                {{ answer }}
+                                                                                {% if not forloop.last %},{% endif %}
+                                                                            {% endfor %}
+                                                                        </p>
+                                                                    </li>
+                                                                {% endfor %}
+                                                            {% elif melding.signalen_voor_melding.0.aanvullende_informatie %}
+                                                                <li>
+                                                                    <h3 class="h5">Aanvullende informatie</h3>
+                                                                    <p>{{ melding.signalen_voor_melding.0.aanvullende_informatie|replace_n|safe }}</p>
+                                                                </li>
+                                                            {% elif melding.meta.aanvullendeInformatieField %}
+                                                                <li>
+                                                                    <h3 class="h5">Aanvullende informatie</h3>
+                                                                    <p>{{ melding.meta.aanvullendeInformatieField|replace_n|safe }}</p>
+                                                                </li>
+                                                            {% endif %}
+                                                        {% endwith %}
                                                     </ul>
                                                 </div>
                                             {% endif %}
@@ -361,8 +406,23 @@
                                     </div>
                                 {% endif %}
                                 <section class="section--seperated">
-                                    <turbo-frame id="informatie_toevoegen" src="{% url 'informatie_toevoegen' melding.uuid %}">
-                                    </turbo-frame>
+                                    <div class="container__details">
+                                        <h2>
+                                            <svg width="21"
+                                                 height="22"
+                                                 viewBox="0 0 21 22"
+                                                 fill="none"
+                                                 xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M19.0009 11C19.0009 15.9706 14.9715 20 10.0009 20C6.96008 20 4.27145 18.4919 2.64218 16.1829L0.953125 17.2577C2.93876 20.1233 6.25068 22 10.0009 22C16.0761 22 21.0009 17.0751 21.0009 11C21.0009 4.92487 16.0761 0 10.0009 0C6.96339 0 4.21339 1.23121 2.22279 3.22181L1.00098 2V6H5.00098L3.637 4.63602C5.26568 3.00735 7.51567 2 10.0009 2C14.9715 2 19.0009 6.02944 19.0009 11Z" fill="#00811F" />
+                                                <path d="M9.00098 5H11.001V11.8573L15.1973 14.28L14.1973 16.0121L9.00098 13V5Z" fill="#00811F" />
+                                            </svg>
+                                            Tijdlijn
+                                        </h2>
+                                        {% if melding.status.naam != "afgehandeld" and melding.status.naam != "geannuleerd" %}
+                                            <turbo-frame id="informatie_toevoegen" src="{% url 'informatie_toevoegen' melding.uuid %}">
+                                            </turbo-frame>
+                                        {% endif %}
+                                    </div>
                                 </section>
                                 <section class="section--seperated {% if melding.status.naam is 'afgehandeld' or melding.status.naam is not 'geannuleerd' %}no-padding{% endif %}"
                                          data-testid="detailTijdlijn">
@@ -380,6 +440,39 @@
                          data-action="click->detail#closeModal"></div>
                     <turbo-frame id="melding_actie_form" class="turboframe-container" data-detail-target="turboActionModal">
                     </turbo-frame>
+                </div>
+                <div class="modal modal--images"
+                     data-detail-target="modalImages"
+                     id="imageModal">
+                    <div class="modal-backdrop modal-exit"
+                         id="modal-backdrop"
+                         data-action="click->detail#closeModal"></div>
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button"
+                                        class="btn-close"
+                                        aria-label="Sluit"
+                                        data-action="detail#closeModal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="image" data-detail-target="selectedImageModal"></div>
+                                <div class="image-counter" data-detail-target="imageCounter"></div>
+                                <div class="container__navigate-images">
+                                    <div class="navigate-images--left inactive"
+                                         data-detail-target="navigateImagesLeft"
+                                         data-action="click->detail#showPreviousImageInModal">
+                                        <span aria-label="Bekijk vorige afbeelding">{% include "icons/arrow-right.svg" %}</span>
+                                    </div>
+                                    <div class="navigate-images--right inactive"
+                                         data-detail-target="navigateImagesRight"
+                                         data-action="click->detail#showNextImageInModal">
+                                        <span aria-label="Bekijk volgende afbeelding">{% include "icons/arrow-right.svg" %}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             </turbo-frame>

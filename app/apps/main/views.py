@@ -1,5 +1,6 @@
 import base64
 import logging
+import math
 
 import requests
 import weasyprint
@@ -63,6 +64,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView, View
+from utils.diversen import get_index
 from utils.rd_convert import rd_to_wgs
 
 logger = logging.getLogger(__name__)
@@ -126,7 +128,6 @@ def melding_lijst(request):
     qs.update(request.POST)
 
     if qs:
-        logger.info(f"request GET and/or POST data: {qs}")
         nieuwe_actieve_filters = {
             k: qs.getlist(k, []) for k, v in actieve_filters.items()
         }
@@ -164,11 +165,24 @@ def melding_lijst(request):
     meldingen_filter_query_dict = update_qd_met_standaard_meldingen_filter_qd(
         form_qs, gebruiker_context
     )
-    logger.info(f"Meldingen query string: {meldingen_filter_query_dict.urlencode()}")
     meldingen_data = MeldingenService().get_melding_lijst(
         query_string=meldingen_filter_query_dict.urlencode()
     )
-    logger.info(f"Meldingen data count: {meldingen_data.get('count', 0)}")
+    if (
+        len(meldingen_data.get("results", [])) == 0
+        and meldingen_filter_query_dict.get("offset") != "0"
+    ):
+        # reset pagination to first page if meldingen result is empty and the offset is not 0
+        meldingen_filter_query_dict["offset"] = "0"
+        form_qs["offset"] = "0"
+        request.session["offset"] = "0"
+        meldingen_data = MeldingenService().get_melding_lijst(
+            query_string=meldingen_filter_query_dict.urlencode()
+        )
+    request.session["pagina_melding_ids"] = [
+        r.get("uuid") for r in meldingen_data.get("results")
+    ]
+    request.session["melding_count"] = meldingen_data.get("count", 0)
 
     form = FilterForm(
         form_qs,
@@ -195,6 +209,26 @@ def melding_lijst(request):
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def melding_detail(request, id):
     melding = MeldingenService().get_melding(id)
+
+    if (
+        request.GET.get("melding_ids")
+        and request.GET.get("offset")
+        and request.GET.get("melding_count")
+    ):
+        request.session["pagina_melding_ids"] = request.GET.get("melding_ids").split(
+            ","
+        )
+        request.session["offset"] = int(request.GET.get("offset"))
+        request.session["melding_count"] = int(request.GET.get("melding_count"))
+        return redirect(reverse("melding_detail", args=[id]))
+
+    try:
+        index = request.session.get("pagina_melding_ids", []).index(str(id))
+    except Exception:
+        index = -1
+    meldingen_index = (
+        int(request.session.get("offset", 0)) + index + 1 if index >= 0 else None
+    )
 
     open_taakopdrachten = get_open_taakopdrachten(melding)
     tijdlijn_data = melding_naar_tijdlijn(melding)
@@ -271,6 +305,99 @@ def melding_detail(request, id):
             "aantal_niet_opgeloste_taken": aantal_niet_opgeloste_taken,
             "tijdlijn_data": tijdlijn_data,
             "open_taakopdrachten": open_taakopdrachten,
+            "meldingen_index": meldingen_index,
+        },
+    )
+
+
+@login_required
+@permission_required("authorisatie.melding_bekijken", raise_exception=True)
+def melding_next(request, id, richting):
+    melding_id = str(id)
+    frame_id = "melding_next_volgend" if richting > 0 else "melding_next_vorige"
+    label = "Volgende" if richting > 0 else "Vorige"
+
+    pagina_item_aantal = 10
+    next_melding_url = None
+    pagina = int(request.session.get("offset", "0"))
+    melding_count = request.session.get("melding_count", 0)
+    laatste_pagina = math.floor(melding_count / pagina_item_aantal)
+    gebruiker = request.user
+    gebruiker_context = get_gebruiker_context(gebruiker)
+
+    pagina_melding_ids = request.session.get("pagina_melding_ids", [])
+
+    index = get_index(pagina_melding_ids, melding_id)
+    if (index == 0 and pagina == 0 and richting < 0) or (
+        index == len(pagina_melding_ids) - 1
+        and pagina == (laatste_pagina * pagina_item_aantal)
+        and richting > 0
+    ):
+        # eerste of laatste melding in meldingen lijst over alle pagina's
+        return render(
+            request,
+            "melding/melding_next.html",
+            {
+                "frame_id": frame_id,
+            },
+        )
+
+    if (index == 0 and richting < 0) or (
+        index == pagina_item_aantal - 1 and richting > 0
+    ):
+        # als huidige melding zich aan het begin of aan het eind van de pagina bevindt, haal dan respectievelijk de vorige of volgende pagina op
+        actieve_filters = get_actieve_filters(gebruiker)
+        standaard_waardes = {
+            "limit": f"{pagina_item_aantal}",
+            "ordering": get_ordering(gebruiker),
+            "q": request.session.get("q", ""),
+            "offset": str(
+                (int(pagina / pagina_item_aantal) + richting) * pagina_item_aantal
+            ),
+        }
+
+        pagina = (int(pagina / pagina_item_aantal) + richting) * pagina_item_aantal
+        standaard_waardes["offset"] = str(pagina)
+
+        form_qs = QueryDict("", mutable=True)
+        form_qs.update(standaard_waardes)
+
+        for k, v in actieve_filters.items():
+            if v:
+                form_qs.setlist(k, v)
+
+        meldingen_filter_query_dict = update_qd_met_standaard_meldingen_filter_qd(
+            form_qs, gebruiker_context
+        )
+        meldingen_data = MeldingenService().get_melding_lijst(
+            query_string=meldingen_filter_query_dict.urlencode()
+        )
+
+        pagina_melding_ids = [r.get("uuid") for r in meldingen_data.get("results")]
+        melding_count = meldingen_data.get("count")
+        index = get_index(pagina_melding_ids, melding_id)
+        nieuwe_melding_id = None
+        if index == -1 and pagina_melding_ids:
+            # in de happy flow zal vorige of volgende melding zich op vorige of volgende pagina bevinden
+            nieuwe_melding_id = (
+                pagina_melding_ids[0] if richting > 0 else pagina_melding_ids[-1]
+            )
+        if nieuwe_melding_id:
+            next_melding_url = f"{reverse('melding_detail', args=[nieuwe_melding_id])}?melding_ids={','.join(pagina_melding_ids)}&offset={pagina}&melding_count={melding_count}"
+
+    elif index != -1:
+        next_melding_url = reverse(
+            "melding_detail", args=[pagina_melding_ids[index + richting]]
+        )
+
+    return render(
+        request,
+        "melding/melding_next.html",
+        {
+            "frame_id": frame_id,
+            "next_melding_url": next_melding_url,
+            "label": label,
+            "richting": richting,
         },
     )
 
@@ -287,7 +414,6 @@ def publiceer_topic(request, id):
 def melding_afhandelen(request, id):
     melding = MeldingenService().get_melding(id)
 
-    afhandel_reden_opties = [(s, s) for s in melding.get("volgende_statussen", ())]
     melding_bijlagen = [
         [
             b
@@ -352,7 +478,6 @@ def melding_afhandelen(request, id):
         {
             "form": form,
             "melding": melding,
-            "afhandel_reden_opties": afhandel_reden_opties,
             "bijlagen": bijlagen_flat,
             "actieve_taken": actieve_taken,
             "aantal_actieve_taken": len(actieve_taken),
@@ -365,7 +490,6 @@ def melding_afhandelen(request, id):
 def melding_annuleren(request, id):
     melding = MeldingenService().get_melding(id)
 
-    afhandel_reden_opties = [(s, s) for s in melding.get("volgende_statussen", ())]
     melding_bijlagen = [
         [
             b
@@ -409,7 +533,6 @@ def melding_annuleren(request, id):
         {
             "form": form,
             "melding": melding,
-            "afhandel_reden_opties": afhandel_reden_opties,
             "bijlagen": bijlagen_flat,
             "actieve_taken": actieve_taken,
             "aantal_actieve_taken": len(actieve_taken),
@@ -647,9 +770,6 @@ def taak_annuleren(request, melding_uuid):
 @login_required
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def informatie_toevoegen(request, id):
-    melding = MeldingenService().get_melding(id)
-
-    tijdlijn_data = melding_naar_tijdlijn(melding)
     form = InformatieToevoegenForm()
     if request.POST:
         form = InformatieToevoegenForm(request.POST)
@@ -672,9 +792,8 @@ def informatie_toevoegen(request, id):
         request,
         "melding/part_informatie_toevoegen.html",
         {
-            "melding": melding,
+            "melding_uuid": id,
             "form": form,
-            "tijdlijn_data": tijdlijn_data,
         },
     )
 
@@ -756,6 +875,8 @@ def melding_aanmaken(request):
     initial_form = {
         "straatnaam": "Westerkade",
         "huisnummer": "29",
+        "huisletter": "A",
+        "toevoeging": "Bis",
         "wijknaam": "Rotterdam Centrum",
         "buurtnaam": "Nieuwe Werk",
         "rd_x": "4.47522318",
@@ -779,11 +900,9 @@ def melding_aanmaken(request):
         is_valid = form.is_valid()
         if is_valid:
             signaal_data = form.signaal_data(file_names)
-            logger.info(signaal_data)
             signaal_response = MeldingenService().signaal_aanmaken(
                 data=signaal_data,
             )
-            logger.info(signaal_response)
             return redirect(
                 reverse(
                     "melding_verzonden",
@@ -827,7 +946,6 @@ def msb_login(request):
                 "pwd": form.cleaned_data["wachtwoord"],
             }
             response = requests.post(url=url, data=login_data)
-            logger.info("msb_login=%s", response.status_code)
             if response.status_code == 200:
                 request.session["msb_token"] = response.json().get("result")
                 request.session["msb_base_url"] = msb_base_url
@@ -850,16 +968,11 @@ def msb_melding_zoeken(request):
         is_valid = form.is_valid()
         if is_valid:
             url = f"{request.session['msb_base_url']}/sbmob/api/msb/melding/{form.cleaned_data.get('msb_nummer')}"
-            logger.info("msb melding url=%s", url)
             response = requests.get(
                 url,
                 headers={
                     "Authorization": f"Bearer {request.session.get('msb_token')}",
                 },
-            )
-            logger.info(
-                "msb melding zoeken response.status_code=%s",
-                response.status_code,
             )
             if response.status_code == 200:
                 msb_data = response.json().get("result", {"test": "test"})
@@ -925,8 +1038,8 @@ def msb_importeer_melding(request):
         "onderwerpen": [
             f"{settings.MELDINGEN_URL}/api/v1/onderwerp/grofvuil-op-straat/"
         ],
-        "omschrijving_kort": msb_data.get("omschrijving", "")[:500],
-        "omschrijving": msb_data.get("aanvullendeInformatie", ""),
+        "omschrijving_melder": msb_data.get("omschrijving", "")[:500],
+        "aanvullende_informatie": msb_data.get("aanvullendeInformatie", "")[:5000],
         "meta": msb_data,
         "meta_uitgebreid": {},
         "adressen": [
@@ -959,9 +1072,7 @@ def msb_importeer_melding(request):
         logger.error("rd x=%s", msb_data.get("locatie", {}).get("x", 0))
         logger.error("rd y=%s", msb_data.get("locatie", {}).get("y", 0))
 
-    logger.info("signaal aanmaken data=%s", post_data)
     foto_urls = [f"{msb_base_url}{f.get('url')}" for f in msb_data.get("fotos", [])]
-    logger.info("msb foto urls=%s", foto_urls)
 
     post_data["bijlagen"] = []
     for f in foto_urls:
@@ -972,14 +1083,12 @@ def msb_importeer_melding(request):
             },
             stream=True,
         )
-        logger.info("foto_response.status_code=%s", f_response.status_code)
         b64 = _to_base64(f_response.content)
         post_data["bijlagen"].append({"bestand": b64})
 
-    signaal_response = MeldingenService().signaal_aanmaken(
+    MeldingenService().signaal_aanmaken(
         data=post_data,
     )
-    logger.info("signaal aanmaken response=%s", signaal_response)
     del request.session["msb_melding"]
     return render(
         request,
@@ -1053,7 +1162,6 @@ class StandaardExterneOmschrijvingVerwijderenView(
 def locatie_aanpassen(request, id):
     try:
         melding = MeldingenService().get_melding(id)
-        afhandel_reden_opties = [(s, s) for s in melding.get("volgende_statussen", ())]
 
         locaties_voor_melding = melding.get("locaties_voor_melding", [])
 
@@ -1106,7 +1214,6 @@ def locatie_aanpassen(request, id):
             {
                 "form": form,
                 "melding": melding,
-                "afhandel_reden_opties": afhandel_reden_opties,
                 "actieve_taken": actieve_taken,
                 "aantal_actieve_taken": len(actieve_taken),
             },

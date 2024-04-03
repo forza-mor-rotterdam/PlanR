@@ -58,16 +58,13 @@
                     </thead>
                     <tbody id="id_maincontent">
                         {% for melding in data.results %}
+                            {% get_bijlagen melding as bijlagen %}
                             <tr data-action="click->overview#navigate"
                                 data-overview-targeturl-param="{% url 'melding_detail' melding.uuid %}">
                                 <td width="80">
-                                    {% if melding.bijlage.afbeelding_verkleind_relative_url %}
+                                    {% if bijlagen %}
                                         <div class="container__thumbnail"
-                                             style="background-image: url('{{ melding.bijlage.afbeelding_verkleind_relative_url|mor_core_url }}')">
-                                        </div>
-                                    {% elif melding.bijlage.bestand_relative_url %}
-                                        <div class="container__thumbnail"
-                                             style="background-image: url('{{ melding.bijlage.bestand_relative_url|mor_core_url }}')">
+                                             style="background-image: url('{{ bijlagen.0.afbeelding_verkleind_relative_url|mor_core_url }}')">
                                         </div>
                                     {% else %}
                                         <div class="background-image"></div>
