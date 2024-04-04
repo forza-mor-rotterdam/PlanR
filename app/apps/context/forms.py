@@ -3,7 +3,7 @@ from urllib.parse import urlparse
 from apps.context.constanten import FILTER_KEYS, KOLOM_KEYS
 from apps.context.models import Context
 from apps.services.meldingen import MeldingenService
-from apps.services.onderwerpen import render_onderwerp
+from apps.services.onderwerpen import OnderwerpenService
 from django import forms
 from utils.forms import RadioSelect
 
@@ -128,20 +128,55 @@ class ContextAanpassenForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         instance = kwargs.get("instance")
         super().__init__(*args, **kwargs)
+
+        # Group onderwerpen by group_uuid
         onderwerp_alias_list = (
             MeldingenService().onderwerp_alias_list().get("results", [])
         )
+        onderwerpen_grouped = {}
+        for onderwerp_alias in onderwerp_alias_list:
+            onderwerp = OnderwerpenService().get_onderwerp(
+                onderwerp_alias.get("bron_url")
+            )
+            group_uuid = onderwerp.get("group_uuid")
+            group_name = OnderwerpenService().get_groep(group_uuid).get("name")
+            if group_uuid not in onderwerpen_grouped:
+                onderwerpen_grouped[group_uuid] = {"name": group_name, "items": []}
+            onderwerpen_grouped[group_uuid]["items"].append(
+                (onderwerp_alias.get("pk"), onderwerp.get("name", "Niet gevonden!"))
+            )
+
+        # Different way to get the groups using OnderwerpenService().get_onderwerpen()
+        # onderwerpen_grouped = {}
+        # onderwerpen = OnderwerpenService().get_onderwerpen()
+        # for onderwerp in onderwerpen:
+        #     group_uuid = onderwerp.get("group_uuid")
+        #     group_name = (
+        #         OnderwerpenService().get_groep(onderwerp.get("group_uuid")).get("name")
+        #     )
+        #     onderwerpen_grouped.setdefault(
+        #         group_uuid, {"name": group_name, "items": []}
+        #     )
+        #     onderwerpen_grouped[group_uuid]["items"].append(
+        #         (
+        #             onderwerp.get("pk"),
+        #             onderwerp.get("name", "Niet gevonden!"),
+        #         )
+        #     )
+
+        # Format onderwerpen choices
+        onderwerpen_choices = []
+        for group_uuid, group_data in onderwerpen_grouped.items():
+            group_name = group_data["name"]
+            group_items = sorted(group_data["items"], key=lambda x: x[1])
+            onderwerpen_choices.append(
+                (group_name, [(pk, label) for pk, label in group_items])
+            )
+
         taakapplicaties = MeldingenService().taakapplicaties().get("results", [])
         taaktypes = [tt for ta in taakapplicaties for tt in ta.get("taaktypes", [])]
-        self.fields["standaard_filters"].choices = [
-            (
-                onderwerp_alias.get("pk"),
-                render_onderwerp(
-                    onderwerp_alias.get("bron_url"), onderwerp_alias.get("pk")
-                ),
-            )
-            for onderwerp_alias in onderwerp_alias_list
-        ]
+        # Assign choices to standaard_filters field
+        self.fields["standaard_filters"].choices = onderwerpen_choices
         self.fields["taaktypes"].choices = [
             (
                 taaktype.get("_links", {}).get("self"),

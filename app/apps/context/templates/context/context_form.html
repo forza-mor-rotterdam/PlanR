@@ -52,6 +52,7 @@
                         <div class="form-control__with-helptext js-validation">{{ form.naam|render_rotterdam_formulier }}</div>
                         {{ form.filters|render_rotterdam_formulier }}
                         {{ form.kolommen|render_rotterdam_formulier }}
+                        {% comment %} @Remco @TODO Standaard filters below is for the onderwerpen, grouping of the onderwerpen isnt rendered correctly using render_rotterdam_formulier {% endcomment %}
                         {{ form.standaard_filters|render_rotterdam_formulier }}
                         {{ form.taaktypes|render_rotterdam_formulier }}
                         {{ form.urgentie|render_rotterdam_formulier }}
