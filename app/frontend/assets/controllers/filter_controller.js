@@ -23,7 +23,9 @@ export default class extends Controller {
         self.element.requestSubmit()
       })
       searchInput.addEventListener('blur', function () {
-        self.element.requestSubmit()
+        if (self.containerSearchTarget.querySelector(['input']).value.length === 0) {
+          self.element.requestSubmit()
+        }
       })
     }
 
