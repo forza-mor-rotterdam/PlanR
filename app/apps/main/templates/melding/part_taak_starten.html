@@ -29,9 +29,11 @@
                   data-controller="taakstartenformulier"
                   data-turbo-frame="_top"
                   data-taakstartenformulier-target="formTaakStarten"
+                  data-taakstartenformulier-taaktypes="{{ taaktype_choices|json_encode }}"
                   enctype="multipart/form-data"
                   novalidate>
                 {% csrf_token %}
+                <div class="form-control__with-helptext">{{ form.categorie|render_rotterdam_formulier }}</div>
                 <div class="form-control__with-helptext">
                     <div class="form-row">
                         <label>Selecteer een taak</label>
