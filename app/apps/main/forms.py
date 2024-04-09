@@ -216,8 +216,11 @@ class FilterForm(forms.Form):
         )
 
         for v in self.filter_velden:
+            if opties := v.get("opties"):
+                total_opties = self._count_options(opties)
+
             self.fields[v.get("key")] = MultipleChoiceField(
-                label=f"{v.get('naam')} ({v.get('aantal_actief')}/{len(v.get('opties', []))})",
+                label=f"{v.get('naam')} ({v.get('aantal_actief')}/{total_opties})",
                 widget=CheckboxSelectMultiple(
                     attrs={
                         "class": "list--form-check-input",
@@ -231,6 +234,15 @@ class FilterForm(forms.Form):
                 choices=v.get("opties", []),
                 required=False,
             )
+
+    def _count_options(self, opties):
+        count = 0
+        for option in opties:
+            if isinstance(option[1], (list, tuple)):
+                count += len(option[1])
+            else:
+                count += 1
+        return count
 
 
 class LoginForm(forms.Form):
@@ -866,9 +878,9 @@ class MeldingAanmakenForm(forms.Form):
         labels = {
             k: {
                 "label": v.label,
-                "choices": {c[0]: c[1] for c in v.choices}
-                if hasattr(v, "choices")
-                else None,
+                "choices": (
+                    {c[0]: c[1] for c in v.choices} if hasattr(v, "choices") else None
+                ),
             }
             for k, v in self.fields.items()
         }
