@@ -95,28 +95,8 @@ fieldset {
 
 .form-control {
     &:disabled,
-    &:read-only,
-    option[disabled],
-    option[read-only] {
+    option[disabled] {
         color: $text-muted;
-    }
-}
-
-.form-control[readonly],
-.form-select[readonly] {
-    background-color: $gray-tint01;
-    opacity: 1;
-    color: $gray-tint08;
-    ~ .form-check-label {
-        color: $gray-tint08;
-    }
-    &:checked {
-        border-color: $gray-tint08;
-    }
-
-    &:hover {
-        border: 1px solid #7c8b90 !important;
-        box-shadow: none !important;
     }
 }
 

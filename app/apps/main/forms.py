@@ -274,7 +274,10 @@ class TaakStartenForm(forms.Form):
         label="Categorie",
         required=False,
         widget=forms.Select(
-            attrs={"data-taakstartenformulier-target": "categorieField"}
+            attrs={
+                "data-taakstartenformulier-target": "categorieField",
+                "class": "form-select form-control",
+            }
         ),
     )
 
