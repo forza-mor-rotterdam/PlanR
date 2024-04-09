@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class BasisService:
     _api_base_url = None
-    _timeout: tuple[int, ...] = (5, 10)
+    _timeout: tuple[int, ...] = (10, 20)
     _api_path: str = "/api/v1"
 
     class BasisUrlFout(Exception):
