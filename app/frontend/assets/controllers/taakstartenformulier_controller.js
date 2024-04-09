@@ -11,7 +11,7 @@ let formData = null
 const defaultErrorMessage = 'Vul a.u.b. dit veld in.'
 
 export default class extends Controller {
-  static targets = ['formTaakStarten']
+  static targets = ['formTaakStarten', 'categorieField', 'taaktypeField']
 
   initializeSelect2() {
     $(this.formTaakStartenTarget.querySelector('.select2')).select2({
@@ -64,6 +64,46 @@ export default class extends Controller {
         errorList[0].scrollIntoView({ behavior: 'smooth' })
         event.preventDefault()
       }
+    })
+    this.handleTaaktypeChoices()
+  }
+
+  handleTaaktypeChoices() {
+    this.categorieFieldTarget.addEventListener('change', () => {
+      const categorie = this.categorieFieldTarget.value
+      const taaktypeField = this.taaktypeFieldTarget
+
+      // Clear previous options
+      taaktypeField.innerHTML = ''
+
+      // Add default option
+      const defaultOption = document.createElement('option')
+      defaultOption.textContent = 'Selecteer een taaktype'
+      defaultOption.value = ''
+      taaktypeField.appendChild(defaultOption)
+
+      // Add options based on selected categorie
+      const taaktypes = JSON.parse(form.dataset.taakstartenformulierTaaktypes)
+
+      taaktypes.forEach((categorieOptions) => {
+        const [category, options] = categorieOptions
+        const isMatchedCategory = !categorie || category === categorie
+
+        if (Array.isArray(options) && isMatchedCategory) {
+          const optgroup = document.createElement('optgroup')
+          optgroup.label = category
+
+          options.forEach((taaktype) => {
+            const [value, text] = taaktype
+            const option = document.createElement('option')
+            option.value = value
+            option.textContent = text
+            optgroup.appendChild(option)
+          })
+
+          taaktypeField.appendChild(optgroup)
+        }
+      })
     })
   }
 

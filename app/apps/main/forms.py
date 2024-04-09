@@ -270,8 +270,21 @@ class InformatieToevoegenForm(forms.Form):
 
 
 class TaakStartenForm(forms.Form):
+    categorie = forms.ChoiceField(
+        label="Categorie",
+        required=False,
+        widget=forms.Select(
+            attrs={"data-taakstartenformulier-target": "categorieField"}
+        ),
+    )
+
     taaktype = forms.ChoiceField(
-        widget=Select2Widget(attrs={"class": "select2"}),
+        widget=Select2Widget(
+            attrs={
+                "class": "select2",
+                "data-taakstartenformulier-target": "taaktypeField",
+            }
+        ),
         label="Taak",
         required=True,
     )
@@ -290,36 +303,11 @@ class TaakStartenForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        taaktypes = kwargs.pop("taaktypes", None)
+        taaktype_choices = kwargs.pop("taaktypes", None)
+        categorie_choices = kwargs.pop("categories", None)
         super().__init__(*args, **kwargs)
-
-        taaktype_categories = {}
-        for taaktype_url, taaktype_omschrijving in taaktypes:
-            categories = TaaktypeCategorie.objects.filter(
-                taaktypes__contains=[taaktype_url]
-            )
-            if categories.exists():
-                for category in categories:
-                    category_name = category.naam
-                    if category_name not in taaktype_categories:
-                        taaktype_categories[category_name] = []
-                    taaktype_categories[category_name].append(
-                        (taaktype_url, taaktype_omschrijving)
-                    )
-            else:
-                if "Overig" not in taaktype_categories:
-                    taaktype_categories["Overig"] = []
-                taaktype_categories["Overig"].append(
-                    (taaktype_url, taaktype_omschrijving)
-                )
-
-        choices = [("", "Selecteer een taak")]
-
-        for category_name, category_taaktypes in taaktype_categories.items():
-            optgroup = (category_name, category_taaktypes)
-            choices.append(optgroup)
-
-        self.fields["taaktype"].choices = choices
+        self.fields["taaktype"].choices = taaktype_choices
+        self.fields["categorie"].choices = categorie_choices
 
 
 class TaakAfrondenForm(forms.Form):
@@ -866,9 +854,9 @@ class MeldingAanmakenForm(forms.Form):
         labels = {
             k: {
                 "label": v.label,
-                "choices": {c[0]: c[1] for c in v.choices}
-                if hasattr(v, "choices")
-                else None,
+                "choices": (
+                    {c[0]: c[1] for c in v.choices} if hasattr(v, "choices") else None
+                ),
             }
             for k, v in self.fields.items()
         }

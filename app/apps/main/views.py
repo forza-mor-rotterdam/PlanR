@@ -659,11 +659,44 @@ def taak_starten(request, id):
     melding = MeldingenService().get_melding(id)
 
     taaktypes = get_taaktypes(melding, request.user)
-    form = TaakStartenForm(taaktypes=taaktypes)
+
+    taaktype_categories = {}
+    for taaktype_url, taaktype_omschrijving in taaktypes:
+        categories = TaaktypeCategorie.objects.filter(
+            taaktypes__contains=[taaktype_url]
+        )
+        if categories.exists():
+            for category in categories:
+                category_name = category.naam
+                if category_name not in taaktype_categories:
+                    taaktype_categories[category_name] = []
+                taaktype_categories[category_name].append(
+                    (taaktype_url, taaktype_omschrijving)
+                )
+        else:
+            if "Overig" not in taaktype_categories:
+                taaktype_categories["Overig"] = []
+            taaktype_categories["Overig"].append((taaktype_url, taaktype_omschrijving))
+
+    taaktype_choices = [("", "Selecteer een taaktype")]
+    for category_name, category_taaktypes in taaktype_categories.items():
+        optgroup = (category_name, category_taaktypes)
+        taaktype_choices.append(optgroup)
+
+    categorie_choices = [("", "Selecteer een categorie")]
+    for category_name in taaktype_categories.keys():
+        categorie_choices.append((category_name, category_name))
+
+    form = TaakStartenForm(taaktypes=taaktype_choices, categories=categorie_choices)
     if request.POST:
-        form = TaakStartenForm(request.POST, taaktypes=taaktypes)
+        taaktypes = get_taaktypes(melding, request.user)
+        categories = None
+        form = TaakStartenForm(
+            request.POST, taaktypes=taaktype_choices, categories=categorie_choices
+        )
         if form.is_valid():
             data = form.cleaned_data
+
             taaktypes_dict = {tt[0]: tt[1] for tt in taaktypes}
             MeldingenService().taak_aanmaken(
                 melding_uuid=id,
@@ -680,6 +713,8 @@ def taak_starten(request, id):
         {
             "form": form,
             "melding": melding,
+            "taaktype_choices": taaktype_choices,
+            "categorie_choices": categorie_choices,
         },
     )
 
