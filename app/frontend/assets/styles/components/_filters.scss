@@ -180,15 +180,25 @@
         .container__details-list {
             display: flex;
             flex-wrap: wrap;
+            min-width: 100%;
 
-            &.cols2 {
-                min-width: 520px;
+            @media (min-width: 550px) {
+                &.cols2,
+                &.cols3,
+                &.cols4 {
+                    min-width: 520px;
+                }
             }
-            &.cols3 {
-                min-width: 775px;
+            @media (min-width: 800px) {
+                &.cols3,
+                &.cols4 {
+                    min-width: 775px;
+                }
             }
-            &.cols4 {
-                min-width: 1100px;
+            @media (min-width: 1140px) {
+                &.cols4 {
+                    min-width: 1100px;
+                }
             }
 
             > details {
