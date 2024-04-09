@@ -4,7 +4,7 @@
 {% load rotterdam_formulier_html %}
 {% load vertaal from vertaal_tags %}
 {% load context_template from context_tags %}
-{% load slice_iterable from main_tags %}
+{% load slice_iterable python_any from main_tags %}
 {% load mor_core_url replace_n from main_tags %}
 {% load render_onderwerp get_bijlagen from melding_tags %}
 {% load json_encode from json_tags %}
@@ -259,16 +259,18 @@
                                                                     {% endif %}
                                                                     {% with aanvullende_vragen=signaal.aanvullende_vragen %}
                                                                         {% if aanvullende_vragen %}
-                                                                            {% for vraag in aanvullende_vragen %}
-                                                                                <li>
-                                                                                    <h3 class="h5">{{ vraag.question }}</h3>
-                                                                                    <p>
-                                                                                        {% for answer in vraag.answers %}
-                                                                                            {{ answer }}
-                                                                                            {% if not forloop.last %},{% endif %}
-                                                                                        {% endfor %}
-                                                                                    </p>
-                                                                                </li>
+                                                                            {% for qa in aanvullende_vragen %}
+                                                                                {% if qa.answers|python_any %}
+                                                                                    <li>
+                                                                                        <h3 class="h5">{{ qa.question }}</h3>
+                                                                                        <p>
+                                                                                            {% for answer in qa.answers %}
+                                                                                                {{ answer }}
+                                                                                                {% if not forloop.last %},{% endif %}
+                                                                                            {% endfor %}
+                                                                                        </p>
+                                                                                    </li>
+                                                                                {% endif %}
                                                                             {% endfor %}
                                                                         {% elif signaal.aanvullende_informatie %}
                                                                             <li>
@@ -350,16 +352,18 @@
                                                         {% endif %}
                                                         {% with aanvullende_vragen=melding.signalen_voor_melding.0.aanvullende_vragen %}
                                                             {% if aanvullende_vragen %}
-                                                                {% for vraag in aanvullende_vragen %}
-                                                                    <li>
-                                                                        <h3 class="h5">{{ vraag.question }}</h3>
-                                                                        <p>
-                                                                            {% for answer in vraag.answers %}
-                                                                                {{ answer }}
-                                                                                {% if not forloop.last %},{% endif %}
-                                                                            {% endfor %}
-                                                                        </p>
-                                                                    </li>
+                                                                {% for qa in aanvullende_vragen %}
+                                                                    {% if qa.answers|python_any %}
+                                                                        <li>
+                                                                            <h3 class="h5">{{ qa.question }}</h3>
+                                                                            <p>
+                                                                                {% for answer in qa.answers %}
+                                                                                    {{ answer }}
+                                                                                    {% if not forloop.last %},{% endif %}
+                                                                                {% endfor %}
+                                                                            </p>
+                                                                        </li>
+                                                                    {% endif %}
                                                                 {% endfor %}
                                                             {% elif melding.signalen_voor_melding.0.aanvullende_informatie %}
                                                                 <li>
