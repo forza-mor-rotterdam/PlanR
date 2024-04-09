@@ -622,6 +622,19 @@ textarea {
         }
     }
 
+    .select2-dropdown {
+        padding: 0;
+        .select2-search {
+            .select2-search__field {
+                background-image: url("../icons/search.svg");
+                background-repeat: no-repeat;
+                background-position: 10px center; /* Adjust the position as needed */
+                padding-left: 40px; /* Ensure there's enough padding for the icon */
+                min-height: 32px;
+            }
+        }
+    }
+
     .select2-selection--multiple {
         padding: 4px 0;
         .select2-search {

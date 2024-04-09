@@ -33,12 +33,7 @@
                   enctype="multipart/form-data"
                   novalidate>
                 {% csrf_token %}
-                <div class="form-control__with-helptext">
-                    <div class="form-row">
-                        <label>Selecteer een afdeling/categorie</label>
-                        <div>{{ form.categorie }}</div>
-                    </div>
-                </div>
+                <div class="form-control__with-helptext">{{ form.categorie|render_rotterdam_formulier }}</div>
                 <div class="form-control__with-helptext">
                     <div class="form-row">
                         <label>Selecteer een taak</label>
