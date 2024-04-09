@@ -45,8 +45,7 @@ def render_onderwerp_groepen(context):
         ]
         return sorted(onderwerpen_gegroepeerd, key=lambda x: x[0])
     except Exception as e:
-        print(f"Error onderwerp groep: {e}")
-
+        logger.error(f"Error onderwerp groep: {e}")
     return None
 
 
