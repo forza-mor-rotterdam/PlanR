@@ -520,9 +520,13 @@ CKEDITOR_UPLOAD_PATH = "uploads/"
 EMAIL_BEHEER = os.getenv("EMAIL_BEHEER", "ForzaMOR@rotterdam.nl")
 
 APP_ENV = os.getenv("APP_ENV", "productie")  # acceptatie/test/productie
-ONDERWERPEN_URL = os.getenv(
-    "ONDERWERPEN_URL",
-    "https://onderwerpen-acc.forzamor.nl"
-    if APP_ENV != "productie"
-    else "https://onderwerpen.forzamor.nl",
-)
+
+ONDERWERPEN_URL = os.getenv("ONDERWERPEN_URL", "https://onderwerpen.forzamor.nl")
+if APP_ENV != "productie":
+    ONDERWERPEN_URL = os.getenv(
+        "ONDERWERPEN_URL", "https://onderwerpen-acc.forzamor.nl"
+    )
+    if APP_ENV == "test":
+        ONDERWERPEN_URL = os.getenv(
+            "ONDERWERPEN_URL", "https://onderwerpen-test.forzamor.nl"
+        )
