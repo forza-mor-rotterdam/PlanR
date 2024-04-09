@@ -39,7 +39,6 @@
             display: flex;
             justify-content: space-between;
         }
-        margin: 32px 0;
 
         > * {
             flex: 1;
@@ -61,6 +60,10 @@
             justify-content: flex-end;
             gap: 1rem;
         }
+    }
+
+    > .container__flex {
+        margin: 32px 0;
     }
 
     table tbody {

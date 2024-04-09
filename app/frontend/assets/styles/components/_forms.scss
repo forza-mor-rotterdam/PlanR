@@ -307,8 +307,8 @@ textarea {
     }
 }
 
-.form-check-input,
-.form-radio-input {
+input.form-check-input,
+input.form-radio-input {
     @include form-check-input();
 }
 
