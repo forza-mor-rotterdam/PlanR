@@ -714,7 +714,6 @@ def taak_starten(request, id):
             "form": form,
             "melding": melding,
             "taaktype_choices": taaktype_choices,
-            "categorie_choices": categorie_choices,
         },
     )
 
