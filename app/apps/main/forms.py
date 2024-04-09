@@ -11,7 +11,7 @@ from apps.services.onderwerpen import render_onderwerp
 from django import forms
 from django.core.files.storage import default_storage
 from django.utils import timezone
-from django_select2.forms import Select2MultipleWidget, Select2Widget
+from django_select2.forms import Select2MultipleWidget
 from utils.rd_convert import rd_to_wgs
 
 logger = logging.getLogger(__name__)
@@ -279,14 +279,11 @@ class TaakStartenForm(forms.Form):
     )
 
     taaktype = forms.ChoiceField(
-        widget=Select2Widget(
-            attrs={
-                "class": "select2",
-                "data-taakstartenformulier-target": "taaktypeField",
-            }
-        ),
         label="Taak",
         required=True,
+        widget=forms.RadioSelect(
+            attrs={"data-taakstartenformulier-target": "taaktypeField"}
+        ),
     )
 
     bericht = forms.CharField(

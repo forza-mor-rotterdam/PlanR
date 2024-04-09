@@ -678,7 +678,7 @@ def taak_starten(request, id):
                 taaktype_categories["Overig"] = []
             taaktype_categories["Overig"].append((taaktype_url, taaktype_omschrijving))
 
-    taaktype_choices = [("", "Selecteer een taaktype")]
+    taaktype_choices = []
     for category_name, category_taaktypes in taaktype_categories.items():
         optgroup = (category_name, category_taaktypes)
         taaktype_choices.append(optgroup)
@@ -687,12 +687,12 @@ def taak_starten(request, id):
     for category_name in taaktype_categories.keys():
         categorie_choices.append((category_name, category_name))
 
-    form = TaakStartenForm(taaktypes=taaktype_choices, categories=categorie_choices)
+    form = TaakStartenForm(taaktypes=taaktypes, categories=categorie_choices)
     if request.POST:
         taaktypes = get_taaktypes(melding, request.user)
         categories = None
         form = TaakStartenForm(
-            request.POST, taaktypes=taaktype_choices, categories=categorie_choices
+            request.POST, taaktypes=taaktypes, categories=categorie_choices
         )
         if form.is_valid():
             data = form.cleaned_data

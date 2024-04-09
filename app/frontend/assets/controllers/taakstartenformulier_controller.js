@@ -65,45 +65,65 @@ export default class extends Controller {
         event.preventDefault()
       }
     })
-    this.handleTaaktypeChoices()
+    this.handleTaaktypeChoicesRadio()
+  }
+  hideRadioButton = (radioButton) => {
+    radioButton.style.display = 'none'
+    const label = radioButton.closest('label')
+    if (label) {
+      label.style.display = 'none'
+    }
   }
 
-  handleTaaktypeChoices() {
+  showRadioButton = (radioButton) => {
+    radioButton.style.display = 'block'
+    const label = radioButton.closest('label')
+    if (label) {
+      label.style.display = 'inline-block'
+    }
+  }
+
+  toggleRadioButtons = (taaktypeField, taaktypeRadioButtons, taaktypes, categorie) => {
+    let hasMatchingOptions = false
+    taaktypeRadioButtons.forEach((radioButton) => {
+      const value = radioButton.value
+      const [matchingOption] =
+        // eslint-disable-next-line no-unused-vars
+        taaktypes.find(([_, options]) => {
+          return options.some(([optionValue]) => optionValue === value)
+        }) || []
+      if (matchingOption && matchingOption === categorie) {
+        this.showRadioButton(radioButton)
+        hasMatchingOptions = true
+      } else {
+        this.hideRadioButton(radioButton)
+      }
+    })
+    // Show the form field if there are matching options, otherwise hide it
+    taaktypeField.style.display = hasMatchingOptions ? 'block' : 'none'
+  }
+
+  handleTaaktypeChoicesRadio = () => {
+    const taaktypeField = this.taaktypeFieldTarget
+    const taaktypeRadioButtons = this.element.querySelectorAll(
+      'input[type="radio"][data-taakstartenformulier-target="taaktypeField"]'
+    )
+
+    // Hide the entire form field initially
+    taaktypeField.style.display = 'none'
+    taaktypeRadioButtons.forEach(this.hideRadioButton)
+    const taaktypes = JSON.parse(this.formTaakStartenTarget.dataset.taakstartenformulierTaaktypes)
+
     this.categorieFieldTarget.addEventListener('change', () => {
       const categorie = this.categorieFieldTarget.value
-      const taaktypeField = this.taaktypeFieldTarget
-
-      // Clear previous options
-      taaktypeField.innerHTML = ''
-
-      // Add default option
-      const defaultOption = document.createElement('option')
-      defaultOption.textContent = 'Selecteer een taaktype'
-      defaultOption.value = ''
-      taaktypeField.appendChild(defaultOption)
-
-      // Add options based on selected categorie
-      const taaktypes = JSON.parse(form.dataset.taakstartenformulierTaaktypes)
-
-      taaktypes.forEach((categorieOptions) => {
-        const [category, options] = categorieOptions
-        const isMatchedCategory = !categorie || category === categorie
-
-        if (Array.isArray(options) && isMatchedCategory) {
-          const optgroup = document.createElement('optgroup')
-          optgroup.label = category
-
-          options.forEach((taaktype) => {
-            const [value, text] = taaktype
-            const option = document.createElement('option')
-            option.value = value
-            option.textContent = text
-            optgroup.appendChild(option)
-          })
-
-          taaktypeField.appendChild(optgroup)
-        }
-      })
+      if (!categorie) {
+        // Hide the form field and its options when no category is selected
+        taaktypeField.style.display = 'none'
+        taaktypeRadioButtons.forEach(this.hideRadioButton)
+        return
+      }
+      // Toggle radio buttons based on selected category
+      this.toggleRadioButtons(taaktypeField, taaktypeRadioButtons, taaktypes, categorie)
     })
   }
 
