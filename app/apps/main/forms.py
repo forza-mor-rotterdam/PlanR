@@ -271,12 +271,11 @@ class InformatieToevoegenForm(forms.Form):
 
 class TaakStartenForm(forms.Form):
     categorie = forms.ChoiceField(
-        label="Categorie",
+        label="Filter op afdeling",
         required=False,
         widget=forms.Select(
             attrs={
                 "data-taakstartenformulier-target": "categorieField",
-                "class": "form-select form-control",
             }
         ),
     )
