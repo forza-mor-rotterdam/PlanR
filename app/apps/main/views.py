@@ -658,45 +658,40 @@ def melding_spoed_veranderen(request, id):
 def taak_starten(request, id):
     melding = MeldingenService().get_melding(id)
 
+    # Get task types for the user
     taaktypes = get_taaktypes(melding, request.user)
 
+    # Categorize task types
     taaktype_categories = {}
     for taaktype_url, taaktype_omschrijving in taaktypes:
         categories = TaaktypeCategorie.objects.filter(
             taaktypes__contains=[taaktype_url]
         )
-        if categories.exists():
-            for category in categories:
-                category_name = category.naam
-                if category_name not in taaktype_categories:
-                    taaktype_categories[category_name] = []
-                taaktype_categories[category_name].append(
-                    (taaktype_url, taaktype_omschrijving)
-                )
-        else:
-            if "Overig" not in taaktype_categories:
-                taaktype_categories["Overig"] = []
-            taaktype_categories["Overig"].append((taaktype_url, taaktype_omschrijving))
+        category_name = categories.first().naam if categories.exists() else "Overig"
+        taaktype_categories.setdefault(category_name, []).append(
+            (taaktype_url, taaktype_omschrijving)
+        )
 
-    taaktype_choices = [("", "Selecteer een taak")]
-    for category_name, category_taaktypes in taaktype_categories.items():
-        optgroup = (category_name, category_taaktypes)
-        taaktype_choices.append(optgroup)
+    # Prepare task type choices for form
+    taaktype_choices = [
+        (category_name, category_taaktypes)
+        for category_name, category_taaktypes in taaktype_categories.items()
+    ]
+    taaktype_choices.insert(0, ("", "Selecteer een taak"))
 
-    categorie_choices = [("", "--")]
-    for category_name in taaktype_categories.keys():
-        categorie_choices.append((category_name, category_name))
+    # Prepare category choices for form
+    categorie_choices = [
+        (category_name, category_name) for category_name in taaktype_categories.keys()
+    ]
+    categorie_choices.insert(0, ("", "--"))
 
     form = TaakStartenForm(taaktypes=taaktype_choices, categories=categorie_choices)
     if request.POST:
-        taaktypes = get_taaktypes(melding, request.user)
-        categories = None
         form = TaakStartenForm(
             request.POST, taaktypes=taaktype_choices, categories=categorie_choices
         )
         if form.is_valid():
             data = form.cleaned_data
-
             taaktypes_dict = {tt[0]: tt[1] for tt in taaktypes}
             MeldingenService().taak_aanmaken(
                 melding_uuid=id,
