@@ -78,7 +78,7 @@ export default class extends Controller {
 
       // Add default option
       const defaultOption = document.createElement('option')
-      defaultOption.textContent = 'Selecteer een taaktype'
+      defaultOption.textContent = 'Selecteer een taak'
       defaultOption.value = ''
       taaktypeField.appendChild(defaultOption)
 

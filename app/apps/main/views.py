@@ -678,7 +678,7 @@ def taak_starten(request, id):
                 taaktype_categories["Overig"] = []
             taaktype_categories["Overig"].append((taaktype_url, taaktype_omschrijving))
 
-    taaktype_choices = [("", "Selecteer een taaktype")]
+    taaktype_choices = [("", "Selecteer een taak")]
     for category_name, category_taaktypes in taaktype_categories.items():
         optgroup = (category_name, category_taaktypes)
         taaktype_choices.append(optgroup)
