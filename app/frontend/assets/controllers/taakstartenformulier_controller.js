@@ -68,19 +68,12 @@ export default class extends Controller {
     this.handleTaaktypeChoicesRadio()
   }
   hideRadioButton = (radioButton) => {
-    radioButton.style.display = 'none'
-    const label = radioButton.closest('label')
-    if (label) {
-      label.style.display = 'none'
-    }
+    radioButton.closest('li').style.display = 'none'
+    radioButton.checked = false
   }
 
   showRadioButton = (radioButton) => {
-    radioButton.style.display = 'block'
-    const label = radioButton.closest('label')
-    if (label) {
-      label.style.display = 'inline-block'
-    }
+    radioButton.closest('li').style.display = 'block'
   }
 
   toggleRadioButtons = (taaktypeField, taaktypeRadioButtons, taaktypes, categorie) => {
@@ -101,10 +94,8 @@ export default class extends Controller {
 
   handleTaaktypeChoicesRadio = () => {
     const taaktypeField = this.taaktypeFieldTarget
-    const taaktypeRadioButtons = this.element.querySelectorAll(
-      'input[type="radio"][data-taakstartenformulier-target="taaktypeField"]'
-    )
-
+    const taaktypeRadioButtons = this.element.querySelectorAll('input[type="radio"]')
+    console.log('taaktypeRadioButtons', taaktypeRadioButtons)
     // Hide the entire form field initially
     taaktypeField.style.display = 'none'
     taaktypeRadioButtons.forEach(this.hideRadioButton)
@@ -115,8 +106,10 @@ export default class extends Controller {
       if (!categorie) {
         // Hide the form field and its options when no category is selected
         taaktypeField.style.display = 'none'
+        // return
+      } else {
+        taaktypeField.style.display = 'inline-block'
         taaktypeRadioButtons.forEach(this.hideRadioButton)
-        return
       }
       // Toggle radio buttons based on selected category
       this.toggleRadioButtons(taaktypeField, taaktypeRadioButtons, taaktypes, categorie)

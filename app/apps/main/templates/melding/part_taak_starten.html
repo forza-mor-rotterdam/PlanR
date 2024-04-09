@@ -11,7 +11,7 @@
     {% render_bundle 'app' 'js' %}
 {% endblock javascripts %}
 <turbo-frame id="melding_actie_form">
-<div class="modal-dialog modal-dialog--small">
+<div class="modal-dialog modal-dialog--wide">
     <div class="modal-content">
         <div class="modal-header">
             <h1>
@@ -25,7 +25,7 @@
         <div class="modal-body">
             <form action="{% url 'taak_starten' melding.uuid %}"
                   method="post"
-                  class="form--horizontal"
+                  class=""
                   data-controller="taakstartenformulier"
                   data-turbo-frame="_top"
                   data-taakstartenformulier-target="formTaakStarten"
@@ -33,32 +33,35 @@
                   enctype="multipart/form-data"
                   novalidate>
                 {% csrf_token %}
-                <div class="form-control__with-helptext">
+                <div class="form-control__with-helptext margin--bottom">
                     <div class="form-row">
-                        <label>Selecteer een afdeling/categorie</label>
+                        <label>Categorie</label>
                         <div>{{ form.categorie }}</div>
                     </div>
                 </div>
-                <div class="form-control__with-helptext">
+                <div class="form-control__with-helptext container__form-check-cols3"
+                     data-taakstartenformulier-target="taaktypeField">
                     <div class="form-row">
-                        <label>Selecteer een taak</label>
-                        <div>
+                        <label>Taak</label>
+                        <div class="wrapper__columns">
                             {{ form.taaktype }}
                             <p class="help-block invalid-text no-margin"></p>
                         </div>
                     </div>
                 </div>
                 <div class="form-control__with-helptext">{{ form.bericht|render_rotterdam_formulier }}</div>
-                <div class="form-row btn-row">
-                    <button type="reset"
-                            class="btn btn-tertiary"
-                            data-action="detail#closeModal"
-                            data-detail-target="modalAfhandelen">
-                        <span>Annuleren</span>
-                    </button>
-                    <button type="submit" class="btn btn-action">
-                        <span>Start taak</span>
-                    </button>
+                <div class="form--horizontal">
+                    <div class="form-row btn-row">
+                        <button type="reset"
+                                class="btn btn-tertiary"
+                                data-action="detail#closeModal"
+                                data-detail-target="modalAfhandelen">
+                            <span>Annuleren</span>
+                        </button>
+                        <button type="submit" class="btn btn-action">
+                            <span>Start taak</span>
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>

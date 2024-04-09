@@ -65,6 +65,9 @@ body.show-modal--first-filter {
         &--small {
             max-width: map-get($container-max-widths, md);
         }
+        &--wide {
+            max-width: 100%;
+        }
     }
 
     &-content {

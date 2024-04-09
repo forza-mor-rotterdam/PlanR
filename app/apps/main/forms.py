@@ -284,9 +284,7 @@ class TaakStartenForm(forms.Form):
     taaktype = forms.ChoiceField(
         label="Taak",
         required=True,
-        widget=forms.RadioSelect(
-            attrs={"data-taakstartenformulier-target": "taaktypeField"}
-        ),
+        widget=forms.RadioSelect(attrs={"class": "form-check-input"}),
     )
 
     bericht = forms.CharField(
