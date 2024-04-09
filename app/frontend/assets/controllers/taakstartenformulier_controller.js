@@ -84,7 +84,6 @@ export default class extends Controller {
   }
 
   toggleRadioButtons = (taaktypeField, taaktypeRadioButtons, taaktypes, categorie) => {
-    let hasMatchingOptions = false
     taaktypeRadioButtons.forEach((radioButton) => {
       const value = radioButton.value
       const [matchingOption] =
@@ -94,13 +93,10 @@ export default class extends Controller {
         }) || []
       if (matchingOption && matchingOption === categorie) {
         this.showRadioButton(radioButton)
-        hasMatchingOptions = true
       } else {
         this.hideRadioButton(radioButton)
       }
     })
-    // Show the form field if there are matching options, otherwise hide it
-    taaktypeField.style.display = hasMatchingOptions ? 'block' : 'none'
   }
 
   handleTaaktypeChoicesRadio = () => {
