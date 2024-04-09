@@ -683,7 +683,7 @@ def taak_starten(request, id):
         optgroup = (category_name, category_taaktypes)
         taaktype_choices.append(optgroup)
 
-    categorie_choices = [("", "--")]
+    categorie_choices = [("", "Selecteer een afdeling")]
     for category_name in taaktype_categories.keys():
         categorie_choices.append((category_name, category_name))
 
