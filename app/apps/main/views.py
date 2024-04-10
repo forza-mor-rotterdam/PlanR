@@ -254,23 +254,18 @@ def melding_detail(request, id):
         if form.is_valid():
             opmerking = form.cleaned_data.get("opmerking")
             bijlagen = request.FILES.getlist("bijlagen_extra")
+            bijlagen_base64 = []
+            for f in bijlagen:
+                file_name = default_storage.save(f.name, f)
+                bijlagen_base64.append({"bestand": to_base64(file_name)})
 
-            # Check if at least one field is filled
-            if not opmerking and not bijlagen:
-                form.add_error(None, "Please fill in at least one field")
-            else:
-                bijlagen_base64 = []
-                for f in bijlagen:
-                    file_name = default_storage.save(f.name, f)
-                    bijlagen_base64.append({"bestand": to_base64(file_name)})
-
-                MeldingenService().melding_gebeurtenis_toevoegen(
-                    id,
-                    bijlagen=bijlagen_base64,
-                    omschrijving_intern=opmerking,
-                    gebruiker=request.user.email,
-                )
-                return redirect("melding_detail", id=id)
+            MeldingenService().melding_gebeurtenis_toevoegen(
+                id,
+                bijlagen=bijlagen_base64,
+                omschrijving_intern=opmerking,
+                gebruiker=request.user.email,
+            )
+            return redirect("melding_detail", id=id)
     aantal_actieve_taken = len(
         [
             to
@@ -811,23 +806,18 @@ def informatie_toevoegen(request, id):
         if form.is_valid():
             opmerking = form.cleaned_data.get("opmerking")
             bijlagen = request.FILES.getlist("bijlagen_extra")
+            bijlagen_base64 = []
+            for f in bijlagen:
+                file_name = default_storage.save(f.name, f)
+                bijlagen_base64.append({"bestand": to_base64(file_name)})
 
-            # Check if at least one field is filled
-            if not opmerking and not bijlagen:
-                form.add_error(None, "Please fill in at least one field")
-            else:
-                bijlagen_base64 = []
-                for f in bijlagen:
-                    file_name = default_storage.save(f.name, f)
-                    bijlagen_base64.append({"bestand": to_base64(file_name)})
-
-                MeldingenService().melding_gebeurtenis_toevoegen(
-                    id,
-                    bijlagen=bijlagen_base64,
-                    omschrijving_intern=opmerking,
-                    gebruiker=request.user.email,
-                )
-                return redirect("melding_detail", id=id)
+            MeldingenService().melding_gebeurtenis_toevoegen(
+                id,
+                bijlagen=bijlagen_base64,
+                omschrijving_intern=opmerking,
+                gebruiker=request.user.email,
+            )
+            return redirect("melding_detail", id=id)
     return render(
         request,
         "melding/part_informatie_toevoegen.html",
