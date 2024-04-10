@@ -12,6 +12,13 @@
                   enctype="multipart/form-data"
                   data-turbo-frame="_top">
                 {% csrf_token %}
+                error: {{ error }}
+                form errors: {{ form.errors }}
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <strong>Error:</strong> {{ form.errors }}
+                    </div>
+                {% endif %}
                 {{ form.opmerking|render_rotterdam_formulier }}
                 <div data-controller="bijlagen">{{ form.bijlagen_extra|render_rotterdam_formulier }}</div>
                 <div class="form-row">
