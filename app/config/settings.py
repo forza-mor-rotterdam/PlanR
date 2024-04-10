@@ -163,6 +163,9 @@ CELERY_TASK_TRACK_STARTED = True
 CELERY_RESULT_BACKEND = "django-db"
 CELERY_TASK_TIME_LIMIT = 30 * 60
 CELERYBEAT_SCHEDULE = {}
+worker_concurrency = 2
+worker_max_tasks_per_child = 20
+worker_max_memory_per_child = 200000
 
 SITE_ID = 1
 SITE_NAME = os.getenv("SITE_NAME", "PlanR")
