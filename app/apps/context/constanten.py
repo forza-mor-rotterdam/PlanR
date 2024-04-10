@@ -207,7 +207,7 @@ class MeldingIdKolom(StandaardKolom):
     def td_inhoud(self):
         uuid = string_based_lookup(self.context, "melding.uuid")
         return mark_safe(
-            f"<a href='./{uuid}' data-turbo-action='advance'>{self.td_label()}</a>"
+            f"<a href='./{uuid}' data-turbo-action='advance' data-turbo-prefetch='false'>{self.td_label()}</a>"
         )
 
 
