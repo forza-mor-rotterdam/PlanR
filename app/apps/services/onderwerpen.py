@@ -40,10 +40,10 @@ def render_onderwerp_groepen(context):
             )
 
         onderwerpen_gegroepeerd = [
-            [info["naam"], sorted(info["items"], key=lambda b: b[1].get("label"))]
+            [info["naam"], sorted(info["items"], key=lambda b: b[1].get("label") or "")]
             for groep_uuid, info in groep_uuids.items()
         ]
-        return sorted(onderwerpen_gegroepeerd, key=lambda x: x[0])
+        return sorted(onderwerpen_gegroepeerd, key=lambda x: x[0] or "")
     except Exception as e:
         logger.error(f"Error onderwerp groep: {e}")
     return None
