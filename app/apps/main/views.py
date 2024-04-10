@@ -821,7 +821,7 @@ def informatie_toevoegen(request, id):
                     omschrijving_intern=opmerking,
                     gebruiker=request.user.email,
                 )
-                return redirect(request.path)  # Redirect to the same page
+                return redirect("melding_detail", id=id)
     return render(
         request,
         "melding/part_informatie_toevoegen.html",
