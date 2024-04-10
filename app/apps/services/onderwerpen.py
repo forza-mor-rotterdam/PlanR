@@ -22,9 +22,17 @@ def render_onderwerp_groepen(context):
             onderwerp_url = value[0]
             onderwerp_data = OnderwerpenService().get_onderwerp(onderwerp_url)
             onderwerp_group_uuid = onderwerp_data.get("group_uuid")
+            if not onderwerp_group_uuid:
+                logger.warning(
+                    f"No onderwerp_group_uuid for onderwerp url: {onderwerp_url}"
+                )
             groep_naam = (
                 OnderwerpenService().get_groep(onderwerp_group_uuid).get("name")
             )
+            if not groep_naam:
+                logger.warning(
+                    f"No groep_naam for onderwerp url: {onderwerp_url} and group_uuid: {onderwerp_group_uuid}"
+                )
 
             if onderwerp_group_uuid not in groep_uuids:
                 groep_uuids[onderwerp_group_uuid] = {"naam": groep_naam, "items": []}
@@ -40,12 +48,16 @@ def render_onderwerp_groepen(context):
             )
 
         onderwerpen_gegroepeerd = [
-            [info["naam"], sorted(info["items"], key=lambda b: b[1].get("label") or "")]
+            [info["naam"], sorted(info["items"], key=lambda b: b[1].get("label"))]
             for groep_uuid, info in groep_uuids.items()
         ]
-        return sorted(onderwerpen_gegroepeerd, key=lambda x: x[0] or "")
+        return sorted(onderwerpen_gegroepeerd, key=lambda x: x[0])
     except Exception as e:
-        logger.error(f"Error onderwerp groep: {e}")
+        logger.error(
+            f"Error onderwerp groep: {e}. Onderwerp_url: {onderwerp_url if onderwerp_url else 'none'}, onderwerp_group_uuid: {onderwerp_group_uuid if onderwerp_group_uuid else 'none'}"
+        )
+        if groep_uuids:
+            logger.error(f"Groep_uuids: {groep_uuids}")
     return None
 
 
