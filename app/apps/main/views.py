@@ -249,22 +249,28 @@ def melding_detail(request, id):
     bijlagen_flat = [b for bl in melding_bijlagen for b in bl]
     form = InformatieToevoegenForm()
     overview_querystring = request.session.get("overview_querystring", "")
-    if request.POST:
-        form = InformatieToevoegenForm(request.POST)
+    if request.method == "POST":
+        form = InformatieToevoegenForm(request.POST, request.FILES)
         if form.is_valid():
-            bijlagen = request.FILES.getlist("bijlagen", [])
-            bijlagen_base64 = []
-            for f in bijlagen:
-                file_name = default_storage.save(f.name, f)
-                bijlagen_base64.append({"bestand": to_base64(file_name)})
+            opmerking = form.cleaned_data.get("opmerking")
+            bijlagen = request.FILES.getlist("bijlagen_extra")
 
-            MeldingenService().melding_status_aanpassen(
-                id,
-                omschrijving_intern=form.cleaned_data.get("opmerking"),
-                bijlagen=bijlagen_base64,
-                gebruiker=request.user.email,
-            )
-            return redirect("melding_detail", id=id)
+            # Check if at least one field is filled
+            if not opmerking and not bijlagen:
+                form.add_error(None, "Please fill in at least one field")
+            else:
+                bijlagen_base64 = []
+                for f in bijlagen:
+                    file_name = default_storage.save(f.name, f)
+                    bijlagen_base64.append({"bestand": to_base64(file_name)})
+
+                MeldingenService().melding_gebeurtenis_toevoegen(
+                    id,
+                    bijlagen=bijlagen_base64,
+                    omschrijving_intern=opmerking,
+                    gebruiker=request.user.email,
+                )
+                return redirect("melding_detail", id=id)
     aantal_actieve_taken = len(
         [
             to
