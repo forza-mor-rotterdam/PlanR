@@ -249,19 +249,20 @@ def melding_detail(request, id):
     bijlagen_flat = [b for bl in melding_bijlagen for b in bl]
     form = InformatieToevoegenForm()
     overview_querystring = request.session.get("overview_querystring", "")
-    if request.POST:
-        form = InformatieToevoegenForm(request.POST)
+    if request.method == "POST":
+        form = InformatieToevoegenForm(request.POST, request.FILES)
         if form.is_valid():
-            bijlagen = request.FILES.getlist("bijlagen", [])
+            opmerking = form.cleaned_data.get("opmerking")
+            bijlagen = request.FILES.getlist("bijlagen_extra")
             bijlagen_base64 = []
             for f in bijlagen:
                 file_name = default_storage.save(f.name, f)
                 bijlagen_base64.append({"bestand": to_base64(file_name)})
 
-            MeldingenService().melding_status_aanpassen(
+            MeldingenService().melding_gebeurtenis_toevoegen(
                 id,
-                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
                 bijlagen=bijlagen_base64,
+                omschrijving_intern=opmerking,
                 gebruiker=request.user.email,
             )
             return redirect("melding_detail", id=id)
@@ -800,10 +801,11 @@ def taak_annuleren(request, melding_uuid):
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def informatie_toevoegen(request, id):
     form = InformatieToevoegenForm()
-    if request.POST:
-        form = InformatieToevoegenForm(request.POST)
+    if request.method == "POST":
+        form = InformatieToevoegenForm(request.POST, request.FILES)
         if form.is_valid():
-            bijlagen = request.FILES.getlist("bijlagen_extra", [])
+            opmerking = form.cleaned_data.get("opmerking")
+            bijlagen = request.FILES.getlist("bijlagen_extra")
             bijlagen_base64 = []
             for f in bijlagen:
                 file_name = default_storage.save(f.name, f)
@@ -812,11 +814,10 @@ def informatie_toevoegen(request, id):
             MeldingenService().melding_gebeurtenis_toevoegen(
                 id,
                 bijlagen=bijlagen_base64,
-                omschrijving_intern=form.cleaned_data.get("opmerking"),
+                omschrijving_intern=opmerking,
                 gebruiker=request.user.email,
             )
             return redirect("melding_detail", id=id)
-
     return render(
         request,
         "melding/part_informatie_toevoegen.html",
