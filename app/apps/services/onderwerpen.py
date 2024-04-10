@@ -22,18 +22,9 @@ def render_onderwerp_groepen(context):
             onderwerp_url = value[0]
             onderwerp_data = OnderwerpenService().get_onderwerp(onderwerp_url)
             onderwerp_group_uuid = onderwerp_data.get("group_uuid")
-            if not onderwerp_group_uuid:
-                logger.warning(
-                    f"No onderwerp_group_uuid for onderwerp url: {onderwerp_url}"
-                )
             groep_naam = (
-                OnderwerpenService().get_groep(onderwerp_group_uuid).get("name")
+                OnderwerpenService().get_groep(onderwerp_group_uuid).get("name", "")
             )
-            if not groep_naam:
-                logger.warning(
-                    f"No groep_naam for onderwerp url: {onderwerp_url} and group_uuid: {onderwerp_group_uuid}"
-                )
-
             if onderwerp_group_uuid not in groep_uuids:
                 groep_uuids[onderwerp_group_uuid] = {"naam": groep_naam, "items": []}
 
@@ -53,11 +44,7 @@ def render_onderwerp_groepen(context):
         ]
         return sorted(onderwerpen_gegroepeerd, key=lambda x: x[0])
     except Exception as e:
-        logger.error(
-            f"Error onderwerp groep: {e}. Onderwerp_url: {onderwerp_url if onderwerp_url else 'none'}, onderwerp_group_uuid: {onderwerp_group_uuid if onderwerp_group_uuid else 'none'}"
-        )
-        if groep_uuids:
-            logger.error(f"Groep_uuids: {groep_uuids}")
+        logger.error(f"Error onderwerp groep: {e}.")
     return None
 
 
@@ -84,6 +71,6 @@ class OnderwerpenService(BasisService):
         )
         if not onderwerp_groep.get("name"):
             logger.error(
-                f"Onderwerp_groep has no name: {onderwerp_groep}. Groep url: {url}, settings.ONDERWERPEN_URL: {settings.ONDERWERPEN_URL}"
+                f"Onderwerp_groep not found: {onderwerp_groep}. Groep url: {url}."
             )
         return onderwerp_groep
