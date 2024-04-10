@@ -76,9 +76,14 @@ class OnderwerpenService(BasisService):
         return all_onderwerpen
 
     def get_groep(self, groep_uuid):
+        url = f"{settings.ONDERWERPEN_URL}/api/v1/group/{groep_uuid}"
         onderwerp_groep = self.do_request(
-            f"{settings.ONDERWERPEN_URL}/api/v1/group/{groep_uuid}",
+            url,
             cache_timeout=120,
             raw_response=False,
         )
+        if not onderwerp_groep.get("name"):
+            logger.error(
+                f"Onderwerp_groep has no name: {onderwerp_groep}. Groep url: {url}, settings.ONDERWERPEN_URL: {settings.ONDERWERPEN_URL}"
+            )
         return onderwerp_groep
