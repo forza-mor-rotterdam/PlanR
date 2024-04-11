@@ -1,7 +1,11 @@
 import string
 
 from apps.main.constanten import VERTALINGEN
-from apps.services.onderwerpen import render_onderwerp
+from apps.services.onderwerpen import (
+    OnderwerpenService,
+    render_onderwerp,
+    render_onderwerp_groepen,
+)
 from django.http import QueryDict
 from django.template.loader import get_template
 from django.urls import reverse
@@ -203,7 +207,7 @@ class MeldingIdKolom(StandaardKolom):
     def td_inhoud(self):
         uuid = string_based_lookup(self.context, "melding.uuid")
         return mark_safe(
-            f"<a href='./{uuid}' data-turbo-action='advance'>{self.td_label()}</a>"
+            f"<a href='./{uuid}' data-turbo-action='advance' data-turbo-prefetch='false'>{self.td_label()}</a>"
         )
 
 
@@ -430,11 +434,29 @@ class BegraafplaatsFilter(StandaardFilter):
 
 class OnderwerpFilter(StandaardFilter):
     _key = "onderwerp"
+    _group = True
 
     def optie_label(self, optie_data):
         if len(optie_data) < 2:
             return optie_data
         return render_onderwerp(optie_data[0], optie_data[1])
+
+    def opties(self):
+        if self._group:
+            groups = render_onderwerp_groepen(self.context)
+            if groups:
+                return groups
+        opties = [
+            [
+                k,
+                {
+                    "label": self.optie_label(v),
+                    "item_count": v[1],
+                },
+            ]
+            for k, v in self.context.items()
+        ]
+        return opties
 
 
 class WijkFilter(StandaardFilter):

@@ -78,3 +78,8 @@ def to_timestamp(value):
         return int(value.timestamp())
     except Exception:
         print("No datatime instance")
+
+
+@register.filter(name="python_any")
+def python_any(values):
+    return any(values)

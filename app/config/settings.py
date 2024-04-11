@@ -163,6 +163,9 @@ CELERY_TASK_TRACK_STARTED = True
 CELERY_RESULT_BACKEND = "django-db"
 CELERY_TASK_TIME_LIMIT = 30 * 60
 CELERYBEAT_SCHEDULE = {}
+CELERY_WORKER_CONCURRENCY = 2
+CELERY_WORKER_MAX_TASKS_PER_CHILD = 20
+CELERY_WORKER_MAX_MEMORY_PER_CHILD = 200000
 
 SITE_ID = 1
 SITE_NAME = os.getenv("SITE_NAME", "PlanR")
@@ -520,3 +523,9 @@ CKEDITOR_UPLOAD_PATH = "uploads/"
 EMAIL_BEHEER = os.getenv("EMAIL_BEHEER", "ForzaMOR@rotterdam.nl")
 
 APP_ENV = os.getenv("APP_ENV", "productie")  # acceptatie/test/productie
+ONDERWERPEN_URL = os.getenv(
+    "ONDERWERPEN_URL",
+    "https://onderwerpen-acc.forzamor.nl"
+    if APP_ENV != "productie"
+    else "https://onderwerpen.forzamor.nl",
+)

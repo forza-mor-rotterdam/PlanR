@@ -180,7 +180,26 @@
         .container__details-list {
             display: flex;
             flex-wrap: wrap;
-            min-width: 1100px;
+            min-width: 100%;
+
+            @media (min-width: 550px) {
+                &.cols2,
+                &.cols3,
+                &.cols4 {
+                    min-width: 520px;
+                }
+            }
+            @media (min-width: 800px) {
+                &.cols3,
+                &.cols4 {
+                    min-width: 775px;
+                }
+            }
+            @media (min-width: 1140px) {
+                &.cols4 {
+                    min-width: 1100px;
+                }
+            }
 
             > details {
                 flex: 0 0 24%;

@@ -310,7 +310,8 @@ p {
 }
 
 ul {
-    &.list-clean {
+    &.list-clean,
+    &.form-check-input {
         @include list-clean();
     }
 
@@ -370,6 +371,41 @@ ul {
 
             img {
                 max-width: 100%;
+            }
+        }
+    }
+
+    &.form-check-input {
+        > li {
+            font-weight: 700;
+        }
+
+        ul {
+            @include list-clean();
+            flex-wrap: wrap;
+            margin-bottom: 1em;
+
+            li {
+                margin: 0.5em 0 0.5em -4px;
+
+                label {
+                    font-weight: 400;
+                    input {
+                        vertical-align: sub;
+                    }
+                }
+            }
+
+            @media (min-width: map-get($grid-breakpoints, md)) {
+                display: flex;
+                li {
+                    flex: 1 0 50%;
+
+                    &:nth-child(odd) {
+                        padding-left: 1.5em;
+                        box-sizing: border-box;
+                    }
+                }
             }
         }
     }

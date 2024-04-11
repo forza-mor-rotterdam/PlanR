@@ -80,7 +80,7 @@
                                     {% endif %}
                                     {% if signaal.melder.telefoonnummer %}
                                         <li>
-                                            <a href="tel:{{ melding.meta.telefoon_melder }}" class="link--phone">
+                                            <a href="tel:{{ signaal.melder.telefoonnummer }}" class="link--phone">
                                                 <svg width="22"
                                                      height="22"
                                                      viewBox="0 0 14 22"
@@ -160,7 +160,7 @@
                         {% endif %}
                         {% if signaal.melder.telefoonnummer %}
                             <li>
-                                <a href="tel:{{ melding.meta.telefoon_melder }}" class="link--phone">
+                                <a href="tel:{{ signaal.melder.telefoonnummer }}" class="link--phone">
                                     <svg width="22"
                                          height="22"
                                          viewBox="0 0 14 22"

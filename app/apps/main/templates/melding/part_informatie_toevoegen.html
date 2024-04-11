@@ -10,12 +10,18 @@
                   action="{% url 'informatie_toevoegen' melding_uuid %}"
                   method="post"
                   enctype="multipart/form-data"
-                  data-turbo-frame="_top">
+                  data-turbo-frame="_top"
+                  data-controller="opmerkingformulier"
+                  data-opmerkingformulier-target="formOpmerking">
                 {% csrf_token %}
                 {{ form.opmerking|render_rotterdam_formulier }}
                 <div data-controller="bijlagen">{{ form.bijlagen_extra|render_rotterdam_formulier }}</div>
+                <p class="help-block invalid-text"
+                   data-opmerkingformulier-target="errorMessage"></p>
                 <div class="form-row">
-                    <button type="submit" class="btn btn-secondary">
+                    <button type="submit"
+                            class="btn btn-secondary"
+                            data-action="opmerkingformulier#onSubmit">
                         <span>Toevoegen</span>
                     </button>
                     <button type="reset"

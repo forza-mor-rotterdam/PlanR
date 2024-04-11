@@ -216,8 +216,11 @@ class FilterForm(forms.Form):
         )
 
         for v in self.filter_velden:
+            if opties := v.get("opties"):
+                total_opties = self._count_options(opties)
+
             self.fields[v.get("key")] = MultipleChoiceField(
-                label=f"{v.get('naam')} ({v.get('aantal_actief')}/{len(v.get('opties', []))})",
+                label=f"{v.get('naam')} ({v.get('aantal_actief')}/{total_opties})",
                 widget=CheckboxSelectMultiple(
                     attrs={
                         "class": "list--form-check-input",
@@ -231,6 +234,15 @@ class FilterForm(forms.Form):
                 choices=v.get("opties", []),
                 required=False,
             )
+
+    def _count_options(self, opties):
+        count = 0
+        for option in opties:
+            if isinstance(option[1], (list, tuple)):
+                count += len(option[1])
+            else:
+                count += 1
+        return count
 
 
 class LoginForm(forms.Form):
@@ -250,9 +262,11 @@ class InformatieToevoegenForm(forms.Form):
                 "class": "form-control",
                 "data-testid": "information",
                 "rows": "4",
+                "maxlength": "5000",
             }
         ),
         required=False,
+        max_length=5000,
     )
 
     bijlagen_extra = forms.FileField(
@@ -340,9 +354,11 @@ class TaakAfrondenForm(forms.Form):
                 "data-testid": "information",
                 "rows": "4",
                 "data-meldingbehandelformulier-target": "internalText",
+                "maxlength": "5000",
             }
         ),
         required=False,
+        max_length=5000,
     )
 
     def __init__(self, *args, **kwargs):
@@ -380,9 +396,11 @@ class TaakAnnulerenForm(forms.Form):
                         "data-testid": "information",
                         "rows": "4",
                         "data-meldingbehandelformulier-target": "internalText",
+                        "maxlength": "5000",
                     }
                 ),
                 required=False,
+                max_length=5000,
             )
 
 
@@ -431,6 +449,7 @@ class MeldingAfhandelenForm(forms.Form):
                         "data-meldingbehandelformulier-target": "externalText",
                         "data-action": "meldingbehandelformulier#onChangeExternalText",
                         "name": "omschrijving_extern",
+                        "maxlength": "1000",
                     }
                 ),
                 required=True,
@@ -445,9 +464,11 @@ class MeldingAfhandelenForm(forms.Form):
                     "class": "form-control",
                     "rows": "4",
                     "data-meldingbehandelformulier-target": "internalText",
+                    "maxlength": "5000",
                 }
             ),
             required=False,
+            max_length=5000,
         )
 
 
@@ -462,9 +483,11 @@ class MeldingAnnulerenForm(forms.Form):
                     "class": "form-control",
                     "rows": "4",
                     "data-meldingbehandelformulier-target": "internalText",
+                    "maxlength": "5000",
                 }
             ),
             required=False,
+            max_length=5000,
         )
 
 
@@ -479,9 +502,11 @@ class MeldingHeropenenForm(forms.Form):
                     "class": "form-control",
                     "rows": "4",
                     "data-meldingbehandelformulier-target": "internalText",
+                    "maxlength": "5000",
                 }
             ),
             required=True,
+            max_length=5000,
         )
 
 
@@ -506,9 +531,11 @@ class MeldingPauzerenForm(forms.Form):
             attrs={
                 "class": "form-control",
                 "rows": "4",
+                "maxlength": "5000",
             }
         ),
         required=False,
+        max_length=5000,
     )
 
 
@@ -520,9 +547,11 @@ class MeldingHervattenForm(forms.Form):
             attrs={
                 "class": "form-control",
                 "rows": "4",
+                "maxlength": "5000",
             }
         ),
         required=False,
+        max_length=5000,
     )
 
 
@@ -539,9 +568,11 @@ class MeldingSpoedForm(forms.Form):
             attrs={
                 "class": "form-control",
                 "rows": "4",
+                "maxlength": "5000",
             }
         ),
         required=False,
+        max_length=5000,
     )
 
     def submit_label(self):
@@ -561,9 +592,11 @@ class LocatieAanpassenForm(forms.Form):
                 "class": "form-control",
                 "rows": "4",
                 "data-locatieaanpassenformulier-target": "internalText",
+                "maxlength": "5000",
             }
         ),
         required=False,
+        max_length=5000,
     )
     geometrie = forms.CharField(
         label="Geometrie",
