@@ -249,19 +249,20 @@ def melding_detail(request, id):
     bijlagen_flat = [b for bl in melding_bijlagen for b in bl]
     form = InformatieToevoegenForm()
     overview_querystring = request.session.get("overview_querystring", "")
-    if request.POST:
-        form = InformatieToevoegenForm(request.POST)
+    if request.method == "POST":
+        form = InformatieToevoegenForm(request.POST, request.FILES)
         if form.is_valid():
-            bijlagen = request.FILES.getlist("bijlagen", [])
+            opmerking = form.cleaned_data.get("opmerking")
+            bijlagen = request.FILES.getlist("bijlagen_extra")
             bijlagen_base64 = []
             for f in bijlagen:
                 file_name = default_storage.save(f.name, f)
                 bijlagen_base64.append({"bestand": to_base64(file_name)})
 
-            MeldingenService().melding_status_aanpassen(
+            MeldingenService().melding_gebeurtenis_toevoegen(
                 id,
-                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
                 bijlagen=bijlagen_base64,
+                omschrijving_intern=opmerking,
                 gebruiker=request.user.email,
             )
             return redirect("melding_detail", id=id)
@@ -658,10 +659,38 @@ def melding_spoed_veranderen(request, id):
 def taak_starten(request, id):
     melding = MeldingenService().get_melding(id)
 
+    # Get task types for the user
     taaktypes = get_taaktypes(melding, request.user)
-    form = TaakStartenForm(taaktypes=taaktypes)
+
+    # Categorize task types
+    taaktype_categories = {}
+    for taaktype_url, taaktype_omschrijving in taaktypes:
+        categories = TaaktypeCategorie.objects.filter(
+            taaktypes__contains=[taaktype_url]
+        )
+        category_name = categories.first().naam if categories.exists() else "Overig"
+        taaktype_categories.setdefault(category_name, []).append(
+            (taaktype_url, taaktype_omschrijving)
+        )
+
+    # Prepare task type choices for form
+    taaktype_choices = [
+        (category_name, category_taaktypes)
+        for category_name, category_taaktypes in taaktype_categories.items()
+    ]
+    taaktype_choices.insert(0, ("", "Selecteer een taak"))
+
+    # Prepare category choices for form
+    categorie_choices = [
+        (category_name, category_name) for category_name in taaktype_categories.keys()
+    ]
+    categorie_choices.insert(0, ("", "--"))
+
+    form = TaakStartenForm(taaktypes=taaktype_choices, categories=categorie_choices)
     if request.POST:
-        form = TaakStartenForm(request.POST, taaktypes=taaktypes)
+        form = TaakStartenForm(
+            request.POST, taaktypes=taaktype_choices, categories=categorie_choices
+        )
         if form.is_valid():
             data = form.cleaned_data
             taaktypes_dict = {tt[0]: tt[1] for tt in taaktypes}
@@ -680,6 +709,7 @@ def taak_starten(request, id):
         {
             "form": form,
             "melding": melding,
+            "taaktype_choices": taaktype_choices,
         },
     )
 
@@ -771,10 +801,11 @@ def taak_annuleren(request, melding_uuid):
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def informatie_toevoegen(request, id):
     form = InformatieToevoegenForm()
-    if request.POST:
-        form = InformatieToevoegenForm(request.POST)
+    if request.method == "POST":
+        form = InformatieToevoegenForm(request.POST, request.FILES)
         if form.is_valid():
-            bijlagen = request.FILES.getlist("bijlagen_extra", [])
+            opmerking = form.cleaned_data.get("opmerking")
+            bijlagen = request.FILES.getlist("bijlagen_extra")
             bijlagen_base64 = []
             for f in bijlagen:
                 file_name = default_storage.save(f.name, f)
@@ -783,11 +814,10 @@ def informatie_toevoegen(request, id):
             MeldingenService().melding_gebeurtenis_toevoegen(
                 id,
                 bijlagen=bijlagen_base64,
-                omschrijving_intern=form.cleaned_data.get("opmerking"),
+                omschrijving_intern=opmerking,
                 gebruiker=request.user.email,
             )
             return redirect("melding_detail", id=id)
-
     return render(
         request,
         "melding/part_informatie_toevoegen.html",
