@@ -51,15 +51,15 @@ class BasisService:
             "params": params,
             "timeout": self._timeout,
         }
-
+        cache_key = f"{url}?{urlencode(params)}"
         if cache_timeout and method == "get":
-            cache_key = f"{url}?{urlencode(params)}"
             response = cache.get(cache_key)
             if not response:
                 response: Response = action(**action_params)
                 if int(response.status_code) == 200:
                     cache.set(cache_key, response, cache_timeout)
         else:
+            cache.delete(cache_key)
             response: Response = action(**action_params)
 
         if raw_response:

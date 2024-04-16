@@ -173,7 +173,9 @@ class ContextAanpassenForm(forms.ModelForm):
                 (group_name, [(pk, label) for pk, label in group_items])
             )
 
-        taakapplicaties = MeldingenService().taakapplicaties().get("results", [])
+        taakapplicaties = (
+            MeldingenService().taakapplicaties(use_cache=False).get("results", [])
+        )
         taaktypes = [tt for ta in taakapplicaties for tt in ta.get("taaktypes", [])]
         # Assign choices to standaard_filters field
         self.fields["standaard_filters"].choices = onderwerpen_choices
