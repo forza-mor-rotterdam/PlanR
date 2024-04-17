@@ -694,7 +694,7 @@ def taak_starten(request, id):
         if form.is_valid():
             data = form.cleaned_data
             taaktypes_dict = {tt[0]: tt[1] for tt in taaktypes}
-            MeldingenService().taak_aanmaken(
+            MeldingenService(request=request).taak_aanmaken(
                 melding_uuid=id,
                 taaktype_url=data.get("taaktype"),
                 titel=taaktypes_dict.get(data.get("taaktype"), data.get("taaktype")),

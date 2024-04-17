@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 import requests
 from apps.services.basis import BasisService
 from django.conf import settings
+from django.contrib import messages
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
@@ -44,6 +45,7 @@ def get_taaktypes(melding, gebruiker):
 class MeldingenService(BasisService):
     def __init__(self, *args, **kwargs: dict):
         self._api_base_url = settings.MELDINGEN_URL
+        self.request = kwargs.pop("request", None)
         super().__init__(*args, **kwargs)
 
     def get_url(self, url):
@@ -281,12 +283,18 @@ class MeldingenService(BasisService):
             "gebruiker": gebruiker,
             "additionele_informatie": additionele_informatie,
         }
-        return self.do_request(
+        response = self.do_request(
             f"{self._api_path}/melding/{melding_uuid}/taakopdracht/",
             method="post",
             data=data,
-            raw_response=False,
+            raw_response=True,
         )
+        if response.status_code == 201:
+            return self.naar_json(response)
+        logger.error(self.naar_json(response))
+        if self.request:
+            messages.error(self.request, self.naar_json(response).get("detail"))
+        return response
 
     def taak_status_aanpassen(
         self,

@@ -35,9 +35,9 @@ class BasisService:
         try:
             return response.json()
         except Exception:
-            raise BasisService.NaarJsonFout(
-                f"Json antwoord verwacht: url={response.url}, status code={response.status_code}, tekst={response.text}"
-            )
+            return {
+                "bericht": f"Json antwoord verwacht: url={response.url}, status code={response.status_code}"
+            }
 
     def do_request(
         self, url, method="get", data={}, params={}, raw_response=True, cache_timeout=0
