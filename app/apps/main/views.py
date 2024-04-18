@@ -232,7 +232,7 @@ def melding_detail(request, id):
 
     open_taakopdrachten = get_open_taakopdrachten(melding)
     tijdlijn_data = melding_naar_tijdlijn(melding)
-    taaktypes = get_taaktypes(melding, request.user)
+    taaktypes = get_taaktypes(melding, request)
     melding_bijlagen = [
         [bijlage for bijlage in meldinggebeurtenis.get("bijlagen", [])]
         + [
@@ -660,7 +660,7 @@ def taak_starten(request, id):
     melding = MeldingenService().get_melding(id)
 
     # Get task types for the user
-    taaktypes = get_taaktypes(melding, request.user)
+    taaktypes = get_taaktypes(melding, request)
 
     # Categorize task types
     taaktype_categories = {}
