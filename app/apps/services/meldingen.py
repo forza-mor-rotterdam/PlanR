@@ -258,10 +258,10 @@ class MeldingenService(BasisService):
             )
         return response.json()
 
-    def taakapplicaties(self):
+    def taakapplicaties(self, use_cache=True):
         return self.do_request(
             f"{self._api_path}/taakapplicatie/",
-            cache_timeout=60 * 60,
+            cache_timeout=60 * 60 if use_cache else 0,
             raw_response=False,
         )
 
