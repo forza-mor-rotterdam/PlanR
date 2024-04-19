@@ -28,6 +28,8 @@ def slice_iterable(input, start_int=None, end_int=None):
 
 @register.filter
 def laatste_slug_van_url(url):
+    if not url:
+        return url
     qs_removed_from_url = url.split("?")[0]
     stripped_url = qs_removed_from_url.strip("/")
     last_part_from_url = stripped_url.split("/")[-1]
