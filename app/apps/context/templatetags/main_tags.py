@@ -84,4 +84,6 @@ def to_timestamp(value):
 
 @register.filter(name="python_any")
 def python_any(values):
-    return any(values)
+    if values:
+        return any(values)
+    return values
