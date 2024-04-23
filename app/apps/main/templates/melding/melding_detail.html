@@ -11,6 +11,9 @@
 {% block title %}
     Melding {{ melding.id }} | PlanR
 {% endblock title %}
+{% block body_class %}
+    has-page-navigation
+{% endblock body_class %}
 {% block body %}
     {% context_template "melding_detail_locaties.html" as locatie_template %}
     {% context_template "melding_detail_titel.html" as titel_template %}
