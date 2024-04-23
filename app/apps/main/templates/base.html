@@ -72,7 +72,7 @@
         <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin="">
         </script>
     </head>
-    <body>
+    <body class="{% block body_class %}{% endblock body_class %}">
         <a href="#id_maincontent" class="skiplink">Ga direct naar de content</a>
         {% block header %}
             {% with pageTitle="PlanR" %}
