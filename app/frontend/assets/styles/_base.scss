@@ -22,6 +22,10 @@ body {
     font-smoothing: antialiased;
 }
 
+html {
+    height: 100%;
+}
+
 body,
 main,
 header {
@@ -493,6 +497,13 @@ section {
     }
 }
 
+// ERRORPAGES
+body.no-js {
+    .no-js {
+        display: none;
+    }
+}
+
 // HELPER-CLASSES
 
 .foldout {
@@ -639,4 +650,9 @@ section {
 
 .email-border-bottom {
     border-bottom: 1px solid #d3d3d3;
+}
+
+.link--whatsapp {
+    display: inline-block;
+    margin-left: 12px;
 }

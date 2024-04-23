@@ -70,6 +70,13 @@ from utils.rd_convert import rd_to_wgs
 logger = logging.getLogger(__name__)
 
 
+def http_403(request):
+    return render(
+        request,
+        "403.html",
+    )
+
+
 def http_404(request):
     return render(
         request,
