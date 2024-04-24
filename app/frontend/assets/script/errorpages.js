@@ -105,7 +105,7 @@ const questions = [
     correct: 1,
   },
 ]
-
+let rightAnswerGiven = false
 const index = Math.floor(questions.length * Math.random())
 console.log('questions', index)
 console.log('questions[index].choices', questions[index].choices)
@@ -116,8 +116,14 @@ for (let i = 0; i < questions[index].choices.length; i++) {
   btn.textContent = questions[index].choices[i]
   btn.addEventListener('click', function () {
     if (i === questions[index].correct) {
-      confettiLoop()
+      if (!rightAnswerGiven) {
+        rightAnswerGiven = true
+        confettiLoop()
+      }
+    } else {
+      this.classList.add('wrong-answer')
     }
+    this.blur()
   })
   document.getElementById('errorpageContainerAnswers').appendChild(btn)
 }

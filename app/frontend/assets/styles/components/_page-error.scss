@@ -1,7 +1,9 @@
 .errorpage,
 .errorpage turbo-frame {
     height: 100%;
+}
 
+.errorpage {
     main {
         padding-bottom: 0;
         height: calc(100% - 120px);
@@ -60,11 +62,24 @@ figure.question {
         text-align: left;
         color: $green-tint01;
         max-width: 360px;
+        position: relative;
 
         &:hover,
         &:focus {
             background-color: $green-tint01;
             color: $white;
+        }
+
+        &.wrong-answer {
+            background-color: $red;
+            color: $white;
+
+            &::after {
+                content: url("data:image/svg+xml,%3csvg width=%2732%27 height=%2732%27 viewBox=%270 0 32 32%27 fill=%27black%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath fill-rule=%27evenodd%27 clip-rule=%27evenodd%27 d=%27M26.6077 6.80752L25.1935 5.39331L16.0011 14.5857L6.80875 5.39331L5.39453 6.80752L14.5869 15.9999L5.39453 25.1923L6.80874 26.6065L16.0011 17.4141L25.1935 26.6065L26.6077 25.1923L17.4153 15.9999L26.6077 6.80752Z%27 fill=%27white%27/%3e%3c/svg%3e");
+                position: absolute;
+                top: 8px;
+                right: 8px;
+            }
         }
     }
 }
