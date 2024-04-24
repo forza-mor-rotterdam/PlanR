@@ -48,13 +48,16 @@ export default class extends Controller {
       const tabsContent = this.tabsContent2Target.querySelectorAll('.tab-content')
       this.activateTabs(tabs, tabsContent, this)
     }
+    if (this.locatieValue) {
+      this.coordinates = JSON.parse(this.locatieValue)?.geometrie?.coordinates?.reverse()
+    }
 
-    this.coordinates = JSON.parse(this.locatieValue)?.geometrie?.coordinates?.reverse()
-
-    this.signalen =
-      JSON.parse(this.signalenValue)?.filter(
-        (signaal) => signaal.locaties_voor_signaal?.[0]?.geometrie?.coordinates
-      ) ?? []
+    if (this.signalenValue) {
+      this.signalen =
+        JSON.parse(this.signalenValue)?.filter(
+          (signaal) => signaal.locaties_voor_signaal?.[0]?.geometrie?.coordinates
+        ) ?? []
+    }
 
     if (this.hasThumbListTarget) {
       const element = this.thumbListTarget.getElementsByTagName('li')[0]
@@ -93,7 +96,7 @@ export default class extends Controller {
       },
     }
 
-    if (mapDiv && this.coordinates.length == 2) {
+    if (mapDiv && this.coordinates?.length == 2) {
       markerIcon = L.Icon.extend({
         options: {
           iconSize: [32, 32],
@@ -157,10 +160,11 @@ export default class extends Controller {
     this.urlParams = new URLSearchParams(window.location.search)
     this.tabIndex = Number(this.urlParams.get('tabIndex'))
     this.selectTab(this.tabIndex || 1)
-
-    imagesList = JSON.parse(this.afbeeldingenValue).map(
-      (bestand) => bestand.afbeelding_relative_url
-    )
+    if (this.afbeeldingenValue) {
+      imagesList = JSON.parse(this.afbeeldingenValue).map(
+        (bestand) => bestand.afbeelding_relative_url
+      )
+    }
 
     keyFunctions = (e) => {
       if (e.key === 'Escape') {
@@ -255,8 +259,12 @@ export default class extends Controller {
 
   closeModal() {
     const modalBackdrop = document.querySelector('.modal-backdrop')
-    this.modalAfhandelenTarget.classList.remove('show')
-    this.modalImagesTarget.classList.remove('show')
+    if (this.hasModalAfhandelenTarget) {
+      this.modalAfhandelenTarget.classList.remove('show')
+    }
+    if (this.hasModalImagesTarget) {
+      this.modalImagesTarget.classList.remove('show')
+    }
     modalBackdrop.classList.remove('show')
     document.body.classList.remove('show-modal')
     if (lastFocussedItem) {
