@@ -58,20 +58,15 @@ figure.question {
     margin-bottom: 2em;
     .btn {
         padding-left: 1em;
-        padding-right: 1em;
+        padding-right: 3em;
         text-align: left;
         color: $green-tint01;
         max-width: 360px;
         position: relative;
-
-        &:hover,
-        &:focus {
-            background-color: $green-tint01;
-            color: $white;
-        }
+        cursor: default;
 
         &.wrong-answer {
-            background-color: $red;
+            background-color: $red !important;
             color: $white;
 
             &::after {
@@ -80,6 +75,29 @@ figure.question {
                 top: 8px;
                 right: 8px;
             }
+        }
+
+        &.right-answer {
+            background-color: $green-tint01;
+            color: $white;
+
+            &::after {
+                content: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjYiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCA1NSA0MyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBjbGFzcz0iaWNvbi0tY2hlY2ttYXJrIj4KPHBhdGggZD0iTTQ5LjY0MzkgMC4wNDI3MjQ2TDIzLjA0NjggMzMuMjg0NUw0Ljk2Mzk3IDExLjI4NDRMMC4zMTczODMgMTUuMDc5OEwyMy4wOTY1IDQyLjgyNjFMNTQuMzI4OCAzLjc5Mjk1TDQ5LjY0MzkgMC4wNDI3MjQ2WiIgZmlsbD0iI0ZGRiIvPgo8L3N2Zz4K");
+                position: absolute;
+                top: 13px;
+                right: 10px;
+            }
+        }
+    }
+}
+
+.container__answers:not(.right-answer-given) {
+    .btn {
+        &:hover,
+        &:focus {
+            background-color: $green-tint01;
+            color: $white;
+            cursor: pointer;
         }
     }
 }
