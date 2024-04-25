@@ -134,8 +134,9 @@
                     data-detail-action-param="{% url 'melding_spoed_veranderen' melding.uuid %}">
                 <input type="checkbox"
                        class="form-check-input"
+                       id="cb__spoed"
                        {% if melding.urgentie >= 0.5 %}checked{% endif %} />
-                Met spoed oppakken
+                <label for="cb__spoed">Met spoed oppakken</label>
                 <svg width="32"
                      height="32"
                      viewBox="0 0 32 32"
