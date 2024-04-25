@@ -11,11 +11,16 @@ logger = logging.getLogger(__name__)
 
 
 def general_settings(context):
+    user = getattr(context, "user", None)
+
     gebruiker = (
-        context.user.serialized_instance()
-        if hasattr(context.user, "serialized_instance")
-        else {}
+        user.serialized_instance() if hasattr(user, "serialized_instance") else {}
     )
+    unwatched_count = 0
+    if user and getattr(user, "is_authenticated", False):
+        unwatched_count = ReleaseNote.count_unwatched(user)
+
+    template_basis = getattr(user, "profiel.context.template", None) if user else None
 
     session_expiry_max_timestamp = context.session.get("_session_init_timestamp_", 0)
     if session_expiry_max_timestamp:
@@ -23,15 +28,6 @@ def general_settings(context):
     session_expiry_timestamp = context.session.get("_session_current_timestamp_", 0)
     if session_expiry_timestamp:
         session_expiry_timestamp += settings.SESSION_EXPIRE_SECONDS
-
-    template_basis = None
-    if (
-        hasattr(context, "user")
-        and hasattr(context.user, "profiel")
-        and hasattr(context.user.profiel, "context")
-        and hasattr(context.user.profiel.context, "template")
-    ):
-        template_basis = context.user.profiel.context.template
 
     mercure_service = None
     subscriber_token = None
@@ -46,11 +42,6 @@ def general_settings(context):
             "timestamp": int(timezone.now().timestamp()),
         }
         subscriber_token = mercure_service.get_subscriber_token(payload)
-
-    # Add logic to calculate the count of unwatched release notes
-    unwatched_count = 0
-    if hasattr(context, "user") and context.user.is_authenticated:
-        unwatched_count = ReleaseNote.count_unwatched(context.user)
 
     deploy_date_formatted = None
     if settings.DEPLOY_DATE:

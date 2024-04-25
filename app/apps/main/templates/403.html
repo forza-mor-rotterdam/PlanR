@@ -2,47 +2,32 @@
 {% block title %}
     Fout 403 - verboden | PlanR
 {% endblock title %}
+{% block body_class %}
+    errorpage
+{% endblock body_class %}
 {% block body %}
     <turbo-frame id="overview">
-    <div class="border-green print-only"></div>
-    <div class="page__detail">
-        {% if request.user.is_authenticated %}
+    {% if request.user.is_authenticated %}
+        <div class="container__details">
             <div>
-                <div class="grid-container">
-                    <div class="grid-item">
-                        <div>
-                            <h1>Fout 403 - Verboden</h1>
-                            <p>Je bent ingelogd, maar je hebt niet genoeg rechten op deze pagina te bekijken.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="grid-container">
-                    <div class="grid-item">
-                        <section class="section--seperated">
-                            <div class="container__details">
-                                <h3>Relevante links</h3>
-                                Hieronder vindt je de belangrijkste links.
-                                <ul class="list--blocks-horizontal">
-                                    <li>
-                                        <a href="{% url 'melding_lijst' %}">Meldingen overzicht</a>
-                                    </li>
-                                    <li>
-                                        <a href="{% url 'beheer' %}">Beheer</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </section>
-                    </div>
-                </div>
-                <div class="grid-container">
-                    <div class="grid-item">
-                        <section class="section--seperated">
-                            <div class="container__details">{% include "auth/rollen_rechten.html" %}</div>
-                        </section>
-                    </div>
-                </div>
+                <h1 class="h3 block--black">Fout 403 - Verboden</h1>
+                <p class="margin-bottom">Je bent ingelogd, maar je hebt niet genoeg rechten op deze pagina te bekijken.</p>
+                <h3>Relevante links</h3>
+                Hieronder vind je de belangrijkste links.
+                <ul class="list--blocks-horizontal margin-bottom">
+                    <li>
+                        <a href="{% url 'melding_lijst' %}">Meldingen overzicht</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'beheer' %}" target="_top">Beheer</a>
+                    </li>
+                </ul>
+                <div>{% include "auth/rollen_rechten.html" %}</div>
             </div>
-        {% endif %}
-    </div>
+            <div class="full-width">
+                <img src="/static/images/skyline.svg" alt="" />
+            </div>
+        </div>
+    {% endif %}
     </turbo-frame>
 {% endblock body %}

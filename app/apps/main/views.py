@@ -70,6 +70,13 @@ from utils.rd_convert import rd_to_wgs
 logger = logging.getLogger(__name__)
 
 
+def http_403(request):
+    return render(
+        request,
+        "403.html",
+    )
+
+
 def http_404(request):
     return render(
         request,
@@ -232,7 +239,7 @@ def melding_detail(request, id):
 
     open_taakopdrachten = get_open_taakopdrachten(melding)
     tijdlijn_data = melding_naar_tijdlijn(melding)
-    taaktypes = get_taaktypes(melding, request.user)
+    taaktypes = get_taaktypes(melding, request)
     melding_bijlagen = [
         [bijlage for bijlage in meldinggebeurtenis.get("bijlagen", [])]
         + [
@@ -660,7 +667,7 @@ def taak_starten(request, id):
     melding = MeldingenService().get_melding(id)
 
     # Get task types for the user
-    taaktypes = get_taaktypes(melding, request.user)
+    taaktypes = get_taaktypes(melding, request)
 
     # Categorize task types
     taaktype_categories = {}
@@ -694,7 +701,7 @@ def taak_starten(request, id):
         if form.is_valid():
             data = form.cleaned_data
             taaktypes_dict = {tt[0]: tt[1] for tt in taaktypes}
-            MeldingenService().taak_aanmaken(
+            MeldingenService(request=request).taak_aanmaken(
                 melding_uuid=id,
                 taaktype_url=data.get("taaktype"),
                 titel=taaktypes_dict.get(data.get("taaktype"), data.get("taaktype")),

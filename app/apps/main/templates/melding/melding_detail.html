@@ -11,6 +11,9 @@
 {% block title %}
     Melding {{ melding.id }} | PlanR
 {% endblock title %}
+{% block body_class %}
+    has-page-navigation
+{% endblock body_class %}
 {% block body %}
     {% context_template "melding_detail_locaties.html" as locatie_template %}
     {% context_template "melding_detail_titel.html" as titel_template %}
@@ -24,8 +27,10 @@
                  data-detail-locatie-value="{{ locatie|json_encode }}"
                  data-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
                  data-detail-url-prefix-value="{{ MOR_CORE_URL_PREFIX }}"
-                 data-detail-signalen-value="{{ melding.signalen_voor_melding|json_encode }}">
+                 data-detail-signalen-value="{{ melding.signalen_voor_melding|json_encode }}"
+                 class="detail-content-wrapper">
                 <div class="border-green print-only"></div>
+                {% include "snippets/messages.html" %}
                 <div class="page__detail">
                     <div>
                         <a href="{% url 'melding_lijst' %}?{{ overview_querystring }}"

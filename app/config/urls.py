@@ -29,6 +29,7 @@ from apps.main.views import (
     TaaktypeCategorieVerwijderenView,
     clear_melding_token_from_cache,
     gebruiker_info,
+    http_403,
     http_404,
     http_500,
     informatie_toevoegen,
@@ -337,11 +338,14 @@ else:
         path("admin/", admin.site.urls),
     ]
 
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.APP_ENV != "productie":
     urlpatterns += [
+        path("403/", http_403, name="403"),
         path("404/", http_404, name="404"),
         path("500/", http_500, name="500"),
     ]
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

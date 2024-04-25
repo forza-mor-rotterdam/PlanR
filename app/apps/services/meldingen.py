@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 import requests
 from apps.services.basis import BasisService
 from django.conf import settings
+from django.contrib import messages
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
@@ -11,12 +12,12 @@ from django.core.validators import validate_email
 logger = logging.getLogger(__name__)
 
 
-def get_taaktypes(melding, gebruiker):
+def get_taaktypes(melding, request):
     from apps.context.utils import get_gebruiker_context
 
-    gebruiker_context = get_gebruiker_context(gebruiker)
+    gebruiker_context = get_gebruiker_context(request.user)
 
-    taakapplicaties = MeldingenService().taakapplicaties()
+    taakapplicaties = MeldingenService(request=request).taakapplicaties()
     taaktypes = [
         [
             tt.get("_links", {}).get("self"),
@@ -44,6 +45,7 @@ def get_taaktypes(melding, gebruiker):
 class MeldingenService(BasisService):
     def __init__(self, *args, **kwargs: dict):
         self._api_base_url = settings.MELDINGEN_URL
+        self.request = kwargs.pop("request", None)
         super().__init__(*args, **kwargs)
 
     def get_url(self, url):
@@ -259,11 +261,17 @@ class MeldingenService(BasisService):
         return response.json()
 
     def taakapplicaties(self, use_cache=True):
-        return self.do_request(
+        response = self.do_request(
             f"{self._api_path}/taakapplicatie/",
             cache_timeout=60 * 60 if use_cache else 0,
-            raw_response=False,
+            raw_response=True,
         )
+        if response.status_code == 200:
+            return self.naar_json(response)
+        logger.error(self.naar_json(response))
+        if self.request:
+            messages.error(self.request, self.naar_json(response).get("detail"))
+        return self.naar_json(response)
 
     def taak_aanmaken(
         self,
@@ -281,12 +289,18 @@ class MeldingenService(BasisService):
             "gebruiker": gebruiker,
             "additionele_informatie": additionele_informatie,
         }
-        return self.do_request(
+        response = self.do_request(
             f"{self._api_path}/melding/{melding_uuid}/taakopdracht/",
             method="post",
             data=data,
-            raw_response=False,
+            raw_response=True,
         )
+        if response.status_code == 201:
+            return self.naar_json(response)
+        logger.error(self.naar_json(response))
+        if self.request:
+            messages.error(self.request, self.naar_json(response).get("detail"))
+        return response
 
     def taak_status_aanpassen(
         self,

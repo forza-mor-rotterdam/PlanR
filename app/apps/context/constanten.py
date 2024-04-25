@@ -336,7 +336,11 @@ class MeldRNummerKolom(StandaardKolom):
         bron_signaal_ids.append(meta_meldr_nummer)
         bron_signaal_ids.append(msb_meldr_nummer)
 
-        bron_signaal_ids_joined = "<br>".join([id for id in bron_signaal_ids if id])
+        bron_signaal_ids_joined = (
+            "<div class='clamped'>"
+            + "<br>".join([id for id in bron_signaal_ids if id])
+            + "</div>"
+        )
 
         return bron_signaal_ids_joined
 
