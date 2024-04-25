@@ -34,7 +34,6 @@
                     {% for signaal in melding.signalen_voor_melding %}
                         <div class="tab-content" data-index="{{ forloop.counter }}">
                             <div class="display--flex--md">
-                                {% comment %} {{ signaal }} {% endcomment %}
                                 <ul class="list-clean incident-meta-list">
                                     {% if signaal.melder.naam %}
                                         <li>
@@ -78,7 +77,7 @@
                                             </p>
                                         </li>
                                     {% endif %}
-                                    {% if signaal.melder.telefoonnummer %}
+                                    {% if signaal.melder.telefoonnummer and signaal.melder.telefoonnummer != "Anoniem" %}
                                         <li>
                                             <a href="tel:{{ signaal.melder.telefoonnummer }}" class="link--phone">
                                                 <svg width="22"
@@ -158,7 +157,7 @@
                                 </p>
                             </li>
                         {% endif %}
-                        {% if signaal.melder.telefoonnummer %}
+                        {% if signaal.melder.telefoonnummer and signaal.melder.telefoonnummer != "Anoniem" %}
                             <li>
                                 <a href="tel:{{ signaal.melder.telefoonnummer }}" class="link--phone">
                                     <svg width="22"
