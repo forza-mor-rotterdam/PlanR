@@ -12,6 +12,11 @@
     Melding
     {% for signaal in melding.signalen_voor_melding %}
         {{ signaal.bron_signaal_id }}
+        {% if forloop.last == false %}
+            ,
+        {% else %}
+            |
+        {% endif %}
     {% endfor %}
     | {{ melding.id }} | PlanR
 {% endblock title %}
