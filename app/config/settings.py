@@ -63,6 +63,7 @@ INSTALLED_APPS = (
     "django_celery_results",
     "sorl.thumbnail",
     "django_select2",
+    "autodynatrace.wrappers.django",
     # Apps
     "apps.rotterdam_formulier_html",
     "apps.main",
