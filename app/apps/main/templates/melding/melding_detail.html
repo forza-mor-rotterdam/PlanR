@@ -9,7 +9,16 @@
 {% load render_onderwerp get_bijlagen from melding_tags %}
 {% load json_encode from json_tags %}
 {% block title %}
-    Melding {{ melding.id }} | PlanR
+    Melding
+    {% for signaal in melding.signalen_voor_melding %}
+        {{ signaal.bron_signaal_id }}
+        {% if forloop.last == false %}
+            ,
+        {% else %}
+            |
+        {% endif %}
+    {% endfor %}
+    {{ melding.id }} | PlanR
 {% endblock title %}
 {% block body_class %}
     has-page-navigation
