@@ -10,7 +10,9 @@
 {% load json_encode from json_tags %}
 {% block title %}
     Melding
-    {% for signaal in melding.signalen_voor_melding %}{{ signaal.bron_signaal_id ~ ' ' }}{% endfor %}
+    {% for signaal in melding.signalen_voor_melding %}
+        {{ signaal.bron_signaal_id }}
+    {% endfor %}
     | {{ melding.id }} | PlanR
 {% endblock title %}
 {% block body_class %}
