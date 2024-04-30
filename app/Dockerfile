@@ -88,7 +88,8 @@ RUN mkdir -p /media \
     && chmod -R ugo+rwx /srv/web/var/cache \
     && chown -R "$APP_USER":"$APP_USER" "$APP_HOME" \
     && chmod -R +x /app/deploy \
-    && pip install --no-cache-dir -r /app/requirements.txt
+    && pip install --no-cache-dir -r /app/requirements.txt \
+    && opentelemetry-bootstrap -a install
 
 USER $APP_USER
 

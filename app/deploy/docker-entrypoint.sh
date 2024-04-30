@@ -40,5 +40,5 @@ echo "Docker entrypoint script has completed."
 #celery -A config beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler --detach
 
 # Execute uWSGI with the specified configuration file
-uwsgi --ini /app/deploy/config.ini
+opentelemetry-instrument uwsgi --ini /app/deploy/config.ini
 #tail -f /app/uwsgi.log
