@@ -1,12 +1,6 @@
 .page__beheer {
     padding: 0.5rem 0;
 
-    .list-nav--tertiary {
-        small {
-            display: none;
-            @extend .visually-hidden;
-        }
-    }
     @media (min-width: map-get($grid-breakpoints, lg)) {
         padding: 2rem 0 4rem;
     }
