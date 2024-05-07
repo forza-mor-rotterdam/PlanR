@@ -618,6 +618,29 @@ body.no-js {
     &--top {
         height: 48px;
         width: 100%;
+
+        .list-nav--tertiary {
+            small {
+                @extend .visually-hidden;
+            }
+        }
+
+        @media (min-width: map-get($grid-breakpoints, lg)) {
+            .list-nav--tertiary {
+                small {
+                    display: inline;
+                    position: relative;
+                    overflow: visible;
+                    clip: auto;
+                    height: auto;
+                    width: auto;
+                    margin: 0;
+                    padding: 0;
+                    border: 0;
+                    pointer-events: all;
+                }
+            }
+        }
     }
 }
 
