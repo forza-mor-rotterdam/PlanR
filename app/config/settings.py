@@ -58,6 +58,7 @@ INSTALLED_APPS = (
     "health_check.cache",
     "health_check.storage",
     "health_check.db",
+    "debug_toolbar",
     "health_check.contrib.migrations",
     "django_celery_beat",
     "django_celery_results",
@@ -80,6 +81,7 @@ MIDDLEWARE = (
     "csp.middleware.CSPMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django_session_timeout.middleware.SessionTimeoutMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -366,6 +368,16 @@ MELDING_AANMAKEN_URL = os.getenv(
     "MELDING_AANMAKEN_URL",
     "https://serviceformulier-acc.benc.forzamor.nl/melding/aanmaken",
 )
+
+
+def show_debug_toolbar(request):
+    return DEBUG and os.getenv("SHOW_DEBUG_TOOLBAR") in TRUE_VALUES
+
+
+DEBUG_TOOLBAR_CONFIG = {
+    "SHOW_TOOLBAR_CALLBACK": show_debug_toolbar,
+    "INSERT_BEFORE": "</head>",
+}
 
 LOG_LEVEL = "DEBUG" if DEBUG else "INFO"
 
