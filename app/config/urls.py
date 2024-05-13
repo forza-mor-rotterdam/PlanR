@@ -18,6 +18,7 @@ from apps.context.views import (
     ContextLijstView,
     ContextVerwijderenView,
 )
+from apps.health.views import healthz
 from apps.main.views import (
     StandaardExterneOmschrijvingAanmakenView,
     StandaardExterneOmschrijvingAanpassenView,
@@ -97,6 +98,7 @@ urlpatterns = [
     ),
     path("publiceer-topic/<uuid:id>/", publiceer_topic, name="publiceer_topic"),
     path("health/", include("health_check.urls")),
+    path("healthz/", healthz, name="healthz"),
     path("msb/login/", msb_login, name="msb_login"),
     path("msb/zoeken/", msb_melding_zoeken, name="msb_melding_zoeken"),
     path("msb/importeer/", msb_importeer_melding, name="msb_importeer_melding"),
