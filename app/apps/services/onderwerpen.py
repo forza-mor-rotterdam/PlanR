@@ -50,13 +50,15 @@ def render_onderwerp_groepen(context):
 
 class OnderwerpenService(BasisService):
     def get_onderwerp(self, url) -> dict:
-        return self.do_request(url, cache_timeout=120, raw_response=False)
+        return self.do_request(url, cache_timeout=60 * 60, raw_response=False)
 
     def get_onderwerpen(self):
         all_onderwerpen = []
         next_page = f"{settings.ONDERWERPEN_URL}/api/v1/category"
         while next_page:
-            response = self.do_request(next_page, cache_timeout=120, raw_response=False)
+            response = self.do_request(
+                next_page, cache_timeout=60 * 60, raw_response=False
+            )
             current_onderwerpen = response.get("results", [])
             all_onderwerpen.extend(current_onderwerpen)
             next_page = response.get("_links", {}).get("next")
@@ -66,7 +68,7 @@ class OnderwerpenService(BasisService):
         url = f"{settings.ONDERWERPEN_URL}/api/v1/group/{groep_uuid}"
         onderwerp_groep = self.do_request(
             url,
-            cache_timeout=120,
+            cache_timeout=60 * 60,
             raw_response=False,
         )
         if not onderwerp_groep.get("name"):

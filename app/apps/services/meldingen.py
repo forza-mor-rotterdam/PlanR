@@ -4,7 +4,6 @@ from urllib.parse import urlparse
 import requests
 from apps.services.basis import BasisService
 from django.conf import settings
-from django.contrib import messages
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
@@ -45,7 +44,6 @@ def get_taaktypes(melding, request):
 class MeldingenService(BasisService):
     def __init__(self, *args, **kwargs: dict):
         self._api_base_url = settings.MELDINGEN_URL
-        self.request = kwargs.pop("request", None)
         super().__init__(*args, **kwargs)
 
     def get_url(self, url):
@@ -123,12 +121,9 @@ class MeldingenService(BasisService):
             f"{self._api_path}/melding/{id}/gebeurtenis-toevoegen/",
             method="post",
             data=data,
+            raw_response=False,
         )
-        if response.status_code != 200:
-            raise MeldingenService.AntwoordFout(
-                f"status code: {response.status_code}, status code verwacht: 200"
-            )
-        return response.json()
+        return response
 
     def melding_status_aanpassen(
         self,
@@ -229,13 +224,9 @@ class MeldingenService(BasisService):
                 "gebruiker": gebruiker,
                 "omschrijving_intern": omschrijving_intern,
             },
+            raw_response=False,
         )
-        if response.status_code == 200:
-            return response.json()
-        logger.error(response.text)
-        raise MeldingenService.DataOphalenFout(
-            f"signaal_aanmaken: Verwacht status code 200, kreeg status code '{response.status_code}'"
-        )
+        return response
 
     def locatie_aanpassen(
         self,
@@ -253,25 +244,17 @@ class MeldingenService(BasisService):
             f"{self._api_path}/melding/{id}/locatie-aanmaken/",
             method="post",
             data=data,
+            raw_response=False,
         )
-        if response.status_code // 100 != 2:
-            raise MeldingenService.AntwoordFout(
-                f"status code: {response.status_code}, fout: {response.text}."
-            )
-        return response.json()
+        return response
 
     def taakapplicaties(self, use_cache=True):
         response = self.do_request(
             f"{self._api_path}/taakapplicatie/",
             cache_timeout=60 * 60 if use_cache else 0,
-            raw_response=True,
+            raw_response=False,
         )
-        if response.status_code == 200:
-            return self.naar_json(response)
-        logger.error(self.naar_json(response))
-        if self.request:
-            messages.error(self.request, self.naar_json(response).get("detail"))
-        return self.naar_json(response)
+        return response
 
     def taak_aanmaken(
         self,
@@ -293,13 +276,9 @@ class MeldingenService(BasisService):
             f"{self._api_path}/melding/{melding_uuid}/taakopdracht/",
             method="post",
             data=data,
-            raw_response=True,
+            raw_response=False,
+            expected_status_code=201,
         )
-        if response.status_code == 201:
-            return self.naar_json(response)
-        logger.error(self.naar_json(response))
-        if self.request:
-            messages.error(self.request, self.naar_json(response).get("detail"))
         return response
 
     def taak_status_aanpassen(
@@ -324,26 +303,19 @@ class MeldingenService(BasisService):
             f"{taakopdracht_url}status-aanpassen/",
             method="patch",
             data=data,
-            raw_response=True,
+            raw_response=False,
         )
-        if response.status_code == 200:
-            return response.json()
-        raise MeldingenService.DataOphalenFout(
-            f"taak_status_aanpassen: Verwacht status code 200, kreeg status code '{response.status_code}', tekst: {response.text}"
-        )
+        return response
 
     def signaal_aanmaken(self, data: {}):
         response = self.do_request(
             f"{self._api_path}/signaal/",
             method="post",
             data=data,
+            expected_status_code=201,
+            raw_response=False,
         )
-        if response.status_code == 201:
-            return response.json()
-        logger.error(response.text)
-        raise MeldingenService.DataOphalenFout(
-            f"signaal_aanmaken: Verwacht status code 201, kreeg status code '{response.status_code}'"
-        )
+        return response
 
     def onderwerp_alias_list(self):
         return self.do_request(

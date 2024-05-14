@@ -1,7 +1,8 @@
 .page__beheer {
-    padding-top: 0.5rem;
+    padding: 0.5rem 0;
+
     @media (min-width: map-get($grid-breakpoints, lg)) {
-        padding-top: 2rem;
+        padding: 2rem 0 4rem;
     }
 
     a.link--back {
