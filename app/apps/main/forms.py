@@ -659,7 +659,7 @@ class LocatieAanpassenForm(forms.Form):
                 "data-locatieaanpassenformulier-target": "postcode",
             }
         ),
-        required=True,
+        required=False,
     )
     wijknaam = forms.CharField(
         widget=forms.HiddenInput(
