@@ -52,9 +52,11 @@ class BasisService:
         raw_response=True,
         cache_timeout=0,
         expected_status_code=200,
+        force_cache=False,
     ) -> Response | dict:
         action: Request = getattr(requests, method)
         url = self.get_url(url)
+        response = None
         action_params: dict = {
             "url": url,
             "headers": self.get_headers(),
@@ -63,27 +65,32 @@ class BasisService:
             "timeout": self._timeout,
         }
         cache_key = f"{url}?{urlencode(params)}"
-        if cache_timeout and method == "get":
-            response = cache.get(cache_key)
-            if not response:
-                try:
-                    response: Response = action(**action_params)
-                except Exception as e:
-                    logger.error(f"error: {e}")
-                    if self.request:
-                        messages.error(self.request, self._default_error_message)
-                    return {"error": f"{e}"}
-                if int(response.status_code) == 200:
-                    cache.set(cache_key, response, cache_timeout)
-        else:
+        if force_cache:
             cache.delete(cache_key)
+
+        if cache_timeout and method == "get" and not force_cache:
+            response = cache.get(cache_key)
+            if (
+                hasattr(response, "status_code")
+                and getattr(response, "status_code") != 200
+            ):
+                response = None
+
+        if not response:
             try:
                 response: Response = action(**action_params)
             except Exception as e:
+                cache.delete(cache_key)
                 logger.error(f"error: {e}")
                 if self.request:
                     messages.error(self.request, self._default_error_message)
                 return {"error": f"{e}"}
+
+            if cache_timeout and method == "get" and response.status_code == 200:
+                logger.debug(
+                    f"set cache for: url={cache_key}, cache_timeout={cache_timeout}"
+                )
+                cache.set(cache_key, response, cache_timeout)
 
         if raw_response:
             return response

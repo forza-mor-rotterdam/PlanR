@@ -2,6 +2,9 @@ import json
 
 from apps.context.forms import ContextAanmakenForm, ContextAanpassenForm
 from apps.context.models import Context
+from apps.services.meldingen import MeldingenService
+from apps.services.onderwerpen import OnderwerpenService
+from apps.services.taakr import TaakRService
 from django.contrib.auth.decorators import permission_required
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -45,6 +48,19 @@ class ContextAanmakenAanpassenView(ContextView):
 )
 class ContextAanpassenView(ContextAanmakenAanpassenView, UpdateView):
     form_class = ContextAanpassenForm
+
+    def get_form_kwargs(self, *args, **kwargs):
+        kwargs = super().get_form_kwargs(*args, **kwargs)
+        kwargs["taaktypes"] = TaakRService(request=self.request).get_taaktypes(
+            use_cache=False
+        )
+        kwargs["onderwerp_alias_list"] = (
+            MeldingenService(request=self.request)
+            .onderwerp_alias_list()
+            .get("results", [])
+        )
+        kwargs["onderwerpen_service"] = OnderwerpenService(request=self.request)
+        return kwargs
 
     def get_initial(self):
         initial = self.initial.copy()

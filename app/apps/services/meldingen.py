@@ -3,6 +3,7 @@ from urllib.parse import urlparse
 
 import requests
 from apps.services.basis import BasisService
+from apps.services.taakr import TaakRService
 from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
@@ -16,14 +17,12 @@ def get_taaktypes(melding, request):
 
     gebruiker_context = get_gebruiker_context(request.user)
 
-    taakapplicaties = MeldingenService(request=request).taakapplicaties()
     taaktypes = [
         [
             tt.get("_links", {}).get("self"),
             f"{tt.get('omschrijving')}",
         ]
-        for ta in taakapplicaties.get("results", [])
-        for tt in ta.get("taaktypes", [])
+        for tt in TaakRService(request=request).get_taaktypes()
         if urlparse(tt.get("_links", {}).get("self")).path
         in [urlparse(tt).path for tt in gebruiker_context.taaktypes]
         and tt.get("actief", False)

@@ -47,35 +47,37 @@
                         </div>
                     </div>
                 {% endif %}
-                <form action="." method="post">
-                    {% csrf_token %}
-                    <fieldset>
-                        <div class="form-control__with-helptext js-validation">{{ form.naam|render_rotterdam_formulier }}</div>
-                        {{ form.filters|render_rotterdam_formulier }}
-                        {{ form.kolommen|render_rotterdam_formulier }}
-                        <div class="form-row">
-                            <h3 class="label">Onderwerpen</h3>
-                            {{ form.standaard_filters }}
+                {% if form.taaktypes|length and form.onderwerpen_choices and form.onderwerp_alias_list|length %}
+                    <form action="." method="post">
+                        {% csrf_token %}
+                        <fieldset>
+                            <div class="form-control__with-helptext js-validation">{{ form.naam|render_rotterdam_formulier }}</div>
+                            {{ form.filters|render_rotterdam_formulier }}
+                            {{ form.kolommen|render_rotterdam_formulier }}
+                            <div class="form-row">
+                                <h3 class="label">Onderwerpen</h3>
+                                {{ form.standaard_filters }}
+                            </div>
+                            {{ form.taaktypes|render_rotterdam_formulier }}
+                            {{ form.urgentie|render_rotterdam_formulier }}
+                            {{ form.template|render_rotterdam_formulier }}
+                        </fieldset>
+                        <div class="form-row container__button">
+                            <div class="form-row btn-row">
+                                <button type="reset"
+                                        class="btn btn-tertiary"
+                                        data-controller="utils"
+                                        data-action="utils#goToUrl"
+                                        data-utils-url-param="{% url 'context_lijst' %}">
+                                    <span>Annuleren</span>
+                                </button>
+                                <button type="submit" class="btn btn-action">
+                                    <span>Aanpassen</span>
+                                </button>
+                            </div>
                         </div>
-                        {{ form.taaktypes|render_rotterdam_formulier }}
-                        {{ form.urgentie|render_rotterdam_formulier }}
-                        {{ form.template|render_rotterdam_formulier }}
-                    </fieldset>
-                    <div class="form-row container__button">
-                        <div class="form-row btn-row">
-                            <button type="reset"
-                                    class="btn btn-tertiary"
-                                    data-controller="utils"
-                                    data-action="utils#goToUrl"
-                                    data-utils-url-param="{% url 'context_lijst' %}">
-                                <span>Annuleren</span>
-                            </button>
-                            <button type="submit" class="btn btn-action">
-                                <span>Aanpassen</span>
-                            </button>
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                {% endif %}
             </div>
             <div>
                 {% if object.profielen_voor_context.all %}
