@@ -3,6 +3,7 @@ from urllib.parse import urlparse
 
 from apps.services.meldingen import MeldingenService
 from apps.services.onderwerpen import render_onderwerp
+from apps.services.taakr import TaakRService
 from django.contrib.gis.db import models
 from utils.fields import DictJSONField, ListJSONField
 from utils.models import BasisModel
@@ -78,8 +79,7 @@ class Context(BasisModel):
         return Context.urgentie_choices()[0][1]
 
     def taaktype_namen(self):
-        taakapplicaties = MeldingenService().taakapplicaties().get("results", [])
-        taaktypes = [tt for ta in taakapplicaties for tt in ta.get("taaktypes", [])]
+        taaktypes = TaakRService().get_taaktypes()
         taaktype_namen = [
             taaktype.get("omschrijving")
             for taaktype in taaktypes

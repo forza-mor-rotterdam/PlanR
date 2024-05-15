@@ -1,4 +1,4 @@
-from apps.services.meldingen import MeldingenService
+from apps.services.taakr import TaakRService
 from django.db import models
 from utils.fields import ListJSONField
 from utils.models import BasisModel
@@ -23,8 +23,7 @@ class TaaktypeCategorie(models.Model):
     taaktypes = ListJSONField(default=list)
 
     def taaktype_namen(self):
-        taakapplicaties = MeldingenService().taakapplicaties().get("results", [])
-        taaktypes = [tt for ta in taakapplicaties for tt in ta.get("taaktypes", [])]
+        taaktypes = TaakRService().get_taaktypes()
         taaktype_namen = [
             taaktype.get("omschrijving")
             for taaktype in taaktypes

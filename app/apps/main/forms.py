@@ -8,6 +8,7 @@ from apps.main.models import StandaardExterneOmschrijving, TaaktypeCategorie
 from apps.main.utils import get_valide_filter_classes, get_valide_kolom_classes
 from apps.services.meldingen import MeldingenService
 from apps.services.onderwerpen import render_onderwerp
+from apps.services.taakr import TaakRService
 from django import forms
 from django.core.files.storage import default_storage
 from django.utils import timezone
@@ -1063,10 +1064,7 @@ class TaaktypeCategorieAanpassenForm(forms.ModelForm):
         self.fields["taaktypes"].choices = self.get_taaktypes_choices()
 
     def get_taaktypes_choices(self):
-        taakapplicaties = MeldingenService().taakapplicaties().get("results", [])
-        alle_taaktypes = [
-            tt for ta in taakapplicaties for tt in ta.get("taaktypes", [])
-        ]
+        alle_taaktypes = TaakRService().get_taaktypes()
 
         current_taaktypes = (
             [
