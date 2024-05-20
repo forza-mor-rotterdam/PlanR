@@ -49,6 +49,7 @@ from apps.services.meldingen import MeldingenService, get_taaktypes
 from config.context_processors import general_settings
 from deepdiff import DeepDiff
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.decorators import (
     login_required,
     permission_required,
@@ -719,8 +720,13 @@ def taak_starten(request, id):
                 bericht=data.get("bericht"),
                 gebruiker=request.user.email,
             )
-            return redirect("melding_detail", id=id)
-        print(form.errors)
+        if form.errors:
+            messages.error(
+                request,
+                "Er ging iets mis met het aanmaken van de taak. Waarschijnlijk heeft iemand anders de door jouw gekozen taak aangemaakt",
+            )
+
+        return redirect("melding_detail", id=id)
 
     return render(
         request,
@@ -766,8 +772,12 @@ def taak_afronden(request, melding_uuid):
                 status=TAAK_STATUS_VOLTOOID,
                 resolutie=form.cleaned_data.get("resolutie"),
             )
-
-            return redirect("melding_detail", id=melding_uuid)
+        if form.errors:
+            messages.error(
+                request,
+                "Er ging iets mis met het afronden van de taak. Misschien dat iemand anders deze taak heeft afgerond of geannuleerd.",
+            )
+        return redirect("melding_detail", id=melding_uuid)
 
     return render(
         request,
@@ -806,8 +816,12 @@ def taak_annuleren(request, melding_uuid):
                 gebruiker=request.user.email,
                 bijlagen=[],
             )
-
-            return redirect("melding_detail", id=melding_uuid)
+        if form.errors:
+            messages.error(
+                request,
+                "Er ging iets mis met het annuleren van de taak. Misschien dat iemand anders deze taak heeft afgerond of geannuleerd.",
+            )
+        return redirect("melding_detail", id=melding_uuid)
     return render(
         request,
         "melding/part_taak_annuleren.html",
