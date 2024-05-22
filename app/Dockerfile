@@ -15,14 +15,19 @@ EXPOSE 8000
 # Expose uwsgi stats interface
 EXPOSE 9191
 
-ENV APP_HOME=/app
-ENV APP_USER=appuser
-ENV APP_USER_ID=2000
+ENV PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=off \
+    REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
+    APP_HOME=/app \
+    APP_USER=appuser \
+    APP_USER_ID=2000 \
+    LANG=nl_NL.UTF-8 \
+    LANGUAGE=nl_NL \
+    LC_ALL=nl_NL.UTF-8 \
+    SECRET_KEY="secret_key"
 
 RUN groupadd -r "$APP_USER" && \
     useradd -r -u "$APP_USER_ID" -g "$APP_USER" -d "$APP_HOME" -s /sbin/nologin -c "Docker image user" "$APP_USER"
-
-ENV PYTHONUNBUFFERED 1
 
 WORKDIR /app/
 
@@ -79,6 +84,8 @@ COPY --from=node_step /srv/web/public/build /static/
 
 RUN mkdir -p /media \
     && mkdir -p /static \
+    && pip install --no-cache-dir -r /app/requirements.txt \
+    && python /app/manage.py collectstatic --noinput \
     && chown -R "$APP_USER":"$APP_USER" /media \
     && chown -R "$APP_USER":"$APP_USER" /static \
     && chmod -R 744 /media \
@@ -88,7 +95,6 @@ RUN mkdir -p /media \
     && chmod -R ugo+rwx /srv/web/var/cache \
     && chown -R "$APP_USER":"$APP_USER" "$APP_HOME" \
     && chmod -R +x /app/deploy \
-    && pip install --no-cache-dir -r /app/requirements.txt \
     && opentelemetry-bootstrap -a install
 
 USER $APP_USER

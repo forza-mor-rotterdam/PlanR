@@ -23,8 +23,8 @@ echo "Applying migrations..."
 python manage.py migrate --noinput
 
 # Collect static files
-echo "Collecting static files..."
-python manage.py collectstatic --no-input
+# echo "Collecting static files..."
+# python manage.py collectstatic --no-input
 
 # Create a superuser (if not already created)
 echo "Creating superuser..."
@@ -40,5 +40,6 @@ echo "Docker entrypoint script has completed."
 #celery -A config beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler --detach
 
 # Execute uWSGI with the specified configuration file
-uwsgi --ini /app/deploy/config.ini
+# uwsgi --ini /app/deploy/config.ini
+gunicorn -c gunicorn.conf.py config.wsgi
 #tail -f /app/uwsgi.log
