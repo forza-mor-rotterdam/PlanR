@@ -1,4 +1,5 @@
 import logging
+from urllib.parse import urlparse
 
 from apps.services.basis import BasisService
 from django.conf import settings
@@ -13,7 +14,7 @@ class TaakRService(BasisService):
         self._api_base_url = settings.TAAKR_URL
         super().__init__(*args, **kwargs)
 
-    def get_afdelingen(self, url) -> dict:
+    def get_afdelingen(self, url) -> list:
         alle_afdelingen = []
         next_page = f"{self._api_base_url}/api/v1/afdeling"
         while next_page:
@@ -25,7 +26,7 @@ class TaakRService(BasisService):
             next_page = response.get("next")
         return alle_afdelingen
 
-    def get_taaktypes(self, use_cache=True):
+    def get_taaktypes(self, use_cache=True) -> list:
         alle_taaktypes = []
         next_page = f"{self._api_base_url}/api/v1/taaktype"
         while next_page:
@@ -48,3 +49,43 @@ class TaakRService(BasisService):
             raw_response=False,
         )
         return taaktype
+
+    def get_taaktype_by_url(self, taaktype_url):
+        taaktype = self.do_request(
+            taaktype_url,
+            cache_timeout=0,  # Back to 60*60
+            raw_response=False,
+        )
+        return taaktype
+
+    def categorize_taaktypes(self, melding, taaktypes):
+        from apps.context.utils import get_gebruiker_context
+
+        gebruiker_context = get_gebruiker_context(self.request.user)
+        taaktypes_categorized = [
+            [
+                tt.get("_links", {}).get("self"),
+                f"{tt.get('omschrijving')}",
+            ]
+            for tt in taaktypes
+            if urlparse(tt.get("_links", {}).get("self")).path
+            in [urlparse(tt).path for tt in gebruiker_context.taaktypes]
+            and tt.get("actief", False)
+        ]
+        gebruikte_taaktypes = [
+            *set(
+                list(
+                    to.get("taaktype")
+                    for to in melding.get("taakopdrachten_voor_melding", [])
+                    if not to.get("resolutie")
+                )
+            )
+        ]
+        taaktypes_categorized = [
+            tt for tt in taaktypes_categorized if tt[0] not in gebruikte_taaktypes
+        ]
+        return taaktypes_categorized
+
+    def get_taakapplicatie_taaktype_url(self, taaktype_url):
+        if taaktype := self.get_taaktype_by_url(taaktype_url):
+            return taaktype.get("_links").get("taakapplicatie_taaktype_url")

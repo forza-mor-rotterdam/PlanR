@@ -372,12 +372,12 @@ MELDING_AANMAKEN_URL = os.getenv(
     "https://serviceformulier-acc.benc.forzamor.nl/melding/aanmaken",
 )
 taakr_urls = {
-    PRODUCTIE: "https://fixer.forzamor.nl",
-    ACCEPTATIE: "https://fixer-acc.forzamor.nl",
-    TEST: "https://fixer-test.forzamor.nl",
+    PRODUCTIE: "https://taakr.forzamor.nl",
+    ACCEPTATIE: "https://taakr-acc.forzamor.nl",
+    TEST: "https://taakr-test.forzamor.nl",
 }
 TAAKR_URL = (
-    "http://fixer.mor.local:8004"
+    "http://taakr.mor.local:8009"
     if DEBUG
     else os.getenv("TAAKR_URL", taakr_urls.get(APP_ENV))
 )
