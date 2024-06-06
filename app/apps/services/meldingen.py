@@ -3,41 +3,12 @@ from urllib.parse import urlparse
 
 import requests
 from apps.services.basis import BasisService
-from apps.services.taakr import TaakRService
 from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 
 logger = logging.getLogger(__name__)
-
-
-def get_taaktypes(melding, request):
-    from apps.context.utils import get_gebruiker_context
-
-    gebruiker_context = get_gebruiker_context(request.user)
-
-    taaktypes = [
-        [
-            tt.get("_links", {}).get("self"),
-            f"{tt.get('omschrijving')}",
-        ]
-        for tt in TaakRService(request=request).get_taaktypes()
-        if urlparse(tt.get("_links", {}).get("self")).path
-        in [urlparse(tt).path for tt in gebruiker_context.taaktypes]
-        and tt.get("actief", False)
-    ]
-    gebruikte_taaktypes = [
-        *set(
-            list(
-                to.get("taaktype")
-                for to in melding.get("taakopdrachten_voor_melding", [])
-                if not to.get("resolutie")
-            )
-        )
-    ]
-    taaktypes = [tt for tt in taaktypes if tt[0] not in gebruikte_taaktypes]
-    return taaktypes
 
 
 class MeldingenService(BasisService):
@@ -258,14 +229,16 @@ class MeldingenService(BasisService):
     def taak_aanmaken(
         self,
         melding_uuid,
-        taaktype_url,
+        taakapplicatie_taaktype_url,
         titel,
         bericht=None,
         gebruiker=None,
+        taaktypeapplicatie_taaktype_url=None,  # Not used in mor-core atm
         additionele_informatie={},
     ):
         data = {
-            "taaktype": taaktype_url,
+            "taaktypeapplicatie_taaktype_url": taaktypeapplicatie_taaktype_url,  # Not used in mor-core atm
+            "taaktype": taakapplicatie_taaktype_url,
             "titel": titel,
             "bericht": bericht,
             "gebruiker": gebruiker,

@@ -371,15 +371,26 @@ MELDING_AANMAKEN_URL = os.getenv(
     "MELDING_AANMAKEN_URL",
     "https://serviceformulier-acc.benc.forzamor.nl/melding/aanmaken",
 )
+
+onderwerpen_urls = {
+    PRODUCTIE: "https://onderwerpen.forzamor.nl",
+    ACCEPTATIE: "https://onderwerpen-acc.forzamor.nl",
+    TEST: "https://onderwerpen-test.forzamor.nl",
+}
+ONDERWERPEN_URL = os.getenv(
+    "ONDERWERPEN_URL", onderwerpen_urls.get(APP_ENV, onderwerpen_urls[ACCEPTATIE])
+)
+
+
 taakr_urls = {
-    PRODUCTIE: "https://fixer.forzamor.nl",
-    ACCEPTATIE: "https://fixer-acc.forzamor.nl",
-    TEST: "https://fixer-test.forzamor.nl",
+    PRODUCTIE: "https://taakr.forzamor.nl",
+    ACCEPTATIE: "https://taakr-acc.forzamor.nl",
+    TEST: "https://taakr-test.forzamor.nl",
 }
 TAAKR_URL = (
-    "http://fixer.mor.local:8004"
+    "http://taakr.mor.local:8009"
     if DEBUG
-    else os.getenv("TAAKR_URL", taakr_urls.get(APP_ENV))
+    else os.getenv("TAAKR_URL", taakr_urls.get(APP_ENV, taakr_urls[ACCEPTATIE]))
 )
 
 
@@ -545,10 +556,3 @@ CKEDITOR_CONFIGS = {
 CKEDITOR_UPLOAD_PATH = "uploads/"
 
 EMAIL_BEHEER = os.getenv("EMAIL_BEHEER", "ForzaMOR@rotterdam.nl")
-
-ONDERWERPEN_URL = os.getenv(
-    "ONDERWERPEN_URL",
-    "https://onderwerpen-acc.forzamor.nl"
-    if APP_ENV != "productie"
-    else "https://onderwerpen.forzamor.nl",
-)
