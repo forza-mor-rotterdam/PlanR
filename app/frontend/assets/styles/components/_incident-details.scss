@@ -3,18 +3,18 @@
     h1 {
         margin-bottom: 0;
         + span {
-            font-size: 16px;
+            font-size: 0.875em;
         }
     }
 
     .aside {
-        font-size: 16px;
+        font-size: 0.875em;
 
         .btn {
             text-align: left;
             width: auto;
             display: inline-block;
-            font-size: 16px;
+            font-size: 0.875em;
             margin-right: 4px;
 
             &-textlink {
@@ -210,7 +210,7 @@
         background-color: $gray-tint02;
         padding: $input-padding-x;
         display: flex;
-        font-size: 16px;
+        font-size: 0.875em;
 
         dl {
             margin: 0;

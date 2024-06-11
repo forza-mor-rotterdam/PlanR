@@ -65,7 +65,7 @@
             no-repeat;
         background-position: 8px 50%;
         color: $gray-tint11;
-        font-size: 16px;
+        font-size: 0.875em;
 
         &::-webkit-search-cancel-button {
             -webkit-appearance: none;
@@ -84,7 +84,7 @@
 
     .help-block {
         padding: 2px 0 08px;
-        font-size: 12px;
+        font-size: 0.666em;
     }
 
     @media (min-width: map-get($grid-breakpoints, md)) {
@@ -102,7 +102,7 @@
         border: 1px solid $gray-tint04;
         outline: 0;
         padding: 12px $input-padding-x;
-        font-size: 16px;
+        font-size: 0.875em;
         width: 100%;
         margin-bottom: 12px;
         color: $gray-tint11;

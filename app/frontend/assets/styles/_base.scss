@@ -203,7 +203,7 @@ a,
     &.link--back {
         @include has-icon();
         padding-left: 10px;
-        font-size: 16px;
+        font-size: 0.875em;
         font-weight: 700;
         > svg {
             left: -20px;
@@ -529,7 +529,7 @@ body.no-js {
 }
 
 .help-text {
-    font-size: 16px;
+    font-size: 0.875em;
     color: $gray-tint09;
 }
 

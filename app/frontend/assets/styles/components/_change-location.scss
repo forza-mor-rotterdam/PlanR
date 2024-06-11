@@ -16,7 +16,7 @@
         background-color: $gray-tint02;
         display: inline-block;
         min-width: 75%;
-        font-size: 16px;
+        font-size: 0.875em;
 
         p {
             margin: 0;
@@ -42,7 +42,7 @@
 
         label {
             font-weight: 400;
-            font-size: 16px;
+            font-size: 0.875em;
             flex: 0 1 auto;
         }
         input {
@@ -76,7 +76,7 @@
             label {
                 display: block;
                 padding: $input-padding-y $input-padding-y $input-padding-y 44px;
-                font-size: 16px;
+                font-size: 0.875em;
                 font-weight: 400;
                 line-height: $line-height-base;
                 &:hover {

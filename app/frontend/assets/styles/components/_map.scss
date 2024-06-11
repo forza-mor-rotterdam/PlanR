@@ -21,7 +21,7 @@
 
         .map__overlay {
             color: $white;
-            font-size: 1.5rem;
+            font-size: 1.5em;
             font-family: "Bolder", sans-serif;
             text-align: center;
             justify-content: center;
@@ -102,7 +102,7 @@
             text-align: center;
             line-height: 44px;
             padding: 0 12px 0 40px;
-            font-size: 0.9rem;
+            font-size: 0.9em;
             height: 40px;
             display: inline-block;
             background-color: $white;
@@ -131,7 +131,7 @@
                 align-items: flex-end;
             }
             label {
-                font-size: 1rem;
+                font-size: 1em;
             }
         }
     }
@@ -199,7 +199,7 @@
         }
         .container__content {
             flex: 1 0 75%;
-            font-size: 16px;
+            font-size: 0.875em;
             a {
                 color: $green-tint01;
             }
