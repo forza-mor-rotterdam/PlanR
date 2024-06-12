@@ -8,11 +8,11 @@ html,
 body {
     margin: 0;
     font-family: "Bolder", sans-serif;
-    font-size: 16px;
+    font-size: 1em;
     color: $gray-tint11;
 
     @media (min-width: map-get($grid-breakpoints, sm)) {
-        font-size: 18px;
+        font-size: 1.125em;
     }
 }
 

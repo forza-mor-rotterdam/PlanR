@@ -697,6 +697,10 @@ input.form-radio-input {
             color: $gray-tint11 !important;
         }
     }
+
+    .form--horizontal & {
+        max-width: 456px;
+    }
 }
 
 body > .select2-container--default,
