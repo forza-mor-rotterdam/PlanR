@@ -432,6 +432,17 @@ class StatusFilter(StandaardFilter):
         ]
 
 
+class SpoedFilter(StandaardFilter):
+    _key = "urgentie_gte"
+    _label = "Spoed"
+
+    def opties(self):
+        return [
+            [0.5, {"label": "Spoed"}],
+            [0.0, {"label": "Geen spoed"}],
+        ]
+
+
 class BegraafplaatsFilter(StandaardFilter):
     _key = "begraafplaats"
 
@@ -479,6 +490,7 @@ FILTERS = (
     OnderwerpFilter,
     WijkFilter,
     BuurtFilter,
+    SpoedFilter,
 )
 
 FILTER_KEYS = [f.key() for f in FILTERS]

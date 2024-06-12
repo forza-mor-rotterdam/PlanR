@@ -1,6 +1,6 @@
 from urllib.parse import urlparse
 
-from apps.context.constanten import FILTER_KEYS, KOLOM_KEYS
+from apps.context.constanten import FILTERS, KOLOMMEN
 from apps.context.models import Context
 from django import forms
 from utils.forms import RadioSelect
@@ -67,7 +67,7 @@ class ContextAanpassenForm(forms.ModelForm):
         ),
         label="Filters",
         required=False,
-        choices=[(f, f) for f in FILTER_KEYS],
+        choices=[(f.key(), f.label()) for f in FILTERS],
     )
 
     kolommen = forms.MultipleChoiceField(
@@ -78,7 +78,7 @@ class ContextAanpassenForm(forms.ModelForm):
         ),
         label="Kolommen",
         required=False,
-        choices=[(f, f) for f in KOLOM_KEYS],
+        choices=[(f.key(), f.th_label(f)) for f in KOLOMMEN],
     )
 
     standaard_filters = forms.MultipleChoiceField(

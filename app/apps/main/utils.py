@@ -137,7 +137,6 @@ def get_valide_filter_classes(gebruiker_context):
 
 def update_qd_met_standaard_meldingen_filter_qd(qd, gebruiker_context=None):
     meldingen_filter_qd = QueryDict("", mutable=True)
-    meldingen_filter_qd.update(qd)
     if gebruiker_context:
         for k, v in gebruiker_context.standaard_filters.items():
             if isinstance(v, (list, tuple)):
@@ -145,7 +144,7 @@ def update_qd_met_standaard_meldingen_filter_qd(qd, gebruiker_context=None):
                     meldingen_filter_qd.update({k: vv})
             else:
                 meldingen_filter_qd.update({k: v})
-
+    meldingen_filter_qd.update(qd)
     return meldingen_filter_qd
 
 
