@@ -1,5 +1,3 @@
-import json
-
 from apps.context.forms import ContextAanmakenForm, ContextAanpassenForm
 from apps.context.models import Context
 from apps.services.meldingen import MeldingenService
@@ -33,12 +31,6 @@ class ContextAanmakenAanpassenView(ContextView):
         standaard_filters = {
             "pre_onderwerp": form.cleaned_data.get("standaard_filters", []),
         }
-        urgentie = (
-            form.cleaned_data.get("urgentie")
-            if form.cleaned_data.get("urgentie")
-            else '{"urgentie_gte": 0.0}'
-        )
-        standaard_filters.update(json.loads(urgentie))
         form.instance.standaard_filters = standaard_filters
         return super().form_valid(form)
 

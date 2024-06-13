@@ -4,6 +4,7 @@ import math
 
 import requests
 import weasyprint
+from apps.context.constanten import FilterManager
 from apps.context.utils import get_gebruiker_context
 from apps.main.constanten import MSB_WIJKEN
 from apps.main.forms import (
@@ -175,7 +176,7 @@ def melding_lijst(request):
         form_qs, gebruiker_context
     )
     meldingen_data = meldingen_service.get_melding_lijst(
-        query_string=meldingen_filter_query_dict.urlencode()
+        query_string=FilterManager().get_query_string(meldingen_filter_query_dict)
     )
     if (
         len(meldingen_data.get("results", [])) == 0
@@ -186,7 +187,7 @@ def melding_lijst(request):
         form_qs["offset"] = "0"
         request.session["offset"] = "0"
         meldingen_data = meldingen_service.get_melding_lijst(
-            query_string=meldingen_filter_query_dict.urlencode()
+            query_string=FilterManager().get_query_string(meldingen_filter_query_dict)
         )
     request.session["pagina_melding_ids"] = [
         r.get("uuid") for r in meldingen_data.get("results")
