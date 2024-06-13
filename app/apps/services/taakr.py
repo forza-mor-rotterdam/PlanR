@@ -58,6 +58,24 @@ class TaakRService(BasisService):
         )
         return taaktype
 
+    def get_niet_actieve_taaktypes(self, melding, use_cache=True):
+        alle_taaktypes = self.get_taaktypes(use_cache=use_cache)
+        gebruikte_taaktypes = [
+            *set(
+                list(
+                    to.get("taaktype")
+                    for to in melding.get("taakopdrachten_voor_melding", [])
+                    if not to.get("resolutie")
+                )
+            )
+        ]
+        taaktypes = [
+            tt
+            for tt in alle_taaktypes
+            if tt.get("taakapplicatie_taaktype_url") not in gebruikte_taaktypes
+        ]
+        return taaktypes
+
     def categorize_taaktypes(self, melding, taaktypes):
         from apps.context.utils import get_gebruiker_context
 

@@ -681,7 +681,7 @@ def taak_starten(request, id):
     melding = meldingen_service.get_melding(id)
 
     # Get taak types for the user
-    taaktypes = TaakRService(request=request).get_taaktypes()
+    taaktypes = TaakRService(request=request).get_niet_actieve_taaktypes(melding)
     taaktypes_categorized = TaakRService(request=request).categorize_taaktypes(
         melding, taaktypes
     )
