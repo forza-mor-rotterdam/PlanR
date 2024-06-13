@@ -242,7 +242,7 @@ def melding_detail(request, id):
 
     open_taakopdrachten = get_open_taakopdrachten(melding)
     tijdlijn_data = melding_naar_tijdlijn(melding)
-    taaktypes = TaakRService(request=request).get_taaktypes()
+    taaktypes = TaakRService(request=request).get_niet_actieve_taaktypes(melding)
     categorized_taaktypes = TaakRService(request=request).categorize_taaktypes(
         melding, taaktypes
     )
