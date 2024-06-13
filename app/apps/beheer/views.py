@@ -27,6 +27,10 @@ def beheer(request):
             f"https://ontdbblr{env_suffixs.get(settings.APP_ENV, env_suffixs.get(settings.ACCEPTATIE))}.{domain}{beheer_url}",
             "OntdbblR",
         ),
+        (
+            f"https://taakr{env_suffixs.get(settings.APP_ENV, env_suffixs.get(settings.ACCEPTATIE))}.{domain}{beheer_url}",
+            "TaakR",
+        ),
     ]
 
     return render(
