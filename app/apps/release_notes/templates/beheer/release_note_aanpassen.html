@@ -71,7 +71,11 @@
                     </fieldset>
                     <div class="form-row container__button">
                         <div class="form-row btn-row">
-                            <button type="reset" class="btn btn-tertiary">
+                            <button type="reset"
+                                    class="btn btn-tertiary"
+                                    data-controller="utils"
+                                    data-action="utils#goToUrl"
+                                    data-utils-url-param="/beheer/release-notes/">
                                 <span>Annuleren</span>
                             </button>
                             <button type="submit" class="btn btn-action">
