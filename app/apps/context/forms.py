@@ -1,9 +1,7 @@
 from urllib.parse import urlparse
 
-from apps.context.constanten import FILTER_KEYS, KOLOM_KEYS
+from apps.context.constanten import FILTERS, KOLOMMEN
 from apps.context.models import Context
-from apps.services.meldingen import MeldingenService
-from apps.services.onderwerpen import OnderwerpenService
 from django import forms
 from utils.forms import RadioSelect
 
@@ -69,7 +67,7 @@ class ContextAanpassenForm(forms.ModelForm):
         ),
         label="Filters",
         required=False,
-        choices=[(f, f) for f in FILTER_KEYS],
+        choices=[(f.key(), f.label()) for f in FILTERS],
     )
 
     kolommen = forms.MultipleChoiceField(
@@ -80,7 +78,7 @@ class ContextAanpassenForm(forms.ModelForm):
         ),
         label="Kolommen",
         required=False,
-        choices=[(f, f) for f in KOLOM_KEYS],
+        choices=[(f.key(), f.th_label(f)) for f in KOLOMMEN],
     )
 
     standaard_filters = forms.MultipleChoiceField(
@@ -91,16 +89,6 @@ class ContextAanpassenForm(forms.ModelForm):
         ),
         label="Onderwerpen",
         required=False,
-        choices=(),
-    )
-    urgentie = forms.ChoiceField(
-        widget=forms.RadioSelect(
-            attrs={
-                "class": "list--form-radio-input",
-            }
-        ),
-        label="Urgentie",
-        required=True,
         choices=(),
     )
     taaktypes = forms.MultipleChoiceField(
@@ -126,20 +114,20 @@ class ContextAanpassenForm(forms.ModelForm):
         )
 
     def __init__(self, *args, **kwargs):
-        instance = kwargs.get("instance")
+        kwargs.get("instance")
+        self.taaktypes = kwargs.pop("taaktypes", None)
+        self.onderwerp_alias_list = kwargs.pop("onderwerp_alias_list", None)
+        self.onderwerpen_service = kwargs.pop("onderwerpen_service", None)
         super().__init__(*args, **kwargs)
 
         # Group onderwerpen by group_uuid
-        onderwerp_alias_list = (
-            MeldingenService().onderwerp_alias_list().get("results", [])
-        )
         onderwerpen_grouped = {}
-        for onderwerp_alias in onderwerp_alias_list:
-            onderwerp = OnderwerpenService().get_onderwerp(
+        for onderwerp_alias in self.onderwerp_alias_list:
+            onderwerp = self.onderwerpen_service.get_onderwerp(
                 onderwerp_alias.get("bron_url")
             )
             group_uuid = onderwerp.get("group_uuid")
-            group_name = OnderwerpenService().get_groep(group_uuid).get("name")
+            group_name = self.onderwerpen_service.get_groep(group_uuid).get("name")
             if group_uuid not in onderwerpen_grouped:
                 onderwerpen_grouped[group_uuid] = {"name": group_name, "items": []}
             onderwerpen_grouped[group_uuid]["items"].append(
@@ -165,31 +153,23 @@ class ContextAanpassenForm(forms.ModelForm):
         #     )
 
         # Format onderwerpen choices
-        onderwerpen_choices = []
+        self.onderwerpen_choices = []
         for group_uuid, group_data in onderwerpen_grouped.items():
             group_name = group_data["name"]
             group_items = sorted(group_data["items"], key=lambda x: x[1])
-            onderwerpen_choices.append(
+            self.onderwerpen_choices.append(
                 (group_name, [(pk, label) for pk, label in group_items])
             )
 
-        taakapplicaties = (
-            MeldingenService().taakapplicaties(use_cache=False).get("results", [])
-        )
-        taaktypes = [tt for ta in taakapplicaties for tt in ta.get("taaktypes", [])]
         # Assign choices to standaard_filters field
-        self.fields["standaard_filters"].choices = onderwerpen_choices
+        self.fields["standaard_filters"].choices = self.onderwerpen_choices
         self.fields["taaktypes"].choices = [
             (
                 taaktype.get("_links", {}).get("self"),
                 taaktype.get("omschrijving"),
             )
-            for taaktype in taaktypes
+            for taaktype in self.taaktypes
         ]
-        self.fields["urgentie"].initial = Context.urgentie_choices()[0][0]
-        self.fields["urgentie"].choices = Context.urgentie_choices()
-        if instance:
-            self.fields["urgentie"].initial = instance.urgentie()
 
 
 class ContextAanmakenForm(ContextAanpassenForm):

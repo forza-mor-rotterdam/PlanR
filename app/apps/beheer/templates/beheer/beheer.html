@@ -27,14 +27,13 @@
             <a href="{% url 'release_note_lijst' %}">Release notes</a>
         </li>
     </ul>
-    <h2>Andere Forzamor beheer productie omgevingen</h2>
+    <h2>Andere Forzamor beheer {{ APP_ENV }} omgevingen</h2>
     <ul class="list--blocks-horizontal">
-        <li>
-            <a href="https://fixer.forzamor.nl/beheer">FixeR</a>
-        </li>
-        <li>
-            <a href="https://onderwerpen.forzamor.nl/beheer">Onderwerpen</a>
-        </li>
+        {% for url in env_urls %}
+            <li>
+                <a href="{{ url.0 }}">{{ url.1 }}</a>
+            </li>
+        {% endfor %}
     </ul>
     </turbo-frame>
 {% endblock body %}

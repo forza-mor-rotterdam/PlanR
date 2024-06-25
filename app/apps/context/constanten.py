@@ -374,6 +374,11 @@ class StandaardFilter:
     def label(cls):
         return cls._label if cls._label else cls._key
 
+    @classmethod
+    def update_filter_querydict(cls, querydict, filter_value):
+        querydict.setlist(cls._key, filter_value)
+        return querydict
+
     def optie_label(self, optie_data):
         return f"{VERTALINGEN.get(optie_data[0], optie_data[0])}"
 
@@ -432,6 +437,25 @@ class StatusFilter(StandaardFilter):
         ]
 
 
+class SpoedFilter(StandaardFilter):
+    _key = "urgentie_gte"
+    _label = "Spoed"
+
+    @classmethod
+    def update_filter_querydict(cls, querydict, filter_value):
+        if "spoed" in filter_value and len(filter_value) == 1:
+            querydict.setlist("urgentie_gte", [0.5])
+        if "geen_spoed" in filter_value and len(filter_value) == 1:
+            querydict.setlist("urgentie_lt", [0.5])
+        return querydict
+
+    def opties(self):
+        return [
+            ["spoed", {"label": "Spoed"}],
+            ["geen_spoed", {"label": "Geen spoed"}],
+        ]
+
+
 class BegraafplaatsFilter(StandaardFilter):
     _key = "begraafplaats"
 
@@ -479,7 +503,31 @@ FILTERS = (
     OnderwerpFilter,
     WijkFilter,
     BuurtFilter,
+    SpoedFilter,
 )
+
+
+class FilterManager:
+    _valid_filters = FILTERS
+
+    def __init__(self, *args, **kwargs):
+        self._filterclass_by_key = {f.key(): f for f in self._valid_filters}
+
+    def _get_class_by_key(self, k):
+        return self._filterclass_by_key.get(k)
+
+    def get_query_string(self, query_dict):
+        new_query_dict = QueryDict("", mutable=True)
+        for k, v in query_dict.items():
+            filter_cls = self._get_class_by_key(k)
+            if filter_cls:
+                filter_cls.update_filter_querydict(
+                    new_query_dict, query_dict.getlist(k)
+                )
+            else:
+                new_query_dict.setlist(k, query_dict.getlist(k))
+        return new_query_dict.urlencode()
+
 
 FILTER_KEYS = [f.key() for f in FILTERS]
 FILTER_CLASS_BY_KEY = {f.key(): f for f in FILTERS}

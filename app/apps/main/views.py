@@ -4,6 +4,7 @@ import math
 
 import requests
 import weasyprint
+from apps.context.constanten import FilterManager
 from apps.context.utils import get_gebruiker_context
 from apps.main.constanten import MSB_WIJKEN
 from apps.main.forms import (
@@ -45,7 +46,8 @@ from apps.main.utils import (
     to_base64,
     update_qd_met_standaard_meldingen_filter_qd,
 )
-from apps.services.meldingen import MeldingenService, get_taaktypes
+from apps.services.meldingen import MeldingenService
+from apps.services.taakr import TaakRService
 from config.context_processors import general_settings
 from deepdiff import DeepDiff
 from django.conf import settings
@@ -174,7 +176,7 @@ def melding_lijst(request):
         form_qs, gebruiker_context
     )
     meldingen_data = meldingen_service.get_melding_lijst(
-        query_string=meldingen_filter_query_dict.urlencode()
+        query_string=FilterManager().get_query_string(meldingen_filter_query_dict)
     )
     if (
         len(meldingen_data.get("results", [])) == 0
@@ -185,7 +187,7 @@ def melding_lijst(request):
         form_qs["offset"] = "0"
         request.session["offset"] = "0"
         meldingen_data = meldingen_service.get_melding_lijst(
-            query_string=meldingen_filter_query_dict.urlencode()
+            query_string=FilterManager().get_query_string(meldingen_filter_query_dict)
         )
     request.session["pagina_melding_ids"] = [
         r.get("uuid") for r in meldingen_data.get("results")
@@ -241,7 +243,10 @@ def melding_detail(request, id):
 
     open_taakopdrachten = get_open_taakopdrachten(melding)
     tijdlijn_data = melding_naar_tijdlijn(melding)
-    taaktypes = get_taaktypes(melding, request)
+    taaktypes = TaakRService(request=request).get_niet_actieve_taaktypes(melding)
+    categorized_taaktypes = TaakRService(request=request).categorize_taaktypes(
+        melding, taaktypes
+    )
     melding_bijlagen = [
         [bijlage for bijlage in meldinggebeurtenis.get("bijlagen", [])]
         + [
@@ -309,7 +314,7 @@ def melding_detail(request, id):
             "form": form,
             "overview_querystring": overview_querystring,
             "bijlagen_extra": bijlagen_flat,
-            "taaktypes": taaktypes,
+            "taaktypes": categorized_taaktypes,
             "aantal_actieve_taken": aantal_actieve_taken,
             "aantal_opgeloste_taken": aantal_opgeloste_taken,
             "aantal_niet_opgeloste_taken": aantal_niet_opgeloste_taken,
@@ -675,14 +680,16 @@ def melding_spoed_veranderen(request, id):
 def taak_starten(request, id):
     meldingen_service = MeldingenService(request=request)
     melding = meldingen_service.get_melding(id)
-    print(melding)
 
-    # Get task types for the user
-    taaktypes = get_taaktypes(melding, request)
+    # Get taak types for the user
+    taaktypes = TaakRService(request=request).get_niet_actieve_taaktypes(melding)
+    taaktypes_categorized = TaakRService(request=request).categorize_taaktypes(
+        melding, taaktypes
+    )
 
     # Categorize task types
     taaktype_categories = {}
-    for taaktype_url, taaktype_omschrijving in taaktypes:
+    for taaktype_url, taaktype_omschrijving in taaktypes_categorized:
         categories = TaaktypeCategorie.objects.filter(
             taaktypes__contains=[taaktype_url]
         )
@@ -711,10 +718,16 @@ def taak_starten(request, id):
         )
         if form.is_valid():
             data = form.cleaned_data
-            taaktypes_dict = {tt[0]: tt[1] for tt in taaktypes}
+            taaktypes_dict = {tt[0]: tt[1] for tt in taaktypes_categorized}
+            taakapplicatie_taaktype_url = TaakRService(
+                request=request
+            ).get_taakapplicatie_taaktype_url(data.get("taaktype"))
             meldingen_service.taak_aanmaken(
                 melding_uuid=id,
-                taaktype_url=data.get("taaktype"),
+                taaktypeapplicatie_taaktype_url=data.get(
+                    "taaktype"
+                ),  # Not used in mor-core
+                taakapplicatie_taaktype_url=taakapplicatie_taaktype_url,
                 titel=taaktypes_dict.get(data.get("taaktype"), data.get("taaktype")),
                 bericht=data.get("bericht"),
                 gebruiker=request.user.email,

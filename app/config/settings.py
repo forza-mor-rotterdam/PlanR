@@ -15,7 +15,10 @@ TRUE_VALUES = [True, "True", "true", "1"]
 SECRET_KEY = os.getenv(
     "DJANGO_SECRET_KEY", os.getenv("SECRET_KEY", os.getenv("APP_SECRET"))
 )
-
+PRODUCTIE = "productie"
+ACCEPTATIE = "acceptatie"
+TEST = "test"
+APP_ENV = os.getenv("APP_ENV", PRODUCTIE)  # acceptatie/test/productie
 GIT_SHA = os.getenv("GIT_SHA")
 DEPLOY_DATE = os.getenv("DEPLOY_DATE", "")
 ENVIRONMENT = os.getenv("ENVIRONMENT")
@@ -369,6 +372,27 @@ MELDING_AANMAKEN_URL = os.getenv(
     "https://serviceformulier-acc.benc.forzamor.nl/melding/aanmaken",
 )
 
+onderwerpen_urls = {
+    PRODUCTIE: "https://onderwerpen.forzamor.nl",
+    ACCEPTATIE: "https://onderwerpen-acc.forzamor.nl",
+    TEST: "https://onderwerpen-test.forzamor.nl",
+}
+ONDERWERPEN_URL = os.getenv(
+    "ONDERWERPEN_URL", onderwerpen_urls.get(APP_ENV, onderwerpen_urls[ACCEPTATIE])
+)
+
+
+taakr_urls = {
+    PRODUCTIE: "https://taakr.forzamor.nl",
+    ACCEPTATIE: "https://taakr-acc.forzamor.nl",
+    TEST: "https://taakr-test.forzamor.nl",
+}
+TAAKR_URL = (
+    "http://taakr.mor.local:8009"
+    if DEBUG
+    else os.getenv("TAAKR_URL", taakr_urls.get(APP_ENV, taakr_urls[ACCEPTATIE]))
+)
+
 
 def show_debug_toolbar(request):
     return DEBUG and os.getenv("SHOW_DEBUG_TOOLBAR") in TRUE_VALUES
@@ -532,11 +556,3 @@ CKEDITOR_CONFIGS = {
 CKEDITOR_UPLOAD_PATH = "uploads/"
 
 EMAIL_BEHEER = os.getenv("EMAIL_BEHEER", "ForzaMOR@rotterdam.nl")
-
-APP_ENV = os.getenv("APP_ENV", "productie")  # acceptatie/test/productie
-ONDERWERPEN_URL = os.getenv(
-    "ONDERWERPEN_URL",
-    "https://onderwerpen-acc.forzamor.nl"
-    if APP_ENV != "productie"
-    else "https://onderwerpen.forzamor.nl",
-)
