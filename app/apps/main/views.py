@@ -719,15 +719,9 @@ def taak_starten(request, id):
         if form.is_valid():
             data = form.cleaned_data
             taaktypes_dict = {tt[0]: tt[1] for tt in taaktypes_categorized}
-            taakapplicatie_taaktype_url = TaakRService(
-                request=request
-            ).get_taakapplicatie_taaktype_url(data.get("taaktype"))
             meldingen_service.taak_aanmaken(
                 melding_uuid=id,
-                taaktypeapplicatie_taaktype_url=data.get(
-                    "taaktype"
-                ),  # Not used in mor-core
-                taakapplicatie_taaktype_url=taakapplicatie_taaktype_url,
+                taakapplicatie_taaktype_url=data.get("taaktype"),
                 titel=taaktypes_dict.get(data.get("taaktype"), data.get("taaktype")),
                 bericht=data.get("bericht"),
                 gebruiker=request.user.email,

@@ -1069,23 +1069,25 @@ class TaaktypeCategorieAanpassenForm(forms.ModelForm):
         current_taaktypes = (
             [
                 (
-                    taaktype.get("_links", {}).get("self"),
+                    taaktype.get("_links", {}).get("taakapplicatie_taaktype_url"),
                     taaktype.get("omschrijving"),
                 )
                 for taaktype in alle_taaktypes
-                if taaktype.get("_links", {}).get("self") in self.instance.taaktypes
+                if taaktype.get("_links", {}).get("taakapplicatie_taaktype_url")
+                in self.instance.taaktypes
             ]
             if self.instance
             else []
         )
 
         alle_taaktypes_urls = [
-            taaktype.get("_links", {}).get("self") for taaktype in alle_taaktypes
+            taaktype.get("_links", {}).get("taakapplicatie_taaktype_url")
+            for taaktype in alle_taaktypes
         ]
 
         unused_taaktypes = [
             (
-                taaktype.get("_links", {}).get("self"),
+                taaktype.get("_links", {}).get("taakapplicatie_taaktype_url"),
                 taaktype.get("omschrijving"),
             )
             for taaktype, taaktype_url in zip(alle_taaktypes, alle_taaktypes_urls)

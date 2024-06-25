@@ -165,7 +165,7 @@ class ContextAanpassenForm(forms.ModelForm):
         self.fields["standaard_filters"].choices = self.onderwerpen_choices
         self.fields["taaktypes"].choices = [
             (
-                taaktype.get("_links", {}).get("self"),
+                taaktype.get("_links", {}).get("taakapplicatie_taaktype_url"),
                 taaktype.get("omschrijving"),
             )
             for taaktype in self.taaktypes

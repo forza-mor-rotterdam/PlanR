@@ -1,5 +1,4 @@
 import json
-from urllib.parse import urlparse
 
 from apps.services.meldingen import MeldingenService
 from apps.services.onderwerpen import render_onderwerp
@@ -83,8 +82,8 @@ class Context(BasisModel):
         taaktype_namen = [
             taaktype.get("omschrijving")
             for taaktype in taaktypes
-            if urlparse(taaktype.get("_links", {}).get("self")).path
-            in [urlparse(tt).path for tt in self.taaktypes]
+            if taaktype.get("_links", {}).get("taakapplicatie_taaktype_url")
+            in self.taaktypes
         ]
         return taaktype_namen
 

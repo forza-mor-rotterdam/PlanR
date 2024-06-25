@@ -1,5 +1,4 @@
 import logging
-from urllib.parse import urlparse
 
 from apps.services.basis import BasisService
 from django.conf import settings
@@ -82,12 +81,12 @@ class TaakRService(BasisService):
         gebruiker_context = get_gebruiker_context(self.request.user)
         taaktypes_categorized = [
             [
-                tt.get("_links", {}).get("self"),
+                tt.get("_links", {}).get("taakapplicatie_taaktype_url"),
                 f"{tt.get('omschrijving')}",
             ]
             for tt in taaktypes
-            if urlparse(tt.get("_links", {}).get("self")).path
-            in [urlparse(tt).path for tt in gebruiker_context.taaktypes]
+            if tt.get("_links", {}).get("taakapplicatie_taaktype_url")
+            in gebruiker_context.taaktypes
             and tt.get("actief", False)
         ]
         gebruikte_taaktypes = [
