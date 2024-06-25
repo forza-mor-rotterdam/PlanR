@@ -233,11 +233,9 @@ class MeldingenService(BasisService):
         titel,
         bericht=None,
         gebruiker=None,
-        taaktypeapplicatie_taaktype_url=None,  # Not used in mor-core atm
         additionele_informatie={},
     ):
         data = {
-            "taaktypeapplicatie_taaktype_url": taaktypeapplicatie_taaktype_url,  # Not used in mor-core atm
             "taaktype": taakapplicatie_taaktype_url,
             "titel": titel,
             "bericht": bericht,
