@@ -27,7 +27,8 @@ class TaaktypeCategorie(models.Model):
         taaktype_namen = [
             taaktype.get("omschrijving")
             for taaktype in taaktypes
-            if taaktype.get("_links", {}).get("self") in self.taaktypes
+            if taaktype.get("_links", {}).get("taakapplicatie_taaktype_url")
+            in self.taaktypes
         ]
         return taaktype_namen
 
