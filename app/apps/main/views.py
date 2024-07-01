@@ -6,6 +6,7 @@ import requests
 import weasyprint
 from apps.context.constanten import FilterManager
 from apps.context.utils import get_gebruiker_context
+from apps.instellingen.models import Instelling
 from apps.main.constanten import MSB_WIJKEN
 from apps.main.forms import (
     TAAK_RESOLUTIE_GEANNULEERD,
@@ -916,9 +917,14 @@ def melding_pdf_download(request, id):
 @login_required
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def meldingen_bestand(request):
+    instelling = Instelling.actieve_instelling()
+    if not instelling:
+        raise Exception(
+            "De MOR-Core url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
+        )
     meldingen_service = MeldingenService(request=request)
     modified_path = request.path.replace(settings.MOR_CORE_URL_PREFIX, "")
-    url = f"{settings.MELDINGEN_URL}{modified_path}"
+    url = f"{instelling.mor_core_basis_url}{modified_path}"
     headers = {"Authorization": f"Token {meldingen_service.haal_token()}"}
     response = requests.get(url, stream=True, headers=headers)
     return StreamingHttpResponse(
@@ -1057,6 +1063,11 @@ def msb_melding_zoeken(request):
 @login_required
 @permission_required("authorisatie.msb_toegang", raise_exception=True)
 def msb_importeer_melding(request):
+    instelling = Instelling.actieve_instelling()
+    if not instelling:
+        raise Exception(
+            "De MOR-Core url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
+        )
     if not request.session.get("msb_token"):
         return redirect(reverse("msb_login"))
     if not request.session.get("msb_melding"):
@@ -1097,7 +1108,7 @@ def msb_importeer_melding(request):
         },
         "origineel_aangemaakt": msb_data.get("datumMelding", now.isoformat()),
         "onderwerpen": [
-            f"{settings.MELDINGEN_URL}/api/v1/onderwerp/grofvuil-op-straat/"
+            f"{instelling.mor_core_basis_url}/api/v1/onderwerp/grofvuil-op-straat/"
         ],
         "omschrijving_melder": msb_data.get("omschrijving", "")[:500],
         "aanvullende_informatie": msb_data.get("aanvullendeInformatie", "")[:5000],
