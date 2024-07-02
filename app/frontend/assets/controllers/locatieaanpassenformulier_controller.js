@@ -258,7 +258,9 @@ export default class extends Controller {
       address.current = address.id === currentAddressId
       address.isFirst = this.getAddressId(responseData[0]) === address.id
       address.selected = !self.initial ? address.isFirst : address.current
-      address.stringified = JSON.stringify(address)
+
+      // eslint-disable-next-line no-useless-escape
+      address.stringified = JSON.stringify(address).replace(/[\/\(\)\']/g, '&apos;')
       address.verbose = this.getAddressVerbose(address)
       if (address.selected) {
         this.updateFormFields(address)
