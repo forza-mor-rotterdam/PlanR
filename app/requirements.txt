@@ -30,3 +30,4 @@ requests_mock==1.11.0
 opentelemetry-distro
 opentelemetry-exporter-otlp
 django-debug-toolbar==4.0.0
+django-encrypted-model-fields==0.6.5

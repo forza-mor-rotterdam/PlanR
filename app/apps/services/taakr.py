@@ -1,7 +1,8 @@
 import logging
+from urllib.parse import urlparse
 
+from apps.instellingen.models import Instelling
 from apps.services.basis import BasisService
-from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -10,12 +11,25 @@ class TaakRService(BasisService):
     _default_error_message = "Er ging iets mis met het ophalen van data van TaakR"
 
     def __init__(self, *args, **kwargs: dict):
-        self._api_base_url = settings.TAAKR_URL
+        instelling = Instelling.actieve_instelling()
+        if not instelling:
+            raise Exception(
+                "De TaakR url kon niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
+            )
+        self._base_url = instelling.taakr_basis_url
         super().__init__(*args, **kwargs)
+
+    def get_url(self, url):
+        url_o = urlparse(url)
+        if not url_o.scheme and not url_o.netloc:
+            return f"{self._base_url}{url}"
+        if f"{url_o.scheme}://{url_o.netloc}" == self._base_url:
+            return url
+        raise TaakRService.BasisUrlFout(f"url: {url}, basis_url: {self._base_url}")
 
     def get_afdelingen(self, url) -> list:
         alle_afdelingen = []
-        next_page = f"{self._api_base_url}/api/v1/afdeling"
+        next_page = f"{self._base_url}/api/v1/afdeling"
         while next_page:
             response = self.do_request(
                 next_page, cache_timeout=60 * 60, raw_response=False
@@ -27,7 +41,7 @@ class TaakRService(BasisService):
 
     def get_taaktypes(self, use_cache=True) -> list:
         alle_taaktypes = []
-        next_page = f"{self._api_base_url}/api/v1/taaktype"
+        next_page = f"{self._base_url}/api/v1/taaktype"
         while next_page:
             response = self.do_request(
                 next_page,
@@ -41,7 +55,7 @@ class TaakRService(BasisService):
         return alle_taaktypes
 
     def get_taaktype(self, taaktype_uuid):
-        url = f"{self._api_base_url}/api/v1/taaktype/{taaktype_uuid}"
+        url = f"{self._base_url}/api/v1/taaktype/{taaktype_uuid}"
         taaktype = self.do_request(
             url,
             cache_timeout=60 * 60,
