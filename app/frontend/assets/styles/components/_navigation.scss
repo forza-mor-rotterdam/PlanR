@@ -24,6 +24,11 @@
         &:hover,
         &:focus {
             color: $green-tint01;
+            svg {
+                path {
+                    fill: $green-tint01;
+                }
+            }
         }
     }
 }
