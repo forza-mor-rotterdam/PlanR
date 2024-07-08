@@ -522,5 +522,3 @@ CKEDITOR_CONFIGS = {
 }
 
 CKEDITOR_UPLOAD_PATH = "uploads/"
-
-EMAIL_BEHEER = os.getenv("EMAIL_BEHEER", "ForzaMOR@rotterdam.nl")
