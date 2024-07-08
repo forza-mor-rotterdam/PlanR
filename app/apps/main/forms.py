@@ -374,7 +374,12 @@ class TaakAfrondenForm(forms.Form):
         if taakopdracht_opties:
             self.fields["taakopdracht"] = forms.ChoiceField(
                 label="Taak",
-                widget=forms.Select(),
+                widget=Select2Widget(
+                    attrs={
+                        "class": "select2",
+                        "data-select2Modal-target": "targetField",
+                    }
+                ),
                 choices=taakopdracht_opties,
                 required=True,
             )
@@ -388,11 +393,15 @@ class TaakAnnulerenForm(forms.Form):
         if taakopdracht_opties:
             self.fields["taakopdracht"] = forms.ChoiceField(
                 label="Taak",
-                widget=forms.Select(),
+                widget=Select2Widget(
+                    attrs={
+                        "class": "select2",
+                        "data-select2Modal-target": "targetField",
+                    }
+                ),
                 choices=taakopdracht_opties,
                 required=True,
             )
-
             self.fields["omschrijving_intern"] = forms.CharField(
                 label="Interne opmerking",
                 help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",

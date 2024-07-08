@@ -18,11 +18,10 @@
                 <form action="{% url 'taak_annuleren' melding.uuid %}"
                       method="post"
                       class="form--horizontal"
-                      data-controller=""
                       data-turbo-frame="_top"
                       enctype="multipart/form-data">
                     {% csrf_token %}
-                    <div data-controller="bijlagen">{{ form.taakopdracht|render_rotterdam_formulier }}</div>
+                    <div data-controller="select2Modal">{{ form.taakopdracht|render_rotterdam_formulier }}</div>
                     <div class="form-control__with-helptext">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
                     <div class="form-row btn-row">
                         <button type="reset"
