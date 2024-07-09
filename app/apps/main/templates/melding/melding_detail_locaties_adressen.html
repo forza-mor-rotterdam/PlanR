@@ -1,0 +1,24 @@
+{% for locatie in locaties %}
+    {% if forloop.first %}
+        {% if melding.locaties_voor_melding|length > 1 %}<h4>Huidige Locatie</h4>{% endif %}
+        <div class="locatie-container">
+            {% include "melding/melding_detail_locaties_adres.html" with locatie=locatie melding=melding only %}
+            {% if locatie.geometrie.coordinates %}
+                {% include "melding/melding_detail_locaties_adres_kaart.html" with locatie=locatie only %}
+            {% endif %}
+        </div>
+    {% endif %}
+{% endfor %}
+{% if locaties|length > 1 %}
+    <details>
+        <summary>
+            <h4>Oude Locatie(s)</h4>
+        </summary>
+    {% endif %}
+    {% for locatie in locaties %}
+        {% if not forloop.first %}
+            {% include "melding/melding_detail_locaties_adres.html" with locatie=locatie only %}
+            {% if not forloop.last %}<hr class="divider">{% endif %}
+        {% endif %}
+    {% endfor %}
+    {% if locaties|length > 1 %}</details>{% endif %}

@@ -1,5 +1,6 @@
 import base64
 import logging
+from collections import OrderedDict
 from re import sub
 
 from apps.services.mercure import MercureService
@@ -41,6 +42,36 @@ def to_base64(file):
     base64_encoded_data = base64.b64encode(binary_file_data)
     base64_message = base64_encoded_data.decode("utf-8")
     return base64_message
+
+
+def melding_locaties(melding: dict):
+    locaties_voor_melding = melding.get("locaties_voor_melding", [])
+    adressen = [
+        locatie
+        for locatie in locaties_voor_melding
+        if locatie.get("locatie_type") == "adres"
+    ]
+    lichtmasten = [
+        locatie
+        for locatie in locaties_voor_melding
+        if locatie.get("locatie_type") == "lichtmast"
+    ]
+    graven = [
+        locatie
+        for locatie in locaties_voor_melding
+        if locatie.get("locatie_type") == "graf"
+    ]
+
+    return OrderedDict(
+        [
+            (
+                "adressen",
+                sorted(adressen, key=lambda b: b.get("gewicht"), reverse=True),
+            ),
+            ("lichtmasten", lichtmasten),
+            ("graven", graven),
+        ]
+    )
 
 
 def melding_naar_tijdlijn(melding: dict):

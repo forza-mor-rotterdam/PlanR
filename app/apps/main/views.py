@@ -40,6 +40,7 @@ from apps.main.utils import (
     get_open_taakopdrachten,
     get_ordering,
     get_valide_kolom_classes,
+    melding_locaties,
     melding_naar_tijdlijn,
     publiceer_topic_met_subscriptions,
     set_actieve_filters,
@@ -244,6 +245,7 @@ def melding_detail(request, id):
 
     open_taakopdrachten = get_open_taakopdrachten(melding)
     tijdlijn_data = melding_naar_tijdlijn(melding)
+    locaties = melding_locaties(melding)
     taaktypes = TaakRService(request=request).get_niet_actieve_taaktypes(melding)
     categorized_taaktypes = TaakRService(request=request).categorize_taaktypes(
         melding, taaktypes
@@ -312,6 +314,7 @@ def melding_detail(request, id):
         "melding/melding_detail.html",
         {
             "melding": melding,
+            "locaties": locaties,
             "form": form,
             "overview_querystring": overview_querystring,
             "bijlagen_extra": bijlagen_flat,

@@ -1,0 +1,21 @@
+<ul class="list-clean">
+    <li>
+        <div class="display--flex--md">
+            <ul class="list-clean">
+                <li>
+                    <h3 class="h5">
+                        Lichtmast
+                        {% if locaties|length > 1 %}
+                            nummers
+                        {% else %}
+                            nummer
+                        {% endif %}
+                    </h3>
+                    <p>
+                        {% for locatie in locaties %}{{ locatie.lichtmast_id|join:", " }}{% endfor %}
+                    </p>
+                </li>
+            </ul>
+        </div>
+    </li>
+</ul>
