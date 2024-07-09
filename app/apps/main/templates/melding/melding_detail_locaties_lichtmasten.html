@@ -12,7 +12,10 @@
                         {% endif %}
                     </h3>
                     <p>
-                        {% for locatie in locaties %}{{ locatie.lichtmast_id|join:", " }}{% endfor %}
+                        {% for locatie in locaties %}
+                            {{ locatie.lichtmast_id }}
+                            {% if not forloop.last %},{% endif %}
+                        {% endfor %}
                     </p>
                 </li>
             </ul>
