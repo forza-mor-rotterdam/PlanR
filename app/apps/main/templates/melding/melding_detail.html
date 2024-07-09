@@ -24,7 +24,6 @@
     has-page-navigation
 {% endblock body_class %}
 {% block body %}
-    {% context_template "melding_detail_locaties.html" as locatie_template %}
     {% context_template "melding_detail_titel.html" as titel_template %}
     {% context_template "melding_detail_melder.html" as melder_template %}
     {% context_template "melding_detail_acties.html" as acties_template %}
@@ -397,7 +396,7 @@
                                         </div>
                                     </div>
                                 </section>
-                                {% include locatie_template %}
+                                {% include "melding/melding_detail_locaties.html" %}
                                 {% include melder_template %}
                                 <div class="border-green print-only"></div>
                             </div>

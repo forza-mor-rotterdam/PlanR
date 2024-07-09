@@ -1,0 +1,45 @@
+<div class="display--flex--md">
+    <ul class="list-clean {% if melding.locaties_voor_melding|length == 1 %}has-padding{% endif %}">
+        <li>
+            <h3 class="h5">Ter hoogte van</h3>
+            <p>
+                {% if locatie.straatnaam %}
+                    {{ locatie.straatnaam }}
+                {% else %}
+                    onbekend
+                {% endif %}
+                {% if locatie.huisnummer %}
+                    {% spaceless %}
+                        <span>{{ locatie.huisnummer }}</span>
+                        {% if locatie.huisletter %}<span>{{ locatie.huisletter }}</span>{% endif %}
+                    {% endspaceless %}
+                    {% if locatie.toevoeging %}<span>{{ locatie.toevoeging }}</span>{% endif %}
+                {% else %}
+                    onbekend
+                {% endif %}
+            </p>
+        </li>
+        <li>
+            <h3 class="h5">Wijk</h3>
+            <p>
+                {% if locatie.wijknaam %}
+                    {{ locatie.wijknaam }}
+                {% else %}
+                    onbekend
+                {% endif %}
+            </p>
+        </li>
+    </ul>
+    <ul class="list-clean {% if melding.locaties_voor_melding|length == 1 %}has-padding{% endif %}">
+        <li>
+            <h3 class="h5">Buurt</h3>
+            <p>
+                {% if locatie.buurtnaam %}
+                    {{ locatie.buurtnaam }}
+                {% else %}
+                    onbekend
+                {% endif %}
+            </p>
+        </li>
+    </ul>
+</div>
