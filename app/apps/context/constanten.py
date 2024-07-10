@@ -297,7 +297,11 @@ class StatusKolom(StandaardKolom):
                 self.context, "melding.taakopdrachten_voor_melding", not_found_value=[]
             )
             if taak.get("status", {}).get("naam", "")
-            not in ["voltooid", "niet_voltooid"]
+            not in [
+                "voltooid",
+                "niet_voltooid",
+                "voltooid_met_feedback",
+            ]
         ]
 
         taakopdrachten_voor_melding = (

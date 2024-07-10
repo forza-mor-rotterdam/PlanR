@@ -76,12 +76,18 @@ class TaakRService(BasisService):
         gebruikte_taaktypes = [
             *set(
                 list(
-                    to.get("taaktype")
-                    for to in melding.get("taakopdrachten_voor_melding", [])
-                    if not to.get("resolutie")
+                    taakopdracht.get("taaktype")
+                    for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
+                    if not any(
+                        taakgebeurtenis.get("resolutie")
+                        for taakgebeurtenis in taakopdracht.get(
+                            "taakgebeurtenissen_voor_taakopdracht", []
+                        )
+                    )
                 )
             )
         ]
+
         taaktypes = [
             tt
             for tt in alle_taaktypes
@@ -106,9 +112,14 @@ class TaakRService(BasisService):
         gebruikte_taaktypes = [
             *set(
                 list(
-                    to.get("taaktype")
-                    for to in melding.get("taakopdrachten_voor_melding", [])
-                    if not to.get("resolutie")
+                    taakopdracht.get("taaktype")
+                    for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
+                    if not any(
+                        taakgebeurtenis.get("resolutie")
+                        for taakgebeurtenis in taakopdracht.get(
+                            "taakgebeurtenissen_voor_taakopdracht", []
+                        )
+                    )
                 )
             )
         ]
