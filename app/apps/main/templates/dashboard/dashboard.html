@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load mor_core_url from main_tags %}
+{% load rotterdam_formulier_html %}
+{% load json_encode from main_tags %}
+{% block title %}
+    Dashboard | PlanR
+{% endblock title %}
+{% block body %}
+    <turbo-frame id="overview">
+    <div>
+        <h1>Dashboard</h1>
+    </div>
+    <h2>Aantallen</h2>
+    <div class="grid-container">
+        <div class="grid-item bgc-white"
+             data-controller="chart-line"
+             data-chart-line-data-value='{ "labels": ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"], "datasets": [{ "label": "Binnengekomen", "borderColor": "#00811F", "fill":true, "backgroundColor": "rgba(0,200,100,0.05)", "data": [190, 320, 270, 330, 110, 340, 290] }] }'>
+            <div class="header-canvas">
+                <div class="container__flex">
+                    <div>
+                        <span class="h5">Overzicht</span>
+                        <h4 class="h3">Meldingen</h4>
+                    </div>
+                    <div>
+                        <ul class="list-horizontal">
+                            <li>
+                                <button data-action="chart-line#update" class="active">
+                                    <span class="h3">2.103</span>
+                                    <span>Binnengekomen</span>
+                                </button>
+                            </li>
+                            <li>
+                                <button data-action="chart-line#update">
+                                    <span class="h3">1.881</span>
+                                    <span>Afgehandeld</span>
+                                </button>
+                            </li>
+                            <li>
+                                <button data-action="chart-line#update">
+                                    <span class="h3">222</span>
+                                    <span>In behandeling</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="align--right">
+                        <a href="#"> Toon deze
+                            <br>
+                        meldingen</a>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <canvas data-chart-line-target="canvas"></canvas>
+            </div>
+        </div>
+        <div class="grid-item bgc-white">
+            <div class="header-canvas">
+                <div>
+                    <div>
+                        <span class="h5">Oplossingspercentage</span>
+                        <h4 class="h3">88.2% opgelost</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="container__canvas">
+                <canvas data-chart-doughnut-target="canvas"
+                        data-controller="chart-doughnut"
+                        data-chart-doughnut-type-value="doughnut"
+                        data-chart-doughnut-data-value='{ "labels": ["Opgelost", "Niet opgelost"], "datasets": [{ "label": "Oplossingspercentage", "backgroundColor": ["#00811F", "#EBF5ED"], "borderColor": "#EBF5ED", "data": [88.2, 11.8] }] }'
+                        height="200">
+                </canvas>
+                <div class="centered">
+                    <span class="pill">88,2%</span>
+                    <br>
+                    <small>van de meldingen is
+                        <br>
+                    uitgevoerd in deze periode.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    </turbo-frame>
+{% endblock body %}

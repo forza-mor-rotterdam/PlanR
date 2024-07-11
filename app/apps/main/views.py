@@ -109,6 +109,16 @@ def root(request):
 
 @login_required
 @permission_required("authorisatie.melding_lijst_bekijken", raise_exception=True)
+def dashboard(request):
+    return render(
+        request,
+        "dashboard/dashboard.html",
+        {},
+    )
+
+
+@login_required
+@permission_required("authorisatie.melding_lijst_bekijken", raise_exception=True)
 def melding_lijst(request):
     meldingen_service = MeldingenService(request=request)
     meldingen_service.set_gebruiker(

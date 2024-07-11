@@ -10,6 +10,7 @@ body {
     font-family: "Bolder", sans-serif;
     font-size: 1em;
     color: $gray-tint11;
+    background-color: $gray-tint00;
 
     @media (min-width: map-get($grid-breakpoints, sm)) {
         font-size: 1.125em;
@@ -506,6 +507,9 @@ body.no-js {
 
 // HELPER-CLASSES
 
+.align-right {
+    text--align: right;
+}
 .foldout {
     height: auto;
     overflow: hidden;
@@ -561,6 +565,9 @@ body.no-js {
     pointer-events: none;
 }
 
+.bgc-white {
+    background-color: $white;
+}
 .nowrap {
     white-space: nowrap;
 }
