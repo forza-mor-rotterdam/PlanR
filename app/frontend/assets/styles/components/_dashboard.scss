@@ -26,6 +26,10 @@ canvas {
         margin: 0;
     }
 
+    .width--fixed {
+        display: inline-block;
+    }
+
     button {
         border: none;
         background-color: transparent;
@@ -44,7 +48,7 @@ canvas {
 
         &.active,
         &:hover {
-            span:not(.h3) {
+            span.decorated {
                 border-bottom: 2px solid $green-tint01;
             }
         }

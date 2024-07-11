@@ -2,10 +2,12 @@
 import Chart from '@stimulus-components/chartjs'
 
 export default class extends Chart {
-  static targets = ['canvas']
+  static targets = ['canvas', 'received', 'done', 'open']
   connect() {
     super.connect()
-    console.log('Do what you want here.')
+    this.animateValue(this.receivedTarget, this.data.get('received'))
+    this.animateValue(this.doneTarget, this.data.get('done'))
+    this.animateValue(this.openTarget, this.data.get('open'))
 
     // The chart.js instance
     this.chart
@@ -49,6 +51,20 @@ export default class extends Chart {
     button.classList.add('active')
   }
 
+  animateValue(object, end, duration = 1000) {
+    let startTimestamp = null
+    let start = 0
+    const step = (timestamp) => {
+      if (!startTimestamp) startTimestamp = timestamp
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1)
+      object.innerHTML = Math.floor(progress * (end - start) + start)
+      if (progress < 1) {
+        window.requestAnimationFrame(step)
+      }
+    }
+    window.requestAnimationFrame(step)
+  }
+
   // You can set default options in this getter for all your charts.
   get defaultOptions() {
     return {
@@ -70,6 +86,9 @@ export default class extends Chart {
             display: false,
           },
         },
+      },
+      animation: {
+        easing: 'easeInOutSine',
       },
     }
   }

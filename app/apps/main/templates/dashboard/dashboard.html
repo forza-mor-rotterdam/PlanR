@@ -10,75 +10,84 @@
     <div>
         <h1>Dashboard</h1>
     </div>
-    <h2>Aantallen</h2>
-    <div class="grid-container">
-        <div class="grid-item bgc-white"
-             data-controller="chart-line"
-             data-chart-line-data-value='{ "labels": ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"], "datasets": [{ "label": "Binnengekomen", "borderColor": "#00811F", "fill":true, "backgroundColor": "rgba(0,200,100,0.05)", "data": [190, 320, 270, 330, 110, 340, 290] }] }'>
-            <div class="header-canvas">
-                <div class="container__flex">
-                    <div>
-                        <span class="h5">Overzicht</span>
-                        <h4 class="h3">Meldingen</h4>
-                    </div>
-                    <div>
-                        <ul class="list-horizontal">
-                            <li>
-                                <button data-action="chart-line#update" class="active">
-                                    <span class="h3">2.103</span>
-                                    <span>Binnengekomen</span>
-                                </button>
-                            </li>
-                            <li>
-                                <button data-action="chart-line#update">
-                                    <span class="h3">1.881</span>
-                                    <span>Afgehandeld</span>
-                                </button>
-                            </li>
-                            <li>
-                                <button data-action="chart-line#update">
-                                    <span class="h3">222</span>
-                                    <span>In behandeling</span>
-                                </button>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="align--right">
-                        <a href="#"> Toon deze
-                            <br>
-                        meldingen</a>
+    <div class="screen-xl">
+        <h2>Aantallen</h2>
+        <div class="grid-container">
+            <div class="grid-item bgc-white"
+                 data-controller="chart-line"
+                 data-chart-line-data-value='{ "labels": ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"], "datasets": [{ "label": "Binnengekomen", "borderColor": "#00811F", "fill":true, "backgroundColor": "rgba(0,200,100,0.05)", "data": [190, 320, 270, 330, 110, 340, 290] }] }'
+                 data-chart-line-received="2103"
+                 data-chart-line-done="1881"
+                 data-chart-line-open="222">
+                <div class="header-canvas">
+                    <div class="container__flex">
+                        <div>
+                            <span class="h5">Overzicht</span>
+                            <h4 class="h3">Meldingen</h4>
+                        </div>
+                        <div>
+                            <ul class="list-horizontal">
+                                <li>
+                                    <button data-action="chart-line#update" class="active">
+                                        <span class="h3"><span data-chart-line-target="received" class="width--fixed">2103</span></span>
+                                        <span class="decorated">Binnengekomen</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button data-action="chart-line#update">
+                                        <span class="h3"><span data-chart-line-target="done" class="width--fixed">1.881</span></span>
+                                        <span class="decorated">Afgehandeld</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button data-action="chart-line#update">
+                                        <span class="h3"><span data-chart-line-target="open" class="width--fixed">222</span></span>
+                                        <span class="decorated">In behandeling</span>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="align--right">
+                            <a href="#"> Toon deze
+                                <br>
+                            meldingen</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div>
-                <canvas data-chart-line-target="canvas"></canvas>
-            </div>
-        </div>
-        <div class="grid-item bgc-white">
-            <div class="header-canvas">
                 <div>
+                    <canvas data-chart-line-target="canvas"></canvas>
+                </div>
+            </div>
+            <div class="grid-item bgc-white"
+                 data-controller="chart-doughnut"
+                 data-chart-doughnut-type-value="doughnut"
+                 data-chart-doughnut-data-value='{ "labels": ["Opgelost", "Niet opgelost"], "datasets": [{ "label": "Oplossingspercentage", "backgroundColor": ["#00811F", "#EBF5ED"], "borderColor": "#EBF5ED", "data": [88.2, 11.8] }] }'
+                 data-chart-doughnut-percentage="88.2">
+                <div class="header-canvas">
                     <div>
-                        <span class="h5">Oplossingspercentage</span>
-                        <h4 class="h3">88.2% opgelost</h4>
+                        <div>
+                            <span class="h5">Oplossingspercentage</span>
+                            <h4 class="h3">
+                                <span data-chart-doughnut-target="percentage" class="width--fixed">88</span>% opgelost
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="container__canvas">
+                    <canvas data-chart-doughnut-target="canvas"></canvas>
+                    <div class="centered">
+                        <span class="pill"><span data-chart-doughnut-target="percentagePill">88</span>%</span>
+                        <br>
+                        <small>van de meldingen is
+                            <br>
+                        uitgevoerd in deze periode.</small>
                     </div>
                 </div>
             </div>
-            <div class="container__canvas">
-                <canvas data-chart-doughnut-target="canvas"
-                        data-controller="chart-doughnut"
-                        data-chart-doughnut-type-value="doughnut"
-                        data-chart-doughnut-data-value='{ "labels": ["Opgelost", "Niet opgelost"], "datasets": [{ "label": "Oplossingspercentage", "backgroundColor": ["#00811F", "#EBF5ED"], "borderColor": "#EBF5ED", "data": [88.2, 11.8] }] }'
-                        height="200">
-                </canvas>
-                <div class="centered">
-                    <span class="pill">88,2%</span>
-                    <br>
-                    <small>van de meldingen is
-                        <br>
-                    uitgevoerd in deze periode.</small>
-                </div>
-            </div>
         </div>
+    </div>
+    <div class="screen-xl--notification">
+        <p>Deze pagina is alleen te bekijken op een groter scherm.</p>
     </div>
     </turbo-frame>
 {% endblock body %}

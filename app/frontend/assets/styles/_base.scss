@@ -64,6 +64,18 @@ main {
     }
 }
 
+.screen-xl {
+    display: none;
+
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        display: block;
+    }
+}
+.screen-xl--notification {
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        display: none;
+    }
+}
 .grid-container {
     display: grid;
     grid-auto-columns: minmax(0, 1fr);
@@ -74,6 +86,8 @@ main {
     }
 
     .grid-item {
+        box-sizing: content-box;
+        min-width: 0; // when min-widh is not set, nested charts are not animating..
         &.bottom-left {
             display: flex;
             flex-direction: column;
