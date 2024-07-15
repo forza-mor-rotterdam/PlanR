@@ -1,9 +1,12 @@
 canvas {
     background-color: $white;
     padding: $alert-padding-x;
+    position: relative;
+    z-index: 5;
+    background: transparent;
 }
 
-.header-canvas {
+.header-chart {
     background-color: $white;
     padding: $alert-padding-y;
 
@@ -14,11 +17,6 @@ canvas {
         > div {
             flex: 0 1 auto;
         }
-    }
-    a {
-        font-size: 0.6em;
-        display: inline-block;
-        color: $black;
     }
 
     h3,
@@ -62,24 +60,89 @@ canvas {
     }
 }
 
-.container__canvas {
-    position: relative;
+.footer-chart {
+    text-align: center;
+    padding-bottom: 1em;
+    a {
+        font-size: 0.6em;
+        display: inline-block;
+        color: $black;
+    }
+}
 
-    .centered {
-        position: absolute;
-        top: 60%;
-        left: 50%;
-        width: 60%;
-        transform: translate(-50%, -50%);
-        text-align: center;
+.container__chart--slider:not(:first-child) {
+    border-top: 13px solid $gray-tint00;
+}
+
+.container__bar {
+    width: 100%;
+    padding: 0 $alert-padding-x;
+    box-sizing: border-box;
+    margin-top: $alert-padding-x;
+
+    .bar-background {
+        width: 100%;
+        height: 11px;
+        background-color: #eff1f4;
+        position: relative;
+        margin-bottom: 0.5em;
+
+        .bar {
+            height: 3px;
+            border-top: 4px solid $green-tint04;
+            border-bottom: 4px solid $green-tint04;
+            position: absolute;
+            top: 0;
+            left: 0;
+            animation: fullwidth 1s ease-in-out forwards;
+            animation-iteration-count: 1;
+
+            &--color-primary {
+                background-color: $green-tint01;
+            }
+            &--color-warning {
+                background-color: $warning;
+            }
+        }
     }
 
-    .pill {
-        display: inline-block;
-        padding: 0.3em 0.5em;
-        border-radius: 100px;
-        background-color: $green-tint04;
-        color: $green-tint01;
-        font-weight: 900;
+    .container__slider {
+        width: 100%;
+        position: relative;
+
+        .slider-wrapper {
+            position: relative;
+        }
+
+        .slider,
+        .label {
+            position: absolute;
+            left: 0;
+            animation: fullleft 1s ease-in-out forwards;
+            animation-iteration-count: 1;
+        }
+
+        .slider {
+            top: -4px;
+            width: 3px;
+            border: 2px solid $white;
+            background-color: $black;
+            height: 15px;
+            border-radius: 5px;
+        }
+
+        .label {
+            top: -2em;
+            transform: translateX(calc(-50% + 4px));
+            font-weight: 700;
+            padding: 0.3em 0.5em;
+            border-radius: 10px;
+            background-color: $white;
+        }
+    }
+
+    .container__flex {
+        display: flex;
+        justify-content: space-between;
     }
 }
