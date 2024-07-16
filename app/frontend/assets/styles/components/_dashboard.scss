@@ -1,17 +1,12 @@
 .dashboard-subjects {
     li {
         margin-right: 1em;
-        a {
-            font-size: 0.75em;
-            text-decoration: none;
-            color: $black;
+        font-size: 0.75em;
 
-            &.active,
-            &:hover {
-                text-shadow:
-                    0 0 0.9px #333,
-                    0 0 0.65px #333;
-            }
+        &.active {
+            text-shadow:
+                0 0 0.9px #333,
+                0 0 0.65px #333;
         }
     }
 }
@@ -50,6 +45,9 @@ canvas {
         border: none;
         background-color: transparent;
         cursor: pointer;
+        * {
+            pointer-events: none;
+        }
         span {
             display: block;
             text-align: left;

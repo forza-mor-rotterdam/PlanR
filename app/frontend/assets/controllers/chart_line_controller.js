@@ -1,30 +1,44 @@
 // import { Controller } from '@hotwired/stimulus'
 import Chart from '@stimulus-components/chartjs'
 
+const maandArray = [
+  'januari',
+  'februari',
+  'maart',
+  'april',
+  'mei',
+  'juni',
+  'juli',
+  'augustus',
+  'september',
+  'oktober',
+  'november',
+  'december',
+]
+
 export default class extends Chart {
   static targets = ['canvas']
   connect() {
     super.connect()
+
+    const nu = new Date()
+    var maandtekst = maandArray[nu.getMonth()]
+    const labels = []
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(nu.getFullYear(), nu.getMonth(), nu.getDate() - i)
+      labels.push(`${date.getDate()} ${maandtekst}`)
+    }
+
+    this.chart.data.labels = labels
+    this.chart.update()
   }
 
   async update(e) {
     this.setActiveButton(e)
-
-    const randomList = []
-    for (let i = 0; i < this.chart.data.labels.length; i++) {
-      randomList.push(this.getRandomInt())
-    }
-
-    this.chart.data.datasets[0].data = randomList
+    const newData = e.params.newdata.split(',')
+    this.chart.data.datasets[0].data = newData
+    this.chart.data.datasets[0].label = e.target.querySelector('.decorated').textContent
     this.chart.update()
-  }
-
-  getRandomInt() {
-    const min = 50
-    const max = 400
-    const range = max - min
-    const num = Math.floor(Math.random() * range + min)
-    return num
   }
 
   setActiveButton(e) {
@@ -67,6 +81,16 @@ export default class extends Chart {
             display: false,
           },
         },
+        xAxes: [
+          {
+            type: 'time',
+            time: {
+              min: this.start,
+              max: this.end,
+              unit: 'day',
+            },
+          },
+        ],
       },
       animation: {
         easing: 'easeInOutSine',

@@ -13,14 +13,14 @@
     <div class="screen-xl">
         <div>
             <ul class="dashboard-subjects list-horizontal">
-                <li>
-                    <a href="" class="active">Laatste 7 dagen</a>
+                <li class="active">
+                    <span>Laatste 7 dagen</span>
                 </li>
                 <li>
-                    <a href="">Alle afdelingen</a>
+                    <span>Alle afdelingen</span>
                 </li>
                 <li>
-                    <a href="">Alle locaties</a>
+                    <span>Alle locaties</span>
                 </li>
             </ul>
         </div>
@@ -44,25 +44,30 @@
                             <div>
                                 <ul class="list-horizontal">
                                     <li>
-                                        <button data-action="chart-line#update" class="active">
+                                        <button data-action="chart-line#update"
+                                                data-chart-line-newdata-param='190, 320, 270, 330, 110, 340, 290'
+                                                class="active">
                                             <span class="h3"><span data-chart-utils-target="numbersReceived" class="width--fixed"></span></span>
                                             <span class="decorated">Binnengekomen</span>
                                         </button>
                                     </li>
                                     <li>
-                                        <button data-action="chart-line#update">
+                                        <button data-action="chart-line#update"
+                                                data-chart-line-newdata-param='90, 120, 170, 220, 270, 320, 390'>
                                             <span class="h3"><span data-chart-utils-target="numbersOpen" class="width--fixed"></span></span>
                                             <span class="decorated">In behandeling</span>
                                         </button>
                                     </li>
                                     <li>
-                                        <button data-action="chart-line#update">
+                                        <button data-action="chart-line#update"
+                                                data-chart-line-newdata-param='390, 320, 270, 220, 170, 120, 90'>
                                             <span class="h3"><span data-chart-utils-target="numbersDone" class="width--fixed"></span></span>
                                             <span class="decorated">Afgehandeld</span>
                                         </button>
                                     </li>
                                     <li>
-                                        <button data-action="chart-line#update">
+                                        <button data-action="chart-line#update"
+                                                data-chart-line-newdata-param='0, 100, 250, 400, 250, 100, 0'>
                                             <span class="h3"><span data-chart-utils-target="numbersNotDone" class="width--fixed"></span></span>
                                             <span class="decorated">Niet afgehandeld</span>
                                         </button>
@@ -83,7 +88,7 @@
                 <div class="grid-item bgc-white">
                     <div class="container__chart--slider"
                          data-controller="chart-slider"
-                         data-chart-slider-percentage="89">
+                         data-chart-slider-percentage="189">
                         <div class="header-chart">
                             <div>
                                 <div>
