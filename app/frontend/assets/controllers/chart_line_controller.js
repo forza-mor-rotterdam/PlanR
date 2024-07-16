@@ -43,6 +43,17 @@ export default class extends Chart {
         legend: {
           display: false,
         },
+        tooltip: {
+          backgroundColor: '#ffffff',
+          borderColor: 'rgba(0, 0 ,0 , .8)',
+          borderWidth: 1,
+          bodyAlign: 'center',
+          bodyColor: '#000000',
+          titleColor: '#000000',
+          titleAlign: 'center',
+          displayColors: false,
+          borderRadius: 0,
+        },
       },
       scales: {
         y: {

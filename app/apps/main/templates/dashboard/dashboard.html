@@ -11,7 +11,20 @@
         <h1>Dashboard</h1>
     </div>
     <div class="screen-xl">
-        <div data-controller="aantallen">
+        <div>
+            <ul class="dashboard-subjects list-horizontal">
+                <li>
+                    <a href="" class="active">Laatste 7 dagen</a>
+                </li>
+                <li>
+                    <a href="">Alle afdelingen</a>
+                </li>
+                <li>
+                    <a href="">Alle locaties</a>
+                </li>
+            </ul>
+        </div>
+        <div>
             <h2>Aantallen</h2>
             <div class="grid-container"
                  data-controller="chart-utils"
@@ -134,12 +147,12 @@
                 </div>
             </div>
         </div>
-        {% comment %} <div data-controller="locatie">
+        <div data-controller="locatie">
             <h2>Locatie</h2>
         </div>
         <div data-controller="top-vijf">
             <h2>Top vijf</h2>
-        </div> {% endcomment %}
+        </div>
     </div>
     <div class="screen-xl--notification">
         <p>Deze pagina is alleen te bekijken op een groter scherm.</p>
