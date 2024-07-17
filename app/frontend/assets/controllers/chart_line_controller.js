@@ -81,16 +81,6 @@ export default class extends Chart {
             display: false,
           },
         },
-        xAxes: [
-          {
-            type: 'time',
-            time: {
-              min: this.start,
-              max: this.end,
-              unit: 'day',
-            },
-          },
-        ],
       },
       animation: {
         easing: 'easeInOutSine',
