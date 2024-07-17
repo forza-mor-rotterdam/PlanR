@@ -83,6 +83,13 @@ main {
 
     @media (min-width: map-get($grid-breakpoints, md)) {
         grid-template-columns: 66fr 34fr;
+
+        &.grid-container--reversed {
+            grid-template-columns: 34fr 66fr;
+        }
+        &.grid-container--3cols {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
     }
 
     .grid-item {
@@ -486,10 +493,18 @@ dl {
 // SECTIONS
 section {
     &.section--seperated {
-        padding: 1rem 0 0.75rem;
+        padding: 1em 0 0.75em;
 
         &__no-border-bottom {
             border-bottom: 0;
+        }
+    }
+    &.section--seperated--l {
+        padding: 1em 0 4em;
+        border-bottom: 1px solid #a6a6a6;
+
+        &:last-child {
+            border: none;
         }
     }
 }
