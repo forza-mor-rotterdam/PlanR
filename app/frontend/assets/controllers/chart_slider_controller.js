@@ -1,38 +1,44 @@
 import { Controller } from '@hotwired/stimulus'
 
-let dataValue = null
+let observer = null
 
 export default class extends Controller {
-  static targets = ['percentageHeader', 'percentageLabel', 'bar', 'wrapper']
-
-  connect() {
-    dataValue = this.data.get('percentage')
-
-    if (this.hasWrapperTarget) {
-      this.wrapperTarget.setAttribute('style', `max-width:${dataValue}%`)
+  initialize() {
+    let options = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.6,
     }
-    if (this.hasBarTarget) {
-      this.barTarget.setAttribute('style', `max-width:${dataValue}%`)
-    }
-    if (this.hasPercentageHeaderTarget) {
-      this.animateValue(this.percentageHeaderTarget, dataValue)
-    }
-    if (this.hasPercentageLabelTarget) {
-      this.animateValue(this.percentageLabelTarget, dataValue)
-    }
+    observer = new IntersectionObserver(this.handleIntersect, options)
+    observer.observe(this.element)
   }
 
-  animateValue(object, end, duration = 1000) {
-    let startTimestamp = null
-    let start = 0
-    const step = (timestamp) => {
-      if (!startTimestamp) startTimestamp = timestamp
-      const progress = Math.min((timestamp - startTimestamp) / duration, 1)
-      object.innerHTML = Math.floor(progress * (end - start) + start)
-      if (progress < 1) {
-        window.requestAnimationFrame(step)
+  handleIntersect(entries) {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting && !entry.target.classList.contains('in-viewport')) {
+        entry.target.classList.add('in-viewport')
+        const numbersToAnimate = entry.target.querySelectorAll('.animated')
+        numbersToAnimate.forEach((number) => {
+          let end = number.textContent
+          let duration = 1000
+          let startTimestamp = null
+          let start = 0
+          const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1)
+            number.textContent = Math.floor(progress * (end - start) + start)
+            if (progress < 1) {
+              window.requestAnimationFrame(step)
+            }
+          }
+          window.requestAnimationFrame(step)
+        })
+        // observer.unobserve(entry.target)
       }
-    }
-    window.requestAnimationFrame(step)
+    })
+  }
+
+  disconnect() {
+    observer.disconnect(this.element)
   }
 }

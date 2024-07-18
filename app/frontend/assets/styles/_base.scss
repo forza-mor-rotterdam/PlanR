@@ -40,6 +40,16 @@ header {
     }
 }
 
+body.wide--xl {
+    main,
+    header,
+    .container--env {
+        > .container {
+            max-width: 1250px;
+        }
+    }
+}
+
 main,
 header {
     padding: 0 map-get($container-margin, s) 16px;

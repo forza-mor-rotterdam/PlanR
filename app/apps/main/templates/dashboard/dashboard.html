@@ -5,149 +5,137 @@
 {% block title %}
     Dashboard | PlanR
 {% endblock title %}
+{% block body_class %}
+    wide--xl
+{% endblock body_class %}
 {% block body %}
     <turbo-frame id="overview">
     <div>
         <h1>Dashboard</h1>
     </div>
     <div class="screen-xl">
-        <div>
-            <ul class="dashboard-subjects list-horizontal">
-                <li class="active">
-                    <span>Laatste 7 dagen</span>
-                </li>
-                <li>
-                    <span>Alle afdelingen</span>
-                </li>
-                <li>
-                    <span>Alle locaties</span>
-                </li>
-            </ul>
-        </div>
         <section class="section--seperated--l">
-            <div>
-                <h2>Aantallen</h2>
-                <div class="grid-container"
-                     data-controller="chart-utils"
-                     data-chart-utils-received="2103"
-                     data-chart-utils-open="209"
-                     data-chart-utils-done="1881"
-                     data-chart-utils-not-done="13">
-                    <div class="grid-item bgc-white"
-                         data-controller="chart-line"
-                         data-chart-line-data-value='{ "labels": ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"], "datasets": [{ "label": "Binnengekomen", "borderColor": "#00811F", "fill":true, "backgroundColor": "rgba(0,200,100,0.05)", "data": [190, 320, 270, 330, 110, 340, 290] }] }'>
-                        <div class="header-chart">
-                            <div class="container__flex">
-                                <div>
-                                    <span class="h6">Overzicht</span>
-                                    <h4>Meldingen</h4>
-                                </div>
-                                <div>
-                                    <ul class="list-horizontal">
-                                        <li>
-                                            <button data-action="chart-line#update"
-                                                    data-chart-line-newdata-param='190, 320, 270, 330, 110, 340, 290'
-                                                    class="active">
-                                                <span class="h3"><span data-chart-utils-target="numbersReceived" class="width--fixed"></span></span>
-                                                <span class="decorated">Binnengekomen</span>
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <button data-action="chart-line#update"
-                                                    data-chart-line-newdata-param='90, 120, 170, 220, 270, 320, 390'>
-                                                <span class="h3"><span data-chart-utils-target="numbersOpen" class="width--fixed"></span></span>
-                                                <span class="decorated">In behandeling</span>
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <button data-action="chart-line#update"
-                                                    data-chart-line-newdata-param='390, 320, 270, 220, 170, 120, 90'>
-                                                <span class="h3"><span data-chart-utils-target="numbersDone" class="width--fixed"></span></span>
-                                                <span class="decorated">Afgehandeld</span>
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <button data-action="chart-line#update"
-                                                    data-chart-line-newdata-param='0, 100, 250, 400, 250, 100, 0'>
-                                                <span class="h3"><span data-chart-utils-target="numbersNotDone" class="width--fixed"></span></span>
-                                                <span class="decorated">Niet afgehandeld</span>
-                                            </button>
-                                        </li>
-                                    </ul>
-                                </div>
+            <h2>Aantallen</h2>
+            <div class="grid-container"
+                 data-controller="chart-utils"
+                 data-chart-utils-received="2103"
+                 data-chart-utils-open="209"
+                 data-chart-utils-done="1881"
+                 data-chart-utils-not-done="13">
+                <div class="grid-item bgc-white"
+                     data-controller="chart-line"
+                     data-chart-line-data-value='{ "labels": ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"], "datasets": [{ "label": "Binnengekomen", "borderColor": "#00811F", "fill":true, "backgroundColor": "rgba(0,200,100,0.05)", "data": [190, 320, 270, 330, 110, 340, 290] }] }'>
+                    <div class="header-chart">
+                        <div class="container__flex">
+                            <div>
+                                <span class="h6">
+                                    {% include "icons/dashboard.svg" %}
+                                Afgelopen 7 dagen</span>
+                                <h4>Meldingen</h4>
                             </div>
-                        </div>
-                        <div>
-                            <canvas data-chart-line-target="canvas"></canvas>
-                        </div>
-                        <div class="footer-chart">
-                            <div class="align--center">
-                                <a href="#">Toon deze meldingen</a>
+                            <div>
+                                <ul class="list-horizontal">
+                                    <li>
+                                        <button data-action="chart-line#update"
+                                                data-chart-line-newdata-param='190, 320, 270, 330, 110, 340, 290'
+                                                class="active">
+                                            <span class="h3"><span data-chart-utils-target="numbersReceived" class="width--fixed"></span></span>
+                                            <span class="decorated">Binnengekomen</span>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button data-action="chart-line#update"
+                                                data-chart-line-newdata-param='90, 120, 170, 220, 270, 320, 390'>
+                                            <span class="h3"><span data-chart-utils-target="numbersOpen" class="width--fixed"></span></span>
+                                            <span class="decorated">In behandeling</span>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button data-action="chart-line#update"
+                                                data-chart-line-newdata-param='390, 320, 270, 220, 170, 120, 90'>
+                                            <span class="h3"><span data-chart-utils-target="numbersDone" class="width--fixed"></span></span>
+                                            <span class="decorated">Afgehandeld</span>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button data-action="chart-line#update"
+                                                data-chart-line-newdata-param='0, 100, 250, 400, 250, 100, 0'>
+                                            <span class="h3"><span data-chart-utils-target="numbersNotDone" class="width--fixed"></span></span>
+                                            <span class="decorated">Niet afgehandeld</span>
+                                        </button>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>
-                    <div class="grid-item bgc-white">
-                        <div class="container__chart--slider"
-                             data-controller="chart-slider"
-                             data-chart-slider-percentage="189">
-                            <div class="header-chart">
+                    <div>
+                        <canvas data-chart-line-target="canvas"></canvas>
+                    </div>
+                    <div class="footer-chart">
+                        <div class="align--center">
+                            <a href="#">Toon deze meldingen</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-item bgc-white">
+                    <div class="container__chart--slider lazy" data-controller="chart-slider">
+                        <div class="header-chart">
+                            <div>
                                 <div>
-                                    <div>
-                                        <span class="h6">Afhandelingsgraad</span>
-                                        <h4>
-                                            <span data-chart-slider-target="percentageHeader"></span>% opgelost
-                                        </h4>
-                                        <p>Percentage meldingen in behandeling, ten opzichte van de binnengekomen meldingen.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="container__bar">
-                                <div class="bar-background">
-                                    <div class="bar bar--color-primary" data-chart-slider-target="bar"></div>
-                                    <div class="container__slider">
-                                        <div class="slider-wrapper" data-chart-slider-target="wrapper">
-                                            <div class="slider"></div>
-                                            <div class="label">
-                                                <span data-chart-slider-target="percentageLabel"></span>%
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="container__flex">
-                                    <small>0%</small>
-                                    <small>100%</small>
+                                    <span class="h6">
+                                        {% include "icons/dashboard.svg" %}
+                                    Afhandelingsgraad</span>
+                                    <h4>
+                                        <span class="animated">89</span>% opgelost
+                                    </h4>
+                                    <p>Percentage meldingen in behandeling, ten opzichte van de binnengekomen meldingen.</p>
                                 </div>
                             </div>
                         </div>
-                        <div class="container__chart--slider"
-                             data-controller="chart-slider"
-                             data-chart-slider-percentage="10">
-                            <div class="header-chart">
-                                <div>
-                                    <div>
-                                        <h4>
-                                            <span data-chart-slider-target="percentageHeader"></span>% in behandeling
-                                        </h4>
-                                        <p>Percentage afgehandelde meldingen, ten opzichte van de binnengekomen meldingen.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="container__bar">
-                                <div class="bar-background">
-                                    <div class="bar bar--color-warning" data-chart-slider-target="bar"></div>
-                                    <div class="container__slider">
-                                        <div class="slider-wrapper" data-chart-slider-target="wrapper">
-                                            <div class="slider"></div>
-                                            <div class="label">
-                                                <span data-chart-slider-target="percentageLabel"></span>%
-                                            </div>
+                        <div class="container__bar">
+                            <div class="bar-background">
+                                <div class="bar bar--color-primary" style="max-width: 89%;"></div>
+                                <div class="container__slider">
+                                    <div class="slider-wrapper" style="max-width: 89%;">
+                                        <div class="slider"></div>
+                                        <div class="label">
+                                            <span class="animated">89</span>%
                                         </div>
                                     </div>
                                 </div>
-                                <div class="container__flex">
-                                    <small>0%</small>
-                                    <small>100%</small>
+                            </div>
+                            <div class="container__flex">
+                                <small>0%</small>
+                                <small>100%</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container__chart--slider lazy" data-controller="chart-slider">
+                        <div class="header-chart">
+                            <div>
+                                <div>
+                                    <h4>
+                                        <span class="animated">11</span>% in behandeling
+                                    </h4>
+                                    <p>Percentage afgehandelde meldingen, ten opzichte van de binnengekomen meldingen.</p>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="container__bar">
+                            <div class="bar-background">
+                                <div class="bar bar--color-warning" style="max-width: 11%;"></div>
+                                <div class="container__slider">
+                                    <div class="slider-wrapper" style="max-width: 11%;">
+                                        <div class="slider"></div>
+                                        <div class="label">
+                                            <span class="animated">11</span>%
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="container__flex">
+                                <small>0%</small>
+                                <small>100%</small>
                             </div>
                         </div>
                     </div>
@@ -160,10 +148,10 @@
                 <div class="grid-container grid-container--reversed">
                     <div class="grid-item bgc-white">
                         <div class="header-chart">
-                            <div>
-                                <span class="h6">Wijken</span>
-                                <h4>Wijken met de meeste meldingen</h4>
-                            </div>
+                            <span class="h6">
+                                {% include "icons/dashboard.svg" %}
+                            Wijken</span>
+                            <h4>Wijken met de meeste meldingen</h4>
                         </div>
                         <div class="container__table lazy" data-controller="lazyload-table-bar">
                             <table class="dashboard">
@@ -182,8 +170,12 @@
                                 <tbody>
                                     <tr>
                                         <td>Agniesebuurt</td>
-                                        <td>798</td>
-                                        <td>38%</td>
+                                        <td>
+                                            <span class="animated">798</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">38</span>%
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">
@@ -196,8 +188,12 @@
                                     </tr>
                                     <tr>
                                         <td>Provenierswijk</td>
-                                        <td>461</td>
-                                        <td>22%</td>
+                                        <td>
+                                            <span class="animated">461</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">22</span>%
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">
@@ -210,8 +206,12 @@
                                     </tr>
                                     <tr>
                                         <td>Bergpolder</td>
-                                        <td>357</td>
-                                        <td>17%</td>
+                                        <td>
+                                            <span class="animated">357</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">17</span>%
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">
@@ -224,8 +224,12 @@
                                     </tr>
                                     <tr>
                                         <td>Blijdorp</td>
-                                        <td>294</td>
-                                        <td>14%</td>
+                                        <td>
+                                            <span class="animated">294</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">14</span>%
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">
@@ -238,8 +242,12 @@
                                     </tr>
                                     <tr>
                                         <td>Liskwartier</td>
-                                        <td>189</td>
-                                        <td>9%</td>
+                                        <td>
+                                            <span class="animated">189</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">9</span>%
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">
@@ -262,7 +270,9 @@
                     <div class="grid-item bgc-white">
                         <div class="header-chart">
                             <div>
-                                <span class="h6">Kaart</span>
+                                <span class="h6">
+                                    {% include "icons/dashboard.svg" %}
+                                Kaart</span>
                                 <h4>Meldingen op de kaart</h4>
                             </div>
                         </div>
@@ -277,7 +287,9 @@
                     <div class="grid-item bgc-white">
                         <div class="header-chart">
                             <div>
-                                <span class="h6">Gemelde onderwerpen</span>
+                                <span class="h6">
+                                    {% include "icons/dashboard.svg" %}
+                                Gemelde onderwerpen</span>
                                 <h4>Meest gemelde onderwerpen</h4>
                             </div>
                         </div>
@@ -298,8 +310,12 @@
                                 <tbody>
                                     <tr>
                                         <td>Afval naast container</td>
-                                        <td>798</td>
-                                        <td>38%</td>
+                                        <td>
+                                            <span class="animated">798</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">38</span>%
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">
@@ -312,8 +328,12 @@
                                     </tr>
                                     <tr>
                                         <td>Grofvuil</td>
-                                        <td>461</td>
-                                        <td>22%</td>
+                                        <td>
+                                            <span class="animated">461</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">22</span>%
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">
@@ -326,8 +346,12 @@
                                     </tr>
                                     <tr>
                                         <td>Zwerfafval</td>
-                                        <td>357</td>
-                                        <td>17%</td>
+                                        <td>
+                                            <span class="animated">357</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">17</span>%
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">
@@ -340,8 +364,12 @@
                                     </tr>
                                     <tr>
                                         <td>Wijkcontainer</td>
-                                        <td>294</td>
-                                        <td>14%</td>
+                                        <td>
+                                            <span class="animated">294</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">14</span>%
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">
@@ -354,8 +382,12 @@
                                     </tr>
                                     <tr>
                                         <td>Overige onderwerpen</td>
-                                        <td>189</td>
-                                        <td>9%</td>
+                                        <td>
+                                            <span class="animated">189</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">9</span>%
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">
@@ -377,10 +409,10 @@
                     </div>
                     <div class="grid-item bgc-white">
                         <div class="header-chart">
-                            <div>
-                                <span class="h6">Onderwerpen in behandeling</span>
-                                <h4>Meest in behandeling zijnde onderwerpen</h4>
-                            </div>
+                            <span class="h6">
+                                {% include "icons/dashboard.svg" %}
+                            Onderwerpen in behandeling</span>
+                            <h4>Meest in behandeling zijnde onderwerpen</h4>
                         </div>
                         <div class="container__table lazy" data-controller="lazyload-table-bar">
                             <table class="dashboard">
@@ -399,8 +431,12 @@
                                 <tbody>
                                     <tr>
                                         <td>Afval naast container</td>
-                                        <td>798</td>
-                                        <td>38%</td>
+                                        <td>
+                                            <span class="animated">798</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">38</span>%
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">
@@ -413,8 +449,12 @@
                                     </tr>
                                     <tr>
                                         <td>Grofvuil</td>
-                                        <td>461</td>
-                                        <td>22%</td>
+                                        <td>
+                                            <span class="animated">461</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">22</span>%
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">
@@ -427,8 +467,12 @@
                                     </tr>
                                     <tr>
                                         <td>Zwerfafval</td>
-                                        <td>357</td>
-                                        <td>17%</td>
+                                        <td>
+                                            <span class="animated">357</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">17</span>%
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">
@@ -441,8 +485,12 @@
                                     </tr>
                                     <tr>
                                         <td>Wijkcontainer</td>
-                                        <td>294</td>
-                                        <td>14%</td>
+                                        <td>
+                                            <span class="animated">294</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">14</span>%
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">
@@ -455,8 +503,12 @@
                                     </tr>
                                     <tr>
                                         <td>Overige onderwerpen</td>
-                                        <td>189</td>
-                                        <td>9%</td>
+                                        <td>
+                                            <span class="animated">189</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">9</span>%
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">
@@ -479,7 +531,9 @@
                     <div class="grid-item bgc-white">
                         <div class="header-chart">
                             <div>
-                                <span class="h6">Afgehandelde onderwerpen</span>
+                                <span class="h6">
+                                    {% include "icons/dashboard.svg" %}
+                                Afgehandelde onderwerpen</span>
                                 <h4>Meest afgehandelde onderwerpen</h4>
                             </div>
                         </div>
@@ -500,8 +554,12 @@
                                 <tbody>
                                     <tr>
                                         <td>Afval naast container</td>
-                                        <td>798</td>
-                                        <td>38%</td>
+                                        <td>
+                                            <span class="animated">798</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">38</span>%
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">
@@ -514,8 +572,12 @@
                                     </tr>
                                     <tr>
                                         <td>Grofvuil</td>
-                                        <td>461</td>
-                                        <td>22%</td>
+                                        <td>
+                                            <span class="animated">461</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">22</span>%
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">
@@ -528,8 +590,12 @@
                                     </tr>
                                     <tr>
                                         <td>Zwerfafval</td>
-                                        <td>357</td>
-                                        <td>17%</td>
+                                        <td>
+                                            <span class="animated">357</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">17</span>%
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">
@@ -542,8 +608,12 @@
                                     </tr>
                                     <tr>
                                         <td>Wijkcontainer</td>
-                                        <td>294</td>
-                                        <td>14%</td>
+                                        <td>
+                                            <span class="animated">294</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">14</span>%
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">
@@ -556,8 +626,12 @@
                                     </tr>
                                     <tr>
                                         <td>Overige onderwerpen</td>
-                                        <td>189</td>
-                                        <td>9%</td>
+                                        <td>
+                                            <span class="animated">189</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">9</span>%
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">

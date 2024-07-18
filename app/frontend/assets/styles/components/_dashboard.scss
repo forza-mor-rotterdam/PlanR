@@ -1,16 +1,3 @@
-.dashboard-subjects {
-    li {
-        margin-right: 1em;
-        font-size: 0.75em;
-
-        &.active {
-            text-shadow:
-                0 0 0.9px #333,
-                0 0 0.65px #333;
-        }
-    }
-}
-
 canvas {
     background-color: $white;
     padding: $alert-padding-x;
@@ -86,6 +73,10 @@ canvas {
             padding-right: 10px;
             border-right: 1px solid $gray-tint06;
         }
+    }
+
+    .icon {
+        margin: 0 0.25em 0 0;
     }
 }
 
@@ -225,27 +216,33 @@ canvas {
             }
         }
     }
+}
 
-    &.lazy {
-        table.dashboard {
-            .container__bar {
-                .bar-background {
-                    .bar {
-                        animation: none;
-                        width: 0;
-                    }
-                }
+.lazy {
+    &.container__table table.dashboard,
+    &.container__chart--slider {
+        .animated {
+            visibility: hidden;
+        }
+        .container__bar {
+            .bar {
+                animation: none;
+                width: 0;
             }
         }
     }
-    &.lazy.in-viewport {
-        table.dashboard {
-            .container__bar {
-                .bar {
-                    width: 100%;
-                    animation: fullwidth 5s ease-in-out forwards;
-                    animation-iteration-count: 1;
-                }
+}
+.lazy.in-viewport {
+    &.container__table table.dashboard,
+    &.container__chart--slider {
+        .animated {
+            visibility: visible;
+        }
+        .container__bar {
+            .bar {
+                width: 100%;
+                animation: fullwidth 1s ease-in-out forwards;
+                animation-iteration-count: 1;
             }
         }
     }
