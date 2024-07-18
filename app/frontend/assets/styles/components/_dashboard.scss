@@ -61,7 +61,9 @@ canvas {
         }
 
         &.active,
-        &:hover {
+        &:hover,
+        &:focus {
+            outline: none !important;
             span.decorated {
                 border-bottom: 2px solid $green-tint01;
             }
