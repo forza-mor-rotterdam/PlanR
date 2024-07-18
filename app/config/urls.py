@@ -29,6 +29,7 @@ from apps.main.views import (
     TaaktypeCategorieLijstView,
     TaaktypeCategorieVerwijderenView,
     clear_melding_token_from_cache,
+    dashboard,
     gebruiker_info,
     http_403,
     http_404,
@@ -303,6 +304,12 @@ urlpatterns = [
         "gebruiker/profiel/",
         GebruikerProfielView.as_view(),
         name="gebruiker_profiel",
+    ),
+    # Dashboard
+    path(
+        "dashboard/",
+        dashboard,
+        name="dashboard",
     ),
     ### Locatie
     path(

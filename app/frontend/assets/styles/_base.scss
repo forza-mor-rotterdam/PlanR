@@ -10,6 +10,7 @@ body {
     font-family: "Bolder", sans-serif;
     font-size: 1em;
     color: $gray-tint11;
+    background-color: $gray-tint00;
 
     @media (min-width: map-get($grid-breakpoints, sm)) {
         font-size: 1.125em;
@@ -39,6 +40,16 @@ header {
     }
 }
 
+body.wide--xl {
+    main,
+    header,
+    .container--env {
+        > .container {
+            max-width: 1250px;
+        }
+    }
+}
+
 main,
 header {
     padding: 0 map-get($container-margin, s) 16px;
@@ -63,6 +74,18 @@ main {
     }
 }
 
+.screen-xl {
+    display: none;
+
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        display: block;
+    }
+}
+.screen-xl--notification {
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        display: none;
+    }
+}
 .grid-container {
     display: grid;
     grid-auto-columns: minmax(0, 1fr);
@@ -70,9 +93,18 @@ main {
 
     @media (min-width: map-get($grid-breakpoints, md)) {
         grid-template-columns: 66fr 34fr;
+
+        &.grid-container--reversed {
+            grid-template-columns: 34fr 66fr;
+        }
+        &.grid-container--3cols {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
     }
 
     .grid-item {
+        box-sizing: content-box;
+        min-width: 0; // when min-widh is not set, nested charts are not animating..
         &.bottom-left {
             display: flex;
             flex-direction: column;
@@ -471,10 +503,18 @@ dl {
 // SECTIONS
 section {
     &.section--seperated {
-        padding: 1rem 0 0.75rem;
+        padding: 1em 0 0.75em;
 
         &__no-border-bottom {
             border-bottom: 0;
+        }
+    }
+    &.section--seperated--l {
+        padding: 1em 0 4em;
+        border-bottom: 1px solid #a6a6a6;
+
+        &:last-child {
+            border: none;
         }
     }
 }
@@ -506,6 +546,9 @@ body.no-js {
 
 // HELPER-CLASSES
 
+.align-right {
+    text--align: right;
+}
 .foldout {
     height: auto;
     overflow: hidden;
@@ -561,6 +604,9 @@ body.no-js {
     pointer-events: none;
 }
 
+.bgc-white {
+    background-color: $white;
+}
 .nowrap {
     white-space: nowrap;
 }

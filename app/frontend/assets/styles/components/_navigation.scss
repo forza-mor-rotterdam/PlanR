@@ -4,6 +4,10 @@
     max-width: map-get($container-max-widths, xxl);
     display: flex;
     justify-content: flex-end;
+
+    .wide--xl & {
+        max-width: 1250px;
+    }
 }
 
 .list-nav--tertiary {
