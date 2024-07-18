@@ -111,20 +111,41 @@ canvas {
             margin-bottom: 0.5em;
 
             .bar {
+                position: relative;
                 height: 3px;
                 border-top: 4px solid $green-tint04;
                 border-bottom: 4px solid $green-tint04;
                 position: absolute;
                 top: 0;
                 left: 0;
-                animation: fullwidth 1s ease-in-out forwards;
-                animation-iteration-count: 1;
 
                 &--color-primary {
                     background-color: $green-tint01;
                 }
                 &--color-warning {
                     background-color: $warning;
+                }
+                .slider,
+                .label {
+                    position: absolute;
+                    right: 0;
+                }
+
+                .slider {
+                    top: -7px;
+                    width: 3px;
+                    border: 2px solid $white;
+                    background-color: $black;
+                    height: 15px;
+                    border-radius: 5px;
+                }
+                .label {
+                    top: -2em;
+                    transform: translateX(calc(50% - 4px));
+                    font-weight: 700;
+                    padding: 0.3em 0.5em;
+                    border-radius: 10px;
+                    background-color: $white;
                 }
             }
         }
@@ -135,32 +156,7 @@ canvas {
 
             .slider-wrapper {
                 position: relative;
-            }
-
-            .slider,
-            .label {
-                position: absolute;
-                left: 0;
-                animation: fullleft 1s ease-in-out forwards;
-                animation-iteration-count: 1;
-            }
-
-            .slider {
-                top: -4px;
-                width: 3px;
-                border: 2px solid $white;
-                background-color: $black;
-                height: 15px;
-                border-radius: 5px;
-            }
-
-            .label {
-                top: -2em;
-                transform: translateX(calc(-50% + 4px));
-                font-weight: 700;
-                padding: 0.3em 0.5em;
-                border-radius: 10px;
-                background-color: $white;
+                height: 5px;
             }
         }
 
@@ -243,7 +239,7 @@ canvas {
         .container__bar {
             .bar {
                 width: 100%;
-                animation: fullwidth 1s ease-in-out forwards;
+                animation: fullwidth 1.5s ease-in-out forwards;
                 animation-iteration-count: 1;
             }
         }
