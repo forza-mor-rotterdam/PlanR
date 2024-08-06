@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load rotterdam_formulier_html %}
+{% load l10n %}
+{% load humanize %}
+{% load tz %}
+{% load json_encode from json_tags %}
+{% block title %}
+    Dashboard | PlanR
+{% endblock title %}
+{% block body %}
+    <form action="." method="get">
+        {{ form.as_p }}
+        <input type="submit" value="Toon">
+    </form>
+    <table>
+        <thead>
+            <tr>
+                {% for th in tabel.thead.0 %}<th colspan="{{ tabel.thead.1.0|length }}">{{ th }}</th>{% endfor %}
+            </tr>
+            <tr>
+                {% for th in tabel.thead.1 %}
+                    {% for thh in th %}<th>{{ thh }}</th>{% endfor %}
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                {% for td in tabel.tbody %}
+                    {% for v in td %}
+                        <td style="height: 400px; vertical-align: bottom">
+                            <div style="height: {{ v.percentage|unlocalize }}%; background-color: red"></div>
+                        </td>
+                    {% endfor %}
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+{% endblock body %}
