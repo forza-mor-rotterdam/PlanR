@@ -354,7 +354,6 @@ class MeldingenService(BasisService):
                     "origineel_aangemaakt_lt": origineel_aangemaakt_lt.isoformat(),
                 }
             )
-        print(params)
         return self.do_request(
             f"{self._api_path}/melding/aantallen/",
             params=params,

@@ -18,6 +18,9 @@ const maandArray = [
 
 export default class extends Chart {
   static targets = ['canvas']
+  static values = {
+    labels: String,
+  }
   connect() {
     super.connect()
 
@@ -30,6 +33,7 @@ export default class extends Chart {
     }
 
     this.chart.data.labels = labels
+    this.chart.data.labels = JSON.parse(this.labelsValue)
     this.chart.update()
   }
 
