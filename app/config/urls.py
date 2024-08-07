@@ -18,6 +18,7 @@ from apps.context.views import (
     ContextLijstView,
     ContextVerwijderenView,
 )
+from apps.dashboard.views import dashboard
 from apps.health.views import healthz
 from apps.main.views import (
     StandaardExterneOmschrijvingAanmakenView,
@@ -29,7 +30,9 @@ from apps.main.views import (
     TaaktypeCategorieLijstView,
     TaaktypeCategorieVerwijderenView,
     clear_melding_token_from_cache,
-    dashboard,
+)
+from apps.main.views import dashboard as dashboard_old
+from apps.main.views import (
     gebruiker_info,
     http_403,
     http_404,
@@ -307,9 +310,9 @@ urlpatterns = [
     ),
     # Dashboard
     path(
-        "dashboard/",
-        dashboard,
-        name="dashboard",
+        "dashboard-old/",
+        dashboard_old,
+        name="dashboard_old",
     ),
     ### Locatie
     path(
@@ -319,6 +322,13 @@ urlpatterns = [
     ),
     path("select2/", include(select2_urls)),
     re_path(r"core/media/", meldingen_bestand, name="meldingen_bestand"),
+    path("dashboard/", dashboard, name="dashboard"),
+    re_path(r"^dashboard/(?P<jaar>\d{4})/$", dashboard, name="dashboard_jaar"),
+    re_path(
+        r"^dashboard/(?P<jaar>\d{4})/(?P<week>\d{2})/$",
+        dashboard,
+        name="dashboard_week",
+    ),
 ]
 
 if settings.OIDC_ENABLED:

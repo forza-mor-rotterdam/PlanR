@@ -45,6 +45,7 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", DEFAULT_ALLOWED_HOSTS).split(",")
 INSTALLED_APPS = (
     # templates override
     "apps.health",
+    "django.contrib.humanize",
     "django.contrib.contenttypes",
     "django.contrib.staticfiles",
     "django.contrib.messages",
@@ -82,6 +83,7 @@ INSTALLED_APPS = (
     "apps.release_notes",
     "apps.services",
     "apps.instellingen",
+    "apps.dashboard",
 )
 
 MIDDLEWARE = (

@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load rotterdam_formulier_html %}
+{% load l10n %}
+{% load humanize %}
+{% load tz %}
+{% load json_encode from json_tags %}
+{% block title %}
+    Dashboard | PlanR
+{% endblock title %}
+{% block body_class %}
+    wide--xl
+{% endblock body_class %}
+{% block body %}
+    <turbo-frame id="overview">
+    <div>
+        <h1>Dashboard</h1>
+    </div>
+    <div class="screen-xl">
+        {% comment %} <section class="section--seperated--l">
+            <form action="." method="get">
+                {{ form.as_p }}
+                <input type="submit" value="Toon">
+            </form>
+        </section> {% endcomment %}
+        <section class="section--seperated--l">
+            <h2>Aantallen</h2>
+            <div class="grid-container"
+                 data-controller="chart-utils"
+                 data-chart-utils-received="{{ melding_aantal }}"
+                 data-chart-utils-open="{{ melding_aantal_noord }}"
+                 data-chart-utils-done="{{ melding_aantal_zuid }}"
+                 data-chart-utils-not-done="{{ melding_aantal_buiten }}">
+                <div class="grid-item bgc-white"
+                     data-controller="chart-line"
+                     data-chart-line-labels-value='{{ labels|json_encode }}'
+                     data-chart-line-data-value='{ "labels": ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"], "datasets": [{ "label": "Binnengekomen", "borderColor": "#00811F", "fill":true, "backgroundColor": "rgba(0,200,100,0.05)", "data": [{{ melding_aantallen|join:", " }}] }] }'>
+                    <div class="header-chart">
+                        <div class="container__flex">
+                            <div>
+                                <span class="h6">
+                                    {% include "icons/dashboard.svg" %}
+                                    Week {{ week }}
+                                </span>
+                                <h4>Nieuwe meldingen</h4>
+                            </div>
+                            <div>
+                                <ul class="list-horizontal">
+                                    <li>
+                                        <button data-action="chart-line#update"
+                                                data-chart-line-newdata-param="{{ melding_aantallen|join:', ' }}"
+                                                class="active">
+                                            <span class="h3"><span data-chart-utils-target="numbersReceived" class="width--fixed"></span></span>
+                                            <span class="decorated">Heel Rotterdam</span>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button data-action="chart-line#update"
+                                                data-chart-line-newdata-param="{{ melding_aantallen_noord|join:', ' }}">
+                                            <span class="h3"><span data-chart-utils-target="numbersOpen" class="width--fixed"></span></span>
+                                            <span class="decorated">Rotterdam noord</span>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button data-action="chart-line#update"
+                                                data-chart-line-newdata-param="{{ melding_aantallen_zuid|join:', ' }}">
+                                            <span class="h3"><span data-chart-utils-target="numbersDone" class="width--fixed"></span></span>
+                                            <span class="decorated">Rotterdam zuid</span>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button data-action="chart-line#update"
+                                                data-chart-line-newdata-param="{{ melding_aantallen_buiten|join:', ' }}">
+                                            <span class="h3"><span data-chart-utils-target="numbersNotDone" class="width--fixed"></span></span>
+                                            <span class="decorated">Onbekend of buiten Rotterdam</span>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <canvas data-chart-line-target="canvas"></canvas>
+                    </div>
+                    <div class="footer-chart">
+                        <div class="align--center">
+                            <a href="#">Toon deze meldingen</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <div class="screen-xl--notification">
+        <p>Deze pagina is alleen te bekijken op een groter scherm.</p>
+    </div>
+    </turbo-frame>
+{% endblock body %}
