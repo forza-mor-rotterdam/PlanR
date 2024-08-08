@@ -31,7 +31,7 @@ from apps.main.views import (
     TaaktypeCategorieVerwijderenView,
     clear_melding_token_from_cache,
 )
-from apps.main.views import dashboard as dashboard_old
+from apps.main.views import dashboard as dashboard_mock
 from apps.main.views import (
     gebruiker_info,
     http_403,
@@ -310,9 +310,9 @@ urlpatterns = [
     ),
     # Dashboard
     path(
-        "dashboard-old/",
-        dashboard_old,
-        name="dashboard_old",
+        "dashboard-mock/",
+        dashboard_mock,
+        name="dashboard_mock",
     ),
     ### Locatie
     path(

@@ -11,9 +11,25 @@
     wide--xl
 {% endblock body_class %}
 {% block body %}
-    <turbo-frame id="overview">
+    <turbo-frame id="overview" data-turbo-action="advance">
+    <ul>
+        {% if vorige_volgende_week.0 %}
+            <li>
+                <a href="{{ vorige_volgende_week.0.0 }}">Week {{ vorige_volgende_week.0.1 }}</a>
+            </li>
+        {% endif %}
+        <li>
+            <span>Deze week {{ week }}</span>
+        </li>
+        {% if vorige_volgende_week.1 %}
+            <li>
+                <a href="{{ vorige_volgende_week.1.0 }}">Week {{ vorige_volgende_week.1.1 }}</a>
+            </li>
+        {% endif %}
+    </ul>
     <div>
         <h1>Dashboard</h1>
+        <p>Jaar: {{ jaar }}, week: {{ week }}</p>
     </div>
     <div class="screen-xl">
         {% comment %} <section class="section--seperated--l">
