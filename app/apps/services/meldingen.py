@@ -360,3 +360,39 @@ class MeldingenService(BasisService):
             cache_timeout=cache_timeout,
             raw_response=False,
         )
+
+    def signaal_aantallen(self, datum=None, uur=None):
+        datum_datetime = (
+            datetime.combine(datum, datetime.min.time())
+            if isinstance(datum, date)
+            else None
+        )
+        uur_int = uur if uur in range(0, 24) else None
+        cache_timeout = 0
+        params = {}
+        if datum_datetime:
+            origineel_aangemaakt_gte = datum_datetime
+            origineel_aangemaakt_lt = datum_datetime + timedelta(days=1)
+            if uur_int is not None:
+                origineel_aangemaakt_gte = origineel_aangemaakt_gte + timedelta(
+                    hours=uur_int
+                )
+                origineel_aangemaakt_lt = origineel_aangemaakt_gte + timedelta(
+                    hours=uur_int + 1
+                )
+            cache_timeout = (
+                60 * 60 * 24 if origineel_aangemaakt_lt < datetime.now() else 0
+            )
+            # cache_timeout = 0
+            params.update(
+                {
+                    "origineel_aangemaakt_gte": origineel_aangemaakt_gte.isoformat(),
+                    "origineel_aangemaakt_lt": origineel_aangemaakt_lt.isoformat(),
+                }
+            )
+        return self.do_request(
+            f"{self._api_path}/signaal/aantallen/",
+            params=params,
+            cache_timeout=cache_timeout,
+            raw_response=False,
+        )

@@ -1,49 +1,45 @@
 // import { Controller } from '@hotwired/stimulus'
 import Chart from '@stimulus-components/chartjs'
 
-const maandArray = [
-  'januari',
-  'februari',
-  'maart',
-  'april',
-  'mei',
-  'juni',
-  'juli',
-  'augustus',
-  'september',
-  'oktober',
-  'november',
-  'december',
-]
+// const maandArray = [
+//   'januari',
+//   'februari',
+//   'maart',
+//   'april',
+//   'mei',
+//   'juni',
+//   'juli',
+//   'augustus',
+//   'september',
+//   'oktober',
+//   'november',
+//   'december',
+// ]
 
 export default class extends Chart {
-  static targets = ['canvas']
-  static values = {
-    labels: String,
-  }
+  static targets = ['canvas', 'button']
   connect() {
     super.connect()
 
-    const nu = new Date()
-    var maandtekst = maandArray[nu.getMonth()]
-    const labels = []
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date(nu.getFullYear(), nu.getMonth(), nu.getDate() - i)
-      labels.push(`${date.getDate()} ${maandtekst}`)
-    }
+    // const nu = new Date()
+    // var maandtekst = maandArray[nu.getMonth()]
+    // const labels = []
+    // for (let i = 6; i >= 0; i--) {
+    //   const date = new Date(nu.getFullYear(), nu.getMonth(), nu.getDate() - i)
+    //   labels.push(`${date.getDate()} ${maandtekst}`)
+    // }
 
-    this.chart.data.labels = labels
-    if (this.hasLabelsValue) {
-      this.chart.data.labels = JSON.parse(this.labelsValue)
-    }
+    // this.chart.data.labels = labels
     this.chart.update()
   }
 
   async update(e) {
     this.setActiveButton(e)
-    const newData = e.params.newdata.split(',')
-    this.chart.data.datasets[0].data = newData
-    this.chart.data.datasets[0].label = e.target.querySelector('.decorated').textContent
+    // const newData = e.params.newdata.split(',')
+    console.log(e.params.datasets)
+    this.chart.data.datasets = e.params.datasets
+    // this.chart.data.datasets[0].data = newData
+    // this.chart.data.datasets[0].label = e.target.querySelector('.decorated').textContent
     this.chart.update()
   }
 
