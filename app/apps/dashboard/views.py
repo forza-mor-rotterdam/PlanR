@@ -98,50 +98,116 @@ def dashboard(request, jaar=None, week=None):
         maandag_van_de_week(jaar, maandag.isocalendar().week + 1),
     ]
 
-    data = []
-    meldingen_service = MeldingenService()
+    meldingen = []
+    signalen = []
     labels = []
+    meldingen_service = MeldingenService()
     for weekdag in range(0, 7):
         dag = maandag + timedelta(days=weekdag)
         melding_aantallen = meldingen_service.melding_aantallen(datum=dag)
-        data.append(melding_aantallen)
+        signaal_aantallen = meldingen_service.signaal_aantallen(datum=dag)
+        meldingen.append(melding_aantallen)
+        signalen.append(signaal_aantallen)
         labels.append(
             f"{DAGEN_VAN_DE_WEEK_KORT[weekdag]} {dag.strftime('%-d')} {MAANDEN_KORT[dag.month-1]}"
         )
-
+    wijken = [wijk.get("wijknaam") for wijk in PDOK_WIJKEN]
     wijken_noord = [
         wijk.get("wijknaam") for wijk in PDOK_WIJKEN if wijk.get("stadsdeel") == "Noord"
     ]
     wijken_zuid = [
         wijk.get("wijknaam") for wijk in PDOK_WIJKEN if wijk.get("stadsdeel") == "Zuid"
     ]
-    melding_aantallen = [sum([d.get("count") for d in dag]) for dag in data]
-    melding_aantallen_noord = [
-        sum([d.get("count") for d in dag if d.get("wijk") in wijken_noord])
-        for dag in data
-    ]
-    melding_aantallen_zuid = [
-        sum([d.get("count") for d in dag if d.get("wijk") in wijken_zuid])
-        for dag in data
-    ]
-    melding_aantallen_buiten = [
-        sum(
-            [
-                d.get("count")
-                for d in dag
-                if d.get("wijk") not in wijken_zuid
-                and d.get("wijk") not in wijken_noord
-            ]
-        )
-        for dag in data
-    ]
-    melding_aantal = sum(melding_aantallen)
-    melding_aantal_noord = sum(melding_aantallen_noord)
-    melding_aantal_zuid = sum(melding_aantallen_zuid)
-    melding_aantal_buiten = sum(melding_aantallen_buiten)
 
-    onderwerp_opties = list(set([d.get("onderwerp") for kolom in data for d in kolom]))
-    wijk_opties = list(set([d.get("wijk") for kolom in data for d in kolom]))
+    tabs = [
+        {
+            "wijken": [],
+            "wijk_not_in": True,
+            "titel": "Heel Rotterdam",
+        },
+        {
+            "wijken": wijken_noord,
+            "wijk_not_in": False,
+            "titel": "Rotterdam noord",
+        },
+        {
+            "wijken": wijken_zuid,
+            "wijk_not_in": False,
+            "titel": "Rotterdam zuid",
+        },
+        {
+            "wijken": wijken,
+            "wijk_not_in": True,
+            "titel": "Onbekend of buiten Rotterdam",
+        },
+    ]
+
+    tabs = [
+        {
+            **tab,
+            **{
+                "datasets": [
+                    {
+                        "type": "line",
+                        "label": "Aantal meldingen",
+                        "bron": meldingen,
+                    },
+                    {
+                        "type": "bar",
+                        "label": "Aantal signalen",
+                        "bron": signalen,
+                    },
+                ]
+            },
+        }
+        for tab in tabs
+    ]
+
+    tabs = [
+        {
+            "titel": tab.get("titel"),
+            "labels": labels,
+            "datasets": [
+                {
+                    "type": dataset.get("type"),
+                    "label": dataset.get("label"),
+                    "barPercentage": "0.2",
+                    "borderColor": "#00811F",
+                    "fill": True,
+                    "backgroundColor": "rgba(0,200,100,0.1)",
+                    "data": [
+                        sum(
+                            [
+                                d.get("count")
+                                for d in dag
+                                if bool(d.get("wijk") in tab.get("wijken"))
+                                != bool(tab.get("wijk_not_in"))
+                            ]
+                        )
+                        for dag in dataset.get("bron")
+                    ],
+                }
+                for dataset in tab.get("datasets", [])
+            ],
+        }
+        for tab in tabs
+    ]
+    tabs = [
+        {
+            **tab,
+            **{
+                "aantallen": [
+                    sum(dataset.get("data", [])) for dataset in tab.get("datasets", [])
+                ]
+            },
+        }
+        for tab in tabs
+    ]
+
+    onderwerp_opties = list(
+        set([d.get("onderwerp") for kolom in meldingen for d in kolom])
+    )
+    wijk_opties = list(set([d.get("wijk") for kolom in meldingen for d in kolom]))
 
     form = DashboardForm(request.GET, wijken=wijk_opties, onderwerpen=onderwerp_opties)
     if form.is_valid():
@@ -154,15 +220,8 @@ def dashboard(request, jaar=None, week=None):
             "form": form,
             "jaar": jaar,
             "week": int(week),
-            "melding_aantallen": melding_aantallen,
-            "melding_aantallen_noord": melding_aantallen_noord,
-            "melding_aantallen_zuid": melding_aantallen_zuid,
-            "melding_aantallen_buiten": melding_aantallen_buiten,
-            "melding_aantal": melding_aantal,
-            "melding_aantal_noord": melding_aantal_noord,
-            "melding_aantal_zuid": melding_aantal_zuid,
-            "melding_aantal_buiten": melding_aantal_buiten,
             "labels": labels,
             "vorige_volgende_week": vorige_volgende_week,
+            "tabs": tabs,
         },
     )
