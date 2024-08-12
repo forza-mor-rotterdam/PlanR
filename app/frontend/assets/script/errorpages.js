@@ -16,11 +16,6 @@ const questions = [
     correct: 2,
   },
   {
-    question: 'Een dooie met een dag verlof',
-    choices: ['Iemand die heel saai is', 'Iemand op zijn sterfbed', 'Iemand die heel lui is'],
-    correct: 0,
-  },
-  {
     question: 'Je ken een hoop stront paars verve, maar ’t blijf een hoop stront',
     choices: [
       'Al draagt een aap een gouden ring, hij is en blijft een lelijk ding',
