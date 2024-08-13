@@ -28,7 +28,7 @@
             <div class="grid-container" data-controller="chart-utils">
                 <div class="grid-item bgc-white"
                      data-controller="chart-line"
-                     data-chart-line-data-value='{{ tabs.0|json_encode }}'>
+                     data-chart-line-data-value='{{ aantallen_tabs.0|json_encode }}'>
                     <div class="header-chart">
                         <div class="container__flex">
                             <div>
@@ -44,12 +44,84 @@
                             </div>
                             <div>
                                 <ul class="list-horizontal">
-                                    {% for tab in tabs %}
+                                    {% for tab in aantallen_tabs %}
                                         <li>
                                             <button data-chart-line-target="button"
                                                     data-action="chart-line#update"
                                                     data-chart-line-datasets-param="{{ tab.datasets|json_encode }}"
-                                                    class="active">
+                                                    class="{% if forloop.first %} active{% endif %}">
+                                                <span class="h3">
+                                                    {% for aantal in tab.aantallen %}
+                                                        <span data-chart-utils-target="numberAnimator"
+                                                              class="width--fixed"
+                                                              data-number="{{ aantal }}">{{ aantal }}</span>
+                                                        {% if not forloop.last %}/{% endif %}
+                                                    {% endfor %}
+                                                </span>
+                                                <span class="decorated">{{ tab.titel }}</span>
+                                            </button>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <canvas data-chart-line-target="canvas"></canvas>
+                    </div>
+                    <div class="footer-chart">
+                        <div class="align--center">
+                            <a href="#">Toon deze meldingen</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-item bgc-white">
+                    <h3>Week navigatie</h3>
+                    <ul>
+                        {% if vorige_volgende_week.0 %}
+                            <li>
+                                <a href="{{ vorige_volgende_week.0.0 }}">Week {{ vorige_volgende_week.0.1 }}</a>
+                            </li>
+                        {% endif %}
+                        <li>
+                            <span>Deze week {{ week }}</span>
+                        </li>
+                        {% if vorige_volgende_week.1 %}
+                            <li>
+                                <a href="{{ vorige_volgende_week.1.0 }}">Week {{ vorige_volgende_week.1.1 }}</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <section class="section--seperated--l">
+            <h2>Status veranderingen duur</h2>
+            <div class="grid-container" data-controller="chart-utils">
+                <div class="grid-item bgc-white"
+                     data-controller="chart-line"
+                     data-chart-line-data-value='{{ status_veranderingen_tabs.0|json_encode }}'>
+                    <div class="header-chart">
+                        <div class="container__flex">
+                            <div>
+                                <span class="h6">
+                                    {% include "icons/dashboard.svg" %}
+                                    Week {{ week }}
+                                </span>
+                                <h4>
+                                    Status veranderingen
+                                    <br>
+                                    gemiddeld in seconden
+                                </h4>
+                            </div>
+                            <div>
+                                <ul class="list-horizontal">
+                                    {% for tab in status_veranderingen_tabs %}
+                                        <li>
+                                            <button data-chart-line-target="button"
+                                                    data-action="chart-line#update"
+                                                    data-chart-line-datasets-param="{{ tab.datasets|json_encode }}"
+                                                    class="{% if forloop.first %} active{% endif %}">
                                                 <span class="h3">
                                                     {% for aantal in tab.aantallen %}
                                                         <span data-chart-utils-target="numberAnimator"
