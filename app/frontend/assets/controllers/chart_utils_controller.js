@@ -1,20 +1,8 @@
 import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
-  static targets = [
-    'numbersReceived',
-    'numbersDone',
-    'numbersNotDone',
-    'numbersOpen',
-    'numberAnimator',
-  ]
+  static targets = ['numberAnimator']
   connect() {
-    if (this.hasNumbersDoneTarget) {
-      this.animateValue(this.numbersReceivedTarget, this.data.get('received'))
-      this.animateValue(this.numbersDoneTarget, this.data.get('done'))
-      this.animateValue(this.numbersNotDoneTarget, this.data.get('notDone'))
-      this.animateValue(this.numbersOpenTarget, this.data.get('open'))
-    }
     this.numberAnimatorTargets.forEach((element) => {
       this.animateNumberValue(element, element.dataset.number)
     })

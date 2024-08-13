@@ -91,6 +91,10 @@ main {
     grid-auto-columns: minmax(0, 1fr);
     gap: 32px;
 
+    + .grid-container {
+        margin-top: 32px;
+    }
+
     @media (min-width: map-get($grid-breakpoints, md)) {
         grid-template-columns: 66fr 34fr;
 
@@ -99,6 +103,9 @@ main {
         }
         &.grid-container--3cols {
             grid-template-columns: 1fr 1fr 1fr;
+        }
+        &.grid-container--half {
+            grid-template-columns: 1fr 1fr;
         }
     }
 
