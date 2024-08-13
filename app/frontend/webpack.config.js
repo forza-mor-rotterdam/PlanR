@@ -134,6 +134,10 @@ module.exports = (env, argv) => {
           from: './assets/manifest.json',
           to: '[name][ext]',
         },
+        {
+          from: './assets/json/rdam.geojson',
+          to: '[name][ext]',
+        },
       ],
     }),
     new Dotenv({ path: '../../.env.local' }),
