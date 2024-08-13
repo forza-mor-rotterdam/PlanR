@@ -325,7 +325,7 @@ urlpatterns = [
     path("dashboard/", dashboard, name="dashboard"),
     re_path(r"^dashboard/(?P<jaar>\d{4})/$", dashboard, name="dashboard_jaar"),
     re_path(
-        r"^dashboard/(?P<jaar>\d{4})/(?P<week>\d{2})/$",
+        r"^dashboard/(?P<jaar>\d{4})/week/(?P<week>\d{2})/$",
         dashboard,
         name="dashboard_week",
     ),
