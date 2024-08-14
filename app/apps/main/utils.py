@@ -22,14 +22,9 @@ def snake_case(s: str) -> str:
 
 def get_open_taakopdrachten(melding):
     return [
-        taakopdracht
-        for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
-        if not any(
-            taakgebeurtenis.get("resolutie")
-            for taakgebeurtenis in taakopdracht.get(
-                "taakgebeurtenissen_voor_taakopdracht", []
-            )
-        )
+        to
+        for to in melding.get("taakopdrachten_voor_melding", [])
+        if not to.get("resolutie")
     ]
 
 

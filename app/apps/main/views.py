@@ -299,12 +299,7 @@ def melding_detail(request, id):
         [
             taakopdracht
             for taakopdracht in taakopdrachten_voor_melding
-            if any(
-                taakgebeurtenis.get("resolutie") == "opgelost"
-                for taakgebeurtenis in taakopdracht.get(
-                    "taakgebeurtenissen_voor_taakopdracht", []
-                )
-            )
+            if taakopdracht.get("resolutie") == "opgelost"
         ]
     )
 
@@ -312,13 +307,8 @@ def melding_detail(request, id):
         [
             taakopdracht
             for taakopdracht in taakopdrachten_voor_melding
-            if any(
-                taakgebeurtenis.get("resolutie")
-                in {"niet_opgelost", "geannuleerd", "niet_gevonden"}
-                for taakgebeurtenis in taakopdracht.get(
-                    "taakgebeurtenissen_voor_taakopdracht", []
-                )
-            )
+            if taakopdracht.get("resolutie")
+            in ("niet_opgelost", "geannuleerd", "niet_gevonden")
         ]
     )
 
