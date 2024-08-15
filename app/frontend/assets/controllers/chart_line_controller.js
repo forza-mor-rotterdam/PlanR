@@ -1,11 +1,36 @@
 // import { Controller } from '@hotwired/stimulus'
 import Chart from '@stimulus-components/chartjs'
+import 'chartjs-adapter-moment'
+// import {nl} from 'date-fns/locale';
+import * as moment from 'moment'
 
 export default class extends Chart {
   static targets = ['canvas', 'button']
+  static values = {
+    yTicks: String,
+  }
   connect() {
     super.connect()
     this.chart.update()
+  }
+  initialize() {
+    this.ticks = {
+      y: {
+        default: {
+          count: 8,
+          stepSize: 100,
+        },
+        duration: {
+          count: 8,
+          stepSize: 60 * 60,
+          beginAtZero: true,
+          callback: (value) => {
+            let m = moment.duration(value, 'seconds')
+            return m.locale('nl').humanize(false)
+          },
+        },
+      },
+    }
   }
 
   async update(e) {
@@ -23,10 +48,15 @@ export default class extends Chart {
     })
     button.classList.add('active')
   }
+  getTicks() {
+    console.log(this.identifier)
+    console.log(this.ticks)
+    return this.ticks.y[this.hasYTicksValue ? this.yTicksValue : 'default']
+  }
 
   get defaultOptions() {
     return {
-      maintainAspectRatio: true,
+      // maintainAspectRatio: true,
       plugins: {
         legend: {
           display: false,
@@ -45,10 +75,7 @@ export default class extends Chart {
       },
       scales: {
         y: {
-          min: 0,
-          ticks: {
-            stepSize: 100,
-          },
+          ticks: this.getTicks(),
         },
         x: {
           grid: {
