@@ -293,29 +293,32 @@ def melding_detail(request, id):
                 gebruiker=request.user.email,
             )
             return redirect("melding_detail", id=id)
+    taakopdrachten_voor_melding = [
+        taakopdracht for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
+    ]
     aantal_actieve_taken = len(
         [
-            to
-            for to in melding.get("taakopdrachten_voor_melding", [])
-            if to.get("status", {}).get("naam") != "voltooid"
+            taakopdracht
+            for taakopdracht in taakopdrachten_voor_melding
+            if taakopdracht.get("status", {}).get("naam")
+            not in {"voltooid", "voltooid_met_feedback"}
         ]
     )
 
     aantal_opgeloste_taken = len(
         [
-            to
-            for to in melding.get("taakopdrachten_voor_melding", [])
-            # if to.get("status", {}).get("naam") == "voltooid"
-            if to.get("resolutie", {}) == "opgelost"
+            taakopdracht
+            for taakopdracht in taakopdrachten_voor_melding
+            if taakopdracht.get("resolutie") == "opgelost"
         ]
     )
+
     aantal_niet_opgeloste_taken = len(
         [
-            to
-            for to in melding.get("taakopdrachten_voor_melding", [])
-            if to.get("resolutie", {})
-            in {"niet_opgelost", "geannuleerd", "niet_gevonden"}
-            # if to.get("resolutie", {}).get("naam") == "opgelost"
+            taakopdracht
+            for taakopdracht in taakopdrachten_voor_melding
+            if taakopdracht.get("resolutie")
+            in ("niet_opgelost", "geannuleerd", "niet_gevonden")
         ]
     )
 
@@ -498,9 +501,10 @@ def melding_afhandelen(request, id):
             return redirect("melding_detail", id=id)
 
     actieve_taken = [
-        to
-        for to in melding.get("taakopdrachten_voor_melding", [])
-        if to.get("status", {}).get("naam") != "voltooid"
+        taakopdracht
+        for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
+        if taakopdracht.get("status", {}).get("naam")
+        not in {"voltooid", "voltooid_met_feedback"}
     ]
 
     return render(
@@ -554,9 +558,10 @@ def melding_annuleren(request, id):
             return redirect("melding_detail", id=id)
 
     actieve_taken = [
-        to
-        for to in melding.get("taakopdrachten_voor_melding", [])
-        if to.get("status", {}).get("naam") != "voltooid"
+        taakopdracht
+        for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
+        if taakopdracht.get("status", {}).get("naam")
+        not in {"voltooid", "voltooid_met_feedback"}
     ]
 
     return render(
@@ -605,9 +610,10 @@ def melding_pauzeren(request, id):
     melding = meldingen_service.get_melding(id)
     form = MeldingPauzerenForm()
     actieve_taken = [
-        to
-        for to in melding.get("taakopdrachten_voor_melding", [])
-        if to.get("status", {}).get("naam") != "voltooid"
+        taakopdracht
+        for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
+        if taakopdracht.get("status", {}).get("naam")
+        not in {"voltooid", "voltooid_met_feedback"}
     ]
     if request.POST:
         form = MeldingPauzerenForm(request.POST)
@@ -762,10 +768,12 @@ def taak_afronden(request, melding_uuid):
 
     open_taakopdrachten = get_open_taakopdrachten(melding)
     taakopdracht_urls = {
-        to.get("uuid"): to.get("_links", {}).get("self") for to in open_taakopdrachten
+        taakopdracht.get("uuid"): taakopdracht.get("_links", {}).get("self")
+        for taakopdracht in open_taakopdrachten
     }
     taakopdracht_opties = [
-        (to.get("uuid"), to.get("titel")) for to in open_taakopdrachten
+        (taakopdracht.get("uuid"), taakopdracht.get("titel"))
+        for taakopdracht in open_taakopdrachten
     ]
     form = TaakAfrondenForm(taakopdracht_opties=taakopdracht_opties)
     if request.POST:
@@ -808,10 +816,12 @@ def taak_annuleren(request, melding_uuid):
 
     open_taakopdrachten = get_open_taakopdrachten(melding)
     taakopdracht_urls = {
-        to.get("uuid"): to.get("_links", {}).get("self") for to in open_taakopdrachten
+        taakopdracht.get("uuid"): taakopdracht.get("_links", {}).get("self")
+        for taakopdracht in open_taakopdrachten
     }
     taakopdracht_opties = [
-        (to.get("uuid"), to.get("titel")) for to in open_taakopdrachten
+        (taakopdracht.get("uuid"), taakopdracht.get("titel"))
+        for taakopdracht in open_taakopdrachten
     ]
     form = TaakAnnulerenForm(taakopdracht_opties=taakopdracht_opties)
     if request.POST:
@@ -1289,9 +1299,10 @@ def locatie_aanpassen(request, id):
                 return redirect("melding_detail", id=id)
 
         actieve_taken = [
-            to
-            for to in melding.get("taakopdrachten_voor_melding", [])
-            if to.get("status", {}).get("naam") != "voltooid"
+            taakopdracht
+            for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
+            if taakopdracht.get("status", {}).get("naam")
+            not in {"voltooid", "voltooid_met_feedback"}
         ]
 
         return render(

@@ -45,7 +45,7 @@
                                 {% endif %}
                             {% endfor %}
                             {% if not forloop.first %}
-                                <strong {% if row_data.mg.taakgebeurtenis %}{% with to=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}data-taak-uuid="{{ to.taak_url|laatste_slug_van_url }}"{% endwith %}{% endif %}>
+                                <strong {% if row_data.mg.taakgebeurtenis %}{% with taakopdracht=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}data-taak-uuid="{{ taakopdracht.taak_url|laatste_slug_van_url }}"{% endwith %}{% endif %}>
                                     {% if row_data.mg.taakgebeurtenis %}
                                         {% with taakopdracht=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}
                                             {{ taakopdracht.titel }}
@@ -53,9 +53,9 @@
                                                 : gedeeld
                                             {% elif row_data.mg.taakgebeurtenis.taakstatus.naam != "nieuw" %}
                                                 :
-                                                {% if row_data.mg.taakgebeurtenis.taakstatus.naam == "voltooid" %}
-                                                    {{ taakopdracht.resolutie|vertaal }}
-                                                    <span class="visually-hidden" data-datetime-target="resolutie">{{ taakopdracht.resolutie }}</span>
+                                                {% if row_data.mg.taakgebeurtenis.taakstatus.naam == "voltooid" or row_data.mg.taakgebeurtenis.taakstatus.naam == "voltooid_met_feedback" %}
+                                                    {{ row_data.mg.taakgebeurtenis.resolutie|vertaal }}
+                                                    <span class="visually-hidden" data-datetime-target="resolutie">{{ row_data.mg.taakgebeurtenis.resolutie }}</span>
                                                 {% else %}
                                                     {{ row_data.mg.taakgebeurtenis.taakstatus.naam }}
                                                 {% endif %}
@@ -97,9 +97,7 @@
                                                 {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
                                                 <dt>Status</dt>
                                                 <dd>
-                                                    {% with taakopdracht=melding|taakopdracht:row_data.mg.taakgebeurtenis.taakopdracht %}
-                                                        {{ taakopdracht.resolutie|vertaal }}
-                                                    {% endwith %}
+                                                    {% if row_data.mg.taakgebeurtenis.resolutie %}{{ row_data.mg.taakgebeurtenis.resolutie|vertaal }}{% endif %}
                                                 </dd>
                                             {% else %}
                                                 {% if row_data.mg.taakgebeurtenis.aangemaakt_op %}
