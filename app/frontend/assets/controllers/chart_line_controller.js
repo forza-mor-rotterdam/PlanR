@@ -1,18 +1,16 @@
-// import { Controller } from '@hotwired/stimulus'
-import Chart from '@stimulus-components/chartjs'
-import 'chartjs-adapter-moment'
-// import {nl} from 'date-fns/locale';
-import * as moment from 'moment'
+import ChartHelperController from './chart_helper_controller'
 
-export default class extends Chart {
+export default class extends ChartHelperController {
   static targets = ['canvas', 'button']
   static values = {
     yTicks: String,
   }
+
   connect() {
     super.connect()
     this.chart.update()
   }
+
   initialize() {
     this.ticks = {
       y: {
@@ -25,8 +23,8 @@ export default class extends Chart {
           stepSize: 60 * 60,
           beginAtZero: true,
           callback: (value) => {
-            let m = moment.duration(value, 'seconds')
-            return m.locale('nl').humanize(false)
+            let m = this.getPeriod(value)
+            return m
           },
         },
       },
@@ -50,7 +48,7 @@ export default class extends Chart {
   }
   getTicks() {
     console.log(this.identifier)
-    console.log(this.ticks)
+    console.log('ticks', this.ticks)
     return this.ticks.y[this.hasYTicksValue ? this.yTicksValue : 'default']
   }
 
