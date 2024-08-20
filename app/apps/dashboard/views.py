@@ -4,50 +4,8 @@ from datetime import datetime, timedelta
 import isoweek
 from apps.dashboard.forms import DashboardForm
 from apps.dashboard.tables import get_aantallen_tabs, get_status_veranderingen_tabs
-from apps.main.forms import (
-    TAAK_RESOLUTIE_GEANNULEERD,
-    TAAK_STATUS_VOLTOOID,
-    FilterForm,
-    InformatieToevoegenForm,
-    LocatieAanpassenForm,
-    MeldingAanmakenForm,
-    MeldingAfhandelenForm,
-    MeldingAnnulerenForm,
-    MeldingHeropenenForm,
-    MeldingHervattenForm,
-    MeldingPauzerenForm,
-    MeldingSpoedForm,
-    MSBLoginForm,
-    MSBMeldingZoekenForm,
-    StandaardExterneOmschrijvingAanmakenForm,
-    StandaardExterneOmschrijvingAanpassenForm,
-    StandaardExterneOmschrijvingSearchForm,
-    TaakAfrondenForm,
-    TaakAnnulerenForm,
-    TaakStartenForm,
-    TaaktypeCategorieAanmakenForm,
-    TaaktypeCategorieAanpassenForm,
-    TaaktypeCategorieSearchForm,
-)
-from apps.main.utils import (
-    get_actieve_filters,
-    get_open_taakopdrachten,
-    get_ordering,
-    get_valide_kolom_classes,
-    melding_locaties,
-    melding_naar_tijdlijn,
-    publiceer_topic_met_subscriptions,
-    set_actieve_filters,
-    set_ordering,
-    to_base64,
-    update_qd_met_standaard_meldingen_filter_qd,
-)
 from apps.services.meldingen import MeldingenService
-from django.contrib.auth.decorators import (
-    login_required,
-    permission_required,
-    user_passes_test,
-)
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.urls import reverse
 

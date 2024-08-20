@@ -11,7 +11,7 @@ def get_aantallen_tabs(meldingen, signalen, week):
     for weekdag in range(0, 7):
         dag = maandag + timedelta(days=weekdag)
         labels.append(
-            f"{DAGEN_VAN_DE_WEEK_KORT[weekdag]} {dag.strftime('%-d')} {MAANDEN_KORT[dag.month-1]}"
+            f"{DAGEN_VAN_DE_WEEK_KORT[weekdag]} {dag.strftime('%-d')} {MAANDEN_KORT[dag.month - 1]}"
         )
 
     wijken = [wijk.get("wijknaam") for wijk in PDOK_WIJKEN]
@@ -115,7 +115,7 @@ def get_status_veranderingen_tabs(veranderingen, week):
     for weekdag in range(0, 7):
         dag = maandag + timedelta(days=weekdag)
         labels.append(
-            f"{DAGEN_VAN_DE_WEEK_KORT[weekdag]} {dag.strftime('%-d')} {MAANDEN_KORT[dag.month-1]}"
+            f"{DAGEN_VAN_DE_WEEK_KORT[weekdag]} {dag.strftime('%-d')} {MAANDEN_KORT[dag.month - 1]}"
         )
 
     tabs = [
@@ -167,21 +167,23 @@ def get_status_veranderingen_tabs(veranderingen, week):
                     "fill": True,
                     "backgroundColor": "rgba(0,200,100,0.1)",
                     "data": [
-                        statistics.mean(
-                            [
-                                float(d.get("duur_seconden_gemiddeld"))
+                        (
+                            statistics.mean(
+                                [
+                                    float(d.get("duur_seconden_gemiddeld"))
+                                    for d in dag
+                                    if d.get("begin_status") == tab.get("begin_status")
+                                    and d.get("eind_status") == tab.get("eind_status")
+                                ]
+                            )
+                            if [
+                                d.get("duur_seconden_gemiddeld")
                                 for d in dag
                                 if d.get("begin_status") == tab.get("begin_status")
                                 and d.get("eind_status") == tab.get("eind_status")
                             ]
+                            else 0
                         )
-                        if [
-                            d.get("duur_seconden_gemiddeld")
-                            for d in dag
-                            if d.get("begin_status") == tab.get("begin_status")
-                            and d.get("eind_status") == tab.get("eind_status")
-                        ]
-                        else 0
                         for dag in dataset.get("bron")
                     ],
                 }
@@ -196,9 +198,11 @@ def get_status_veranderingen_tabs(veranderingen, week):
             **tab,
             **{
                 "aantallen": [
-                    int(statistics.mean(dataset.get("data", [])))
-                    if dataset.get("data", [])
-                    else 0
+                    (
+                        int(statistics.mean(dataset.get("data", [])))
+                        if dataset.get("data", [])
+                        else 0
+                    )
                     for dataset in tab.get("datasets", [])
                 ]
             },

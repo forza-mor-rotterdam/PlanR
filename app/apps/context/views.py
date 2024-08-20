@@ -67,6 +67,19 @@ class ContextAanpassenView(ContextAanmakenAanpassenView, UpdateView):
 class ContextAanmakenView(ContextAanmakenAanpassenView, CreateView):
     form_class = ContextAanmakenForm
 
+    def get_form_kwargs(self, *args, **kwargs):
+        kwargs = super().get_form_kwargs(*args, **kwargs)
+        kwargs["taaktypes"] = TaakRService(request=self.request).get_taaktypes(
+            use_cache=False
+        )
+        kwargs["onderwerp_alias_list"] = (
+            MeldingenService(request=self.request)
+            .onderwerp_alias_list()
+            .get("results", [])
+        )
+        kwargs["onderwerpen_service"] = OnderwerpenService(request=self.request)
+        return kwargs
+
 
 @method_decorator(
     permission_required("authorisatie.context_verwijderen"), name="dispatch"
