@@ -1,6 +1,6 @@
 @mixin focus-outline {
     outline-style: solid !important;
-    outline-width: medium !important;
+    outline-width: thin !important;
     outline-color: $gray-tint11 !important;
 }
 

@@ -1,0 +1,104 @@
+body.show-sidesheet {
+    height: 100%;
+    overflow-y: hidden;
+}
+
+.sidesheet {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 100%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    z-index: 2100;
+
+    &.show {
+        left: 0;
+        backdrop-filter: blur(5px);
+
+        .turboframe-container {
+            right: 0;
+        }
+    }
+
+    .turboframe-container {
+        position: absolute;
+        top: 0;
+        right: -100%;
+        height: 100%;
+        max-width: 24em;
+        background-color: $white;
+        z-index: 2100;
+        overflow-y: auto;
+        transition: right 0.5s ease-in-out;
+        box-sizing: border-box;
+        padding: $container-padding-x;
+
+        h1 {
+            font-size: 1.25em;
+            color: $green-tint01;
+            margin-top: 0;
+        }
+
+        h2 {
+            font-size: 1em;
+            border-top: 1px solid $gray-600;
+            padding-top: $container-padding-x;
+            margin-top: $alert-padding-x;
+            display: flex;
+            gap: 4px;
+
+            span {
+                flex: 1;
+            }
+            svg {
+                flex: 0 0 auto;
+                vertical-align: middle;
+                margin-top: 3px;
+            }
+        }
+
+        p {
+            font-size: 0.7em;
+            line-height: 1.5em;
+
+            &.intro {
+                font-size: 0.8em;
+                line-height: 1.25em;
+            }
+        }
+    }
+
+    .btn-close {
+        z-index: 2105;
+        background: transparent;
+        top: $container-padding-x;
+        right: $container-padding-x;
+        min-width: 20px;
+        min-height: 20px;
+    }
+
+    .sidesheet-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 2000;
+        width: 100vw;
+        height: 100vh;
+        background-color: $black;
+        opacity: 0;
+        display: none;
+        -webkit-backdrop-filter: blur(5px);
+        backdrop-filter: blur(5px);
+    }
+}
+
+body.show-sidesheet {
+    .sidesheet-backdrop {
+        display: block;
+        height: 100%;
+        opacity: 0.5;
+        transition: opacity 0.5s ease-in-out;
+    }
+}

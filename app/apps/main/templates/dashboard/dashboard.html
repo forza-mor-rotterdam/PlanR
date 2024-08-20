@@ -9,167 +9,174 @@
     wide--xl
 {% endblock body_class %}
 {% block body %}
-    <turbo-frame id="overview">
+    <turbo-frame id="overview" data-controller="sidesheet">
     <div>
         <h1>Actueel</h1>
     </div>
     <div class="screen-xl">
-        <section class="section--seperated--l">
-            <div>
+        <section class="section--seperated--l section--dashboard">
+            <div class="container__flex flex--wide">
                 <h2>Dashboard</h2>
-                <div class="grid-container grid-container--half">
-                    <div class="grid-item bgc-white">
-                        <div class="dashboard-item dashboard-item--number">
-                            <div class="container__flex">
-                                <div class="container__subject">
-                                    <span class="h6">
-                                        {% include "icons/dashboard.svg" %}
-                                    Alle openstaande meldingen</span>
-                                    <h3 class="h4">Openstaande meldingen</h3>
-                                    <p>Gemiddeld 1,1 taken per melding</p>
-                                </div>
-                                <div>
-                                    <div class="number number--danger">
-                                        <span class="animated">1924</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="container__flex dashboard-item-footer">
-                                <div>
-                                    <p>
-                                        <strong>98 meldingen</strong> meer dan 1 uur geleden
-                                        {% include "icons/value-up.svg" %}
-                                    </p>
-                                </div>
-                                <div>
-                                    <p>
-                                        <a href="#">Toon 1924 meldingen</a>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="grid-item bgc-white"
-                         data-controller="chart-bar"
-                         data-chart-bar-type-value="bar"
-                         data-chart-bar-data-value='{ "labels": ["8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00", "0:00", "1:00", "2:00", "3:00", "4:00", "5:00", "6:00", "7:00"], "datasets": [{ "label": "Binnengekomen", "data": [190, 320, 270, 330, 110, 340, 290, 190, 320, 270, 330, 110, 340, 290, 190, 320, 270, 330, 110, 340, 290, 190, 320, 120] }] }'>
-                        <div class="dashboard-item dashboard-item--number">
+                <button type="button"
+                        class="btn btn-info"
+                        data-action="sidesheet#openSidesheet"
+                        data-sidesheet-action-param="{% url 'sidesheet_actueel' %}">
+                    {% include "icons/info-bullet.svg" %}
+                    <span>Meer info</span>
+                </button>
+            </div>
+            <div class="grid-container grid-container--half">
+                <div class="grid-item bgc-white">
+                    <div class="dashboard-item dashboard-item--number">
+                        <div class="container__flex">
                             <div class="container__subject">
                                 <span class="h6">
                                     {% include "icons/dashboard.svg" %}
-                                Openstaande meldingen per uur</span>
-                                <h3 class="h4">Afgelopen 24 uur</h3>
+                                Alle openstaande meldingen</span>
+                                <h3 class="h4">Openstaande meldingen</h3>
+                                <p>Gemiddeld 1,1 taken per melding</p>
                             </div>
                             <div>
-                                <canvas data-chart-bar-target="canvas" class="no-padding"></canvas>
+                                <div class="number number--danger">
+                                    <span class="animated">1924</span>
+                                </div>
                             </div>
-                            <div class="container__flex">
-                                <small>24 uur geleden</small>
-                                <small>Nu</small>
+                        </div>
+                        <div class="container__flex dashboard-item-footer">
+                            <div>
+                                <p>
+                                    <strong>98 meldingen</strong> meer dan 1 uur geleden
+                                    {% include "icons/value-up.svg" %}
+                                </p>
+                            </div>
+                            <div>
+                                <p>
+                                    <a href="#">Toon 1924 meldingen</a>
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="grid-container grid-container--3cols">
-                    <div class="grid-item bgc-white">
-                        <div class="container__chart--slider lazy" data-controller="chart-slider">
-                            <div class="dashboard-item">
-                                <div>
-                                    <span class="h6">
-                                        {% include "icons/dashboard.svg" %}
-                                    Momenteel openstaand</span>
-                                    <h4>Nieuwe meldingen</h4>
-                                </div>
-                                <div class="container__bar border-bottom">
-                                    <div class="bar-background">
-                                        <div class="bar"></div>
-                                        <div class="container__flex">
-                                            <div class="container__slider" style="max-width: 52.3%;">
-                                                <div class="slider"></div>
-                                                <div class="label">
-                                                    <span class="animated">523</span>
-                                                </div>
-                                            </div>
-                                            <div class="cover"></div>
-                                        </div>
-                                    </div>
+                <div class="grid-item bgc-white"
+                     data-controller="chart-bar"
+                     data-chart-bar-type-value="bar"
+                     data-chart-bar-data-value='{ "labels": ["8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00", "0:00", "1:00", "2:00", "3:00", "4:00", "5:00", "6:00", "7:00"], "datasets": [{ "label": "Binnengekomen", "data": [190, 320, 270, 330, 110, 340, 290, 190, 320, 270, 330, 110, 340, 290, 190, 320, 270, 330, 110, 340, 290, 190, 320, 120] }] }'>
+                    <div class="dashboard-item dashboard-item--number">
+                        <div class="container__subject">
+                            <span class="h6">
+                                {% include "icons/dashboard.svg" %}
+                            Openstaande meldingen per uur</span>
+                            <h3 class="h4">Afgelopen 24 uur</h3>
+                        </div>
+                        <div>
+                            <canvas data-chart-bar-target="canvas" class="no-padding"></canvas>
+                        </div>
+                        <div class="container__flex">
+                            <small>24 uur geleden</small>
+                            <small>Nu</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-container grid-container--3cols">
+                <div class="grid-item bgc-white">
+                    <div class="container__chart--slider lazy" data-controller="chart-slider">
+                        <div class="dashboard-item">
+                            <div>
+                                <span class="h6">
+                                    {% include "icons/dashboard.svg" %}
+                                Momenteel openstaand</span>
+                                <h4>Nieuwe meldingen</h4>
+                            </div>
+                            <div class="container__bar border-bottom">
+                                <div class="bar-background">
+                                    <div class="bar"></div>
                                     <div class="container__flex">
-                                        <small>0</small>
-                                        <small>1000</small>
+                                        <div class="container__slider" style="max-width: 52.3%;">
+                                            <div class="slider"></div>
+                                            <div class="label">
+                                                <span class="animated">523</span>
+                                            </div>
+                                        </div>
+                                        <div class="cover"></div>
                                     </div>
                                 </div>
-                                <div class="dashboard-item-footer">
-                                    <p class="align--center">
-                                        <a href="#">Toon 523 meldingen</a>
-                                    </p>
+                                <div class="container__flex">
+                                    <small>0</small>
+                                    <small>1000</small>
                                 </div>
+                            </div>
+                            <div class="dashboard-item-footer">
+                                <p class="align--center">
+                                    <a href="#">Toon 523 meldingen</a>
+                                </p>
                             </div>
                         </div>
                     </div>
-                    <div class="grid-item bgc-white">
-                        <div class="container__chart--slider lazy" data-controller="chart-slider">
-                            <div class="dashboard-item">
-                                <div>
-                                    <span class="h6">
-                                        {% include "icons/dashboard.svg" %}
-                                    Verwerkte meldingen</span>
-                                    <h4>Meldingen in behandeling</h4>
-                                </div>
-                                <div class="container__bar border-bottom">
-                                    <div class="bar-background">
-                                        <div class="bar"></div>
-                                        <div class="container__flex">
-                                            <div class="container__slider" style="max-width: 42.1%;">
-                                                <div class="slider"></div>
-                                                <div class="label">
-                                                    <span class="animated">421</span>
-                                                </div>
-                                            </div>
-                                            <div class="cover"></div>
-                                        </div>
-                                    </div>
+                </div>
+                <div class="grid-item bgc-white">
+                    <div class="container__chart--slider lazy" data-controller="chart-slider">
+                        <div class="dashboard-item">
+                            <div>
+                                <span class="h6">
+                                    {% include "icons/dashboard.svg" %}
+                                Verwerkte meldingen</span>
+                                <h4>Meldingen in behandeling</h4>
+                            </div>
+                            <div class="container__bar border-bottom">
+                                <div class="bar-background">
+                                    <div class="bar"></div>
                                     <div class="container__flex">
-                                        <small>0</small>
-                                        <small>1000</small>
+                                        <div class="container__slider" style="max-width: 42.1%;">
+                                            <div class="slider"></div>
+                                            <div class="label">
+                                                <span class="animated">421</span>
+                                            </div>
+                                        </div>
+                                        <div class="cover"></div>
                                     </div>
                                 </div>
-                                <div class="dashboard-item-footer">
-                                    <p class="align--center">
-                                        <a href="#">Toon 421 meldingen</a>
-                                    </p>
+                                <div class="container__flex">
+                                    <small>0</small>
+                                    <small>1000</small>
                                 </div>
+                            </div>
+                            <div class="dashboard-item-footer">
+                                <p class="align--center">
+                                    <a href="#">Toon 421 meldingen</a>
+                                </p>
                             </div>
                         </div>
                     </div>
-                    <div class="grid-item bgc-white">
-                        <div class="dashboard-item dashboard-item--number">
-                            <div class="container__flex">
-                                <div class="container__subject">
-                                    <span class="h6">
-                                        {% include "icons/dashboard.svg" %}
-                                    Vertraging</span>
-                                    <h3 class="h4">Vertraagde taken</h3>
-                                    <p>
-                                        Gemiddelde vertraging: <strong>4,5 uur</strong>
-                                    </p>
-                                </div>
-                                <div>
-                                    <div class="number">
-                                        <span class="animated">37</span>
-                                    </div>
+                </div>
+                <div class="grid-item bgc-white">
+                    <div class="dashboard-item dashboard-item--number">
+                        <div class="container__flex">
+                            <div class="container__subject">
+                                <span class="h6">
+                                    {% include "icons/dashboard.svg" %}
+                                Vertraging</span>
+                                <h3 class="h4">Vertraagde taken</h3>
+                                <p>
+                                    Gemiddelde vertraging: <strong>4,5 uur</strong>
+                                </p>
+                            </div>
+                            <div>
+                                <div class="number">
+                                    <span class="animated">37</span>
                                 </div>
                             </div>
-                            <div class="container__flex dashboard-item-footer">
-                                <div>
-                                    <p>
-                                        <strong>5%</strong> van taken in behandeling
-                                    </p>
-                                </div>
-                                <div>
-                                    <p>
-                                        <a href="#">Toon 37 meldingen</a>
-                                    </p>
-                                </div>
+                        </div>
+                        <div class="container__flex dashboard-item-footer">
+                            <div>
+                                <p>
+                                    <strong>5%</strong> van taken in behandeling
+                                </p>
+                            </div>
+                            <div>
+                                <p>
+                                    <a href="#">Toon 37 meldingen</a>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -761,7 +768,7 @@
                             </div>
                             <div class="dashboard-item-footer">
                                 <p class="align--center">
-                                    <a href="{% url 'beheer' %}"  target="sidesheet">Toon meldingen met deze onderwerpen</a>
+                                    <a href="#">Toon meldingen met deze onderwerpen</a>
                                 </p>
                             </div>
                         </div>
@@ -773,8 +780,16 @@
     <div class="screen-xl--notification">
         <p>Deze pagina is alleen te bekijken op een groter scherm.</p>
     </div>
-    </turbo-frame>
-    <turbo-frame id="sidesheet" data-turbo-action="advance">
-    Sidesheet
+    <div class="sidesheet" data-sidesheet-target="sidesheet">
+        <button type="button"
+                class="btn-close"
+                aria-label="Sluit"
+                data-action="sidesheet#closeSidesheet">{% include "icons/close.svg" %}</button>
+        <div class="sidesheet-backdrop sidesheet-exit"
+             data-action="click->sidesheet#closeSidesheet"></div>
+        <div class="turboframe-container">
+            <turbo-frame id="sidesheet" data-sidesheet-target="turboframe"></turbo-frame>
+        </div>
+    </div>
     </turbo-frame>
 {% endblock body %}

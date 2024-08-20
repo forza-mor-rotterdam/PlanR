@@ -57,6 +57,7 @@ from apps.main.views import (
     msb_melding_zoeken,
     publiceer_topic,
     root,
+    sidesheet_actueel,
     taak_afronden,
     taak_annuleren,
     taak_starten,
@@ -313,6 +314,12 @@ urlpatterns = [
         "dashboard-mock/",
         dashboard_mock,
         name="dashboard_mock",
+    ),
+    # sidesheet
+    path(
+        "sidesheet-actueel/",
+        sidesheet_actueel,
+        name="sidesheet_actueel",
     ),
     ### Locatie
     path(

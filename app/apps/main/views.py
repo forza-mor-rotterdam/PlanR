@@ -119,6 +119,15 @@ def dashboard(request):
 
 
 @login_required
+def sidesheet_actueel(request):
+    return render(
+        request,
+        "sidesheet/actueel.html",
+        {},
+    )
+
+
+@login_required
 @permission_required("authorisatie.melding_lijst_bekijken", raise_exception=True)
 def melding_lijst(request):
     meldingen_service = MeldingenService(request=request)
