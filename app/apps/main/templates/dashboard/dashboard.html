@@ -80,7 +80,7 @@
                                     Momenteel openstaand</span>
                                     <h4>Nieuwe meldingen</h4>
                                 </div>
-                                <div class="container__bar">
+                                <div class="container__bar border-bottom">
                                     <div class="bar-background">
                                         <div class="bar"></div>
                                         <div class="container__flex">
@@ -115,7 +115,7 @@
                                     Verwerkte meldingen</span>
                                     <h4>Meldingen in behandeling</h4>
                                 </div>
-                                <div class="container__bar">
+                                <div class="container__bar border-bottom">
                                     <div class="bar-background">
                                         <div class="bar"></div>
                                         <div class="container__flex">
@@ -142,34 +142,31 @@
                         </div>
                     </div>
                     <div class="grid-item bgc-white">
-                        <div class="container__chart--slider lazy" data-controller="chart-slider">
-                            <div class="dashboard-item">
-                                <div>
+                        <div class="dashboard-item dashboard-item--number">
+                            <div class="container__flex">
+                                <div class="container__subject">
                                     <span class="h6">
                                         {% include "icons/dashboard.svg" %}
-                                    Nog te controleren meldingen</span>
-                                    <h4>Meldingen ter controle</h4>
+                                    Vertraging</span>
+                                    <h3 class="h4">Vertraagde taken</h3>
+                                    <p>
+                                        Gemiddelde vertraging: <strong>4,5 uur</strong>
+                                    </p>
                                 </div>
-                                <div class="container__bar">
-                                    <div class="bar-background">
-                                        <div class="bar"></div>
-                                        <div class="container__flex">
-                                            <div class="container__slider" style="max-width: 87%;">
-                                                <div class="slider"></div>
-                                                <div class="label">
-                                                    <span class="animated">87</span>
-                                                </div>
-                                            </div>
-                                            <div class="cover"></div>
-                                        </div>
-                                    </div>
-                                    <div class="container__flex">
-                                        <small>0</small>
-                                        <small>100</small>
+                                <div>
+                                    <div class="number">
+                                        <span class="animated">37</span>
                                     </div>
                                 </div>
-                                <div class="dashboard-item-footer">
-                                    <p class="align--center">
+                            </div>
+                            <div class="container__flex dashboard-item-footer">
+                                <div>
+                                    <p>
+                                        <strong>5%</strong> van taken in behandeling
+                                    </p>
+                                </div>
+                                <div>
+                                    <p>
                                         <a href="#">Toon 37 meldingen</a>
                                     </p>
                                 </div>
@@ -479,8 +476,8 @@
                             <div>
                                 <span class="h6">
                                     {% include "icons/dashboard.svg" %}
-                                Gemelde onderwerpen</span>
-                                <h4>Meest gemelde onderwerpen</h4>
+                                Tabel met aantallen en percentages</span>
+                                <h4>Percentage geanimeerd</h4>
                             </div>
                             <div class="container__table lazy" data-controller="lazyload-table-bar">
                                 <table class="dashboard">
@@ -601,112 +598,40 @@
                         <div class="dashboard-item">
                             <span class="h6">
                                 {% include "icons/dashboard.svg" %}
-                            Onderwerpen in behandeling</span>
-                            <h4>Meest in behandeling zijnde onderwerpen</h4>
-                            <div class="container__table lazy" data-controller="lazyload-table-bar">
+                            Tabel met aantallen</span>
+                            <h4>Eenvoudige tabel met harde aantallen</h4>
+                            <div class="container__table">
                                 <table class="dashboard">
                                     <colgroup>
-                                        <col span="1" style="width: 65%;">
+                                        <col span="1" style="width: 80%;">
                                         <col span="1" style="width: 20%;">
-                                        <col span="1" style="width: 15%;">
                                     </colgroup>
                                     <thead>
                                         <tr>
-                                            <th>Onderwerp</th>
-                                            <th>Aantal</th>
-                                            <th>%</th>
+                                            <th class="visually-hidden">Onderwerp</th>
+                                            <th class="visually-hidden">Aantal</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>Afval naast container</td>
-                                            <td>
-                                                <span class="animated">798</span>
-                                            </td>
-                                            <td>
-                                                <span class="animated">38</span>%
-                                            </td>
+                                        <tr class="border-bottom">
+                                            <td>Grofvuil ophalen</td>
+                                            <td>500</td>
+                                        </tr>
+                                        <tr class="border-bottom">
+                                            <td>Kantvissen</td>
+                                            <td>400</td>
+                                        </tr>
+                                        <tr class="border-bottom">
+                                            <td>Cementspoor op verharding verwijderen</td>
+                                            <td>300</td>
+                                        </tr>
+                                        <tr class="border-bottom">
+                                            <td>Menselijke vloeistoffen verwijderen</td>
+                                            <td>200</td>
                                         </tr>
                                         <tr>
-                                            <td colspan="3">
-                                                <div class="container__bar">
-                                                    <div class="bar-background">
-                                                        <div class="bar bar--color-primary" style="max-width: 38%;"></div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Grofvuil</td>
-                                            <td>
-                                                <span class="animated">461</span>
-                                            </td>
-                                            <td>
-                                                <span class="animated">22</span>%
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3">
-                                                <div class="container__bar">
-                                                    <div class="bar-background">
-                                                        <div class="bar bar--color-primary" style="max-width: 22%;"></div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Zwerfafval</td>
-                                            <td>
-                                                <span class="animated">357</span>
-                                            </td>
-                                            <td>
-                                                <span class="animated">17</span>%
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3">
-                                                <div class="container__bar">
-                                                    <div class="bar-background">
-                                                        <div class="bar bar--color-primary" style="max-width: 17%;"></div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Wijkcontainer</td>
-                                            <td>
-                                                <span class="animated">294</span>
-                                            </td>
-                                            <td>
-                                                <span class="animated">14</span>%
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3">
-                                                <div class="container__bar">
-                                                    <div class="bar-background">
-                                                        <div class="bar bar--color-primary" style="max-width: 14%;"></div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Overige onderwerpen</td>
-                                            <td>
-                                                <span class="animated">189</span>
-                                            </td>
-                                            <td>
-                                                <span class="animated">9</span>%
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3">
-                                                <div class="container__bar">
-                                                    <div class="bar-background">
-                                                        <div class="bar bar--color-primary" style="max-width: 9%;"></div>
-                                                    </div>
-                                                </div>
-                                            </td>
+                                            <td>Afvalcontainer legen</td>
+                                            <td>100</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -836,7 +761,7 @@
                             </div>
                             <div class="dashboard-item-footer">
                                 <p class="align--center">
-                                    <a href="#">Toon meldingen met deze onderwerpen</a>
+                                    <a href="{% url 'beheer' %}"  target="sidesheet">Toon meldingen met deze onderwerpen</a>
                                 </p>
                             </div>
                         </div>
@@ -848,5 +773,8 @@
     <div class="screen-xl--notification">
         <p>Deze pagina is alleen te bekijken op een groter scherm.</p>
     </div>
+    </turbo-frame>
+    <turbo-frame id="sidesheet" data-turbo-action="advance">
+    Sidesheet
     </turbo-frame>
 {% endblock body %}

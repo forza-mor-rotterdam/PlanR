@@ -666,6 +666,10 @@ body.no-js {
     border-top: 8px solid $green-tint01;
 }
 
+.border-bottom {
+    border-bottom: 1px solid $gray-600;
+}
+
 .bar {
     background-color: $gray-tint01;
     &--top {
