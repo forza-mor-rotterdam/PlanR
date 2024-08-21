@@ -1,0 +1,28 @@
+{% extends "dashboard/base.html" %}
+{% load rotterdam_formulier_html %}
+{% load l10n %}
+{% load humanize %}
+{% load tz %}
+{% load json_encode from json_tags %}
+{% block title %}
+    Dashboard | PlanR
+{% endblock title %}
+{% block content %}
+    <div class="screen-xl">
+        <section class="section--seperated--l">
+            <h2>Aantallen</h2>
+            <div class="grid-container" data-controller="chart-utils">
+                {% include "charts/base_chart.html" with title="Doorlooptijden" period_title=title tabs=afgehandeld_tabs options=stacked_bars_options only %}
+                <div class="grid-item bgc-white">
+                    <form action="." method="get">
+                        {{ form.as_p }}
+                        <input type="submit" value="Toon">
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+    <div class="screen-xl--notification">
+        <p>Deze pagina is alleen te bekijken op een groter scherm.</p>
+    </div>
+{% endblock content %}

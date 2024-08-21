@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "dashboard/base.html" %}
 {% load rotterdam_formulier_html %}
 {% load l10n %}
 {% load humanize %}
@@ -7,15 +7,7 @@
 {% block title %}
     Dashboard | PlanR
 {% endblock title %}
-{% block body_class %}
-    wide--xl
-{% endblock body_class %}
-{% block body %}
-    <turbo-frame id="overview" data-turbo-action="advance">
-    <div>
-        <h1>Dashboard</h1>
-        <p>Jaar: {{ jaar }}, week: {{ week }}</p>
-    </div>
+{% block content %}
     <div class="screen-xl">
         {% comment %} <section class="section--seperated--l">
             <form action="." method="get">
@@ -37,9 +29,9 @@
                                     Week {{ week }}
                                 </span>
                                 <h4>
-                                    Nieuwe
+                                    Status veranderingen
                                     <br>
-                                    meldingen/signalen
+                                    gemiddeld in seconden
                                 </h4>
                             </div>
                             <div>
@@ -92,6 +84,10 @@
                             </li>
                         {% endif %}
                     </ul>
+                    <form action="." method="get">
+                        {{ form.as_p }}
+                        <input type="submit" value="Toon">
+                    </form>
                 </div>
             </div>
         </section>
@@ -182,5 +178,4 @@
     <div class="screen-xl--notification">
         <p>Deze pagina is alleen te bekijken op een groter scherm.</p>
     </div>
-    </turbo-frame>
-{% endblock body %}
+{% endblock content %}

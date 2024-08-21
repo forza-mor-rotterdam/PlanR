@@ -54,6 +54,21 @@ DAGEN_VAN_DE_WEEK_KORT = [
     "zo",
 ]
 
+MAANDEN = [
+    "januari",
+    "februari",
+    "maart",
+    "april",
+    "mei",
+    "juni",
+    "juli",
+    "augustus",
+    "september",
+    "oktober",
+    "november",
+    "december",
+]
+
 MAANDEN_KORT = [
     "jan",
     "feb",
