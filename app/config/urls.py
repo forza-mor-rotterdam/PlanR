@@ -18,7 +18,7 @@ from apps.context.views import (
     ContextLijstView,
     ContextVerwijderenView,
 )
-from apps.dashboard.views import dashboard
+from apps.dashboard.views import MeldingenAfgehandeld, NieuweMeldingen
 from apps.health.views import healthz
 from apps.main.views import (
     StandaardExterneOmschrijvingAanmakenView,
@@ -322,12 +322,30 @@ urlpatterns = [
     ),
     path("select2/", include(select2_urls)),
     re_path(r"core/media/", meldingen_bestand, name="meldingen_bestand"),
-    path("dashboard/", dashboard, name="dashboard"),
-    re_path(r"^dashboard/(?P<jaar>\d{4})/$", dashboard, name="dashboard_jaar"),
+    # path("dashboard/", dashboard, name="dashboard"),
     re_path(
-        r"^dashboard/(?P<jaar>\d{4})/week/(?P<week>\d{2})/$",
-        dashboard,
-        name="dashboard_week",
+        r"^dashboard/(?P<jaar>\d{4})/week/(?P<week>\d{2})/(?P<type>meldingen)/(?P<status>nieuw)/$",
+        NieuweMeldingen.as_view(periode="week"),
+        kwargs={"type": "meldingen", "status": "nieuw"},
+        name="dashboard",
+    ),
+    re_path(
+        r"^dashboard/(?P<jaar>\d{4})/week/(?P<week>\d{2})/(?P<type>meldingen)/(?P<status>afgehandeld)/$",
+        MeldingenAfgehandeld.as_view(periode="week"),
+        kwargs={"type": "meldingen", "status": "afgehandeld"},
+        name="dashboard",
+    ),
+    re_path(
+        r"^dashboard/(?P<jaar>\d{4})/maand/(?P<maand>\d{2})/(?P<type>meldingen)/(?P<status>nieuw)/$",
+        NieuweMeldingen.as_view(periode="maand"),
+        kwargs={"type": "meldingen", "status": "nieuw"},
+        name="dashboard",
+    ),
+    re_path(
+        r"^dashboard/(?P<jaar>\d{4})/maand/(?P<maand>\d{2})/(?P<type>meldingen)/(?P<status>afgehandeld)/$",
+        MeldingenAfgehandeld.as_view(periode="maand"),
+        kwargs={"type": "meldingen", "status": "afgehandeld"},
+        name="dashboard",
     ),
 ]
 

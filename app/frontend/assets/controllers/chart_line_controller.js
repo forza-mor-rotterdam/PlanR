@@ -1,17 +1,28 @@
 import ChartHelperController from './chart_helper_controller'
 
 export default class extends ChartHelperController {
-  static targets = ['canvas', 'button']
+  static targets = ['canvas', 'button', 'secondsToHuman']
   static values = {
     yTicks: String,
+    tooltipLabelCallback: String,
   }
 
   connect() {
+    const self = this
     super.connect()
+    this.secondsToHumanTargets.forEach((element) => {
+      element.textContent = self.getPeriod(parseInt(element.textContent))
+    })
+    this.chart.options.scales.y.ticks = this.getTicks()
+    if (this.hasTooltipLabelCallbackValue) {
+      this.chart.options.plugins.tooltip.callbacks.label =
+        self.tooltipLabelCallbacks[self.tooltipLabelCallbackValue]
+    }
     this.chart.update()
   }
 
   initialize() {
+    const self = this
     this.ticks = {
       y: {
         default: {
@@ -27,6 +38,11 @@ export default class extends ChartHelperController {
             return m
           },
         },
+      },
+    }
+    this.tooltipLabelCallbacks = {
+      duration: function (context) {
+        return self.getPeriod(parseInt(context.raw))
       },
     }
   }
@@ -47,11 +63,8 @@ export default class extends ChartHelperController {
     button.classList.add('active')
   }
   getTicks() {
-    console.log(this.identifier)
-    console.log('ticks', this.ticks)
     return this.ticks.y[this.hasYTicksValue ? this.yTicksValue : 'default']
   }
-
   get defaultOptions() {
     return {
       // maintainAspectRatio: true,

@@ -1,0 +1,43 @@
+{% load json_encode from json_tags %}
+<div class="grid-item bgc-white"
+     data-controller="chart-line"
+     data-controller="chart-utils"
+     data-chart-line-y-ticks-value='duration'
+     data-chart-line-tooltip-label-callback-value='duration'
+     data-chart-line-options-value='{{ options|json_encode }}'
+     data-chart-line-data-value='{{ tabs.0|json_encode }}'>
+    <div class="dashboard-item">
+        <div class="container__flex">
+            <div>
+                <span class="h6">
+                    {% include "icons/dashboard.svg" %}
+                    {{ period_title }}
+                </span>
+                <h4>{{ title }}</h4>
+            </div>
+            <div>
+                <ul class="list-horizontal">
+                    {% for tab in tabs %}
+                        <li>
+                            <button data-chart-line-target="button"
+                                    data-action="chart-line#update"
+                                    data-chart-line-datasets-param="{{ tab.datasets|json_encode }}"
+                                    class="{% if forloop.first %} active{% endif %}">
+                                <span class="h3" data-chart-line-target="secondsToHuman">{{ tab.aantallen }}</span>
+                                <span class="decorated">{{ tab.titel }}</span>
+                            </button>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div>
+            <canvas data-chart-line-target="canvas"></canvas>
+        </div>
+        <div class="dashboard-item-footer">
+            <p>
+                <a href="#">Toon deze meldingen</a>
+            </p>
+        </div>
+    </div>
+</div>
