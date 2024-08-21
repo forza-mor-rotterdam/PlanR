@@ -1,11 +1,7 @@
 import string
 
 from apps.main.constanten import VERTALINGEN
-from apps.services.onderwerpen import (
-    OnderwerpenService,
-    render_onderwerp,
-    render_onderwerp_groepen,
-)
+from apps.services.onderwerpen import render_onderwerp, render_onderwerp_groepen
 from django.http import QueryDict
 from django.template.loader import get_template
 from django.urls import reverse

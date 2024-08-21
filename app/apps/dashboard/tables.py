@@ -173,21 +173,23 @@ def get_status_veranderingen_tabs(veranderingen, week=None, ticks=[]):
                     "fill": True,
                     "backgroundColor": "rgba(0,200,100,0.1)",
                     "data": [
-                        statistics.mean(
-                            [
-                                float(d.get("duur_seconden_gemiddeld"))
+                        (
+                            statistics.mean(
+                                [
+                                    float(d.get("duur_seconden_gemiddeld"))
+                                    for d in dag
+                                    if d.get("begin_status") == tab.get("begin_status")
+                                    and d.get("eind_status") == tab.get("eind_status")
+                                ]
+                            )
+                            if [
+                                d.get("duur_seconden_gemiddeld")
                                 for d in dag
                                 if d.get("begin_status") == tab.get("begin_status")
                                 and d.get("eind_status") == tab.get("eind_status")
                             ]
+                            else 0
                         )
-                        if [
-                            d.get("duur_seconden_gemiddeld")
-                            for d in dag
-                            if d.get("begin_status") == tab.get("begin_status")
-                            and d.get("eind_status") == tab.get("eind_status")
-                        ]
-                        else 0
                         for dag in dataset.get("bron")
                     ],
                 }
