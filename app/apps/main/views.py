@@ -710,53 +710,82 @@ def taak_starten(request, id):
     meldingen_service = MeldingenService(request=request)
     melding = meldingen_service.get_melding(id)
 
-    # Get taak types for the user
-    taaktypes = TaakRService(request=request).get_niet_actieve_taaktypes(melding)
-    taaktypes_categorized = TaakRService(request=request).categorize_taaktypes(
-        melding, taaktypes
-    )
+    taakr_service = TaakRService(request=request)
+    taaktypes_with_afdelingen = taakr_service.get_taaktypes_with_afdelingen(melding)
 
-    # Categorize task types
-    taaktype_categories = {}
-    for taaktype_url, taaktype_omschrijving in taaktypes_categorized:
-        categories = TaaktypeCategorie.objects.filter(
-            taaktypes__contains=[taaktype_url]
-        )
-        category_name = categories.first().naam if categories.exists() else "Overig"
-        taaktype_categories.setdefault(category_name, []).append(
+    # Categorize taaktypes by afdeling and get gerelateerde onderwerpen
+    afdelingen = {}
+    onderwerp_gerelateerde_taaktypes = []
+    melding_onderwerpen = set(melding.get("onderwerpen", []))
+    print(f"melding_onderwerpen: {melding_onderwerpen}")
+
+    for item in taaktypes_with_afdelingen:
+        taaktype = item["taaktype"]
+        afdeling = item["afdeling"]
+        afdeling_naam = afdeling.get("naam", "Overig")
+
+        taaktype_url = taaktype.get("_links", {}).get("taakapplicatie_taaktype_url")
+        taaktype_omschrijving = taaktype.get("omschrijving")
+
+        afdelingen.setdefault(afdeling_naam, []).append(
             (taaktype_url, taaktype_omschrijving)
         )
 
-    # Prepare task type choices for form
+        gerelateerde_onderwerpen = set(
+            item["taaktype"].get("gerelateerde_onderwerpen", [])
+        )
+        print(
+            f"gerelateerde_onderwerpen for taaktype {item['taaktype'].get('omschrijving')}: {gerelateerde_onderwerpen}"
+        )
+        if melding_onderwerpen.intersection(gerelateerde_onderwerpen):
+            onderwerp_gerelateerde_taaktypes.append(
+                (taaktype_url, taaktype_omschrijving)
+            )
+
+    print(f"onderwerp_gerelateerde_taaktypes: {onderwerp_gerelateerde_taaktypes}")
+
+    # Prepare taaktype choices for form
     taaktype_choices = [
-        (category_name, category_taaktypes)
-        for category_name, category_taaktypes in taaktype_categories.items()
+        (afdeling_naam, afdeling_taaktypes)
+        for afdeling_naam, afdeling_taaktypes in afdelingen.items()
     ]
     taaktype_choices.insert(0, ("", "Selecteer een taak"))
 
-    # Prepare category choices for form
-    categorie_choices = [
-        (category_name, category_name) for category_name in taaktype_categories.keys()
+    # Prepare afdeling choices for form
+    afdeling_choices = [
+        (afdeling_naam, afdeling_naam) for afdeling_naam in afdelingen.keys()
     ]
-    categorie_choices.insert(0, ("", "--"))
+    afdeling_choices.insert(0, ("", "--"))
 
-    form = TaakStartenForm(taaktypes=taaktype_choices, categories=categorie_choices)
+    form = TaakStartenForm(
+        taaktypes=taaktype_choices,
+        afdelingen=afdeling_choices,
+        onderwerp_gerelateerde_taaktypes=onderwerp_gerelateerde_taaktypes,
+    )
     if request.POST:
         form = TaakStartenForm(
-            request.POST, taaktypes=taaktype_choices, categories=categorie_choices
+            request.POST,
+            taaktypes=taaktype_choices,
+            afdelingen=afdeling_choices,
+            onderwerp_gerelateerde_taaktypes=onderwerp_gerelateerde_taaktypes,
         )
         if form.is_valid():
             data = form.cleaned_data
-            taaktypes_dict = {tt[0]: tt[1] for tt in taaktypes_categorized}
+            selected_taaktype = data.get("related_taaktype") or data.get("taaktype")
+            taaktypes_dict = {
+                tt[0]: tt[1]
+                for afdeling_taaktypes in afdelingen.values()
+                for tt in afdeling_taaktypes
+            }
+            taaktypes_dict.update(dict(onderwerp_gerelateerde_taaktypes))
             meldingen_service.taak_aanmaken(
                 melding_uuid=id,
-                taakapplicatie_taaktype_url=data.get("taaktype"),
-                titel=taaktypes_dict.get(data.get("taaktype"), data.get("taaktype")),
+                taakapplicatie_taaktype_url=selected_taaktype,
+                titel=taaktypes_dict.get(selected_taaktype, selected_taaktype),
                 bericht=data.get("bericht"),
                 gebruiker=request.user.email,
             )
             return redirect("melding_detail", id=id)
-        print(form.errors)
 
     return render(
         request,

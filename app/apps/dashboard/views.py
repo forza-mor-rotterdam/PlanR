@@ -67,7 +67,7 @@ class Dashboard(FormView):
             return f"week {int(week_param)} {int(jaar_param)}"
 
         if self.maand and self.periode == self.PeriodeOpties.MAAND:
-            return f"maand {MAANDEN[int(maand_param)-1]} {int(jaar_param)}"
+            return f"maand {MAANDEN[int(maand_param) - 1]} {int(jaar_param)}"
 
         if self.jaar and self.PeriodeOpties.JAAR:
             return f"jaar {int(jaar_param)}"
@@ -95,7 +95,7 @@ class Dashboard(FormView):
                 {
                     "start_dt": dag,
                     "type": "dag",
-                    "label": f"{DAGEN_VAN_DE_WEEK_KORT[dag.weekday()]} {dag.strftime('%-d')} {MAANDEN_KORT[dag.month-1]}",
+                    "label": f"{DAGEN_VAN_DE_WEEK_KORT[dag.weekday()]} {dag.strftime('%-d')} {MAANDEN_KORT[dag.month - 1]}",
                 }
                 for dag in dagen
             ]
@@ -109,7 +109,7 @@ class Dashboard(FormView):
                 {
                     "start_dt": dag,
                     "type": "maand",
-                    "label": f"{dag.strftime('%-d')} {MAANDEN_KORT[dag.month-1]}",
+                    "label": f"{dag.strftime('%-d')} {MAANDEN_KORT[dag.month - 1]}",
                 }
                 for dag in dagen
             ]
@@ -125,7 +125,7 @@ class Dashboard(FormView):
                 {
                     "start_dt": dag,
                     "type": "maand",
-                    "label": f"{dag.strftime('%-d')} {MAANDEN_KORT[dag.month-1]}",
+                    "label": f"{dag.strftime('%-d')} {MAANDEN_KORT[dag.month - 1]}",
                 }
                 for dag in dagen
             ]
@@ -174,7 +174,7 @@ class Dashboard(FormView):
                     "status": self.kwargs.get("status"),
                 },
             ),
-            f"{MAANDEN[dt.month-1]} {dt.year}",
+            f"{MAANDEN[dt.month - 1]} {dt.year}",
         )
 
     def get_periode_navigatie(self):
@@ -232,7 +232,7 @@ class Dashboard(FormView):
         if self.maand and self.periode == self.PeriodeOpties.MAAND:
             return [
                 self.get_maand_links(int(jaar_param), int(maand_param) - 1),
-                [0, f"{MAANDEN[int(maand_param)-1]} {int(jaar_param)}"],
+                [0, f"{MAANDEN[int(maand_param) - 1]} {int(jaar_param)}"],
                 self.get_maand_links(int(jaar_param), int(maand_param) + 1),
             ]
         if self.jaar and self.PeriodeOpties.JAAR:

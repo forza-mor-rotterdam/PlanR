@@ -11,7 +11,7 @@ let formData = null
 const defaultErrorMessage = 'Vul a.u.b. dit veld in.'
 
 export default class extends Controller {
-  static targets = ['formTaakStarten', 'categorieField', 'taaktypeField']
+  static targets = ['formTaakStarten', 'afdelingField', 'taaktypeField']
 
   initializeSelect2() {
     $(this.formTaakStartenTarget.querySelector('.select2')).select2({
@@ -69,8 +69,8 @@ export default class extends Controller {
   }
 
   handleTaaktypeChoices() {
-    this.categorieFieldTarget.addEventListener('change', () => {
-      const categorie = this.categorieFieldTarget.value
+    this.afdelingFieldTarget.addEventListener('change', () => {
+      const afdeling = this.afdelingFieldTarget.value
       const taaktypeField = this.taaktypeFieldTarget
 
       // Clear previous options
@@ -82,12 +82,12 @@ export default class extends Controller {
       defaultOption.value = ''
       taaktypeField.appendChild(defaultOption)
 
-      // Add options based on selected categorie
+      // Add options based on selected afdeling
       const taaktypes = JSON.parse(form.dataset.taakstartenformulierTaaktypes)
 
-      taaktypes.forEach((categorieOptions) => {
-        const [category, options] = categorieOptions
-        const isMatchedCategory = !categorie || category === categorie
+      taaktypes.forEach((afdelingOptions) => {
+        const [category, options] = afdelingOptions
+        const isMatchedCategory = !afdeling || category === afdeling
 
         if (Array.isArray(options) && isMatchedCategory) {
           const optgroup = document.createElement('optgroup')

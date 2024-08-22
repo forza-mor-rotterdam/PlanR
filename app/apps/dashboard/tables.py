@@ -11,7 +11,7 @@ def get_aantallen_tabs(meldingen, signalen, week=None, ticks=[]):
         for weekdag in range(0, 7):
             dag = maandag + timedelta(days=weekdag)
             labels.append(
-                f"{DAGEN_VAN_DE_WEEK_KORT[weekdag]} {dag.strftime('%-d')} {MAANDEN_KORT[dag.month-1]}"
+                f"{DAGEN_VAN_DE_WEEK_KORT[weekdag]} {dag.strftime('%-d')} {MAANDEN_KORT[dag.month - 1]}"
             )
     elif ticks:
         labels = [t.get("label") for t in ticks]
@@ -119,7 +119,7 @@ def get_status_veranderingen_tabs(veranderingen, week=None, ticks=[]):
         for weekdag in range(0, 7):
             dag = maandag + timedelta(days=weekdag)
             labels.append(
-                f"{DAGEN_VAN_DE_WEEK_KORT[weekdag]} {dag.strftime('%-d')} {MAANDEN_KORT[dag.month-1]}"
+                f"{DAGEN_VAN_DE_WEEK_KORT[weekdag]} {dag.strftime('%-d')} {MAANDEN_KORT[dag.month - 1]}"
             )
     elif ticks:
         labels = [t.get("label") for t in ticks]
@@ -226,7 +226,7 @@ def get_afgehandeld_tabs(afgehandeld, week=None, ticks=[]):
         for weekdag in range(0, 7):
             dag = maandag + timedelta(days=weekdag)
             labels.append(
-                f"{DAGEN_VAN_DE_WEEK_KORT[weekdag]} {dag.strftime('%-d')} {MAANDEN_KORT[dag.month-1]}"
+                f"{DAGEN_VAN_DE_WEEK_KORT[weekdag]} {dag.strftime('%-d')} {MAANDEN_KORT[dag.month - 1]}"
             )
     elif ticks:
         labels = [t.get("label") for t in ticks]

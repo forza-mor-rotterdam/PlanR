@@ -285,14 +285,24 @@ class InformatieToevoegenForm(forms.Form):
 
 
 class TaakStartenForm(forms.Form):
-    categorie = forms.ChoiceField(
+    afdeling = forms.ChoiceField(
         label="Filter op afdeling",
         required=False,
         widget=forms.Select(
             attrs={
-                "data-taakstartenformulier-target": "categorieField",
+                "data-taakstartenformulier-target": "afdelingField",
             }
         ),
+    )
+
+    onderwerp_gerelateerd_taaktype = forms.ChoiceField(
+        widget=RadioSelect(
+            attrs={
+                "data-taakstartenformulier-target": "onderwerpGerelateerdTaaktypeField",
+            }
+        ),
+        label="Onderwerp gerelateerde taak",
+        required=False,
     )
 
     taaktype = forms.ChoiceField(
@@ -321,10 +331,19 @@ class TaakStartenForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         taaktype_choices = kwargs.pop("taaktypes", None)
-        categorie_choices = kwargs.pop("categories", None)
+        afdeling_choices = kwargs.pop("afdelingen", None)
+        onderwerp_gerelateerde_taaktypes = kwargs.pop(
+            "onderwerp_gerelateerde_taaktypes", None
+        )
         super().__init__(*args, **kwargs)
         self.fields["taaktype"].choices = taaktype_choices
-        self.fields["categorie"].choices = categorie_choices
+        self.fields["afdeling"].choices = afdeling_choices
+        if onderwerp_gerelateerde_taaktypes:
+            self.fields[
+                "onderwerp_gerelateerd_taaktype"
+            ].choices = onderwerp_gerelateerde_taaktypes
+        else:
+            self.fields["onderwerp_gerelateerd_taaktype"].widget = forms.HiddenInput()
 
 
 class TaakAfrondenForm(forms.Form):
@@ -714,7 +733,7 @@ class MeldingAanmakenForm(forms.Form):
                 "class": "form-control",
             }
         ),
-        label="Huisnummer",
+        label="Huisletter",
         required=False,
         max_length=1,
     )
@@ -724,7 +743,7 @@ class MeldingAanmakenForm(forms.Form):
                 "class": "form-control",
             }
         ),
-        label="Huisnummer",
+        label="Toevoeging",
         required=False,
         max_length=4,
     )
