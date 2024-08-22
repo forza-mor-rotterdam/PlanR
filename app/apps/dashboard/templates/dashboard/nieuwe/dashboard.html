@@ -144,24 +144,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="grid-item bgc-white">
-                    <h3>Week navigatie</h3>
-                    <ul>
-                        {% if vorige_volgende_week.0 %}
-                            <li>
-                                <a href="{{ vorige_volgende_week.0.0 }}">Week {{ vorige_volgende_week.0.1 }}</a>
-                            </li>
-                        {% endif %}
-                        <li>
-                            <span>Deze week {{ week }}</span>
-                        </li>
-                        {% if vorige_volgende_week.1 %}
-                            <li>
-                                <a href="{{ vorige_volgende_week.1.0 }}">Week {{ vorige_volgende_week.1.1 }}</a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </div>
+                <div class="grid-item bgc-white"></div>
             </div>
         </section>
         <section class="section--seperated--l">
