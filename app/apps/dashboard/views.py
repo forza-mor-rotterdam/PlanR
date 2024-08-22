@@ -32,7 +32,6 @@ class Dashboard(FormView):
         maand_param = kwargs.get("maand")
         week_param = kwargs.get("week")
 
-        datetime.now().date()
         try:
             self.week = isoweek.Week(int(jaar_param), int(week_param))
         except Exception as e:
@@ -45,6 +44,19 @@ class Dashboard(FormView):
                     self.jaar = int(jaar_param)
                 except Exception as e:
                     print(f"Tried jaar, next redirect to current week: {e}")
+                    vandaag = datetime.now().date()
+                    return redirect(
+                        reverse(
+                            "dashboard",
+                            kwargs={
+                                "jaar": vandaag.year,
+                                "week": f"{vandaag.isocalendar().week:02}",
+                                "type": "meldingen",
+                                "status": "nieuw",
+                            },
+                        )
+                    )
+
         self.title = self.get_title()
         return super().dispatch(request, *args, **kwargs)
 
@@ -85,9 +97,7 @@ class Dashboard(FormView):
             ).date()
             if self.week.year != int(jaar_param):
                 return redirect(
-                    reverse(
-                        "dashboard_week", args=[self.week.year, f"{self.week.week:02}"]
-                    )
+                    reverse("dashboard", args=[self.week.year, f"{self.week.week:02}"])
                 )
 
             dagen = (maandag + timedelta(days=weekdag) for weekdag in range(0, 7))
@@ -108,7 +118,7 @@ class Dashboard(FormView):
             ticks = [
                 {
                     "start_dt": dag,
-                    "type": "maand",
+                    "type": "dag",
                     "label": f"{dag.strftime('%-d')} {MAANDEN_KORT[dag.month-1]}",
                 }
                 for dag in dagen
@@ -116,18 +126,18 @@ class Dashboard(FormView):
             return ticks
 
         if self.jaar and self.PeriodeOpties.JAAR:
-            eerste_dag_vd_maand = datetime(int(jaar_param), int(maand_param), 1)
-            dagen = [
-                eerste_dag_vd_maand + timedelta(days=dag_vd_maand)
-                for dag_vd_maand in range(0, self.maand[1])
+            datetime(int(jaar_param), 1, 1)
+            maanden = [
+                datetime(int(jaar_param), maand + 1, 1) for maand in range(0, 12)
             ]
+            print(maanden)
             ticks = [
                 {
                     "start_dt": dag,
                     "type": "maand",
-                    "label": f"{dag.strftime('%-d')} {MAANDEN_KORT[dag.month-1]}",
+                    "label": f"{MAANDEN[dag.month-1]}",
                 }
-                for dag in dagen
+                for dag in maanden
             ]
             return ticks
 

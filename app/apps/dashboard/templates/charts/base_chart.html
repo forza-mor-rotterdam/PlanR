@@ -14,6 +14,7 @@
                     {{ period_title }}
                 </span>
                 <h4>{{ title }}</h4>
+                <p>{{ description }}</p>
             </div>
             <div>
                 <ul class="list-horizontal">
@@ -23,7 +24,7 @@
                                     data-action="chart-line#update"
                                     data-chart-line-datasets-param="{{ tab.datasets|json_encode }}"
                                     class="{% if forloop.first %} active{% endif %}">
-                                <span class="h3" data-chart-line-target="secondsToHuman">{{ tab.aantallen }}</span>
+                                <span class="h3" data-chart-line-target="secondsToHuman">{{ tab.aantal }}</span>
                                 <span class="decorated">{{ tab.titel }}</span>
                             </button>
                         </li>

@@ -302,8 +302,8 @@ def get_afgehandeld_tabs(afgehandeld, week=None, ticks=[]):
         for tab in tabs
     ]
 
-    def get_sum(d, dataset):
-        all_values = [d.get(status) for status in dataset.get("statussen", [])]
+    def get_sum(d, _statussen):
+        all_values = [d.get(status) for status in _statussen]
         values_without_null = [v for v in all_values if v is not None]
         values_to_float = [float(v) for v in values_without_null]
         return sum(values_to_float)
@@ -323,7 +323,7 @@ def get_afgehandeld_tabs(afgehandeld, week=None, ticks=[]):
                     "data": [
                         sum(
                             [
-                                get_sum(d, dataset)
+                                get_sum(d, dataset.get("statussen", []))
                                 for d in dag
                                 if bool(d.get("wijk") in tab.get("wijken"))
                                 != bool(tab.get("wijk_not_in"))
@@ -337,18 +337,19 @@ def get_afgehandeld_tabs(afgehandeld, week=None, ticks=[]):
         }
         for tab in tabs
     ]
-    tabs = [
-        {
-            **tab,
-            **{
-                "aantallen": sum(
-                    [
-                        sum(dataset.get("data", []))
-                        for dataset in tab.get("datasets", [])
-                    ]
-                )
-            },
-        }
-        for tab in tabs
-    ]
+
+    def get_average(tbl):
+        l2 = list(zip(*tbl))
+        l2t = [sum([nn for nn in dd]) for dd in l2]
+        l2tt = [d for d in l2t if d != 0]
+        average = statistics.mean(l2tt) if l2tt else 0
+        return average
+
+    for tab in tabs:
+        tab["aantal"] = get_average(
+            [
+                [d for d in dataset.get("data", [])]
+                for dataset in tab.get("datasets", [])
+            ]
+        )
     return tabs
