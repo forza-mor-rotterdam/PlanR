@@ -1,6 +1,6 @@
 @mixin focus-outline {
     outline-style: solid !important;
-    outline-width: medium !important;
+    outline-width: thin !important;
     outline-color: $gray-tint11 !important;
 }
 
@@ -664,6 +664,10 @@ body.no-js {
 
 .border-green {
     border-top: 8px solid $green-tint01;
+}
+
+.border-bottom {
+    border-bottom: 1px solid $gray-600;
 }
 
 .bar {

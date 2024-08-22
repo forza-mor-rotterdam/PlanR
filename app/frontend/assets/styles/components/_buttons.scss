@@ -259,6 +259,30 @@ textarea {
         }
     }
 
+    &-info {
+        @extend .btn-textlink;
+        width: auto;
+        font-size: 0.65em;
+        color: $black;
+        font-weight: 700;
+        text-decoration: none;
+
+        &:hover,
+        &:focus {
+            span {
+                text-decoration: underline;
+            }
+        }
+        span {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        svg {
+            vertical-align: sub;
+        }
+    }
+
     &.btn-icon {
         svg {
             vertical-align: sub;
