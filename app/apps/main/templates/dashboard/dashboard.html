@@ -72,8 +72,8 @@
                             <canvas data-chart-bar-target="canvas" class="no-padding"></canvas>
                         </div>
                         <div class="container__flex">
-                            <small>24 uur geleden</small>
-                            <small>Nu</small>
+                            <p>24 uur geleden</p>
+                            <p>Nu</p>
                         </div>
                     </div>
                 </div>
@@ -183,8 +183,17 @@
                 </div>
             </div>
         </section>
-        <section class="section--seperated--l">
-            <h2>Aantallen</h2>
+        <section class="section--seperated--l section--dashboard">
+            <div class="container__flex flex--wide">
+                <h2>Aantallen</h2>
+                <button type="button"
+                        class="btn btn-info"
+                        data-action="sidesheet#openSidesheet"
+                        data-sidesheet-action-param="{% url 'sidesheet_actueel' %}">
+                    {% include "icons/info-bullet.svg" %}
+                    <span>Meer info</span>
+                </button>
+            </div>
             <div class="grid-container" data-controller="chart-utils">
                 <div class="grid-item bgc-white"
                      data-controller="chart-line"
@@ -328,449 +337,463 @@
                 </div>
             </div>
         </section>
-        <section class="section--seperated--l">
-            <div>
+        <section class="section--seperated--l section--dashboard">
+            <div class="container__flex flex--wide">
                 <h2>Locatie</h2>
-                <div class="grid-container grid-container--reversed">
-                    <div class="grid-item bgc-white">
-                        <div class="dashboard-item">
-                            <span class="h6">
-                                {% include "icons/dashboard.svg" %}
-                            Wijken</span>
-                            <h4>Wijken met de meeste meldingen</h4>
-                            <div class="container__table lazy" data-controller="lazyload-table-bar">
-                                <table class="dashboard">
-                                    <colgroup>
-                                        <col span="1" style="width: 65%;">
-                                        <col span="1" style="width: 20%;">
-                                        <col span="1" style="width: 15%;">
-                                    </colgroup>
-                                    <thead>
-                                        <tr>
-                                            <th>Wijk</th>
-                                            <th>Aantal</th>
-                                            <th>%</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Agniesebuurt</td>
-                                            <td>
-                                                <span class="animated">798</span>
-                                            </td>
-                                            <td>
-                                                <span class="animated">38</span>%
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3">
-                                                <div class="container__bar">
-                                                    <div class="bar-background">
-                                                        <div class="bar bar--color-primary" style="max-width: 38%;"></div>
-                                                    </div>
+                <button type="button"
+                        class="btn btn-info"
+                        data-action="sidesheet#openSidesheet"
+                        data-sidesheet-action-param="{% url 'sidesheet_actueel' %}">
+                    {% include "icons/info-bullet.svg" %}
+                    <span>Meer info</span>
+                </button>
+            </div>
+            <div class="grid-container grid-container--reversed">
+                <div class="grid-item bgc-white">
+                    <div class="dashboard-item">
+                        <span class="h6">
+                            {% include "icons/dashboard.svg" %}
+                        Wijken</span>
+                        <h4>Wijken met de meeste meldingen</h4>
+                        <div class="container__table lazy" data-controller="lazyload-table-bar">
+                            <table class="dashboard">
+                                <colgroup>
+                                    <col span="1" style="width: 65%;">
+                                    <col span="1" style="width: 20%;">
+                                    <col span="1" style="width: 15%;">
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>Wijk</th>
+                                        <th>Aantal</th>
+                                        <th>%</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Agniesebuurt</td>
+                                        <td>
+                                            <span class="animated">798</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">38</span>%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <div class="container__bar">
+                                                <div class="bar-background">
+                                                    <div class="bar bar--color-primary" style="max-width: 38%;"></div>
                                                 </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Provenierswijk</td>
-                                            <td>
-                                                <span class="animated">461</span>
-                                            </td>
-                                            <td>
-                                                <span class="animated">22</span>%
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3">
-                                                <div class="container__bar">
-                                                    <div class="bar-background">
-                                                        <div class="bar bar--color-primary" style="max-width: 22%;"></div>
-                                                    </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Provenierswijk</td>
+                                        <td>
+                                            <span class="animated">461</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">22</span>%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <div class="container__bar">
+                                                <div class="bar-background">
+                                                    <div class="bar bar--color-primary" style="max-width: 22%;"></div>
                                                 </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Bergpolder</td>
-                                            <td>
-                                                <span class="animated">357</span>
-                                            </td>
-                                            <td>
-                                                <span class="animated">17</span>%
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3">
-                                                <div class="container__bar">
-                                                    <div class="bar-background">
-                                                        <div class="bar bar--color-primary" style="max-width: 17%;"></div>
-                                                    </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Bergpolder</td>
+                                        <td>
+                                            <span class="animated">357</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">17</span>%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <div class="container__bar">
+                                                <div class="bar-background">
+                                                    <div class="bar bar--color-primary" style="max-width: 17%;"></div>
                                                 </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Blijdorp</td>
-                                            <td>
-                                                <span class="animated">294</span>
-                                            </td>
-                                            <td>
-                                                <span class="animated">14</span>%
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3">
-                                                <div class="container__bar">
-                                                    <div class="bar-background">
-                                                        <div class="bar bar--color-primary" style="max-width: 14%;"></div>
-                                                    </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Blijdorp</td>
+                                        <td>
+                                            <span class="animated">294</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">14</span>%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <div class="container__bar">
+                                                <div class="bar-background">
+                                                    <div class="bar bar--color-primary" style="max-width: 14%;"></div>
                                                 </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Liskwartier</td>
-                                            <td>
-                                                <span class="animated">189</span>
-                                            </td>
-                                            <td>
-                                                <span class="animated">9</span>%
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3">
-                                                <div class="container__bar">
-                                                    <div class="bar-background">
-                                                        <div class="bar bar--color-primary" style="max-width: 9%;"></div>
-                                                    </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Liskwartier</td>
+                                        <td>
+                                            <span class="animated">189</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">9</span>%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <div class="container__bar">
+                                                <div class="bar-background">
+                                                    <div class="bar bar--color-primary" style="max-width: 9%;"></div>
                                                 </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="dashboard-item-footer">
-                                <p class="align--center">
-                                    <a href="#">Toon meldingen uit deze wijken</a>
-                                </p>
-                            </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="dashboard-item-footer">
+                            <p class="align--center">
+                                <a href="#">Toon meldingen uit deze wijken</a>
+                            </p>
                         </div>
                     </div>
-                    <div class="grid-item bgc-white">
-                        <div class="dashboard-item">
-                            <div>
-                                <span class="h6">
-                                    {% include "icons/dashboard.svg" %}
-                                Kaart</span>
-                                <h4>Meldingen op de kaart</h4>
-                            </div>
-                            <div data-controller="dashboardMap">
-                                <div class="container__map full-width">
-                                    <div data-dashboardMap-target="map"
-                                         class="map leaflet-container leaflet-touch leaflet-retina leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom"
-                                         style="background-color: unset;
-                                                border: none"></div>
-                                </div>
+                </div>
+                <div class="grid-item bgc-white">
+                    <div class="dashboard-item">
+                        <div>
+                            <span class="h6">
+                                {% include "icons/dashboard.svg" %}
+                            Kaart</span>
+                            <h4>Meldingen op de kaart</h4>
+                        </div>
+                        <div data-controller="dashboardMap">
+                            <div class="container__map full-width">
+                                <div data-dashboardMap-target="map"
+                                     class="map leaflet-container leaflet-touch leaflet-retina leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom"
+                                     style="background-color: unset;
+                                            border: none"></div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
-        <section class="section--seperated--l">
-            <div>
+        <section class="section--seperated--l section--dashboard">
+            <div class="container__flex flex--wide">
                 <h2>Top vijf</h2>
-                <div class="grid-container grid-container--3cols">
-                    <div class="grid-item bgc-white">
-                        <div class="dashboard-item">
-                            <div>
-                                <span class="h6">
-                                    {% include "icons/dashboard.svg" %}
-                                Tabel met aantallen en percentages</span>
-                                <h4>Percentage geanimeerd</h4>
-                            </div>
-                            <div class="container__table lazy" data-controller="lazyload-table-bar">
-                                <table class="dashboard">
-                                    <colgroup>
-                                        <col span="1" style="width: 65%;">
-                                        <col span="1" style="width: 20%;">
-                                        <col span="1" style="width: 15%;">
-                                    </colgroup>
-                                    <thead>
-                                        <tr>
-                                            <th>Onderwerp</th>
-                                            <th>Aantal</th>
-                                            <th>%</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Afval naast container</td>
-                                            <td>
-                                                <span class="animated">798</span>
-                                            </td>
-                                            <td>
-                                                <span class="animated">38</span>%
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3">
-                                                <div class="container__bar">
-                                                    <div class="bar-background">
-                                                        <div class="bar bar--color-primary" style="max-width: 38%;"></div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Grofvuil</td>
-                                            <td>
-                                                <span class="animated">461</span>
-                                            </td>
-                                            <td>
-                                                <span class="animated">22</span>%
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3">
-                                                <div class="container__bar">
-                                                    <div class="bar-background">
-                                                        <div class="bar bar--color-primary" style="max-width: 22%;"></div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Zwerfafval</td>
-                                            <td>
-                                                <span class="animated">357</span>
-                                            </td>
-                                            <td>
-                                                <span class="animated">17</span>%
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3">
-                                                <div class="container__bar">
-                                                    <div class="bar-background">
-                                                        <div class="bar bar--color-primary" style="max-width: 17%;"></div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Wijkcontainer</td>
-                                            <td>
-                                                <span class="animated">294</span>
-                                            </td>
-                                            <td>
-                                                <span class="animated">14</span>%
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3">
-                                                <div class="container__bar">
-                                                    <div class="bar-background">
-                                                        <div class="bar bar--color-primary" style="max-width: 14%;"></div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Overige onderwerpen</td>
-                                            <td>
-                                                <span class="animated">189</span>
-                                            </td>
-                                            <td>
-                                                <span class="animated">9</span>%
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3">
-                                                <div class="container__bar">
-                                                    <div class="bar-background">
-                                                        <div class="bar bar--color-primary" style="max-width: 9%;"></div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="dashboard-item-footer">
-                                <p class="align--center">
-                                    <a href="#">Toon meldingen met deze onderwerpen</a>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="grid-item bgc-white">
-                        <div class="dashboard-item">
+                <button type="button"
+                        class="btn btn-info"
+                        data-action="sidesheet#openSidesheet"
+                        data-sidesheet-action-param="{% url 'sidesheet_actueel' %}">
+                    {% include "icons/info-bullet.svg" %}
+                    <span>Meer info</span>
+                </button>
+            </div>
+            <div class="grid-container grid-container--3cols">
+                <div class="grid-item bgc-white">
+                    <div class="dashboard-item">
+                        <div>
                             <span class="h6">
                                 {% include "icons/dashboard.svg" %}
-                            Tabel met aantallen</span>
-                            <h4>Eenvoudige tabel met harde aantallen</h4>
-                            <div class="container__table">
-                                <table class="dashboard">
-                                    <colgroup>
-                                        <col span="1" style="width: 80%;">
-                                        <col span="1" style="width: 20%;">
-                                    </colgroup>
-                                    <thead>
-                                        <tr>
-                                            <th class="visually-hidden">Onderwerp</th>
-                                            <th class="visually-hidden">Aantal</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="border-bottom">
-                                            <td>Grofvuil ophalen</td>
-                                            <td>500</td>
-                                        </tr>
-                                        <tr class="border-bottom">
-                                            <td>Kantvissen</td>
-                                            <td>400</td>
-                                        </tr>
-                                        <tr class="border-bottom">
-                                            <td>Cementspoor op verharding verwijderen</td>
-                                            <td>300</td>
-                                        </tr>
-                                        <tr class="border-bottom">
-                                            <td>Menselijke vloeistoffen verwijderen</td>
-                                            <td>200</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Afvalcontainer legen</td>
-                                            <td>100</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="dashboard-item-footer">
-                                <p class="align--center">
-                                    <a href="#">Toon meldingen met deze onderwerpen</a>
-                                </p>
-                            </div>
+                            Tabel met aantallen en percentages</span>
+                            <h4>Percentage geanimeerd</h4>
+                        </div>
+                        <div class="container__table lazy" data-controller="lazyload-table-bar">
+                            <table class="dashboard">
+                                <colgroup>
+                                    <col span="1" style="width: 65%;">
+                                    <col span="1" style="width: 20%;">
+                                    <col span="1" style="width: 15%;">
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>Onderwerp</th>
+                                        <th>Aantal</th>
+                                        <th>%</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Afval naast container</td>
+                                        <td>
+                                            <span class="animated">798</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">38</span>%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <div class="container__bar">
+                                                <div class="bar-background">
+                                                    <div class="bar bar--color-primary" style="max-width: 38%;"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Grofvuil</td>
+                                        <td>
+                                            <span class="animated">461</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">22</span>%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <div class="container__bar">
+                                                <div class="bar-background">
+                                                    <div class="bar bar--color-primary" style="max-width: 22%;"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Zwerfafval</td>
+                                        <td>
+                                            <span class="animated">357</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">17</span>%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <div class="container__bar">
+                                                <div class="bar-background">
+                                                    <div class="bar bar--color-primary" style="max-width: 17%;"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Wijkcontainer</td>
+                                        <td>
+                                            <span class="animated">294</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">14</span>%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <div class="container__bar">
+                                                <div class="bar-background">
+                                                    <div class="bar bar--color-primary" style="max-width: 14%;"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Overige onderwerpen</td>
+                                        <td>
+                                            <span class="animated">189</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">9</span>%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <div class="container__bar">
+                                                <div class="bar-background">
+                                                    <div class="bar bar--color-primary" style="max-width: 9%;"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="dashboard-item-footer">
+                            <p class="align--center">
+                                <a href="#">Toon meldingen met deze onderwerpen</a>
+                            </p>
                         </div>
                     </div>
-                    <div class="grid-item bgc-white">
-                        <div class="dashboard-item">
-                            <div>
-                                <span class="h6">
-                                    {% include "icons/dashboard.svg" %}
-                                Afgehandelde onderwerpen</span>
-                                <h4>Meest afgehandelde onderwerpen</h4>
-                            </div>
-                            <div class="container__table lazy" data-controller="lazyload-table-bar">
-                                <table class="dashboard">
-                                    <colgroup>
-                                        <col span="1" style="width: 65%;">
-                                        <col span="1" style="width: 20%;">
-                                        <col span="1" style="width: 15%;">
-                                    </colgroup>
-                                    <thead>
-                                        <tr>
-                                            <th>Onderwerp</th>
-                                            <th>Aantal</th>
-                                            <th>%</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Afval naast container</td>
-                                            <td>
-                                                <span class="animated">798</span>
-                                            </td>
-                                            <td>
-                                                <span class="animated">38</span>%
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3">
-                                                <div class="container__bar">
-                                                    <div class="bar-background">
-                                                        <div class="bar bar--color-primary" style="max-width: 38%;"></div>
-                                                    </div>
+                </div>
+                <div class="grid-item bgc-white">
+                    <div class="dashboard-item">
+                        <span class="h6">
+                            {% include "icons/dashboard.svg" %}
+                        Tabel met aantallen</span>
+                        <h4>Eenvoudige tabel met harde aantallen</h4>
+                        <div class="container__table">
+                            <table class="dashboard">
+                                <colgroup>
+                                    <col span="1" style="width: 80%;">
+                                    <col span="1" style="width: 20%;">
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th class="visually-hidden">Onderwerp</th>
+                                        <th class="visually-hidden">Aantal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-bottom">
+                                        <td>Grofvuil ophalen</td>
+                                        <td>500</td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td>Kantvissen</td>
+                                        <td>400</td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td>Cementspoor op verharding verwijderen</td>
+                                        <td>300</td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td>Menselijke vloeistoffen verwijderen</td>
+                                        <td>200</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Afvalcontainer legen</td>
+                                        <td>100</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="dashboard-item-footer">
+                            <p class="align--center">
+                                <a href="#">Toon meldingen met deze onderwerpen</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-item bgc-white">
+                    <div class="dashboard-item">
+                        <div>
+                            <span class="h6">
+                                {% include "icons/dashboard.svg" %}
+                            Afgehandelde onderwerpen</span>
+                            <h4>Meest afgehandelde onderwerpen</h4>
+                        </div>
+                        <div class="container__table lazy" data-controller="lazyload-table-bar">
+                            <table class="dashboard">
+                                <colgroup>
+                                    <col span="1" style="width: 65%;">
+                                    <col span="1" style="width: 20%;">
+                                    <col span="1" style="width: 15%;">
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>Onderwerp</th>
+                                        <th>Aantal</th>
+                                        <th>%</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Afval naast container</td>
+                                        <td>
+                                            <span class="animated">798</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">38</span>%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <div class="container__bar">
+                                                <div class="bar-background">
+                                                    <div class="bar bar--color-primary" style="max-width: 38%;"></div>
                                                 </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Grofvuil</td>
-                                            <td>
-                                                <span class="animated">461</span>
-                                            </td>
-                                            <td>
-                                                <span class="animated">22</span>%
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3">
-                                                <div class="container__bar">
-                                                    <div class="bar-background">
-                                                        <div class="bar bar--color-primary" style="max-width: 22%;"></div>
-                                                    </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Grofvuil</td>
+                                        <td>
+                                            <span class="animated">461</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">22</span>%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <div class="container__bar">
+                                                <div class="bar-background">
+                                                    <div class="bar bar--color-primary" style="max-width: 22%;"></div>
                                                 </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Zwerfafval</td>
-                                            <td>
-                                                <span class="animated">357</span>
-                                            </td>
-                                            <td>
-                                                <span class="animated">17</span>%
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3">
-                                                <div class="container__bar">
-                                                    <div class="bar-background">
-                                                        <div class="bar bar--color-primary" style="max-width: 17%;"></div>
-                                                    </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Zwerfafval</td>
+                                        <td>
+                                            <span class="animated">357</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">17</span>%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <div class="container__bar">
+                                                <div class="bar-background">
+                                                    <div class="bar bar--color-primary" style="max-width: 17%;"></div>
                                                 </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Wijkcontainer</td>
-                                            <td>
-                                                <span class="animated">294</span>
-                                            </td>
-                                            <td>
-                                                <span class="animated">14</span>%
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3">
-                                                <div class="container__bar">
-                                                    <div class="bar-background">
-                                                        <div class="bar bar--color-primary" style="max-width: 14%;"></div>
-                                                    </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Wijkcontainer</td>
+                                        <td>
+                                            <span class="animated">294</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">14</span>%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <div class="container__bar">
+                                                <div class="bar-background">
+                                                    <div class="bar bar--color-primary" style="max-width: 14%;"></div>
                                                 </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Overige onderwerpen</td>
-                                            <td>
-                                                <span class="animated">189</span>
-                                            </td>
-                                            <td>
-                                                <span class="animated">9</span>%
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3">
-                                                <div class="container__bar">
-                                                    <div class="bar-background">
-                                                        <div class="bar bar--color-primary" style="max-width: 9%;"></div>
-                                                    </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Overige onderwerpen</td>
+                                        <td>
+                                            <span class="animated">189</span>
+                                        </td>
+                                        <td>
+                                            <span class="animated">9</span>%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <div class="container__bar">
+                                                <div class="bar-background">
+                                                    <div class="bar bar--color-primary" style="max-width: 9%;"></div>
                                                 </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="dashboard-item-footer">
-                                <p class="align--center">
-                                    <a href="#">Toon meldingen met deze onderwerpen</a>
-                                </p>
-                            </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="dashboard-item-footer">
+                            <p class="align--center">
+                                <a href="#">Toon meldingen met deze onderwerpen</a>
+                            </p>
                         </div>
                     </div>
                 </div>
