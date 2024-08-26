@@ -295,19 +295,27 @@ textarea {
         border-radius: 4px;
         margin-bottom: 0;
 
-        &--active {
+        &--active,
+        &--disabled {
             background-color: $green-600;
             color: $green-tint01;
             font-weight: 700;
             cursor: default;
             box-sizing: border-box;
         }
+
+        &--disabled {
+            font-weight: 400;
+            background-color: $gray-tint02;
+            color: $gray-tint06;
+        }
     }
 
     &.btn-state:hover {
         text-shadow: 1px 0 0 currentColor;
     }
-    &.btn-state--active:hover {
+    &.btn-state--active:hover,
+    &.btn-state--disabled:hover {
         text-shadow: none;
     }
 
@@ -318,7 +326,7 @@ textarea {
         }
     }
 
-    &:not(:disabled):not(.btn-state--active) {
+    &:not(:disabled):not(.btn-state--active):not(.btn-state--disabled) {
         cursor: pointer;
     }
 
