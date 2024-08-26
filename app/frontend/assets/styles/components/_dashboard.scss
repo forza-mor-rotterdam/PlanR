@@ -6,6 +6,35 @@ canvas {
     background: transparent;
 }
 
+.container__dashboard {
+    > .container__flex {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .container__filters {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1em;
+
+        .list-horizontal {
+            justify-content: flex-start;
+            gap: $input-padding-x;
+            margin-bottom: $input-padding-y;
+            li {
+                margin-right: 0;
+            }
+            .label {
+                font-weight: 700;
+                font-size: 0.7em;
+                line-height: 24px;
+                padding-top: $input-padding-y;
+                min-width: 4em;
+            }
+        }
+    }
+}
+
 .dashboard-item {
     background-color: $white;
     padding: $alert-padding-y;

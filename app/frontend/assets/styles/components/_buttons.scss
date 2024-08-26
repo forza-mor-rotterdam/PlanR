@@ -283,6 +283,34 @@ textarea {
         }
     }
 
+    &.btn-state,
+    &.btn-state--active {
+        display: inline-block;
+        font-weight: 400;
+        font-size: 0.7em;
+        background-color: $white;
+        color: $black;
+        min-height: 0;
+        padding: $input-padding-y $input-padding-x;
+        border-radius: 4px;
+        margin-bottom: 0;
+
+        &--active {
+            background-color: $green-600;
+            color: $green-tint01;
+            font-weight: 700;
+            cursor: default;
+            box-sizing: border-box;
+        }
+    }
+
+    &.btn-state:hover {
+        text-shadow: 1px 0 0 currentColor;
+    }
+    &.btn-state--active:hover {
+        text-shadow: none;
+    }
+
     &.btn-icon {
         svg {
             vertical-align: sub;
@@ -290,7 +318,7 @@ textarea {
         }
     }
 
-    &:not(:disabled) {
+    &:not(:disabled):not(.btn-state--active) {
         cursor: pointer;
     }
 
