@@ -456,7 +456,7 @@ class NieuweMeldingen(Dashboard):
         onderwerpen_ontdubbeld = sorted(
             [
                 {**onderwerp, **{"bar": onderwerp.get("aantal")}}
-                for onderwerp in onderwerp_opties
+                for onderwerp in onderwerpen_ontdubbeld
             ],
             key=lambda b: b.get("aantal"),
             reverse=True,
