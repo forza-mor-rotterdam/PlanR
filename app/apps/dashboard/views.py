@@ -1,4 +1,5 @@
 import calendar
+import copy
 import logging
 from datetime import datetime, timedelta
 
@@ -106,16 +107,13 @@ class Dashboard(FormView):
             maandag = datetime.strptime(
                 f"{self.week.year}-{self.week.week}-1", "%Y-%W-%w"
             ).date()
-            if self.week.year != int(jaar_param):
-                return redirect(
-                    reverse("dashboard", args=[self.week.year, f"{self.week.week:02}"])
-                )
 
             dagen = (maandag + timedelta(days=weekdag) for weekdag in range(0, 7))
             return [
                 {
                     "start_dt": dag,
                     "type": "dag",
+                    "days": 1,
                     "label": f"{DAGEN_VAN_DE_WEEK_KORT[dag.weekday()]} {dag.strftime('%-d')} {MAANDEN_KORT[dag.month-1]}",
                 }
                 for dag in dagen
@@ -130,6 +128,7 @@ class Dashboard(FormView):
                 {
                     "start_dt": dag,
                     "type": "dag",
+                    "days": 1,
                     "label": f"{dag.strftime('%-d')} {MAANDEN_KORT[dag.month-1]}",
                 }
                 for dag in dagen
@@ -137,7 +136,6 @@ class Dashboard(FormView):
             return ticks
 
         if self.jaar and self.PeriodeOpties.JAAR:
-            datetime(int(jaar_param), 1, 1)
             maanden = [
                 datetime(int(jaar_param), maand + 1, 1) for maand in range(0, 12)
             ]
@@ -146,10 +144,12 @@ class Dashboard(FormView):
                 {
                     "start_dt": dag,
                     "type": "maand",
+                    "days": calendar.monthrange(dag.year, dag.month)[1],
                     "label": f"{MAANDEN[dag.month-1]}",
                 }
                 for dag in maanden
             ]
+            print(ticks)
             return ticks
 
         return []
@@ -159,6 +159,7 @@ class Dashboard(FormView):
         if isoweek.Week.thisweek() < _w:
             return
         return (
+            f"week {_w.week}, {_w.year}",
             reverse(
                 "dashboard",
                 kwargs={
@@ -168,7 +169,6 @@ class Dashboard(FormView):
                     "status": self.kwargs.get("status"),
                 },
             ),
-            f"week {_w.week}, {_w.year}",
         )
 
     def get_maand_links(self, jaar, maand):
@@ -186,6 +186,7 @@ class Dashboard(FormView):
         if dt.year == vandaag.year and dt.month > vandaag.month:
             return
         return (
+            f"{MAANDEN[dt.month-1]} {dt.year}",
             reverse(
                 "dashboard",
                 kwargs={
@@ -195,48 +196,59 @@ class Dashboard(FormView):
                     "status": self.kwargs.get("status"),
                 },
             ),
-            f"{MAANDEN[dt.month-1]} {dt.year}",
+        )
+
+    def get_jaar_links(self, jaar):
+        vandaag = datetime.now().date()
+        if int(jaar) > vandaag.year:
+            return ["", ""]
+        return (
+            jaar,
+            reverse(
+                "dashboard",
+                kwargs={
+                    "jaar": jaar,
+                    "type": self.kwargs.get("type"),
+                    "status": self.kwargs.get("status"),
+                },
+            ),
         )
 
     def get_periode_navigatie(self):
         self.kwargs.get("jaar")
-        maand_param = self.kwargs.get("maand")
-        week_param = self.kwargs.get("week")
-
-        periodes = {
-            str(self.PeriodeOpties.MAAND): maand_param,
-            str(self.PeriodeOpties.WEEK): week_param,
-        }
-        extra_kwargs = {}
-        if self.week and self.periode == self.PeriodeOpties.WEEK:
-            extra_kwargs = {
-                str(self.PeriodeOpties.MAAND): "01",
-            }
-
-        if self.maand and self.periode == self.PeriodeOpties.MAAND:
-            extra_kwargs = {
-                str(self.PeriodeOpties.WEEK): "01",
-            }
+        maand_param = self.kwargs.get("maand", "01")
+        week_param = self.kwargs.get("week", "01")
 
         kwargs = {
             k: v
             for k, v in self.kwargs.items()
             if k not in [str(self.PeriodeOpties.MAAND), str(self.PeriodeOpties.WEEK)]
         }
-        kwargs.update(extra_kwargs)
-        periodes = [
-            [
-                reverse(
-                    "dashboard",
-                    kwargs=kwargs,
-                )
-                if not self.kwargs.get(k)
-                else 0,
-                k,
-            ]
+
+        periodes = {
+            str(self.PeriodeOpties.JAAR): copy.deepcopy(kwargs),
+            str(self.PeriodeOpties.MAAND): {
+                **copy.deepcopy(kwargs),
+                **{str(self.PeriodeOpties.MAAND): maand_param},
+            },
+            str(self.PeriodeOpties.WEEK): {
+                **copy.deepcopy(kwargs),
+                **{str(self.PeriodeOpties.WEEK): week_param},
+            },
+        }
+        periodes = {
+            k: reverse(
+                "dashboard",
+                kwargs=v,
+            )
             for k, v in periodes.items()
+        }
+        periodes[self.periode] = ""
+        return [
+            [str(self.PeriodeOpties.JAAR), periodes[str(self.PeriodeOpties.JAAR)]],
+            [str(self.PeriodeOpties.MAAND), periodes[str(self.PeriodeOpties.MAAND)]],
+            [str(self.PeriodeOpties.WEEK), periodes[str(self.PeriodeOpties.WEEK)]],
         ]
-        return periodes
 
     def get_periode_type_navigatie(self):
         jaar_param = self.kwargs.get("jaar")
@@ -246,68 +258,52 @@ class Dashboard(FormView):
         if self.week and self.periode == self.PeriodeOpties.WEEK:
             return [
                 self.get_week_links(self.week.year, self.week.week - 1),
-                [0, f"week {self.week.week}, {int(jaar_param)}"],
+                [f"week {self.week.week}, {int(jaar_param)}", 0],
                 self.get_week_links(self.week.year, self.week.week + 1),
             ]
 
         if self.maand and self.periode == self.PeriodeOpties.MAAND:
             return [
                 self.get_maand_links(int(jaar_param), int(maand_param) - 1),
-                [0, f"{MAANDEN[int(maand_param)-1]} {int(jaar_param)}"],
+                [f"{MAANDEN[int(maand_param)-1]} {int(jaar_param)}", 0],
                 self.get_maand_links(int(jaar_param), int(maand_param) + 1),
             ]
         if self.jaar and self.PeriodeOpties.JAAR:
-            return []
+            return [
+                self.get_jaar_links(int(jaar_param) - 1),
+                [jaar_param, 0],
+                self.get_jaar_links(int(jaar_param) + 1),
+            ]
         return []
 
     def get_status_navigatie(self):
-        jaar_param = self.kwargs.get("jaar")
-        maand_param = self.kwargs.get("maand")
-        week_param = self.kwargs.get("week")
-
-        periodes = {
-            self.PeriodeOpties.MAAND: maand_param,
-            self.PeriodeOpties.WEEK: week_param,
+        statussen = {
+            "nieuw": f"Nieuwe {self.kwargs.get('type')}",
+            "afgehandeld": f"Afgehandelde {self.kwargs.get('type')}",
         }
 
-        statussen = [
-            [f"Nieuwe {self.kwargs.get('type')}", "nieuw"],
-            [f"Afgehandelde {self.kwargs.get('type')}", "afgehandeld"],
-        ]
-        default_kwargs = {
-            "jaar": jaar_param,
-            f"{self.periode}": periodes[self.periode],
-            "type": self.kwargs.get("type"),
-        }
-
-        statussen = [
-            {
-                "title": status[0],
-                "status": status[1],
-                "kwargs": {**default_kwargs, **{"status": status[1]}},
-            }
-            for status in statussen
-        ]
-
-        for status in statussen:
-            y = self.kwargs
-            x = status.get("kwargs")
-            shared_items = {k: x[k] for k in x if k in y and x[k] != y[k]}
-            if not shared_items:
-                status["kwargs"] = {}
-
-        return [
-            [
+        statussen = {
+            k: [
+                v,
                 reverse(
                     "dashboard",
-                    kwargs=status.get("kwargs"),
-                )
-                if status.get("kwargs")
-                else 0,
-                status.get("title"),
+                    kwargs={
+                        **copy.deepcopy(self.kwargs),
+                        **{
+                            "status": k,
+                        },
+                    },
+                ),
             ]
-            for status in statussen
+            for k, v in statussen.items()
+        }
+
+        statussen[self.kwargs.get("status")] = [
+            statussen[self.kwargs.get("status")][0],
+            "",
         ]
+
+        return [[v[0], v[1]] for k, v in statussen.items()]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -339,9 +335,16 @@ class NieuweMeldingen(Dashboard):
         meldingen_service = MeldingenService()
         for tick in self.x_ticks:
             dag = tick.get("start_dt")
-            melding_aantallen = meldingen_service.melding_aantallen(datum=dag)
-            signaal_aantallen = meldingen_service.signaal_aantallen(datum=dag)
-            status_veranderingen = meldingen_service.status_veranderingen(datum=dag)
+            days = tick.get("days")
+            melding_aantallen = meldingen_service.melding_aantallen(
+                datum=dag, days=days
+            )
+            signaal_aantallen = meldingen_service.signaal_aantallen(
+                datum=dag, days=days
+            )
+            status_veranderingen = meldingen_service.status_veranderingen(
+                datum=dag, days=days
+            )
             meldingen.append(melding_aantallen)
             signalen.append(signaal_aantallen)
             veranderingen.append(status_veranderingen)
@@ -509,9 +512,13 @@ class MeldingenAfgehandeld(Dashboard):
 
         afgehandeld = []
         meldingen_service = MeldingenService()
+        print(self.x_ticks)
         for tick in self.x_ticks:
             dag = tick.get("start_dt")
-            status_afgehandeld = meldingen_service.afgehandelde_meldingen(datum=dag)
+            days = tick.get("days")
+            status_afgehandeld = meldingen_service.afgehandelde_meldingen(
+                datum=dag, days=days
+            )
             afgehandeld.append(status_afgehandeld)
 
         afgehandeld_tabs = get_afgehandeld_tabs(afgehandeld, ticks=self.x_ticks)
