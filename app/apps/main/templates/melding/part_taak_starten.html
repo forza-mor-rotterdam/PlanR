@@ -38,20 +38,24 @@
                 <div class="form-control__with-helptext">
                     <div class="form-row">
                         <label>Vaak gekozen bij dit type melding</label>
-                        <div>
+                        <div data-taakstartenformulier-target="onderwerpGerelateerdTaaktypeField">
                             {{ form.onderwerp_gerelateerd_taaktype }}
-                            <p class="help-block invalid-text no-margin"></p>
                         </div>
+                        <p class="help-block invalid-text no-margin"></p>
                     </div>
                 </div>
-                <div class="form-control__with-helptext">{{ form.afdeling|render_rotterdam_formulier }}</div>
+                <div class="form-control__with-helptext">
+                    <div class="form-row">
+                        <label>Afdeling</label>
+                        <div data-taakstartenformulier-target="afdelingField">{{ form.afdeling }}</div>
+                        <p class="help-block invalid-text no-margin"></p>
+                    </div>
+                </div>
                 <div class="form-control__with-helptext">
                     <div class="form-row">
                         <label>Selecteer een taak</label>
-                        <div>
-                            {{ form.taaktype }}
-                            <p class="help-block invalid-text no-margin"></p>
-                        </div>
+                        <div data-taakstartenformulier-target="taaktypeField">{{ form.taaktype }}</div>
+                        <p class="help-block invalid-text no-margin"></p>
                     </div>
                 </div>
                 <div class="form-control__with-helptext">{{ form.bericht|render_rotterdam_formulier }}</div>

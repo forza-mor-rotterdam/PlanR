@@ -717,7 +717,6 @@ def taak_starten(request, id):
     afdelingen = {}
     onderwerp_gerelateerde_taaktypes = []
     melding_onderwerpen = set(melding.get("onderwerpen", []))
-    print(f"melding_onderwerpen: {melding_onderwerpen}")
 
     for item in taaktypes_with_afdelingen:
         taaktype = item["taaktype"]
@@ -734,30 +733,26 @@ def taak_starten(request, id):
         gerelateerde_onderwerpen = set(
             item["taaktype"].get("gerelateerde_onderwerpen", [])
         )
-        print(
-            f"gerelateerde_onderwerpen for taaktype {item['taaktype'].get('omschrijving')}: {gerelateerde_onderwerpen}"
-        )
         if melding_onderwerpen.intersection(gerelateerde_onderwerpen):
             onderwerp_gerelateerde_taaktypes.append(
                 (taaktype_url, taaktype_omschrijving)
             )
 
-    print(f"onderwerp_gerelateerde_taaktypes: {onderwerp_gerelateerde_taaktypes}")
+    initial_afdeling = next(iter(afdelingen.keys()), None)
 
     # Prepare taaktype choices for form
     taaktype_choices = [
         (taaktype_url, taaktype_omschrijving)
         for taaktype_url, taaktype_omschrijving in afdelingen.items()
     ]
-    taaktype_choices.insert(0, ("", "Selecteer een taak"))
 
     # Prepare afdeling choices for form
     afdeling_choices = [
         (afdeling_naam, afdeling_naam) for afdeling_naam in afdelingen.keys()
     ]
-    afdeling_choices.insert(0, ("", "--"))
 
     form = TaakStartenForm(
+        initial={"afdeling": initial_afdeling},
         taaktypes=taaktype_choices,
         afdelingen=afdeling_choices,
         onderwerp_gerelateerde_taaktypes=onderwerp_gerelateerde_taaktypes,

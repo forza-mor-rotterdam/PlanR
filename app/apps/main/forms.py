@@ -287,7 +287,7 @@ class InformatieToevoegenForm(forms.Form):
 class TaakStartenForm(forms.Form):
     afdeling = forms.ChoiceField(
         label="Filter op afdeling",
-        required=False,
+        required=True,
         widget=RadioSelect(
             attrs={
                 "data-taakstartenformulier-target": "afdelingField",
@@ -308,7 +308,6 @@ class TaakStartenForm(forms.Form):
     taaktype = forms.ChoiceField(
         widget=RadioSelect(
             attrs={
-                "class": "",
                 "data-taakstartenformulier-target": "taaktypeField",
             }
         ),
@@ -336,8 +335,23 @@ class TaakStartenForm(forms.Form):
             "onderwerp_gerelateerde_taaktypes", None
         )
         super().__init__(*args, **kwargs)
-        self.fields["taaktype"].choices = taaktype_choices
+
         self.fields["afdeling"].choices = afdeling_choices
+
+        # Set taaktype choices based on the initial afdeling
+        initial_afdeling = self.initial.get("afdeling")
+        if initial_afdeling and taaktype_choices:
+            self.fields["taaktype"].choices = next(
+                (
+                    choices
+                    for afdeling, choices in taaktype_choices
+                    if afdeling == initial_afdeling
+                ),
+                [],
+            )
+        else:
+            self.fields["taaktype"].choices = []
+
         if onderwerp_gerelateerde_taaktypes:
             self.fields[
                 "onderwerp_gerelateerd_taaktype"
