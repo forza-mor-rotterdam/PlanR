@@ -129,6 +129,18 @@ textarea {
             background-color: $gray-tint04;
             border-color: $gray-tint04;
         }
+
+        &-v2 {
+            background-color: $blue-900;
+            border-color: $blue-900;
+            transition: background-color 0.15s ease-in-out;
+
+            &:hover,
+            &:focus {
+                background-color: darken($blue-900, 10%);
+                border-color: darken($blue-900, 10%);
+            }
+        }
     }
 
     &-tertiary {
