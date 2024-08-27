@@ -11,19 +11,35 @@
     wide--xl
 {% endblock body_class %}
 {% block body %}
-    <turbo-frame id="overview" data-turbo-action="advance">
+    <turbo-frame id="overview" data-turbo-action="advance" data-controller="sidesheet">
     <div class="screen-xl container__dashboard">
         <div class="container__filters">
-            <h1 class="no-margin-top">Dashboard</h1>
-            <div class="margin-top">
-                {% comment %} <ul class="list-horizontal">
-                    <li>
-                        <span class="btn-state btn btn-state--active">Meldingen</span>
-                    </li>
-                    <li>
-                        <span class="btn-state btn btn-state--disabled">Taken</span>
-                    </li>
-                </ul> {% endcomment %}
+            <div class="container__title">
+                <h1>Dashboard</h1>
+                <div class="filters">
+                    <button type="button"
+                            class="btn btn-filter"
+                            data-action="sidesheet#toggleFilter">
+                        {% include "icons/filter_v2.svg" %}
+                        <span>Filters</span>
+                    </button>
+                    <dl class="list-horizontal">
+                        <div>
+                            <dt>Onderwerp</dt>
+                            <dd class="pill">
+                                Grofvuil
+                            </dd>
+                        </div>
+                        <div>
+                            <dt>Wijk</dt>
+                            <dd class="pill">
+                                Delfshaven
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+            <div>
                 <ul class="list-horizontal">
                     <li class="label">Status</li>
                     {% for nav in status_navigatie %}
@@ -52,10 +68,12 @@
                     <li class="label"></li>
                     {% for nav in periode_type_navigatie %}
                         <li>
-                            {% if nav.0 %}
-                                <a href="{{ nav.0 }}" class="btn btn-state">{{ nav.1 }}</a>
-                            {% else %}
-                                <span class="btn btn-state--active">{{ nav.1 }}</span>
+                            {% if nav %}
+                                {% if nav.0 %}
+                                    <a href="{{ nav.0 }}" class="btn btn-state">{{ nav.1 }}</a>
+                                {% else %}
+                                    <span class="btn btn-state--active">{{ nav.1 }}</span>
+                                {% endif %}
                             {% endif %}
                         </li>
                     {% endfor %}

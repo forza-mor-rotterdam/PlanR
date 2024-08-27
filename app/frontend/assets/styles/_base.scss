@@ -466,6 +466,15 @@ li {
 }
 
 dl {
+    dt {
+        font-weight: 700;
+    }
+    dd {
+        margin: 0 0 0.5rem;
+        font-weight: 400;
+    }
+}
+dl {
     div {
         display: flex;
 
@@ -483,15 +492,9 @@ dl {
             padding-right: 0.5rem;
         }
     }
-}
 
-dl {
-    dt {
-        font-weight: 700;
-    }
-    dd {
-        margin: 0 0 0.5rem;
-        font-weight: 400;
+    &.list-horizontal {
+        display: flex;
     }
 }
 
