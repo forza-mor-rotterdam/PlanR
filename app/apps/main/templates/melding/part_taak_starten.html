@@ -46,6 +46,15 @@
                 </div>
                 <div class="form-control__with-helptext">
                     <div class="form-row">
+                        <label for="taaktype-search">Zoek een andere taak</label>
+                        <input type="text"
+                               id="taaktype-search"
+                               data-taakstartenformulier-target="taaktypeSearch"
+                               placeholder="Zoek een andere taak...">
+                    </div>
+                </div>
+                <div class="form-control__with-helptext">
+                    <div class="form-row">
                         <label>Afdeling</label>
                         <div data-taakstartenformulier-target="afdelingField">{{ form.afdeling }}</div>
                         <p class="help-block invalid-text no-margin"></p>
