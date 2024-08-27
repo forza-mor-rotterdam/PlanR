@@ -286,6 +286,7 @@ textarea {
     &-filter {
         width: auto;
         height: 2em;
+        min-height: 36px;
         line-height: 2em;
         font-size: 0.7em;
         background-color: $white;
