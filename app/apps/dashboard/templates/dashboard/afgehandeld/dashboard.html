@@ -29,8 +29,14 @@
              data-action="click->sidesheet#toggleFilter"></div>
         <div class="content">
             <form action="." method="get">
-                {{ form.as_p }}
-                <input type="submit" value="Toon">
+                {{ form.onderwerp|render_rotterdam_formulier }}
+                {{ form.wijk|render_rotterdam_formulier }}
+                {{ form.invalidate_cache|render_rotterdam_formulier }}
+                <p>
+                    <button type="submit"
+                            class="btn btn-action btn-action-v2"
+                            data-action="sidesheet#toggleFilter">Pas filters toe</button>
+                </p>
             </form>
         </div>
     </div>

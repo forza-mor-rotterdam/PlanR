@@ -153,7 +153,9 @@
                 {{ form.wijk|render_rotterdam_formulier }}
                 {{ form.invalidate_cache|render_rotterdam_formulier }}
                 <p>
-                    <button type="submit" class="btn btn-action btn-action-v2">Pas filters toe</button>
+                    <button type="submit"
+                            class="btn btn-action btn-action-v2"
+                            data-action="sidesheet#toggleFilter">Pas filters toe</button>
                 </p>
             </form>
         </div>
