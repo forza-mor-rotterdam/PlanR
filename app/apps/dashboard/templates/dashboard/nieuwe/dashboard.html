@@ -9,12 +9,6 @@
 {% endblock title %}
 {% block content %}
     <div class="screen-xl">
-        {% comment %} <section class="section--seperated--l">
-            <form action="." method="get">
-                {{ form.as_p }}
-                <input type="submit" value="Toon">
-            </form>
-        </section> {% endcomment %}
         <section class="section--seperated--l">
             <h2>Aantallen</h2>
             <div class="grid-container" data-controller="chart-utils">
@@ -29,9 +23,9 @@
                                     Week {{ week }}
                                 </span>
                                 <h4>
-                                    Status veranderingen
+                                    Nieuwe
                                     <br>
-                                    gemiddeld in seconden
+                                    meldingen/signalen
                                 </h4>
                             </div>
                             <div>
@@ -148,12 +142,18 @@
             </div>
         </section>
         <section class="section--seperated--l">
-            <div data-controller="dashboardMap">
-                <div class="container__map full-width">
-                    <div data-dashboardMap-target="map"
-                         class="map leaflet-container leaflet-touch leaflet-retina leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom"
-                         style="background-color: unset;
-                                border: none"></div>
+            <div>
+                <h2>Top vijf</h2>
+                <div class="grid-container grid-container--3cols">
+                    <div class="grid-item bgc-white">
+                        {% include "charts/dashboard_item.html" with title=aantal_meldingen_onderwerp.title description="" period_title=title head=aantal_meldingen_onderwerp.head body=aantal_meldingen_onderwerp.body only %}
+                    </div>
+                    <div class="grid-item bgc-white">
+                        {% include "charts/dashboard_item.html" with title=aantal_meldingen_wijk.title description="" period_title=title head=aantal_meldingen_wijk.head body=aantal_meldingen_wijk.body only %}
+                    </div>
+                    <div class="grid-item bgc-white">
+                        {% include "charts/dashboard_item.html" with title=aantal_onderwerpen_ontdubbeld.title description="" period_title=title head=aantal_onderwerpen_ontdubbeld.head body=aantal_onderwerpen_ontdubbeld.body only %}
+                    </div>
                 </div>
             </div>
         </section>

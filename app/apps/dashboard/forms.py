@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class DashboardForm(forms.Form):
+    invalidate_cache = forms.BooleanField(required=False, initial=False)
     onderwerp = forms.ChoiceField(
         # widget=forms.CheckboxSelectMultiple(
         #     attrs={

@@ -1,0 +1,52 @@
+<div class="dashboard-item">
+    <div>
+        <span class="h6">
+            {% include "icons/dashboard.svg" %}
+        {{ period_title }}</span>
+        <h4>{{ title }}</h4>
+        <p>{{ description }}</p>
+    </div>
+    <div class="container__table lazy" data-controller="lazyload-table-bar">
+        <table class="dashboard">
+            <colgroup>
+                {% for h in head_percentages %}
+                    <col span="1" style="width: {{ h }}%;">
+                {% endfor %}
+            </colgroup>
+            <thead>
+                <tr>
+                    {% for h in head %}<th>{{ h }}</th>{% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in body %}
+                    {% if forloop.counter <= 5 %}
+                        <tr>
+                            {% for k, v in row.items %}
+                                {% if k != "bar" %}
+                                    <td {% if not forloop.first %}class="animated"{% endif %}>{{ v }}</td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                        {% if row.bar %}
+                            <tr>
+                                <td colspan="3">
+                                    <div class="container__bar">
+                                        <div class="bar-background">
+                                            <div class="bar bar--color-primary" style="max-width: {{ row.bar }}%;"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="dashboard-item-footer">
+        <p class="align--center">
+            <a href="#">Toon meldingen met deze onderwerpen</a>
+        </p>
+    </div>
+</div>
