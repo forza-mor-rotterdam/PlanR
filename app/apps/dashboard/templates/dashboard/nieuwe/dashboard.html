@@ -151,7 +151,10 @@
             <form action="." method="get">
                 {{ form.onderwerp|render_rotterdam_formulier }}
                 {{ form.wijk|render_rotterdam_formulier }}
-                <button type="submit" class="btn btn-action btn-action-v2">Pas filters toe</button>
+                {{ form.invalidate_cache|render_rotterdam_formulier }}
+                <p>
+                    <button type="submit" class="btn btn-action btn-action-v2">Pas filters toe</button>
+                </p>
             </form>
         </div>
     </div>
