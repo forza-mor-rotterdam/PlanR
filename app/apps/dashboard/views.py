@@ -11,10 +11,11 @@ from apps.dashboard.tables import (
 )
 from apps.main.constanten import DAGEN_VAN_DE_WEEK_KORT, MAANDEN, MAANDEN_KORT
 from apps.services.meldingen import MeldingenService
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import permission_required
 from django.contrib.gis.db import models
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.views.generic.edit import FormView
 
 logger = logging.getLogger(__name__)
@@ -26,6 +27,16 @@ class Dashboard(FormView):
     periode = None
     title = None
     week = maand = jaar = None
+
+    # def form_valid(self, form):
+    #     print("form.cleaned_data")
+    #     print(form.cleaned_data)
+    #     return super().form_valid(form)
+
+    # def form_invalid(self,form):
+    # # Add action to invalid form phase
+    #     print(form.errors)
+    #     return self.render_to_response(self.get_context_data(form=form))
 
     def dispatch(self, request, *args, **kwargs):
         jaar_param = kwargs.get("jaar")
@@ -314,12 +325,14 @@ class Dashboard(FormView):
         return context
 
 
+@method_decorator(
+    permission_required("authorisatie.dashboard_bekijken"), name="dispatch"
+)
 class NieuweMeldingen(Dashboard):
     template_name = "dashboard/nieuwe/dashboard.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         meldingen = []
         signalen = []
         veranderingen = []
@@ -338,15 +351,156 @@ class NieuweMeldingen(Dashboard):
             veranderingen, ticks=self.x_ticks
         )
 
+        meldingen_aantal = sum(
+            [sum([d.get("count") for d in kolom]) for kolom in meldingen]
+        )
+        print(meldingen_aantal)
+        onderwerp_opties = list(
+            set([d.get("onderwerp") for kolom in meldingen for d in kolom])
+        )
+        wijk_opties = list(set([d.get("wijk") for kolom in meldingen for d in kolom]))
+
+        onderwerpen = [
+            {
+                "label": onderwerp,
+                "aantal": sum(
+                    [
+                        d.get("count")
+                        for kolom in meldingen
+                        for d in kolom
+                        if d.get("onderwerp") == onderwerp
+                    ]
+                ),
+            }
+            for onderwerp in onderwerp_opties
+        ]
+        wijken = [
+            {
+                "label": wijk,
+                "aantal": sum(
+                    [
+                        d.get("count")
+                        for kolom in meldingen
+                        for d in kolom
+                        if d.get("wijk") == wijk
+                    ]
+                ),
+            }
+            for wijk in wijk_opties
+        ]
+        onderwerpen = sorted(
+            [
+                {
+                    **onderwerp,
+                    **{
+                        "percentage": int(
+                            float(onderwerp.get("aantal") / meldingen_aantal) * 100
+                        ),
+                        "bar": int(
+                            float(onderwerp.get("aantal") / meldingen_aantal) * 100
+                        ),
+                    },
+                }
+                for onderwerp in onderwerpen
+            ],
+            key=lambda b: b.get("percentage"),
+            reverse=True,
+        )
+        wijken = sorted(
+            [
+                {
+                    **wijk,
+                    **{
+                        "percentage": int(
+                            float(wijk.get("aantal") / meldingen_aantal) * 100
+                        ),
+                        "bar": int(float(wijk.get("aantal") / meldingen_aantal) * 100),
+                    },
+                }
+                for wijk in wijken
+            ],
+            key=lambda b: b.get("percentage"),
+            reverse=True,
+        )
+
+        onderwerpen_ontdubbeld = sorted(
+            [
+                {
+                    "label": onderwerp,
+                    "aantal": "{:.2f}".format(
+                        float(
+                            sum(
+                                [
+                                    d.get("count")
+                                    for kolom in signalen
+                                    for d in kolom
+                                    if d.get("onderwerp") == onderwerp
+                                ]
+                            )
+                            / sum(
+                                [
+                                    d.get("count")
+                                    for kolom in meldingen
+                                    for d in kolom
+                                    if d.get("onderwerp") == onderwerp
+                                ]
+                            )
+                        )
+                    ),
+                }
+                for onderwerp in onderwerp_opties
+            ],
+            key=lambda b: b.get("aantal"),
+            reverse=True,
+        )
+        onderwerpen_ontdubbeld = sorted(
+            [
+                {**onderwerp, **{"bar": onderwerp.get("aantal")}}
+                for onderwerp in onderwerp_opties
+            ],
+            key=lambda b: b.get("aantal"),
+            reverse=True,
+        )
+
+        # print(onderwerp_opties)
+        print(signalen)
+        print(meldingen)
+        aantal_meldingen_onderwerp = {
+            "title": "Meest gemelde onderwerpen",
+            "period_title": self.get_title(),
+            "head": ["Onderwerp", "Aantal", "%"],
+            "head_percentages": [65, 20, 15],
+            "body": onderwerpen,
+        }
+        aantal_meldingen_wijk = {
+            "title": "Wijken met de meeste meldingen",
+            "period_title": self.get_title(),
+            "head": ["Wijk", "Aantal", "%"],
+            "head_percentages": [65, 20, 15],
+            "body": wijken,
+        }
+        aantal_onderwerpen_ontdubbeld = {
+            "title": "Meest ontdubbelde onderwerpen",
+            "period_title": self.get_title(),
+            "head": ["Onderwerp", "verhouding"],
+            "head_percentages": [80, 20],
+            "body": onderwerpen_ontdubbeld,
+        }
         context.update(
             {
                 "aantallen_tabs": aantallen_tabs,
                 "status_veranderingen_tabs": status_veranderingen_tabs,
+                "aantal_meldingen_onderwerp": aantal_meldingen_onderwerp,
+                "aantal_meldingen_wijk": aantal_meldingen_wijk,
+                "aantal_onderwerpen_ontdubbeld": aantal_onderwerpen_ontdubbeld,
             }
         )
         return context
 
 
+@method_decorator(
+    permission_required("authorisatie.dashboard_bekijken"), name="dispatch"
+)
 class MeldingenAfgehandeld(Dashboard):
     template_name = "dashboard/afgehandeld/dashboard.html"
 
@@ -397,76 +551,3 @@ class MeldingenAfgehandeld(Dashboard):
             }
         )
         return context
-
-
-@login_required
-def dashboard(request, jaar_param=None, week=None):
-    vandaag = datetime.now().date()
-    vandaag_week = f"{vandaag.isocalendar().week:02}"
-
-    try:
-        w = isoweek.Week(int(jaar_param), int(week))
-    except Exception:
-        return redirect(reverse("dashboard_week", args=[vandaag.year, vandaag_week]))
-    maandag = datetime.strptime(f"{w.year}-{w.week}-1", "%Y-%W-%w").date()
-
-    if maandag > vandaag:
-        return redirect(reverse("dashboard_week", args=[vandaag.year, vandaag_week]))
-
-    if w.year != int(jaar_param):
-        return redirect(reverse("dashboard_week", args=[w.year, f"{w.week:02}"]))
-
-    def get_week(_jaar, _week):
-        _w = isoweek.Week(int(_jaar), int(_week))
-        if isoweek.Week.thisweek() < _w:
-            return
-        return (
-            reverse(
-                "dashboard_week",
-                args=[_w.year, f"{_w.week:02}"],
-            ),
-            _w.week,
-        )
-
-    vorige_volgende_week = [
-        get_week(w.year, w.week - 1),
-        get_week(w.year, w.week + 1),
-    ]
-
-    meldingen = []
-    signalen = []
-    veranderingen = []
-    meldingen_service = MeldingenService()
-    for weekdag in range(0, 7):
-        dag = maandag + timedelta(days=weekdag)
-        melding_aantallen = meldingen_service.melding_aantallen(datum=dag)
-        signaal_aantallen = meldingen_service.signaal_aantallen(datum=dag)
-        status_veranderingen = meldingen_service.status_veranderingen(datum=dag)
-        meldingen.append(melding_aantallen)
-        signalen.append(signaal_aantallen)
-        veranderingen.append(status_veranderingen)
-
-    aantallen_tabs = get_aantallen_tabs(meldingen, signalen, week=w)
-    status_veranderingen_tabs = get_status_veranderingen_tabs(veranderingen, week=w)
-
-    onderwerp_opties = list(
-        set([d.get("onderwerp") for kolom in meldingen for d in kolom])
-    )
-    wijk_opties = list(set([d.get("wijk") for kolom in meldingen for d in kolom]))
-
-    form = DashboardForm(request.GET, wijken=wijk_opties, onderwerpen=onderwerp_opties)
-    if form.is_valid():
-        print(form.cleaned_data)
-
-    return render(
-        request,
-        "dashboard.html",
-        {
-            "form": form,
-            "jaar_param": jaar_param,
-            "week": int(week),
-            "vorige_volgende_week": vorige_volgende_week,
-            "aantallen_tabs": aantallen_tabs,
-            "status_veranderingen_tabs": status_veranderingen_tabs,
-        },
-    )
