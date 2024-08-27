@@ -219,7 +219,7 @@ export default class extends Controller {
 
   checkValids() {
     let isValid = true
-    const formFields = this.formTaakStartenTarget.querySelectorAll(
+    const formFields = this.form.querySelectorAll(
       'input[type="radio"][required], textarea[required]'
     )
 
@@ -229,9 +229,7 @@ export default class extends Controller {
 
       if (field.type === 'radio') {
         const fieldName = field.name
-        const isChecked = this.formTaakStartenTarget.querySelector(
-          `input[name="${fieldName}"]:checked`
-        )
+        const isChecked = this.form.querySelector(`input[name="${fieldName}"]:checked`)
         if (!isChecked) {
           this.showError(fieldSet, errorElement, defaultErrorMessage)
           isValid = false
