@@ -1,4 +1,5 @@
-body.show-sidesheet {
+body.show-sidesheet,
+body.show-sidesheet--dashboardfilter {
     height: 100%;
     overflow-y: hidden;
 }
@@ -74,7 +75,7 @@ body.show-sidesheet {
         z-index: 2105;
         background: transparent;
         top: $container-padding-x;
-        right: $container-padding-x;
+        right: calc($container-padding-x - 8px);
         min-width: 20px;
         min-height: 20px;
     }
@@ -89,8 +90,26 @@ body.show-sidesheet {
         background-color: $black;
         opacity: 0;
         display: none;
-        -webkit-backdrop-filter: blur(5px);
-        backdrop-filter: blur(5px);
+    }
+
+    &.sidesheet--dashboardfilter {
+        .content {
+            position: absolute;
+            top: 0;
+            right: -100%;
+            height: 100%;
+            max-width: 24em;
+            background-color: $white;
+            z-index: 2100;
+            overflow-y: auto;
+            transition: right 0.5s ease-in-out;
+            box-sizing: border-box;
+            padding: 3em 1.5em 1.5em;
+
+            label small {
+                display: none;
+            }
+        }
     }
 }
 
@@ -100,5 +119,23 @@ body.show-sidesheet {
         height: 100%;
         opacity: 0.5;
         transition: opacity 0.5s ease-in-out;
+    }
+}
+
+body.show-sidesheet-dashboardfilters {
+    .sidesheet--dashboardfilter {
+        left: 0;
+        backdrop-filter: blur(2px);
+
+        .content {
+            right: 0;
+        }
+
+        > .sidesheet-backdrop {
+            display: block;
+            height: 100%;
+            opacity: 0.25;
+            transition: opacity 0.5s ease-in-out;
+        }
     }
 }

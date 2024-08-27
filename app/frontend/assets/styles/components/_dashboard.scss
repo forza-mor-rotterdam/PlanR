@@ -12,6 +12,16 @@ canvas {
         justify-content: space-between;
     }
 
+    .container__title {
+        h1 {
+            margin: 0.5em 0;
+        }
+
+        + div {
+            margin-top: 1.25em;
+        }
+    }
+
     .container__filters {
         display: flex;
         justify-content: space-between;
@@ -30,6 +40,39 @@ canvas {
                 line-height: 24px;
                 padding-top: $input-padding-y;
                 min-width: 4em;
+            }
+        }
+
+        .filters {
+            display: flex;
+            justify-content: flex-start;
+            gap: 1em;
+
+            dl {
+                font-size: 0.6em;
+                line-height: 2em;
+                margin-top: 0.55em;
+                div {
+                    margin-right: 0.5em;
+                    dt,
+                    dd {
+                        flex: 1;
+                        max-width: none;
+                        line-height: 2em;
+                    }
+                    dt {
+                        padding-right: 0.25em;
+                    }
+                }
+
+                .pill {
+                    background-color: $green-600;
+                    color: $green-tint01;
+                    font-weight: 700;
+                    box-sizing: border-box;
+                    border-radius: 2em;
+                    padding: 0 0.5em;
+                }
             }
         }
     }

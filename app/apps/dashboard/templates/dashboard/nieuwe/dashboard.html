@@ -61,28 +61,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="grid-item bgc-white">
-                    <h3>Week navigatie</h3>
-                    <ul>
-                        {% if vorige_volgende_week.0 %}
-                            <li>
-                                <a href="{{ vorige_volgende_week.0.0 }}">Week {{ vorige_volgende_week.0.1 }}</a>
-                            </li>
-                        {% endif %}
-                        <li>
-                            <span>Deze week {{ week }}</span>
-                        </li>
-                        {% if vorige_volgende_week.1 %}
-                            <li>
-                                <a href="{{ vorige_volgende_week.1.0 }}">Week {{ vorige_volgende_week.1.1 }}</a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                    <form action="." method="get">
-                        {{ form.as_p }}
-                        <input type="submit" value="Toon">
-                    </form>
-                </div>
+                <div class="grid-item bgc-white">...</div>
             </div>
         </section>
         <section class="section--seperated--l">
@@ -160,5 +139,25 @@
     </div>
     <div class="screen-xl--notification">
         <p>Deze pagina is alleen te bekijken op een groter scherm.</p>
+    </div>
+    <div class="sidesheet sidesheet--dashboardfilter">
+        <button type="button"
+                class="btn-close"
+                aria-label="Sluit"
+                data-action="sidesheet#toggleFilter">{% include "icons/close.svg" %}</button>
+        <div class="sidesheet-backdrop sidesheet-exit"
+             data-action="click->sidesheet#toggleFilter"></div>
+        <div class="content">
+            <form action="." method="get">
+                {{ form.onderwerp|render_rotterdam_formulier }}
+                {{ form.wijk|render_rotterdam_formulier }}
+                {{ form.invalidate_cache|render_rotterdam_formulier }}
+                <p>
+                    <button type="submit"
+                            class="btn btn-action btn-action-v2"
+                            data-action="sidesheet#toggleFilter">Pas filters toe</button>
+                </p>
+            </form>
+        </div>
     </div>
 {% endblock content %}
