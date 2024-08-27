@@ -1,4 +1,5 @@
-body.show-sidesheet {
+body.show-sidesheet,
+body.show-sidesheet--dashboardfilter {
     height: 100%;
     overflow-y: hidden;
 }
@@ -92,6 +93,22 @@ body.show-sidesheet {
         -webkit-backdrop-filter: blur(5px);
         backdrop-filter: blur(5px);
     }
+
+    &.sidesheet--dashboardfilter {
+        .content {
+            position: absolute;
+            top: 0;
+            right: -100%;
+            height: 100%;
+            max-width: 24em;
+            background-color: $white;
+            z-index: 2100;
+            overflow-y: auto;
+            transition: right 0.5s ease-in-out;
+            box-sizing: border-box;
+            padding: $container-padding-x;
+        }
+    }
 }
 
 body.show-sidesheet {
@@ -100,5 +117,23 @@ body.show-sidesheet {
         height: 100%;
         opacity: 0.5;
         transition: opacity 0.5s ease-in-out;
+    }
+}
+
+body.show-sidesheet-dashboardfilters {
+    .sidesheet--dashboardfilter {
+        left: 0;
+        backdrop-filter: blur(5px);
+
+        .content {
+            right: 0;
+        }
+
+        > .sidesheet-backdrop {
+            display: block;
+            height: 100%;
+            opacity: 0.25;
+            transition: opacity 0.5s ease-in-out;
+        }
     }
 }

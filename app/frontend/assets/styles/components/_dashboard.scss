@@ -12,6 +12,16 @@ canvas {
         justify-content: space-between;
     }
 
+    .container__title {
+        h1 {
+            margin: 0.5em 0;
+        }
+
+        + div {
+            margin-top: 1.25em;
+        }
+    }
+
     .container__filters {
         display: flex;
         justify-content: space-between;
