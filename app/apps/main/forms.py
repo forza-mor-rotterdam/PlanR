@@ -288,7 +288,7 @@ class TaakStartenForm(forms.Form):
     afdeling = forms.ChoiceField(
         label="Filter op afdeling",
         required=False,
-        widget=forms.Select(
+        widget=RadioSelect(
             attrs={
                 "data-taakstartenformulier-target": "afdelingField",
             }
@@ -306,9 +306,9 @@ class TaakStartenForm(forms.Form):
     )
 
     taaktype = forms.ChoiceField(
-        widget=Select2Widget(
+        widget=RadioSelect(
             attrs={
-                "class": "select2",
+                "class": "",
                 "data-taakstartenformulier-target": "taaktypeField",
             }
         ),

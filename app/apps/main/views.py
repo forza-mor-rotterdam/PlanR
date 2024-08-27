@@ -746,8 +746,8 @@ def taak_starten(request, id):
 
     # Prepare taaktype choices for form
     taaktype_choices = [
-        (afdeling_naam, afdeling_taaktypes)
-        for afdeling_naam, afdeling_taaktypes in afdelingen.items()
+        (taaktype_url, taaktype_omschrijving)
+        for taaktype_url, taaktype_omschrijving in afdelingen.items()
     ]
     taaktype_choices.insert(0, ("", "Selecteer een taak"))
 
