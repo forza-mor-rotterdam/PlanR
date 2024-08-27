@@ -6,7 +6,9 @@
 {% endblock title %}
 {% block body %}
     <turbo-frame id="beheer" data-turbo-action="advance">
-    <div class="page__beheer" data-controller="row-search">
+    <div class="page__beheer"
+         data-controller="row-search"
+         data-row-search-disable-result-highlight-value="true">
         <div>
             <a href="{% url 'beheer' %}"
                class="link--back"
