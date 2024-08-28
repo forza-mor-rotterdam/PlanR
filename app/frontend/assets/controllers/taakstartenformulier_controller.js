@@ -114,8 +114,10 @@ export default class extends Controller {
 
       const label = document.createElement('label')
       label.htmlFor = `id_taaktype_${index}`
-      label.className = 'form-check-label ms-1'
-      label.textContent = `${text} ${afdeling ? '(' + afdeling + ')' : ''}`
+      label.className = 'form-check-label'
+      label.innerHTML = `${text} ${
+        afdeling ? '(<strong class="green">' + afdeling + '</strong>)' : ''
+      }`
 
       li.appendChild(input)
       li.appendChild(label)
@@ -207,6 +209,7 @@ export default class extends Controller {
         correspondingRadio.checked = true
       }
     }
+    this.afdelingFieldTarget.classList.add('inactive')
   }
 
   clearSearch() {
@@ -215,6 +218,7 @@ export default class extends Controller {
 
   resetToCurrentAfdeling() {
     const selectedAfdeling = this.afdelingFieldTarget.querySelector('input:checked')?.value
+    this.afdelingFieldTarget.classList.remove('inactive')
     if (selectedAfdeling) {
       this.filterTaaktypes(selectedAfdeling)
     }

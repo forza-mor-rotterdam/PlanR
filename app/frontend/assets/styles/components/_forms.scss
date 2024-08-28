@@ -817,6 +817,7 @@ form.taak--start {
     ul.form-check-input {
         li {
             margin-bottom: 0.5em;
+            padding-right: 0.5em;
         }
     }
 
@@ -854,6 +855,11 @@ form.taak--start {
                     font-weight: 700;
                 }
             }
+        }
+
+        .inactive {
+            opacity: 0.25;
+            pointer-events: none;
         }
     }
 }
