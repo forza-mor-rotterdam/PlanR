@@ -340,17 +340,14 @@ class TaakStartenForm(forms.Form):
 
         self.fields["afdeling"].choices = afdeling_choices
 
-        # Set taaktype choices based on the initial afdeling
-        initial_afdeling = self.initial.get("afdeling")
-        if initial_afdeling and taaktype_choices:
-            self.fields["taaktype"].choices = next(
-                (
-                    choices
-                    for afdeling, choices in taaktype_choices
-                    if afdeling == initial_afdeling
-                ),
-                [],
-            )
+        # Set all taaktype choices
+        if taaktype_choices:
+            all_taaktypes = [
+                (taaktype[0], taaktype[1])
+                for afdeling_taaktypes in taaktype_choices
+                for taaktype in afdeling_taaktypes[1]
+            ]
+            self.fields["taaktype"].choices = all_taaktypes
         else:
             self.fields["taaktype"].choices = []
 

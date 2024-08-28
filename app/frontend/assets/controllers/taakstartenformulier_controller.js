@@ -13,6 +13,8 @@ export default class extends Controller {
   connect() {
     this.form = this.formTaakStartenTarget
     this.formData = new FormData(this.form)
+    const initialAfdeling = this.formTaakStartenTarget.dataset.initialAfdeling
+    this.taaktypes = JSON.parse(this.form.dataset.taakstartenformulierTaaktypes)
 
     this.form.addEventListener('submit', (event) => {
       if (!this.checkValids()) {
@@ -23,8 +25,11 @@ export default class extends Controller {
         }
       }
     })
-    this.taaktypes = JSON.parse(this.form.dataset.taakstartenformulierTaaktypes)
-    // this.handleTaaktypeChoices()
+
+    if (initialAfdeling) {
+      this.filterTaaktypes(initialAfdeling)
+    }
+    this.handleTaaktypeChoices()
     this.handleOnderwerpGerelateerdTaaktypeChoices()
     this.handleSearch()
   }
@@ -70,22 +75,45 @@ export default class extends Controller {
     })
   }
 
+  // filterTaaktypes(selectedAfdeling) {
+
+  //   const taaktypeField = this.taaktypeFieldTarget
+
+  //   // Clear the current taaktype selection and content
+  //   this.clearFieldSelection(taaktypeField)
+  //   taaktypeField.innerHTML = ''
+
+  //   const ul = document.createElement('ul')
+  //   ul.id = 'id_taaktype'
+
+  //   const selectedAfdelingTaaktypes = this.taaktypes.find(
+  //     ([afdeling]) => afdeling === selectedAfdeling
+  //   )
+  //   if (selectedAfdelingTaaktypes) {
+  //     const [, options] = selectedAfdelingTaaktypes
+  //     this.renderTaaktypes(options.map((taaktype) => ({ afdeling: null, taaktype })))
+  //   }
+  // }
   filterTaaktypes(selectedAfdeling) {
     const taaktypeField = this.taaktypeFieldTarget
 
-    // Clear the current taaktype selection and content
-    this.clearFieldSelection(taaktypeField)
-    taaktypeField.innerHTML = ''
+    // Hide all taaktype options
+    taaktypeField.querySelectorAll('li').forEach((li) => {
+      li.style.display = 'none'
+    })
 
-    const ul = document.createElement('ul')
-    ul.id = 'id_taaktype'
-
+    // Show only the taaktypes for the selected afdeling
     const selectedAfdelingTaaktypes = this.taaktypes.find(
       ([afdeling]) => afdeling === selectedAfdeling
     )
     if (selectedAfdelingTaaktypes) {
       const [, options] = selectedAfdelingTaaktypes
-      this.renderTaaktypes(options.map((taaktype) => ({ afdeling: null, taaktype })))
+      options.forEach(([value]) => {
+        const option = taaktypeField.querySelector(`input[value="${value}"]`)
+        if (option) {
+          option.closest('li').style.display = ''
+        }
+      })
     }
   }
 
@@ -98,6 +126,7 @@ export default class extends Controller {
     const wrapper = document.createElement('div')
     div.className = 'form-row'
     wrapper.className = 'wrapper__columns'
+
     ul.id = 'id_taaktype'
     ul.className = 'form-check-input'
 

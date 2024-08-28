@@ -30,6 +30,7 @@
                   data-controller="taakstartenformulier"
                   data-taakstartenformulier-target="formTaakStarten"
                   data-taakstartenformulier-taaktypes="{{ taaktype_choices|json_encode }}"
+                  data-initial-afdeling="{{ initial_afdeling }}"
                   enctype="multipart/form-data"
                   novalidate>
                 {% csrf_token %}
