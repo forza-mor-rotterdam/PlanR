@@ -24,7 +24,7 @@ export default class extends Controller {
       }
     })
     this.taaktypes = JSON.parse(this.form.dataset.taakstartenformulierTaaktypes)
-    this.handleTaaktypeChoices()
+    // this.handleTaaktypeChoices()
     this.handleOnderwerpGerelateerdTaaktypeChoices()
     this.handleSearch()
   }
@@ -95,8 +95,9 @@ export default class extends Controller {
 
     const ul = document.createElement('ul')
     const div = document.createElement('div')
-    div.class = 'wrapper__columns'
+    div.className = 'wrapper__columns'
     ul.id = 'id_taaktype'
+    ul.className = 'form-check-input'
 
     taaktypes.forEach(({ afdeling, taaktype }, index) => {
       const [value, text] = taaktype

@@ -746,27 +746,112 @@ body > .select2-container--default,
     }
 }
 
+.container__form-check-cols2,
 .container__form-check-cols3 {
     width: 100%;
     margin-bottom: 1em;
+    .wrapper__columns {
+        ul {
+            @include list-clean();
+            li {
+                box-sizing: border-box;
+                display: flex;
+                label {
+                    font-weight: 400;
+                }
+                input {
+                    vertical-align: sub;
+                }
+            }
+        }
+    }
+
     @media (min-width: map-get($grid-breakpoints, md)) {
         .wrapper__columns {
             ul {
-                padding: 0;
-                margin: 0;
                 display: flex;
                 flex-wrap: wrap;
+            }
+        }
+    }
+}
 
-                li {
-                    flex: 0 0 33%;
-                    padding: 0.5em 0.5em 0.5em 0;
-                    box-sizing: border-box;
-                    label {
-                        font-weight: 400;
-                    }
-                    input {
-                        vertical-align: sub;
-                    }
+.container__form-check-cols3 {
+    .wrapper__columns {
+        ul {
+            li {
+                flex: 0 0 33%;
+            }
+        }
+    }
+}
+.container__form-check-cols2 {
+    .wrapper__columns {
+        ul {
+            li {
+                flex: 0 0 50%;
+            }
+        }
+    }
+}
+
+form.taak--start {
+    font-size: 20px;
+    label {
+        font-size: 0.8em;
+    }
+
+    .container__search {
+        .form-control {
+            margin-top: 0.5em;
+        }
+    }
+
+    section {
+        margin-bottom: $alert-padding-x;
+        &.bgc-gray01 {
+            padding: $input-padding-x;
+        }
+    }
+
+    ul.form-check-input {
+        li {
+            margin-bottom: 0.5em;
+        }
+    }
+
+    .input-labels {
+        ul {
+            margin-top: 0.8em;
+
+            li {
+                margin-bottom: 0;
+            }
+        }
+        input.form-check-input {
+            -webkit-appearance: none;
+            position: relative;
+            width: 0;
+            height: 0;
+            position: absolute;
+            border: 0;
+            box-shadow: none;
+
+            + label {
+                display: block;
+                padding: 0.25em 0.5em;
+                border-left: 3px solid $gray-tint01;
+                cursor: pointer;
+            }
+            &:checked,
+            &:hover,
+            &:focus {
+                border: 0;
+
+                + label {
+                    border-color: $green-tint01;
+                    color: $green-tint01;
+                    font-weight: 700;
                 }
             }
         }

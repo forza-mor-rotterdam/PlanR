@@ -291,6 +291,7 @@ class TaakStartenForm(forms.Form):
         widget=RadioSelect(
             attrs={
                 "data-taakstartenformulier-target": "afdelingField",
+                "class": "form-check-input",
             }
         ),
     )
