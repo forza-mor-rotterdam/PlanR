@@ -76,6 +76,7 @@ fieldset {
     min-height: 48px;
     line-height: 24px;
     width: 100%;
+    max-width: map-get($container-max-widths, sm);
     margin: 0.5rem 0 1.5rem;
 
     option[disabled],
@@ -741,6 +742,33 @@ body > .select2-container--default,
         }
         input[type="checkbox"] {
             @include form-check-input();
+        }
+    }
+}
+
+.container__form-check-cols3 {
+    width: 100%;
+    margin-bottom: 1em;
+    @media (min-width: map-get($grid-breakpoints, md)) {
+        .wrapper__columns {
+            ul {
+                padding: 0;
+                margin: 0;
+                display: flex;
+                flex-wrap: wrap;
+
+                li {
+                    flex: 0 0 33%;
+                    padding: 0.5em 0.5em 0.5em 0;
+                    box-sizing: border-box;
+                    label {
+                        font-weight: 400;
+                    }
+                    input {
+                        vertical-align: sub;
+                    }
+                }
+            }
         }
     }
 }

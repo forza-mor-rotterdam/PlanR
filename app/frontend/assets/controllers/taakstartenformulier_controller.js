@@ -94,6 +94,8 @@ export default class extends Controller {
     taaktypeField.innerHTML = ''
 
     const ul = document.createElement('ul')
+    const div = document.createElement('div')
+    div.class = 'wrapper__columns'
     ul.id = 'id_taaktype'
 
     taaktypes.forEach(({ afdeling, taaktype }, index) => {
@@ -105,7 +107,7 @@ export default class extends Controller {
       input.name = 'taaktype'
       input.value = value
       input.id = `id_taaktype_${index}`
-      input.className = ''
+      input.className = 'form-check-input'
       input.required = true
       input.setAttribute('data-taakstartenformulier-target', 'taaktypeField')
 
@@ -118,8 +120,8 @@ export default class extends Controller {
       li.appendChild(label)
       ul.appendChild(li)
     })
-
-    taaktypeField.appendChild(ul)
+    div.appendChild(ul)
+    taaktypeField.appendChild(div)
   }
 
   selectCorrespondingOnderwerpGerelateerdTaaktype(selectedTaaktype) {

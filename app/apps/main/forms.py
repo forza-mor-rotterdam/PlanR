@@ -286,7 +286,7 @@ class InformatieToevoegenForm(forms.Form):
 
 class TaakStartenForm(forms.Form):
     afdeling = forms.ChoiceField(
-        label="Filter op afdeling",
+        label="Afdeling",
         required=True,
         widget=RadioSelect(
             attrs={
@@ -299,6 +299,7 @@ class TaakStartenForm(forms.Form):
         widget=RadioSelect(
             attrs={
                 "data-taakstartenformulier-target": "onderwerpGerelateerdTaaktypeField",
+                "class": "form-check-input",
             }
         ),
         label="Onderwerp gerelateerde taak",
@@ -309,6 +310,7 @@ class TaakStartenForm(forms.Form):
         widget=RadioSelect(
             attrs={
                 "data-taakstartenformulier-target": "taaktypeField",
+                "class": "form-check-input",
             }
         ),
         label="Taak",
