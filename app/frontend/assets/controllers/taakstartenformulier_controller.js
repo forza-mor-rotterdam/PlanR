@@ -95,7 +95,9 @@ export default class extends Controller {
 
     const ul = document.createElement('ul')
     const div = document.createElement('div')
-    div.className = 'wrapper__columns'
+    const wrapper = document.createElement('div')
+    div.className = 'form-row'
+    wrapper.className = 'wrapper__columns'
     ul.id = 'id_taaktype'
     ul.className = 'form-check-input'
 
@@ -123,7 +125,8 @@ export default class extends Controller {
       li.appendChild(label)
       ul.appendChild(li)
     })
-    div.appendChild(ul)
+    wrapper.appendChild(ul)
+    div.appendChild(wrapper)
     taaktypeField.appendChild(div)
   }
 
@@ -229,9 +232,11 @@ export default class extends Controller {
     const formFields = this.form.querySelectorAll(
       'input[type="radio"][required], textarea[required]'
     )
+    console.log('formFields', formFields)
 
     formFields.forEach((field) => {
       const fieldSet = field.closest('.form-row')
+      console.log('fieldSet', fieldSet)
       const errorElement = fieldSet.querySelector('.invalid-text')
 
       if (field.type === 'radio') {
