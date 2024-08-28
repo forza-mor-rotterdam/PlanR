@@ -23,20 +23,26 @@
                         {% include "icons/filter_v2.svg" %}
                         <span>Filters</span>
                     </button>
-                    <dl class="list-horizontal">
-                        <div>
-                            <dt>Onderwerp</dt>
-                            <dd class="pill">
-                                Grofvuil
-                            </dd>
-                        </div>
-                        <div>
-                            <dt>Wijk</dt>
-                            <dd class="pill">
-                                Delfshaven
-                            </dd>
-                        </div>
-                    </dl>
+                    {% if form.cleaned_data.onderwerp or form.cleaned_data.wijk %}
+                        <dl class="list-horizontal">
+                            {% if form.cleaned_data.onderwerp %}
+                                <div>
+                                    <dt>Onderwerp</dt>
+                                    <dd class="pill">
+                                        {{ form.cleaned_data.onderwerp.strip }}
+                                    </dd>
+                                </div>
+                            {% endif %}
+                            {% if form.cleaned_data.wijk %}
+                                <div>
+                                    <dt>Wijk</dt>
+                                    <dd class="pill">
+                                        {{ form.cleaned_data.wijk.strip }}
+                                    </dd>
+                                </div>
+                            {% endif %}
+                        </dl>
+                    {% endif %}
                 </div>
             </div>
             <div>
@@ -45,7 +51,7 @@
                     {% for nav in status_navigatie %}
                         <li>
                             {% if nav.1 %}
-                                <a href="{{ nav.1 }}" class="btn btn-state">{{ nav.0 }}</a>
+                                <a href="{{ nav.1 }}?{{ request.GET.urlencode }}" class="btn btn-state">{{ nav.0 }}</a>
                             {% else %}
                                 <span class="btn-state btn btn-state--active">{{ nav.0 }}</span>
                             {% endif %}
@@ -57,7 +63,7 @@
                     {% for nav in periode_navigatie %}
                         <li>
                             {% if nav.1 %}
-                                <a href="{{ nav.1 }}" class="btn btn-state">{{ nav.0 }}</a>
+                                <a href="{{ nav.1 }}?{{ request.GET.urlencode }}" class="btn btn-state">{{ nav.0 }}</a>
                             {% else %}
                                 <span class="btn btn-state--active">{{ nav.0 }}</span>
                             {% endif %}
@@ -69,7 +75,7 @@
                     {% for nav in periode_type_navigatie %}
                         <li>
                             {% if nav.1 %}
-                                <a href="{{ nav.1 }}" class="btn btn-state">{{ nav.0 }}</a>
+                                <a href="{{ nav.1 }}?{{ request.GET.urlencode }}" class="btn btn-state">{{ nav.0 }}</a>
                             {% elif nav.0 %}
                                 <span class="btn btn-state--active">{{ nav.0 }}</span>
                             {% endif %}

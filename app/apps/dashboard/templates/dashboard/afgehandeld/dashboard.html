@@ -10,10 +10,12 @@
 {% block content %}
     <div class="screen-xl">
         <section class="section--seperated--l">
-            <h2>Aantallen</h2>
+            <h2>Afgehandelde meldingen</h2>
+            <p>
+                De informatie die verzameld is voor onderstaande grafieken, is samengesteld op basis van de afhandel datum van meldingen in de gekozen periode. Hier is dan ook informatie verzameld over meldingen die ver voor de gekozen periode gestart kunnen zijn.
+            </p>
             <div class="grid-container" data-controller="chart-utils">
-                {% include "charts/base_chart.html" with title="Doorlooptijden" description="Midoffice duur is bepaald door de optelling van alle tijd dat de melding in controle staat en de optelling van dat de melding op openstaand staat. De uitvoer duur wordt bepaald door de optellingen van alle keren dat de melding in behandeling staat. Wachten wordt berekend door de duur van alle pauze statussen op te tellen. De afgehandeld duur wordt bepaald doordat de melding heropend is, dus dan heeft de melding meer dan 1 afgehandeld status." period_title=title tabs=afgehandeld_tabs options=stacked_bars_options only %}
-                <div class="grid-item bgc-white">...</div>
+                {% include "charts/base_chart.html" with title="Doorlooptijden" description="Midoffice duur is bepaald door de optelling van alle tijd dat de melding in controle staat en de optelling van dat de melding op openstaand staat. De uitvoer duur wordt bepaald door de optellingen van alle keren dat de melding in behandeling staat. Wachten wordt berekend door de duur van alle pauze statussen op te tellen. De afgehandeld duur wordt bepaald doordat de melding heropend is, dus dan heeft de melding meer dan 1 afgehandeld status." period_title=title tabs=afgehandeld_tabs options=stacked_bars_options data_type="duration" only %}
             </div>
         </section>
     </div>
@@ -27,18 +29,7 @@
                 data-action="sidesheet#toggleFilter">{% include "icons/close.svg" %}</button>
         <div class="sidesheet-backdrop sidesheet-exit"
              data-action="click->sidesheet#toggleFilter"></div>
-        <div class="content">
-            <form action="." method="get">
-                {{ form.onderwerp|render_rotterdam_formulier }}
-                {{ form.wijk|render_rotterdam_formulier }}
-                {{ form.invalidate_cache|render_rotterdam_formulier }}
-                <p>
-                    <button type="submit"
-                            class="btn btn-action btn-action-v2"
-                            data-action="sidesheet#toggleFilter">Pas filters toe</button>
-                </p>
-            </form>
-        </div>
+        <div class="content">{% include "dashboard/form.html" %}</div>
     </div>
     <div class="sidesheet" data-sidesheet-target="sidesheet">
         <button type="button"

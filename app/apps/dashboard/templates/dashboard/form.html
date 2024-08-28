@@ -1,0 +1,11 @@
+{% load rotterdam_formulier_html %}
+<form action="." method="get">
+    {{ form.onderwerp|render_rotterdam_formulier }}
+    {{ form.wijk|render_rotterdam_formulier }}
+    {% comment %} {{ form.invalidate_cache|render_rotterdam_formulier }} {% endcomment %}
+    <p>
+        <button type="submit"
+                class="btn btn-action btn-action-v2"
+                data-action="sidesheet#toggleFilter">Pas filters toe</button>
+    </p>
+</form>

@@ -37,13 +37,16 @@ class DashboardForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
+        print(kwargs)
+        print(args)
         super().__init__(*args, **kwargs)
-        self.fields["wijk"].choices = [
-            [c.get("wijknaam"), c.get("wijknaam")] for c in PDOK_WIJKEN
-        ]
-
         onderwerpen_service = OnderwerpenService()
         onderwerpen = onderwerpen_service.get_onderwerpen()
-        self.fields["onderwerp"].choices = [
-            [c.get("name"), c.get("name")] for c in onderwerpen
-        ]
+
+        wijk_choices = [[c.get("wijknaam"), c.get("wijknaam")] for c in PDOK_WIJKEN]
+        wijk_choices.insert(0, ["", "---"])
+        onderwerp_choices = [[c.get("name"), c.get("name")] for c in onderwerpen]
+        onderwerp_choices.insert(0, ["", "---"])
+
+        self.fields["wijk"].choices = wijk_choices
+        self.fields["onderwerp"].choices = onderwerp_choices

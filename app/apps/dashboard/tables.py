@@ -1,21 +1,20 @@
 import statistics
-from datetime import datetime, timedelta
 
-from apps.main.constanten import DAGEN_VAN_DE_WEEK_KORT, MAANDEN_KORT, PDOK_WIJKEN
+from apps.main.constanten import PDOK_WIJKEN
 
 
-def get_aantallen_tabs(meldingen, signalen, week=None, ticks=[]):
-    labels = []
-    if week:
-        maandag = datetime.strptime(f"{week.year}-{week.week}-1", "%Y-%W-%w").date()
-        for weekdag in range(0, 7):
-            dag = maandag + timedelta(days=weekdag)
-            labels.append(
-                f"{DAGEN_VAN_DE_WEEK_KORT[weekdag]} {dag.strftime('%-d')} {MAANDEN_KORT[dag.month-1]}"
-            )
-    elif ticks:
-        labels = [t.get("label") for t in ticks]
+def average(lst):
+    try:
+        return statistics.mean(lst)
+    except Exception:
+        ...
+    return 0
 
+
+def get_aantallen_tabs(meldingen, signalen, ticks=[], onderwerp=None, wijk=None):
+    labels = [t.get("label") for t in ticks]
+
+    alle_wijken = [wijk.get("wijknaam") for wijk in PDOK_WIJKEN]
     wijken = [wijk.get("wijknaam") for wijk in PDOK_WIJKEN]
     wijken_noord = [
         wijk.get("wijknaam") for wijk in PDOK_WIJKEN if wijk.get("stadsdeel") == "Noord"
@@ -23,29 +22,38 @@ def get_aantallen_tabs(meldingen, signalen, week=None, ticks=[]):
     wijken_zuid = [
         wijk.get("wijknaam") for wijk in PDOK_WIJKEN if wijk.get("stadsdeel") == "Zuid"
     ]
-
-    tabs = [
-        {
-            "wijken": [],
-            "wijk_not_in": True,
-            "titel": "Heel Rotterdam",
-        },
-        {
-            "wijken": wijken_noord,
-            "wijk_not_in": False,
-            "titel": "Rotterdam noord",
-        },
-        {
-            "wijken": wijken_zuid,
-            "wijk_not_in": False,
-            "titel": "Rotterdam zuid",
-        },
-        {
-            "wijken": wijken,
-            "wijk_not_in": True,
-            "titel": "Onbekend of buiten Rotterdam",
-        },
-    ]
+    tabs = (
+        [
+            {
+                "wijken": [],
+                "wijk_not_in": True,
+                "titel": "Heel Rotterdam",
+            },
+            {
+                "wijken": wijken_noord,
+                "wijk_not_in": False,
+                "titel": "Rotterdam noord",
+            },
+            {
+                "wijken": wijken_zuid,
+                "wijk_not_in": False,
+                "titel": "Rotterdam zuid",
+            },
+            {
+                "wijken": wijken,
+                "wijk_not_in": True,
+                "titel": "Onbekend of buiten Rotterdam",
+            },
+        ]
+        if not wijk
+        else [
+            {
+                "wijken": [w for w in alle_wijken if wijk == w],
+                "wijk_not_in": False,
+                "titel": wijk,
+            }
+        ]
+    )
 
     tabs = [
         {
@@ -87,6 +95,7 @@ def get_aantallen_tabs(meldingen, signalen, week=None, ticks=[]):
                                 for d in dag
                                 if bool(d.get("wijk") in tab.get("wijken"))
                                 != bool(tab.get("wijk_not_in"))
+                                and (not onderwerp or onderwerp == d.get("onderwerp"))
                             ]
                         )
                         for dag in dataset.get("bron")
@@ -111,19 +120,10 @@ def get_aantallen_tabs(meldingen, signalen, week=None, ticks=[]):
     return tabs
 
 
-def get_status_veranderingen_tabs(veranderingen, week=None, ticks=[]):
-    labels = []
-    if week:
-        maandag = datetime.strptime(f"{week.year}-{week.week}-1", "%Y-%W-%w").date()
-        labels = []
-        for weekdag in range(0, 7):
-            dag = maandag + timedelta(days=weekdag)
-            labels.append(
-                f"{DAGEN_VAN_DE_WEEK_KORT[weekdag]} {dag.strftime('%-d')} {MAANDEN_KORT[dag.month-1]}"
-            )
-    elif ticks:
-        labels = [t.get("label") for t in ticks]
+def get_status_veranderingen_tabs(veranderingen, ticks=[], onderwerp=None, wijk=None):
+    labels = [t.get("label") for t in ticks]
 
+    [wijk.get("wijknaam") for wijk in PDOK_WIJKEN]
     tabs = [
         {
             "begin_status": "openstaand",
@@ -150,7 +150,7 @@ def get_status_veranderingen_tabs(veranderingen, week=None, ticks=[]):
                 "datasets": [
                     {
                         "type": "line",
-                        "label": "gemiddelde duur (seconden)",
+                        "label": "gemiddelde duur",
                         "bron": veranderingen,
                     },
                 ]
@@ -173,22 +173,15 @@ def get_status_veranderingen_tabs(veranderingen, week=None, ticks=[]):
                     "fill": True,
                     "backgroundColor": "rgba(0,200,100,0.1)",
                     "data": [
-                        (
-                            statistics.mean(
-                                [
-                                    float(d.get("duur_seconden_gemiddeld"))
-                                    for d in dag
-                                    if d.get("begin_status") == tab.get("begin_status")
-                                    and d.get("eind_status") == tab.get("eind_status")
-                                ]
-                            )
-                            if [
-                                d.get("duur_seconden_gemiddeld")
+                        average(
+                            [
+                                float(d.get("duur_seconden_gemiddeld"))
                                 for d in dag
                                 if d.get("begin_status") == tab.get("begin_status")
                                 and d.get("eind_status") == tab.get("eind_status")
+                                and (not onderwerp or onderwerp == d.get("onderwerp"))
+                                and (not wijk or wijk == d.get("wijk"))
                             ]
-                            else 0
                         )
                         for dag in dataset.get("bron")
                     ],
@@ -198,19 +191,19 @@ def get_status_veranderingen_tabs(veranderingen, week=None, ticks=[]):
         }
         for tab in tabs
     ]
-    # print(json.dumps(tabs, indent=4))
+
     tabs = [
         {
             **tab,
             **{
-                "aantallen": [
-                    int(statistics.mean([d for d in dataset.get("data", []) if d != 0]))
-                    if [d for d in dataset.get("data", []) if d != 0]
-                    else 0
-                    if dataset.get("data", [])
-                    else 0
-                    for dataset in tab.get("datasets", [])
-                ]
+                "aantal": int(
+                    average(
+                        [
+                            average([d for d in dataset.get("data", []) if d != 0])
+                            for dataset in tab.get("datasets", [])
+                        ]
+                    )
+                )
             },
         }
         for tab in tabs
@@ -218,20 +211,10 @@ def get_status_veranderingen_tabs(veranderingen, week=None, ticks=[]):
     return tabs
 
 
-def get_afgehandeld_tabs(afgehandeld, week=None, ticks=[]):
-    labels = []
-    if week:
-        maandag = datetime.strptime(f"{week.year}-{week.week}-1", "%Y-%W-%w").date()
-        labels = []
-        for weekdag in range(0, 7):
-            dag = maandag + timedelta(days=weekdag)
-            labels.append(
-                f"{DAGEN_VAN_DE_WEEK_KORT[weekdag]} {dag.strftime('%-d')} {MAANDEN_KORT[dag.month-1]}"
-            )
-    elif ticks:
-        labels = [t.get("label") for t in ticks]
+def get_afgehandeld_tabs(afgehandeld, ticks=[], onderwerp=None, wijk=None):
+    labels = [t.get("label") for t in ticks]
 
-    [wijk.get("wijknaam") for wijk in PDOK_WIJKEN]
+    alle_wijken = [wijk.get("wijknaam") for wijk in PDOK_WIJKEN]
     wijken_noord = [
         wijk.get("wijknaam") for wijk in PDOK_WIJKEN if wijk.get("stadsdeel") == "Noord"
     ]
@@ -239,23 +222,37 @@ def get_afgehandeld_tabs(afgehandeld, week=None, ticks=[]):
         wijk.get("wijknaam") for wijk in PDOK_WIJKEN if wijk.get("stadsdeel") == "Zuid"
     ]
 
-    tabs = [
-        {
-            "wijken": [],
-            "wijk_not_in": True,
-            "titel": "Heel Rotterdam",
-        },
-        {
-            "wijken": wijken_noord,
-            "wijk_not_in": False,
-            "titel": "Rotterdam noord",
-        },
-        {
-            "wijken": wijken_zuid,
-            "wijk_not_in": False,
-            "titel": "Rotterdam zuid",
-        },
-    ]
+    import json
+
+    print(json.dumps(afgehandeld, indent=4))
+
+    tabs = (
+        [
+            {
+                "wijken": [],
+                "wijk_not_in": True,
+                "titel": "Heel Rotterdam",
+            },
+            {
+                "wijken": wijken_noord,
+                "wijk_not_in": False,
+                "titel": "Rotterdam noord",
+            },
+            {
+                "wijken": wijken_zuid,
+                "wijk_not_in": False,
+                "titel": "Rotterdam zuid",
+            },
+        ]
+        if not wijk
+        else [
+            {
+                "wijken": [w for w in alle_wijken if wijk == w],
+                "wijk_not_in": False,
+                "titel": wijk,
+            }
+        ]
+    )
     tabs = [
         {
             **tab,
@@ -279,7 +276,7 @@ def get_afgehandeld_tabs(afgehandeld, week=None, ticks=[]):
                         "bron": afgehandeld,
                     },
                     {
-                        "backgroundColor": "#22a32f",
+                        "backgroundColor": "#e3f4dd",
                         "label": "Wachten",
                         "statussen": [
                             "wachten_melder_duur_gemiddeld",
@@ -327,6 +324,7 @@ def get_afgehandeld_tabs(afgehandeld, week=None, ticks=[]):
                                 for d in dag
                                 if bool(d.get("wijk") in tab.get("wijken"))
                                 != bool(tab.get("wijk_not_in"))
+                                and (not onderwerp or onderwerp == d.get("onderwerp"))
                             ]
                         )
                         for dag in dataset.get("bron")
@@ -342,8 +340,7 @@ def get_afgehandeld_tabs(afgehandeld, week=None, ticks=[]):
         l2 = list(zip(*tbl))
         l2t = [sum([nn for nn in dd]) for dd in l2]
         l2tt = [d for d in l2t if d != 0]
-        average = statistics.mean(l2tt) if l2tt else 0
-        return average
+        return average(l2tt)
 
     for tab in tabs:
         tab["aantal"] = get_average(
@@ -353,3 +350,197 @@ def get_afgehandeld_tabs(afgehandeld, week=None, ticks=[]):
             ]
         )
     return tabs
+
+
+def top_vijf_aantal_meldingen_wijk(meldingen, valide_wijken, onderwerp=None):
+    meldingen_aantal = sum(
+        [sum([d.get("count") for d in kolom]) for kolom in meldingen]
+    )
+    meldingen_aantal = (
+        sum(
+            [
+                sum([d.get("count") for d in kolom if d.get("onderwerp") == onderwerp])
+                for kolom in meldingen
+            ]
+        )
+        if onderwerp
+        else meldingen_aantal
+    )
+    meldingen = (
+        [[d for d in kolom if d.get("onderwerp") == onderwerp] for kolom in meldingen]
+        if onderwerp
+        else meldingen
+    )
+
+    wijken = [
+        {
+            "label": wijk,
+            "aantal": sum(
+                [
+                    d.get("count")
+                    for kolom in meldingen
+                    for d in kolom
+                    if d.get("wijk") == wijk
+                ]
+            ),
+        }
+        for wijk in valide_wijken
+    ]
+    wijken = sorted(
+        [
+            {
+                **wijk,
+                **{
+                    "percentage": int(
+                        float(wijk.get("aantal") / meldingen_aantal) * 100
+                    ),
+                    "bar": int(float(wijk.get("aantal") / meldingen_aantal) * 100),
+                },
+            }
+            for wijk in wijken
+        ],
+        key=lambda b: b.get("percentage"),
+        reverse=True,
+    )
+    aantal_meldingen_wijk = {
+        "title": "Wijken met de meeste meldingen",
+        "head": ["Wijk", "Aantal", "%"],
+        "head_percentages": [65, 20, 15],
+        "body": wijken,
+    }
+    return aantal_meldingen_wijk
+
+
+def top_vijf_aantal_meldingen_onderwerp(meldingen, valide_onderwerpen, wijk=None):
+    meldingen_aantal = sum(
+        [sum([d.get("count") for d in kolom]) for kolom in meldingen]
+    )
+    meldingen_aantal = (
+        sum(
+            [
+                sum([d.get("count") for d in kolom if d.get("wijk") == wijk])
+                for kolom in meldingen
+            ]
+        )
+        if wijk
+        else meldingen_aantal
+    )
+    meldingen = (
+        [[d for d in kolom if d.get("wijk") == wijk] for kolom in meldingen]
+        if wijk
+        else meldingen
+    )
+    onderwerpen = [
+        {
+            "label": onderwerp,
+            "aantal": sum(
+                [
+                    d.get("count")
+                    for kolom in meldingen
+                    for d in kolom
+                    if d.get("onderwerp") == onderwerp
+                ]
+            ),
+        }
+        for onderwerp in valide_onderwerpen
+    ]
+    onderwerpen = sorted(
+        [
+            {
+                **onderwerp,
+                **{
+                    "percentage": int(
+                        float(onderwerp.get("aantal") / meldingen_aantal) * 100
+                    ),
+                    "bar": int(float(onderwerp.get("aantal") / meldingen_aantal) * 100),
+                },
+            }
+            for onderwerp in onderwerpen
+        ],
+        key=lambda b: b.get("percentage"),
+        reverse=True,
+    )
+    aantal_meldingen_onderwerp = {
+        "title": "Meest gemelde onderwerpen",
+        "head": ["Onderwerp", "Aantal", "%"],
+        "head_percentages": [65, 20, 15],
+        "body": onderwerpen,
+    }
+    return aantal_meldingen_onderwerp
+
+
+def top_vijf_aantal_onderwerpen_ontdubbeld(
+    meldingen, signalen, valide_onderwerpen, wijk=None
+):
+    import json
+
+    meldingen = (
+        [[d for d in kolom if d.get("wijk") == wijk] for kolom in meldingen]
+        if wijk
+        else meldingen
+    )
+    signalen = (
+        [[d for d in kolom if d.get("wijk") == wijk] for kolom in signalen]
+        if wijk
+        else signalen
+    )
+
+    def get_verhouding(_signalen, _meldingen, _onderwerp):
+        _signalen_aantal = sum(
+            [
+                d.get("count")
+                for kolom in _signalen
+                for d in kolom
+                if d.get("onderwerp") == _onderwerp
+            ]
+        )
+        _meldingen_aantal = sum(
+            [
+                d.get("count")
+                for kolom in _meldingen
+                for d in kolom
+                if d.get("onderwerp") == _onderwerp
+            ]
+        )
+        if _meldingen_aantal <= 0:
+            return float(1)
+        return float(_signalen_aantal / _meldingen_aantal)
+
+    onderwerpen_ontdubbeld = sorted(
+        [
+            {
+                "label": onderwerp,
+                "aantal": "{:.2f}".format(
+                    get_verhouding(signalen, meldingen, onderwerp)
+                ),
+            }
+            for onderwerp in valide_onderwerpen
+        ],
+        key=lambda b: b.get("aantal"),
+        reverse=True,
+    )
+    print(json.dumps(onderwerpen_ontdubbeld, indent=4))
+
+    def get_bar_percentage(_onderwerp, _onderwerpen):
+        if float(_onderwerp.get("aantal")) <= 0:
+            return 1
+        aantal = float(_onderwerp.get("aantal")) - 1
+        max = (float(_onderwerpen[0].get("aantal")) - 1) if _onderwerpen else 0
+        if max <= 0:
+            return 1
+        percentage = int(float(aantal / max) * 80)
+        if percentage <= 0:
+            return 1
+        return percentage
+
+    onderwerpen_ontdubbeld = [
+        {**onderwerp, **{"bar": get_bar_percentage(onderwerp, onderwerpen_ontdubbeld)}}
+        for onderwerp in onderwerpen_ontdubbeld
+    ]
+    aantal_onderwerpen_ontdubbeld = {
+        "title": "Meest ontdubbelde onderwerpen",
+        "head": ["Onderwerp", "verhouding"],
+        "head_percentages": [80, 20],
+        "body": onderwerpen_ontdubbeld,
+    }
+    return aantal_onderwerpen_ontdubbeld

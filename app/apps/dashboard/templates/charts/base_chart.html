@@ -2,9 +2,9 @@
 <div class="grid-item bgc-white"
      data-controller="chart-line"
      data-controller="chart-utils"
-     data-chart-line-y-ticks-value='duration'
-     data-chart-line-tooltip-label-callback-value='duration'
-     data-chart-line-options-value='{{ options|json_encode }}'
+     {% if data_type %}data-chart-line-y-ticks-value='{{ data_type }}'{% endif %}
+     {% if data_type %}data-chart-line-tooltip-label-callback-value='{{ data_type }}'{% endif %}
+     {% if options %}data-chart-line-options-value='{{ options|json_encode }}'{% endif %}
      data-chart-line-data-value='{{ tabs.0|json_encode }}'>
     <div class="dashboard-item">
         <div class="container__flex">
@@ -24,7 +24,8 @@
                                     data-action="chart-line#update"
                                     data-chart-line-datasets-param="{{ tab.datasets|json_encode }}"
                                     class="{% if forloop.first %} active{% endif %}">
-                                <span class="h3" data-chart-line-target="secondsToHuman">{{ tab.aantal }}</span>
+                                <span class="h3"
+                                      {% if data_type %}data-chart-line-target="{{ data_type }}ToHuman"{% endif %}>{{ tab.aantal }}</span>
                                 <span class="decorated">{{ tab.titel }}</span>
                             </button>
                         </li>
