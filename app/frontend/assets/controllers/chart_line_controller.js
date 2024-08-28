@@ -1,7 +1,7 @@
 import ChartHelperController from './chart_helper_controller'
 
 export default class extends ChartHelperController {
-  static targets = ['canvas', 'button', 'secondsToHuman']
+  static targets = ['canvas', 'button', 'durationToHuman']
   static values = {
     yTicks: String,
     tooltipLabelCallback: String,
@@ -10,7 +10,7 @@ export default class extends ChartHelperController {
   connect() {
     const self = this
     super.connect()
-    this.secondsToHumanTargets.forEach((element) => {
+    this.durationToHumanTargets.forEach((element) => {
       element.textContent = self.getPeriod(parseInt(element.textContent))
     })
     this.chart.options.scales.y.ticks = this.getTicks()
@@ -42,7 +42,7 @@ export default class extends ChartHelperController {
     }
     this.tooltipLabelCallbacks = {
       duration: function (context) {
-        return self.getPeriod(parseInt(context.raw))
+        return `${context.dataset.label}: ${self.getPeriod(parseInt(context.raw))}`
       },
     }
   }
