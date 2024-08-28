@@ -232,11 +232,9 @@ export default class extends Controller {
     const formFields = this.form.querySelectorAll(
       'input[type="radio"][required], textarea[required]'
     )
-    console.log('formFields', formFields)
 
     formFields.forEach((field) => {
       const fieldSet = field.closest('.form-row')
-      console.log('fieldSet', fieldSet)
       const errorElement = fieldSet.querySelector('.invalid-text')
 
       if (field.type === 'radio') {
