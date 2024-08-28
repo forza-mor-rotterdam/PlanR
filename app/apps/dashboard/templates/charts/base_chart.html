@@ -7,14 +7,21 @@
      data-chart-line-options-value='{{ options|json_encode }}'
      data-chart-line-data-value='{{ tabs.0|json_encode }}'>
     <div class="dashboard-item">
-        <div class="container__flex">
+        <div class="container__flex {% if description %}has-description{% endif %}">
             <div>
                 <span class="h6">
                     {% include "icons/dashboard.svg" %}
                     {{ period_title }}
                 </span>
                 <h4>{{ title }}</h4>
-                <p>{{ description }}</p>
+                {% if description %}
+                    <div class="container__description">
+                        <div class="container__overflow" data-controller="overflow">
+                            <p class="content__overflow">{{ description }}</p>
+                            {% include "icons/arrow-right.svg" %}
+                        </div>
+                    </div>
+                {% endif %}
             </div>
             <div>
                 <ul class="list-horizontal">
