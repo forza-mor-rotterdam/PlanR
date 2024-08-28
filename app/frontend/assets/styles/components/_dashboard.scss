@@ -89,6 +89,17 @@ canvas {
         > div {
             flex: 0 1 auto;
         }
+        &.has-description {
+            > div {
+                flex: 1 1 25%;
+            }
+        }
+    }
+
+    .container__description {
+        position: relative;
+        height: 2em;
+        background-color: $white;
     }
 
     h3,
