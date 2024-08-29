@@ -740,12 +740,6 @@ def taak_starten(request, id):
 
     initial_afdeling = next(iter(afdelingen.keys()), None)
 
-    # Prepare taaktype choices for form
-    # taaktype_choices = [
-    #     (taaktype_url, taaktype_omschrijving)
-    #     for taaktype_url, taaktype_omschrijving in afdelingen.items()
-    # ]
-
     taaktype_choices = [
         (
             afdeling_naam,
@@ -761,6 +755,9 @@ def taak_starten(request, id):
     afdeling_choices = [
         (afdeling_naam, afdeling_naam) for afdeling_naam in afdelingen.keys()
     ]
+
+    # Move "Overig" to the end if it exists
+    afdeling_choices.sort(key=lambda x: (x[0] == "Overig", x[0]))
 
     form = TaakStartenForm(
         initial={"afdeling": initial_afdeling},

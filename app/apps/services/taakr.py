@@ -121,13 +121,19 @@ class TaakRService(BasisService):
         taaktypes_with_afdelingen = []
         for tt in taaktypes_categorized:
             if tt.get("taakapplicatie_taaktype_url") not in gebruikte_taaktypes:
-                for afdeling_url in tt.get("afdelingen"):
+                if tt.get("afdelingen"):
+                    for afdeling_url in tt.get("afdelingen"):
+                        taaktypes_with_afdelingen.append(
+                            {
+                                "taaktype": tt,
+                                "afdeling": self.get_afdeling_by_url(afdeling_url),
+                            }
+                        )
+                else:
                     taaktypes_with_afdelingen.append(
-                        {
-                            "taaktype": tt,
-                            "afdeling": self.get_afdeling_by_url(afdeling_url),
-                        }
+                        {"taaktype": tt, "afdeling": {}}  # empty afdeling object
                     )
+
         return taaktypes_with_afdelingen
 
     def get_taaktype_by_url(self, taaktype_url, force_cache=False):
