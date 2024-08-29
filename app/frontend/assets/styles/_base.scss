@@ -466,6 +466,15 @@ li {
 }
 
 dl {
+    dt {
+        font-weight: 700;
+    }
+    dd {
+        margin: 0 0 0.5rem;
+        font-weight: 400;
+    }
+}
+dl {
     div {
         display: flex;
 
@@ -483,15 +492,9 @@ dl {
             padding-right: 0.5rem;
         }
     }
-}
 
-dl {
-    dt {
-        font-weight: 700;
-    }
-    dd {
-        margin: 0 0 0.5rem;
-        font-weight: 400;
+    &.list-horizontal {
+        display: flex;
     }
 }
 
@@ -633,6 +636,10 @@ body.no-js {
     margin: 0 !important;
 }
 
+.margin-top {
+    margin-top: 1em;
+}
+
 .no-margin-top {
     margin-top: 0 !important;
 }
@@ -746,4 +753,49 @@ body.no-js {
 .link--whatsapp {
     display: inline-block;
     margin-left: 12px;
+}
+
+.container__overflow {
+    position: absolute;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    max-height: 2.7em;
+    -webkit-box-orient: vertical;
+    width: 100%;
+    z-index: 20;
+    transition: max-height 0.25s ease-in-out;
+    background-color: inherit;
+
+    svg {
+        display: none;
+        position: absolute;
+        bottom: 0;
+        right: 1em;
+        transform: rotate(90deg);
+        path {
+            fill: currentColor;
+        }
+    }
+
+    &.has-overflow {
+        margin-right: 1em;
+        padding-right: 1.6em;
+        box-sizing: border-box;
+        svg {
+            display: block;
+        }
+    }
+
+    &.show {
+        -webkit-line-clamp: unset;
+        max-height: 20em;
+        border: 1px solid $gray-600;
+        padding: 0.25em 1.35em 0.25em 0.25em;
+        svg {
+            transform: rotate(-90deg);
+            right: 0.75em;
+            bottom: 0.7em;
+        }
+    }
 }

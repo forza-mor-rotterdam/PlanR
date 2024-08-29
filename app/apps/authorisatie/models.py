@@ -241,6 +241,11 @@ class ReleaseNoteVerwijderenPermissie(BasisPermissie):
     codenaam = "release_note_verwijderen"
 
 
+class DashboardBekijkenPermissie(BasisPermissie):
+    naam = "Dashboard bekijken"
+    codenaam = "dashboard_bekijken"
+
+
 gebruikersgroep_permissies = (
     MeldingAfhandelenPermissie,
     MeldingAnnulerenPermissie,
@@ -287,6 +292,7 @@ gebruikersgroep_permissies = (
     ReleaseNoteBekijkenPermissie,
     ReleaseNoteAanpassenPermissie,
     ReleaseNoteVerwijderenPermissie,
+    DashboardBekijkenPermissie,
 )
 
 gebruikersgroep_permissie_opties = [

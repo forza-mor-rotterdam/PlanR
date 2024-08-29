@@ -129,6 +129,18 @@ textarea {
             background-color: $gray-tint04;
             border-color: $gray-tint04;
         }
+
+        &-v2 {
+            background-color: $blue-900;
+            border-color: $blue-900;
+            transition: background-color 0.15s ease-in-out;
+
+            &:hover,
+            &:focus {
+                background-color: darken($blue-900, 10%);
+                border-color: darken($blue-900, 10%);
+            }
+        }
     }
 
     &-tertiary {
@@ -283,6 +295,56 @@ textarea {
         }
     }
 
+    &-filter {
+        width: auto;
+        height: 2em;
+        min-height: 36px;
+        line-height: 2em;
+        font-size: 0.7em;
+        background-color: $white;
+        padding: 0 $input-padding-x;
+        span {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+        &:hover,
+        &:focus {
+            background-color: $green-600;
+            transition: all 0.15s ease-in;
+        }
+    }
+
+    &.btn-state,
+    &.btn-state--active {
+        display: inline-block;
+        font-weight: 400;
+        font-size: 0.7em;
+        background-color: $white;
+        color: $black;
+        min-height: 0;
+        padding: $input-padding-y $input-padding-x;
+        border-radius: 4px;
+        margin-bottom: 0;
+        transition: all 0.15s ease-in;
+
+        &:hover,
+        &:focus,
+        &--active,
+        &--disabled {
+            background-color: $green-600;
+            color: $green-tint01;
+            text-shadow: 1px 0 0 currentColor;
+            cursor: default;
+            box-sizing: border-box;
+        }
+
+        &--disabled {
+            font-weight: 400;
+            background-color: $gray-tint02;
+            color: $gray-tint06;
+        }
+    }
+
     &.btn-icon {
         svg {
             vertical-align: sub;
@@ -290,7 +352,7 @@ textarea {
         }
     }
 
-    &:not(:disabled) {
+    &:not(:disabled):not(.btn-state--active):not(.btn-state--disabled) {
         cursor: pointer;
     }
 

@@ -326,7 +326,7 @@ class MeldingenService(BasisService):
             f"{self._api_path}/gebruiker/", method="post", data=gebruiker
         )
 
-    def melding_aantallen(self, datum=None, uur=None, force_cache=False):
+    def melding_aantallen(self, datum=None, uur=None, days=1, force_cache=False):
         datum_datetime = (
             datetime.combine(datum, datetime.min.time())
             if isinstance(datum, date)
@@ -336,8 +336,9 @@ class MeldingenService(BasisService):
         cache_timeout = 0
         params = {}
         if datum_datetime:
+            td = timedelta(days=days)
             origineel_aangemaakt_gte = datum_datetime
-            origineel_aangemaakt_lt = datum_datetime + timedelta(days=1)
+            origineel_aangemaakt_lt = datum_datetime + td
             if uur_int is not None:
                 origineel_aangemaakt_gte = origineel_aangemaakt_gte + timedelta(
                     hours=uur_int
@@ -346,7 +347,7 @@ class MeldingenService(BasisService):
                     hours=uur_int + 1
                 )
             cache_timeout = (
-                60 * 60 * 24 if origineel_aangemaakt_lt < datetime.now() else 0
+                60 * 60 * 24 * 30 if origineel_aangemaakt_lt < datetime.now() else 0
             )
             params.update(
                 {
@@ -362,7 +363,7 @@ class MeldingenService(BasisService):
             raw_response=False,
         )
 
-    def signaal_aantallen(self, datum=None, uur=None, force_cache=False):
+    def signaal_aantallen(self, datum=None, uur=None, days=1, force_cache=False):
         datum_datetime = (
             datetime.combine(datum, datetime.min.time())
             if isinstance(datum, date)
@@ -372,8 +373,9 @@ class MeldingenService(BasisService):
         cache_timeout = 0
         params = {}
         if datum_datetime:
+            td = timedelta(days=days)
             origineel_aangemaakt_gte = datum_datetime
-            origineel_aangemaakt_lt = datum_datetime + timedelta(days=1)
+            origineel_aangemaakt_lt = datum_datetime + td
             if uur_int is not None:
                 origineel_aangemaakt_gte = origineel_aangemaakt_gte + timedelta(
                     hours=uur_int
@@ -382,7 +384,7 @@ class MeldingenService(BasisService):
                     hours=uur_int + 1
                 )
             cache_timeout = (
-                60 * 60 * 24 if origineel_aangemaakt_lt < datetime.now() else 0
+                60 * 60 * 24 * 30 if origineel_aangemaakt_lt < datetime.now() else 0
             )
             params.update(
                 {
@@ -398,7 +400,7 @@ class MeldingenService(BasisService):
             raw_response=False,
         )
 
-    def status_veranderingen(self, datum=None, uur=None, force_cache=False):
+    def status_veranderingen(self, datum=None, uur=None, days=1, force_cache=False):
         datum_datetime = (
             datetime.combine(datum, datetime.min.time())
             if isinstance(datum, date)
@@ -408,12 +410,15 @@ class MeldingenService(BasisService):
         cache_timeout = 0
         params = {}
         if datum_datetime:
+            td = timedelta(days=days)
             aangemaakt_op_gte = datum_datetime
-            aangemaakt_op_lt = datum_datetime + timedelta(days=1)
+            aangemaakt_op_lt = datum_datetime + td
             if uur_int is not None:
                 aangemaakt_op_gte = aangemaakt_op_gte + timedelta(hours=uur_int)
                 aangemaakt_op_lt = aangemaakt_op_gte + timedelta(hours=uur_int + 1)
-            cache_timeout = 60 * 60 * 24 if aangemaakt_op_lt < datetime.now() else 0
+            cache_timeout = (
+                60 * 60 * 24 * 30 if aangemaakt_op_lt < datetime.now() else 0
+            )
             params.update(
                 {
                     "aangemaakt_op_gte": aangemaakt_op_gte.isoformat(),
@@ -428,7 +433,7 @@ class MeldingenService(BasisService):
             raw_response=False,
         )
 
-    def afgehandelde_meldingen(self, datum=None, uur=None, force_cache=False):
+    def afgehandelde_meldingen(self, datum=None, uur=None, days=1, force_cache=False):
         datum_datetime = (
             datetime.combine(datum, datetime.min.time())
             if isinstance(datum, date)
@@ -438,12 +443,15 @@ class MeldingenService(BasisService):
         cache_timeout = 0
         params = {}
         if datum_datetime:
+            td = timedelta(days=days)
             aangemaakt_op_gte = datum_datetime
-            aangemaakt_op_lt = datum_datetime + timedelta(days=1)
+            aangemaakt_op_lt = datum_datetime + td
             if uur_int is not None:
                 aangemaakt_op_gte = aangemaakt_op_gte + timedelta(hours=uur_int)
                 aangemaakt_op_lt = aangemaakt_op_gte + timedelta(hours=uur_int + 1)
-            cache_timeout = 60 * 60 * 24 if aangemaakt_op_lt < datetime.now() else 0
+            cache_timeout = (
+                60 * 60 * 24 * 30 if aangemaakt_op_lt < datetime.now() else 0
+            )
             params.update(
                 {
                     "aangemaakt_op_gte": aangemaakt_op_gte.isoformat(),

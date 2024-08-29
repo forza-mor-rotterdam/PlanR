@@ -2,18 +2,26 @@
 <div class="grid-item bgc-white"
      data-controller="chart-line"
      data-controller="chart-utils"
-     data-chart-line-y-ticks-value='duration'
-     data-chart-line-tooltip-label-callback-value='duration'
-     data-chart-line-options-value='{{ options|json_encode }}'
+     {% if data_type %}data-chart-line-y-ticks-value='{{ data_type }}'{% endif %}
+     {% if data_type %}data-chart-line-tooltip-label-callback-value='{{ data_type }}'{% endif %}
+     {% if options %}data-chart-line-options-value='{{ options|json_encode }}'{% endif %}
      data-chart-line-data-value='{{ tabs.0|json_encode }}'>
     <div class="dashboard-item">
-        <div class="container__flex">
+        <div class="container__flex {% if description %}has-description{% endif %}">
             <div>
                 <span class="h6">
                     {% include "icons/dashboard.svg" %}
                     {{ period_title }}
                 </span>
                 <h4>{{ title }}</h4>
+                {% if description %}
+                    <div class="container__description">
+                        <div class="container__overflow" data-controller="overflow">
+                            <p class="content__overflow">{{ description }}</p>
+                            {% include "icons/arrow-right.svg" %}
+                        </div>
+                    </div>
+                {% endif %}
             </div>
             <div>
                 <ul class="list-horizontal">
@@ -23,7 +31,8 @@
                                     data-action="chart-line#update"
                                     data-chart-line-datasets-param="{{ tab.datasets|json_encode }}"
                                     class="{% if forloop.first %} active{% endif %}">
-                                <span class="h3" data-chart-line-target="secondsToHuman">{{ tab.aantallen }}</span>
+                                <span class="h3"
+                                      {% if data_type %}data-chart-line-target="{{ data_type }}ToHuman"{% endif %}>{{ tab.aantal }}</span>
                                 <span class="decorated">{{ tab.titel }}</span>
                             </button>
                         </li>

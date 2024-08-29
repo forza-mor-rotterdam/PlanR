@@ -9,14 +9,8 @@
 {% endblock title %}
 {% block content %}
     <div class="screen-xl">
-        {% comment %} <section class="section--seperated--l">
-            <form action="." method="get">
-                {{ form.as_p }}
-                <input type="submit" value="Toon">
-            </form>
-        </section> {% endcomment %}
         <section class="section--seperated--l">
-            <h2>Aantallen</h2>
+            <h2>Nieuwe meldingen</h2>
             <div class="grid-container" data-controller="chart-utils">
                 <div class="grid-item bgc-white"
                      data-controller="chart-line"
@@ -29,9 +23,9 @@
                                     Week {{ week }}
                                 </span>
                                 <h4>
-                                    Status veranderingen
+                                    Nieuwe
                                     <br>
-                                    gemiddeld in seconden
+                                    meldingen/signalen
                                 </h4>
                             </div>
                             <div>
@@ -67,115 +61,49 @@
                         </div>
                     </div>
                 </div>
-                <div class="grid-item bgc-white">
-                    <h3>Week navigatie</h3>
-                    <ul>
-                        {% if vorige_volgende_week.0 %}
-                            <li>
-                                <a href="{{ vorige_volgende_week.0.0 }}">Week {{ vorige_volgende_week.0.1 }}</a>
-                            </li>
-                        {% endif %}
-                        <li>
-                            <span>Deze week {{ week }}</span>
-                        </li>
-                        {% if vorige_volgende_week.1 %}
-                            <li>
-                                <a href="{{ vorige_volgende_week.1.0 }}">Week {{ vorige_volgende_week.1.1 }}</a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                    <form action="." method="get">
-                        {{ form.as_p }}
-                        <input type="submit" value="Toon">
-                    </form>
-                </div>
+                <div class="grid-item bgc-white">...</div>
             </div>
         </section>
         <section class="section--seperated--l">
-            <h2>Status veranderingen duur</h2>
             <div class="grid-container" data-controller="chart-utils">
-                <div class="grid-item bgc-white"
-                     data-controller="chart-line"
-                     data-chart-line-y-ticks-value='duration'
-                     data-chart-line-data-value='{{ status_veranderingen_tabs.0|json_encode }}'>
-                    <div class="dashboard-item">
-                        <div class="container__flex">
-                            <div>
-                                <span class="h6">
-                                    {% include "icons/dashboard.svg" %}
-                                    Week {{ week }}
-                                </span>
-                                <h4>
-                                    Status veranderingen
-                                    <br>
-                                    gemiddeld in seconden
-                                </h4>
+                {% include "charts/base_chart.html" with title="Status veranderingen duur" description="" period_title=title tabs=status_veranderingen_tabs data_type="duration" only %}
+            </div>
+        </section>
+        {% if not onderwerp or not wijk %}
+            <section class="section--seperated--l">
+                <div>
+                    <h2>Top vijf</h2>
+                    <div class="grid-container grid-container--3cols">
+                        {% if not onderwerp %}
+                            <div class="grid-item bgc-white">
+                                {% include "charts/dashboard_item.html" with title=aantal_meldingen_onderwerp.title description="" period_title=title head=aantal_meldingen_onderwerp.head body=aantal_meldingen_onderwerp.body only %}
                             </div>
-                            <div>
-                                <ul class="list-horizontal">
-                                    {% for tab in status_veranderingen_tabs %}
-                                        <li>
-                                            <button data-chart-line-target="button"
-                                                    data-action="chart-line#update"
-                                                    data-chart-line-datasets-param="{{ tab.datasets|json_encode }}"
-                                                    class="{% if forloop.first %} active{% endif %}">
-                                                <span class="h3">
-                                                    {% for aantal in tab.aantallen %}
-                                                        <span data-chart-utils-target="numberAnimator"
-                                                              class="width--fixed"
-                                                              data-number="{{ aantal }}">{{ aantal }}</span>
-                                                        {% if not forloop.last %}/{% endif %}
-                                                    {% endfor %}
-                                                </span>
-                                                <span class="decorated">{{ tab.titel }}</span>
-                                            </button>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
+                        {% endif %}
+                        {% if not wijk %}
+                            <div class="grid-item bgc-white">
+                                {% include "charts/dashboard_item.html" with title=aantal_meldingen_wijk.title description="" period_title=title head=aantal_meldingen_wijk.head body=aantal_meldingen_wijk.body only %}
                             </div>
-                        </div>
-                        <div>
-                            <canvas data-chart-line-target="canvas"></canvas>
-                        </div>
-                        <div class="dashboard-item-footer">
-                            <p>
-                                <a href="#">Toon deze meldingen</a>
-                            </p>
-                        </div>
+                        {% endif %}
+                        {% if not onderwerp %}
+                            <div class="grid-item bgc-white">
+                                {% include "charts/dashboard_item.html" with title=aantal_onderwerpen_ontdubbeld.title description="" period_title=title head=aantal_onderwerpen_ontdubbeld.head body=aantal_onderwerpen_ontdubbeld.body only %}
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
-                <div class="grid-item bgc-white">
-                    <h3>Week navigatie</h3>
-                    <ul>
-                        {% if vorige_volgende_week.0 %}
-                            <li>
-                                <a href="{{ vorige_volgende_week.0.0 }}">Week {{ vorige_volgende_week.0.1 }}</a>
-                            </li>
-                        {% endif %}
-                        <li>
-                            <span>Deze week {{ week }}</span>
-                        </li>
-                        {% if vorige_volgende_week.1 %}
-                            <li>
-                                <a href="{{ vorige_volgende_week.1.0 }}">Week {{ vorige_volgende_week.1.1 }}</a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </div>
-            </div>
-        </section>
-        <section class="section--seperated--l">
-            <div data-controller="dashboardMap">
-                <div class="container__map full-width">
-                    <div data-dashboardMap-target="map"
-                         class="map leaflet-container leaflet-touch leaflet-retina leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom"
-                         style="background-color: unset;
-                                border: none"></div>
-                </div>
-            </div>
-        </section>
+            </section>
+        {% endif %}
     </div>
     <div class="screen-xl--notification">
         <p>Deze pagina is alleen te bekijken op een groter scherm.</p>
+    </div>
+    <div class="sidesheet sidesheet--dashboardfilter">
+        <button type="button"
+                class="btn-close"
+                aria-label="Sluit"
+                data-action="sidesheet#toggleFilter">{% include "icons/close.svg" %}</button>
+        <div class="sidesheet-backdrop sidesheet-exit"
+             data-action="click->sidesheet#toggleFilter"></div>
+        <div class="content">{% include "dashboard/form.html" %}</div>
     </div>
 {% endblock content %}

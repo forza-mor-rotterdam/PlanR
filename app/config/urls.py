@@ -331,6 +331,30 @@ urlpatterns = [
     re_path(r"core/media/", meldingen_bestand, name="meldingen_bestand"),
     # path("dashboard/", dashboard, name="dashboard"),
     re_path(
+        r"^dashboard/$",
+        NieuweMeldingen.as_view(),
+        kwargs={"type": "meldingen", "status": "nieuw"},
+        name="dashboard",
+    ),
+    re_path(
+        r"^dashboard/(?P<jaar>\d{4})/$",
+        NieuweMeldingen.as_view(periode="jaar"),
+        kwargs={"type": "meldingen", "status": "nieuw"},
+        name="dashboard",
+    ),
+    re_path(
+        r"^dashboard/(?P<jaar>\d{4})/(?P<type>meldingen)/(?P<status>nieuw)/$",
+        NieuweMeldingen.as_view(periode="jaar"),
+        kwargs={"type": "meldingen", "status": "nieuw"},
+        name="dashboard",
+    ),
+    re_path(
+        r"^dashboard/(?P<jaar>\d{4})/(?P<type>meldingen)/(?P<status>afgehandeld)/$",
+        MeldingenAfgehandeld.as_view(periode="jaar"),
+        kwargs={"type": "meldingen", "status": "afgehandeld"},
+        name="dashboard",
+    ),
+    re_path(
         r"^dashboard/(?P<jaar>\d{4})/week/(?P<week>\d{2})/(?P<type>meldingen)/(?P<status>nieuw)/$",
         NieuweMeldingen.as_view(periode="week"),
         kwargs={"type": "meldingen", "status": "nieuw"},

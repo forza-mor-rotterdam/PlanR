@@ -11,60 +11,79 @@
     wide--xl
 {% endblock body_class %}
 {% block body %}
-    <turbo-frame id="overview" data-turbo-action="advance">
-    <div>
-        <h1>Dashboard</h1>
-        <h2>{{ title|capfirst }}</h2>
-        <ul class="list-horizontal">
-            {% for nav in status_navigatie %}
-                <li>
-                    {% if nav.0 %}
-                        <a href="{{ nav.0 }}">{{ nav.1 }}</a>
-                    {% else %}
-                        <strong>{{ nav.1 }}</strong>
+    <turbo-frame id="overview" data-turbo-action="advance" data-controller="sidesheet">
+    <div class="screen-xl container__dashboard">
+        <div class="container__filters">
+            <div class="container__title">
+                <h1>Dashboard</h1>
+                <div class="filters">
+                    <button type="button"
+                            class="btn btn-filter"
+                            data-action="sidesheet#toggleFilter">
+                        {% include "icons/filter_v2.svg" %}
+                        <span>Filters</span>
+                    </button>
+                    {% if form.cleaned_data.onderwerp or form.cleaned_data.wijk %}
+                        <dl class="list-horizontal">
+                            {% if form.cleaned_data.onderwerp %}
+                                <div>
+                                    <dt>Onderwerp</dt>
+                                    <dd class="pill">
+                                        {{ form.cleaned_data.onderwerp.strip }}
+                                    </dd>
+                                </div>
+                            {% endif %}
+                            {% if form.cleaned_data.wijk %}
+                                <div>
+                                    <dt>Wijk</dt>
+                                    <dd class="pill">
+                                        {{ form.cleaned_data.wijk.strip }}
+                                    </dd>
+                                </div>
+                            {% endif %}
+                        </dl>
                     {% endif %}
-                    {% if not forloop.last %}
-                        &nbsp;
-                        |
-                        &nbsp;
-                    {% endif %}
-                </li>
-            {% endfor %}
-        </ul>
-        <br>
-        <ul class="list-horizontal">
-            {% for nav in periode_navigatie %}
-                <li>
-                    {% if nav.0 %}
-                        <a href="{{ nav.0 }}">{{ nav.1 }}</a>
-                    {% else %}
-                        <strong>{{ nav.1 }}</strong>
-                    {% endif %}
-                    {% if not forloop.last %}
-                        &nbsp;
-                        |
-                        &nbsp;
-                    {% endif %}
-                </li>
-            {% endfor %}
-        </ul>
-        <br>
-        <ul class="list-horizontal">
-            {% for nav in periode_type_navigatie %}
-                <li>
-                    {% if nav.0 %}
-                        <a href="{{ nav.0 }}">{{ nav.1 }}</a>
-                    {% else %}
-                        <strong>{{ nav.1 }}</strong>
-                    {% endif %}
-                    {% if not forloop.last %}
-                        &nbsp;
-                        |
-                        &nbsp;
-                    {% endif %}
-                </li>
-            {% endfor %}
-        </ul>
+                </div>
+            </div>
+            <div>
+                <ul class="list-horizontal">
+                    <li class="label">Status</li>
+                    {% for nav in status_navigatie %}
+                        <li>
+                            {% if nav.1 %}
+                                <a href="{{ nav.1 }}?{{ request.GET.urlencode }}" class="btn btn-state">{{ nav.0 }}</a>
+                            {% else %}
+                                <span class="btn-state btn btn-state--active">{{ nav.0 }}</span>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+                <ul class="list-horizontal">
+                    <li class="label">Periode</li>
+                    {% for nav in periode_navigatie %}
+                        <li>
+                            {% if nav.1 %}
+                                <a href="{{ nav.1 }}?{{ request.GET.urlencode }}" class="btn btn-state">{{ nav.0 }}</a>
+                            {% else %}
+                                <span class="btn btn-state--active">{{ nav.0 }}</span>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+                <ul class="list-horizontal">
+                    <li class="label"></li>
+                    {% for nav in periode_type_navigatie %}
+                        <li>
+                            {% if nav.1 %}
+                                <a href="{{ nav.1 }}?{{ request.GET.urlencode }}" class="btn btn-state">{{ nav.0 }}</a>
+                            {% elif nav.0 %}
+                                <span class="btn btn-state--active">{{ nav.0 }}</span>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
     </div>
     {% block content %}
     {% endblock content %}

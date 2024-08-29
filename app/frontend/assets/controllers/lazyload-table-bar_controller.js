@@ -19,14 +19,22 @@ export default class extends Controller {
 
         const numbersToAnimate = entry.target.querySelectorAll('.animated')
         numbersToAnimate.forEach((number) => {
-          let end = number.textContent
+          let splitted = number.textContent.split('.')
+          console.log(splitted)
+          let end = parseInt(splitted[0])
+          let isFloat = splitted.length > 1
+          let floatStart = 0
+          let floatEnd = isFloat ? parseInt(number.textContent.split('.')[1]) : 0
+
           let duration = 1000
           let startTimestamp = null
           let start = 0
           const step = (timestamp) => {
             if (!startTimestamp) startTimestamp = timestamp
             const progress = Math.min((timestamp - startTimestamp) / duration, 1)
-            number.textContent = Math.floor(progress * (end - start) + start)
+            let intNumber = Math.floor(progress * (end - start) + start)
+            let floatNumber = Math.floor(progress * (floatEnd - floatStart) + floatStart)
+            number.textContent = `${intNumber}` + (isFloat ? `,${floatNumber}` : ``)
             if (progress < 1) {
               window.requestAnimationFrame(step)
             }

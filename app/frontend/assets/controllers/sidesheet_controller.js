@@ -3,10 +3,12 @@ export default class extends Controller {
   static targets = ['sidesheet', 'turboframe']
 
   openSidesheet(e) {
-    e.preventDefault()
-    const sidesheet = this.sidesheetTarget
-    this.turboframeTarget.setAttribute('src', e.params.action)
-    sidesheet.classList.add('show')
+    if (this.hasSidesheetTarget && this.hasTurboframeTarget) {
+      e.preventDefault()
+      const sidesheet = this.sidesheetTarget
+      this.turboframeTarget.setAttribute('src', e.params.action)
+      sidesheet.classList.add('show')
+    }
     document.body.classList.add('show-sidesheet')
   }
 
@@ -16,5 +18,8 @@ export default class extends Controller {
       sidesheet.classList.remove('show')
     }
     document.body.classList.remove('show-sidesheet')
+  }
+  toggleFilter() {
+    document.body.classList.toggle('show-sidesheet-dashboardfilters')
   }
 }
