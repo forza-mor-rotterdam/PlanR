@@ -274,6 +274,7 @@ export default class extends Controller {
 
   clearSearch() {
     this.taaktypeSearchTarget.value = ''
+    this.afdelingFieldTarget.classList.remove('inactive')
   }
 
   resetToCurrentAfdeling() {
