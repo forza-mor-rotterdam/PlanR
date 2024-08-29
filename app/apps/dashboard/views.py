@@ -130,7 +130,7 @@ class Dashboard(FormView):
             return f"week {int(week_param)} {int(jaar_param)}"
 
         if self.maand and self.periode == self.PeriodeOpties.MAAND:
-            return f"maand {MAANDEN[int(maand_param)-1]} {int(jaar_param)}"
+            return f"maand {MAANDEN[int(maand_param) - 1]} {int(jaar_param)}"
 
         if self.jaar and self.PeriodeOpties.JAAR:
             return f"jaar {int(jaar_param)}"
@@ -153,7 +153,7 @@ class Dashboard(FormView):
                     "start_dt": dag,
                     "type": "dag",
                     "days": 1,
-                    "label": f"{DAGEN_VAN_DE_WEEK_KORT[dag.weekday()]} {dag.strftime('%-d')} {MAANDEN_KORT[dag.month-1]}",
+                    "label": f"{DAGEN_VAN_DE_WEEK_KORT[dag.weekday()]} {dag.strftime('%-d')} {MAANDEN_KORT[dag.month - 1]}",
                 }
                 for dag in dagen
             ]
@@ -168,7 +168,7 @@ class Dashboard(FormView):
                     "start_dt": dag,
                     "type": "dag",
                     "days": 1,
-                    "label": f"{dag.strftime('%-d')} {MAANDEN_KORT[dag.month-1]}",
+                    "label": f"{dag.strftime('%-d')} {MAANDEN_KORT[dag.month - 1]}",
                 }
                 for dag in dagen
             ]
@@ -184,7 +184,7 @@ class Dashboard(FormView):
                     "start_dt": dag,
                     "type": "maand",
                     "days": calendar.monthrange(dag.year, dag.month)[1],
-                    "label": f"{MAANDEN[dag.month-1]}",
+                    "label": f"{MAANDEN[dag.month - 1]}",
                 }
                 for dag in maanden
             ]
@@ -225,7 +225,7 @@ class Dashboard(FormView):
         if dt.year == vandaag.year and dt.month > vandaag.month:
             return
         return (
-            f"{MAANDEN[dt.month-1]} {dt.year}",
+            f"{MAANDEN[dt.month - 1]} {dt.year}",
             reverse(
                 "dashboard",
                 kwargs={
@@ -304,7 +304,7 @@ class Dashboard(FormView):
         if self.maand and self.periode == self.PeriodeOpties.MAAND:
             return [
                 self.get_maand_links(int(jaar_param), int(maand_param) - 1),
-                [f"{MAANDEN[int(maand_param)-1]} {int(jaar_param)}", 0],
+                [f"{MAANDEN[int(maand_param) - 1]} {int(jaar_param)}", 0],
                 self.get_maand_links(int(jaar_param), int(maand_param) + 1),
             ]
         if self.jaar and self.PeriodeOpties.JAAR:

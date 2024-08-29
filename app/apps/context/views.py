@@ -44,7 +44,7 @@ class ContextAanpassenView(ContextAanmakenAanpassenView, UpdateView):
     def get_form_kwargs(self, *args, **kwargs):
         kwargs = super().get_form_kwargs(*args, **kwargs)
         kwargs["taaktypes"] = TaakRService(request=self.request).get_taaktypes(
-            use_cache=False
+            force_cache=True
         )
         kwargs["onderwerp_alias_list"] = (
             MeldingenService(request=self.request)
@@ -70,7 +70,7 @@ class ContextAanmakenView(ContextAanmakenAanpassenView, CreateView):
     def get_form_kwargs(self, *args, **kwargs):
         kwargs = super().get_form_kwargs(*args, **kwargs)
         kwargs["taaktypes"] = TaakRService(request=self.request).get_taaktypes(
-            use_cache=False
+            force_cache=True
         )
         kwargs["onderwerp_alias_list"] = (
             MeldingenService(request=self.request)

@@ -617,6 +617,13 @@ body.no-js {
 .bgc-white {
     background-color: $white;
 }
+.bgc-gray01 {
+    background-color: $gray-tint01;
+}
+
+.green {
+    color: $green-tint01;
+}
 .nowrap {
     white-space: nowrap;
 }
@@ -643,6 +650,10 @@ body.no-js {
 
 .padding--bottom {
     padding-bottom: 1em !important;
+}
+
+.margin--bottom {
+    margin-bottom: 1em !important;
 }
 
 .display--flex {

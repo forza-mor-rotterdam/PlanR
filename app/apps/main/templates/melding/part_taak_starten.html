@@ -11,7 +11,7 @@
     {% render_bundle 'app' 'js' %}
 {% endblock javascripts %}
 <turbo-frame id="melding_actie_form">
-<div class="modal-dialog">
+<div class="modal-dialog modal-dialog--wide">
     <div class="modal-content">
         <div class="modal-header">
             <h1>
@@ -26,37 +26,77 @@
             {% include "snippets/messages.html" %}
             <form action="{% url 'taak_starten' melding.uuid %}"
                   method="post"
-                  class="form--horizontal"
-                  data-controller="taakstartenformulier"
+                  class="taak--start"
                   data-turbo-frame="_top"
+                  data-controller="taakstartenformulier"
                   data-taakstartenformulier-target="formTaakStarten"
                   data-taakstartenformulier-taaktypes="{{ taaktype_choices|json_encode }}"
+                  data-initial-afdeling="{{ initial_afdeling }}"
                   enctype="multipart/form-data"
                   novalidate>
                 {% csrf_token %}
                 {{ form.errors }}
-                <div class="form-control__with-helptext">{{ form.categorie|render_rotterdam_formulier }}</div>
-                <div class="form-control__with-helptext">
-                    <div class="form-row">
-                        <label>Selecteer een taak</label>
-                        <div>
-                            {{ form.taaktype }}
+                <section class="bgc-gray01">
+                    <div class="form-control__with-helptext container__form-check-cols3"
+                         data-taakstartenformulier-target="onderwerpGerelateerdTaaktypeField">
+                        <div class="form-row">
+                            <label>Vaak gekozen bij dit type melding</label>
+                            <div class="wrapper__columns">{{ form.onderwerp_gerelateerd_taaktype }}</div>
                             <p class="help-block invalid-text no-margin"></p>
                         </div>
                     </div>
-                </div>
-                <div class="form-control__with-helptext">{{ form.bericht|render_rotterdam_formulier }}</div>
-                <div class="form-row btn-row">
-                    <button type="reset"
-                            class="btn btn-tertiary"
-                            data-action="detail#closeModal"
-                            data-detail-target="modalAfhandelen">
-                        <span>Annuleren</span>
-                    </button>
-                    <button type="submit" class="btn btn-action">
-                        <span>Start taak</span>
-                    </button>
-                </div>
+                </section>
+                <section>
+                    <div class="form-control__with-helptext container__search">
+                        <div class="form-row">
+                            <label for="taaktype-search">Zoek een andere taak</label>
+                            <input type="search"
+                                   id="taaktype-search"
+                                   class="form-control"
+                                   data-taakstartenformulier-target="taaktypeSearch"
+                                   placeholder="Zoek een andere taak...">
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="grid-container grid-container--reversed">
+                        <div class="grid-item">
+                            <div class="form-control__with-helptext">
+                                <div class="form-row input-labels">
+                                    <div data-taakstartenformulier-target="afdelingField">{{ form.afdeling }}</div>
+                                    <p class="help-block invalid-text no-margin"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="form-control__with-helptext container__form-check-cols2"
+                                 data-taakstartenformulier-target="taaktypeField">
+                                <div class="form-row">
+                                    <div class="wrapper__columns">{{ form.taaktype }}</div>
+                                    <p class="help-block invalid-text no-margin"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="form-control__with-helptext">{{ form.bericht|render_rotterdam_formulier }}</div>
+                </section>
+                <section>
+                    <div class="form--horizontal">
+                        <div class="form-row btn-row">
+                            <button type="reset"
+                                    class="btn btn-tertiary"
+                                    data-action="detail#closeModal"
+                                    data-detail-target="modalAfhandelen">
+                                <span>Annuleren</span>
+                            </button>
+                            <button type="submit" class="btn btn-action">
+                                <span>Start taak</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
             </form>
         </div>
     </div>
