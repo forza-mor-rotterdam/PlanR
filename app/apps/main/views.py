@@ -775,37 +775,14 @@ def taak_starten(request, id):
             afdelingen=afdeling_choices,
             onderwerp_gerelateerde_taaktypes=onderwerp_gerelateerde_taaktypes,
         )
-        ## Old code
-        # if form.is_valid():
-        #     data = form.cleaned_data
-        #     taaktypes_dict = {tt[0]: tt[1] for tt in taaktypes_categorized}
-
-        #     meldingen_service.taak_aanmaken(
-        #         melding_uuid=id,
-        #         taakapplicatie_taaktype_url=data.get("taaktype"),
-        #         titel=taaktypes_dict.get(data.get("taaktype"), data.get("taaktype")),
-        #         bericht=data.get("bericht"),
-        #         gebruiker=request.user.email,
-        #     )
-        #     return redirect("melding_detail", id=id)
-        # print(form.errors)
-        ## New code
-        print(f"form valid: {form.is_valid()}")
-        print(f"taaktypes: {taaktype_choices}")
         if form.is_valid():
             data = form.cleaned_data
-            print(f"Selected taaktype: {data.get('taaktype')}")
             taaktypes_dict = {
                 tt[0]: tt[1]
                 for afdeling_taaktypes in afdelingen.values()
                 for tt in afdeling_taaktypes
             }
             taaktypes_dict.update(dict(onderwerp_gerelateerde_taaktypes))
-            print(f"taaktypes_dict: {taaktypes_dict}")
-            print(
-                f"taaktypes_dict.get(data.get('taaktype'), data.get('taaktype')): {taaktypes_dict.get(data.get('taaktype'), data.get('taaktype'))}"
-            )
-            print(f"taakapplicatie_taaktype_url: {data.get('taaktype')}")
 
             meldingen_service.taak_aanmaken(
                 melding_uuid=id,
@@ -815,8 +792,8 @@ def taak_starten(request, id):
                 gebruiker=request.user.email,
             )
             return redirect("melding_detail", id=id)
-        if not form.is_valid():
-            print(f"form errors: {form.errors}")
+        else:
+            logger.error(f"Form.errors: {form.errors}")
 
     return render(
         request,

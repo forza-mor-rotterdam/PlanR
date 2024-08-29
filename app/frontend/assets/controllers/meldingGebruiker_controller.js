@@ -105,7 +105,9 @@ export default class extends Controller {
   }
 
   disconnect() {
-    this.eventSource.close()
+    if (this.eventSource) {
+      this.eventSource.close()
+    }
     this.publiceerTopic(this.meldingIdValue)
   }
 }

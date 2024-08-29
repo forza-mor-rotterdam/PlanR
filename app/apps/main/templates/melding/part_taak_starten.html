@@ -27,6 +27,7 @@
             <form action="{% url 'taak_starten' melding.uuid %}"
                   method="post"
                   class="taak--start"
+                  data-turbo-frame="_top"
                   data-controller="taakstartenformulier"
                   data-taakstartenformulier-target="formTaakStarten"
                   data-taakstartenformulier-taaktypes="{{ taaktype_choices|json_encode }}"
