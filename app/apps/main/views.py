@@ -794,8 +794,7 @@ def taak_starten(request, id):
         print(f"taaktypes: {taaktype_choices}")
         if form.is_valid():
             data = form.cleaned_data
-            selected_taaktype = data.get("related_taaktype") or data.get("taaktype")
-            print(f"Selected taaktype: {selected_taaktype}")
+            print(f"Selected taaktype: {data.get('taaktype')}")
             taaktypes_dict = {
                 tt[0]: tt[1]
                 for afdeling_taaktypes in afdelingen.values()
@@ -804,13 +803,14 @@ def taak_starten(request, id):
             taaktypes_dict.update(dict(onderwerp_gerelateerde_taaktypes))
             print(f"taaktypes_dict: {taaktypes_dict}")
             print(
-                f"taaktypes_dict.get(selected_taaktype, selected_taaktype): {taaktypes_dict.get(selected_taaktype, selected_taaktype)}"
+                f"taaktypes_dict.get(data.get('taaktype'), data.get('taaktype')): {taaktypes_dict.get(data.get('taaktype'), data.get('taaktype'))}"
             )
+            print(f"taakapplicatie_taaktype_url: {data.get('taaktype')}")
 
             meldingen_service.taak_aanmaken(
                 melding_uuid=id,
-                taakapplicatie_taaktype_url=selected_taaktype,
-                titel=taaktypes_dict.get(selected_taaktype, selected_taaktype),
+                taakapplicatie_taaktype_url=data.get("taaktype"),
+                titel=taaktypes_dict.get(data.get("taaktype"), data.get("taaktype")),
                 bericht=data.get("bericht"),
                 gebruiker=request.user.email,
             )
