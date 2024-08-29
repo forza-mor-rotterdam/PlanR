@@ -15,6 +15,7 @@ export default class extends Controller {
     this.formData = new FormData(this.form)
     const initialAfdeling = this.formTaakStartenTarget.dataset.initialAfdeling
     this.taaktypes = JSON.parse(this.form.dataset.taakstartenformulierTaaktypes)
+    this.selectedTaaktype = null
 
     this.form.addEventListener('submit', (event) => {
       if (!this.checkValids()) {
@@ -44,8 +45,8 @@ export default class extends Controller {
     })
 
     this.taaktypeFieldTarget.addEventListener('change', (event) => {
-      const selectedTaaktype = event.target.value
-      this.selectCorrespondingOnderwerpGerelateerdTaaktype(selectedTaaktype)
+      this.selectedTaaktype = event.target.value
+      this.selectCorrespondingOnderwerpGerelateerdTaaktype()
     })
   }
 
@@ -56,15 +57,15 @@ export default class extends Controller {
       this.filterTaaktypes(selectedAfdeling)
     })
     this.onderwerpGerelateerdTaaktypeFieldTarget.addEventListener('change', (event) => {
-      const selectedTaaktype = event.target.value
+      this.selectedTaaktype = event.target.value
       this.clearSearch()
 
-      this.selectCorrespondingAfdeling(selectedTaaktype)
+      this.selectCorrespondingAfdeling()
       const selectedAfdeling = this.afdelingFieldTarget.querySelector('input:checked')
       if (selectedAfdeling) {
         this.filterTaaktypes(selectedAfdeling.value)
       }
-      this.selectCorrespondingTaaktype(selectedTaaktype)
+      this.selectCorrespondingTaaktype()
     })
   }
 
@@ -75,45 +76,39 @@ export default class extends Controller {
     })
   }
 
-  // filterTaaktypes(selectedAfdeling) {
-
-  //   const taaktypeField = this.taaktypeFieldTarget
-
-  //   // Clear the current taaktype selection and content
-  //   this.clearFieldSelection(taaktypeField)
-  //   taaktypeField.innerHTML = ''
-
-  //   const ul = document.createElement('ul')
-  //   ul.id = 'id_taaktype'
-
-  //   const selectedAfdelingTaaktypes = this.taaktypes.find(
-  //     ([afdeling]) => afdeling === selectedAfdeling
-  //   )
-  //   if (selectedAfdelingTaaktypes) {
-  //     const [, options] = selectedAfdelingTaaktypes
-  //     this.renderTaaktypes(options.map((taaktype) => ({ afdeling: null, taaktype })))
-  //   }
-  // }
   filterTaaktypes(selectedAfdeling) {
-    const taaktypeField = this.taaktypeFieldTarget
-
-    // Hide all taaktype options
-    taaktypeField.querySelectorAll('li').forEach((li) => {
-      li.style.display = 'none'
-    })
-
-    // Show only the taaktypes for the selected afdeling
     const selectedAfdelingTaaktypes = this.taaktypes.find(
       ([afdeling]) => afdeling === selectedAfdeling
     )
+
     if (selectedAfdelingTaaktypes) {
-      const [, options] = selectedAfdelingTaaktypes
-      options.forEach(([value]) => {
-        const option = taaktypeField.querySelector(`input[value="${value}"]`)
-        if (option) {
-          option.closest('li').style.display = ''
-        }
-      })
+      const [afdeling, options] = selectedAfdelingTaaktypes
+      const taaktypesToRender = options.map((taaktype) => ({ afdeling, taaktype }))
+      this.renderTaaktypes(taaktypesToRender)
+    } else {
+      // If no matching afdeling is found, render an empty list
+      this.renderTaaktypes([])
+    }
+
+    // Update the selected afdeling radio button
+    const selectedAfdelingRadio = this.afdelingFieldTarget.querySelector(
+      `input[value="${selectedAfdeling}"]`
+    )
+    if (selectedAfdelingRadio) {
+      selectedAfdelingRadio.checked = true
+    }
+
+    // Maintain the selected taaktype if it belongs to the current afdeling
+    if (this.selectedTaaktype) {
+      const correspondingRadio = this.taaktypeFieldTarget.querySelector(
+        `input[value="${this.selectedTaaktype}"]`
+      )
+      if (correspondingRadio) {
+        correspondingRadio.checked = true
+      } else {
+        // If the selected taaktype is not in the current afdeling, clear the selection
+        this.selectedTaaktype = null
+      }
     }
   }
 
@@ -159,10 +154,32 @@ export default class extends Controller {
     taaktypeField.appendChild(div)
   }
 
-  selectCorrespondingOnderwerpGerelateerdTaaktype(selectedTaaktype) {
+  renderAllTaaktypes() {
+    const allTaaktypes = this.taaktypes.flatMap(([afdeling, taaktypes]) =>
+      taaktypes.map((taaktype) => ({ afdeling, taaktype }))
+    )
+    this.renderTaaktypes(allTaaktypes)
+
+    // Restore the previously selected taaktype if it exists
+    if (this.selectedTaaktype) {
+      const correspondingRadio = this.taaktypeFieldTarget.querySelector(
+        `ul input[value="${this.selectedTaaktype}"]`
+      )
+      if (correspondingRadio) {
+        correspondingRadio.checked = true
+      }
+    }
+
+    // Show all afdeling options
+    this.afdelingFieldTarget.querySelectorAll('input[type="radio"]').forEach((radio) => {
+      radio.closest('li').style.display = ''
+    })
+  }
+
+  selectCorrespondingOnderwerpGerelateerdTaaktype() {
     const onderwerpGerelateerdTaaktypeField = this.onderwerpGerelateerdTaaktypeFieldTarget
     const correspondingRadio = onderwerpGerelateerdTaaktypeField.querySelector(
-      `ul input[value="${selectedTaaktype}"]`
+      `ul input[value="${this.selectedTaaktype}"]`
     )
     this.clearFieldSelection(onderwerpGerelateerdTaaktypeField)
 
@@ -171,17 +188,19 @@ export default class extends Controller {
     }
   }
 
-  selectCorrespondingTaaktype(selectedTaaktype) {
+  selectCorrespondingTaaktype() {
     const taaktypeField = this.taaktypeFieldTarget
-    const correspondingRadio = taaktypeField.querySelector(`input[value="${selectedTaaktype}"]`)
+    const correspondingRadio = taaktypeField.querySelector(
+      `input[value="${this.selectedTaaktype}"]`
+    )
     if (correspondingRadio) {
       correspondingRadio.checked = true
     }
 
-    this.selectCorrespondingAfdeling(selectedTaaktype)
+    this.selectCorrespondingAfdeling()
   }
 
-  selectCorrespondingAfdeling(selectedTaaktype) {
+  selectCorrespondingAfdeling() {
     const afdelingField = this.afdelingFieldTarget
     const currentlySelectedAfdeling = afdelingField.querySelector('input:checked')
     let taaktypeBelongsToCurrentAfdeling = false
@@ -192,13 +211,13 @@ export default class extends Controller {
       taaktypeBelongsToCurrentAfdeling = this.taaktypes.some(
         ([afdeling, options]) =>
           afdeling === currentAfdelingValue &&
-          options.some((option) => option[0] === selectedTaaktype)
+          options.some((option) => option[0] === this.selectedTaaktype)
       )
     }
 
     if (!taaktypeBelongsToCurrentAfdeling) {
       for (const [afdeling, options] of this.taaktypes) {
-        if (options.some((option) => option[0] === selectedTaaktype)) {
+        if (options.some((option) => option[0] === this.selectedTaaktype)) {
           const correspondingRadio = afdelingField.querySelector(`input[value="${afdeling}"]`)
           if (correspondingRadio) {
             correspondingRadio.checked = true
@@ -210,13 +229,17 @@ export default class extends Controller {
   }
 
   handleSearch() {
+    let debounceTimer
     this.taaktypeSearchTarget.addEventListener('input', (event) => {
-      const searchTerm = event.target.value.toLowerCase()
-      if (searchTerm.length >= 2) {
-        this.showSearchResults(searchTerm)
-      } else {
-        this.resetToCurrentAfdeling()
-      }
+      clearTimeout(debounceTimer)
+      debounceTimer = setTimeout(() => {
+        const searchTerm = event.target.value.toLowerCase().trim()
+        if (searchTerm.length >= 2) {
+          this.showSearchResults(searchTerm)
+        } else {
+          this.resetToCurrentAfdeling()
+        }
+      }, 300) // 300ms debounce
     })
   }
 
@@ -229,18 +252,23 @@ export default class extends Controller {
       taaktype[1].toLowerCase().includes(searchTerm)
     )
 
+    // Store the currently selected taaktype before rendering
+    const currentlySelectedTaaktype =
+      this.selectedTaaktype || this.taaktypeFieldTarget.querySelector('input:checked')?.value
+
     this.renderTaaktypes(matchingTaaktypes)
 
-    // Maintain the selected taaktype if it exists in the search results
-    const selectedTaaktype = this.taaktypeFieldTarget.querySelector('input:checked')?.value
-    if (selectedTaaktype) {
+    // After rendering, check if the previously selected taaktype is in the search results
+    if (currentlySelectedTaaktype) {
       const correspondingRadio = this.taaktypeFieldTarget.querySelector(
-        `ul input[value="${selectedTaaktype}"]`
+        `ul input[value="${currentlySelectedTaaktype}"]`
       )
       if (correspondingRadio) {
         correspondingRadio.checked = true
+        this.selectedTaaktype = currentlySelectedTaaktype
       }
     }
+
     this.afdelingFieldTarget.classList.add('inactive')
   }
 
