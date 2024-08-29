@@ -36,16 +36,18 @@
                   novalidate>
                 {% csrf_token %}
                 {{ form.errors }}
-                <section class="bgc-gray01">
-                    <div class="form-control__with-helptext container__form-check-cols3"
-                         data-taakstartenformulier-target="onderwerpGerelateerdTaaktypeField">
-                        <div class="form-row">
-                            <label>Vaak gekozen bij dit type melding</label>
-                            <div class="wrapper__columns">{{ form.onderwerp_gerelateerd_taaktype }}</div>
-                            <p class="help-block invalid-text no-margin"></p>
+                {% if onderwerp_gerelateerde_taaktypes|length > 0 %}
+                    <section class="bgc-gray01">
+                        <div class="form-control__with-helptext container__form-check-cols3"
+                             data-taakstartenformulier-target="onderwerpGerelateerdTaaktypeField">
+                            <div class="form-row">
+                                <label>Vaak gekozen bij dit type melding</label>
+                                <div class="wrapper__columns">{{ form.onderwerp_gerelateerd_taaktype }}</div>
+                                <p class="help-block invalid-text no-margin"></p>
+                            </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
+                {% endif %}
                 <section>
                     <div class="form-control__with-helptext container__search">
                         <div class="form-row">
