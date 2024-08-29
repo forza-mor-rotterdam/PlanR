@@ -112,7 +112,7 @@ export default class extends Controller {
     }
   }
 
-  renderTaaktypes(taaktypes) {
+  renderTaaktypes(taaktypes, attach_afdeling = false) {
     const taaktypeField = this.taaktypeFieldTarget
     taaktypeField.innerHTML = ''
 
@@ -142,7 +142,7 @@ export default class extends Controller {
       label.htmlFor = `id_taaktype_${index}`
       label.className = 'form-check-label'
       label.innerHTML = `${text} ${
-        afdeling ? '(<strong class="green">' + afdeling + '</strong>)' : ''
+        afdeling && attach_afdeling ? '(<strong class="green">' + afdeling + '</strong>)' : ''
       }`
 
       li.appendChild(input)
@@ -256,7 +256,7 @@ export default class extends Controller {
     const currentlySelectedTaaktype =
       this.selectedTaaktype || this.taaktypeFieldTarget.querySelector('input:checked')?.value
 
-    this.renderTaaktypes(matchingTaaktypes)
+    this.renderTaaktypes(matchingTaaktypes, true)
 
     // After rendering, check if the previously selected taaktype is in the search results
     if (currentlySelectedTaaktype) {
