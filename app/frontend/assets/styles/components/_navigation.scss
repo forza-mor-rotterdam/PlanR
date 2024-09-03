@@ -4,6 +4,10 @@
     max-width: map-get($container-max-widths, xxl);
     display: flex;
     justify-content: flex-end;
+
+    .wide--xl & {
+        max-width: 1250px;
+    }
 }
 
 .list-nav--tertiary {
@@ -18,12 +22,17 @@
         text-decoration: none;
 
         svg {
-            vertical-align: bottom;
+            vertical-align: text-bottom;
         }
 
         &:hover,
         &:focus {
             color: $green-tint01;
+            svg {
+                path {
+                    fill: $green-tint01;
+                }
+            }
         }
     }
 }

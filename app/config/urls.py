@@ -18,6 +18,7 @@ from apps.context.views import (
     ContextLijstView,
     ContextVerwijderenView,
 )
+from apps.dashboard.views import MeldingenAfgehandeld, NieuweMeldingen
 from apps.health.views import healthz
 from apps.main.views import (
     StandaardExterneOmschrijvingAanmakenView,
@@ -29,6 +30,9 @@ from apps.main.views import (
     TaaktypeCategorieLijstView,
     TaaktypeCategorieVerwijderenView,
     clear_melding_token_from_cache,
+)
+from apps.main.views import dashboard as dashboard_mock
+from apps.main.views import (
     gebruiker_info,
     http_403,
     http_404,
@@ -53,6 +57,7 @@ from apps.main.views import (
     msb_melding_zoeken,
     publiceer_topic,
     root,
+    sidesheet_actueel,
     taak_afronden,
     taak_annuleren,
     taak_starten,
@@ -304,6 +309,18 @@ urlpatterns = [
         GebruikerProfielView.as_view(),
         name="gebruiker_profiel",
     ),
+    # Dashboard
+    path(
+        "dashboard-mock/",
+        dashboard_mock,
+        name="dashboard_mock",
+    ),
+    # sidesheet
+    path(
+        "sidesheet-actueel/",
+        sidesheet_actueel,
+        name="sidesheet_actueel",
+    ),
     ### Locatie
     path(
         "part/melding/<uuid:id>/locatie_aanpassen/",
@@ -312,6 +329,55 @@ urlpatterns = [
     ),
     path("select2/", include(select2_urls)),
     re_path(r"core/media/", meldingen_bestand, name="meldingen_bestand"),
+    # path("dashboard/", dashboard, name="dashboard"),
+    re_path(
+        r"^dashboard/$",
+        NieuweMeldingen.as_view(),
+        kwargs={"type": "meldingen", "status": "nieuw"},
+        name="dashboard",
+    ),
+    re_path(
+        r"^dashboard/(?P<jaar>\d{4})/$",
+        NieuweMeldingen.as_view(periode="jaar"),
+        kwargs={"type": "meldingen", "status": "nieuw"},
+        name="dashboard",
+    ),
+    re_path(
+        r"^dashboard/(?P<jaar>\d{4})/(?P<type>meldingen)/(?P<status>nieuw)/$",
+        NieuweMeldingen.as_view(periode="jaar"),
+        kwargs={"type": "meldingen", "status": "nieuw"},
+        name="dashboard",
+    ),
+    re_path(
+        r"^dashboard/(?P<jaar>\d{4})/(?P<type>meldingen)/(?P<status>afgehandeld)/$",
+        MeldingenAfgehandeld.as_view(periode="jaar"),
+        kwargs={"type": "meldingen", "status": "afgehandeld"},
+        name="dashboard",
+    ),
+    re_path(
+        r"^dashboard/(?P<jaar>\d{4})/week/(?P<week>\d{2})/(?P<type>meldingen)/(?P<status>nieuw)/$",
+        NieuweMeldingen.as_view(periode="week"),
+        kwargs={"type": "meldingen", "status": "nieuw"},
+        name="dashboard",
+    ),
+    re_path(
+        r"^dashboard/(?P<jaar>\d{4})/week/(?P<week>\d{2})/(?P<type>meldingen)/(?P<status>afgehandeld)/$",
+        MeldingenAfgehandeld.as_view(periode="week"),
+        kwargs={"type": "meldingen", "status": "afgehandeld"},
+        name="dashboard",
+    ),
+    re_path(
+        r"^dashboard/(?P<jaar>\d{4})/maand/(?P<maand>\d{2})/(?P<type>meldingen)/(?P<status>nieuw)/$",
+        NieuweMeldingen.as_view(periode="maand"),
+        kwargs={"type": "meldingen", "status": "nieuw"},
+        name="dashboard",
+    ),
+    re_path(
+        r"^dashboard/(?P<jaar>\d{4})/maand/(?P<maand>\d{2})/(?P<type>meldingen)/(?P<status>afgehandeld)/$",
+        MeldingenAfgehandeld.as_view(periode="maand"),
+        kwargs={"type": "meldingen", "status": "afgehandeld"},
+        name="dashboard",
+    ),
 ]
 
 if settings.OIDC_ENABLED:

@@ -1,51 +1,66 @@
 import logging
+from datetime import date, datetime, timedelta
 from urllib.parse import urlparse
 
 import requests
+from apps.instellingen.models import Instelling
 from apps.services.basis import BasisService
-from django.conf import settings
 from django.core.cache import cache
-from django.core.exceptions import ValidationError
-from django.core.validators import validate_email
 
 logger = logging.getLogger(__name__)
 
 
 class MeldingenService(BasisService):
+    _base_url = None
+    _timeout: tuple[int, ...] = (10, 20)
+    _token_api: str = "/api-token-auth/"
+    _use_token = True
+    _token_timeout = 0
+
     def __init__(self, *args, **kwargs: dict):
-        self._api_base_url = settings.MELDINGEN_URL
+        instelling = Instelling.actieve_instelling()
+        if not instelling:
+            raise Exception(
+                "De MOR-Core instellingen kunnen niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
+            )
+        self._use_token = (
+            instelling.mor_core_gebruiker_email
+            and instelling.mor_core_gebruiker_wachtwoord
+        )
+        self._token_timeout = instelling.mor_core_token_timeout
+        self._base_url = instelling.mor_core_basis_url
         super().__init__(*args, **kwargs)
 
     def get_url(self, url):
         url_o = urlparse(url)
         if not url_o.scheme and not url_o.netloc:
-            return f"{self._api_base_url}{url}"
-        if f"{url_o.scheme}://{url_o.netloc}" == self._api_base_url:
+            return f"{self._base_url}{url}"
+        if f"{url_o.scheme}://{url_o.netloc}" == self._base_url:
             return url
-        raise MeldingenService.BasisUrlFout(
-            f"url: {url}, basis_url: {self._api_base_url}"
-        )
+        raise MeldingenService.BasisUrlFout(f"url: {url}, basis_url: {self._base_url}")
 
     def haal_token(self):
         meldingen_token = cache.get("meldingen_token")
+        if not self._token_timeout:
+            cache.delete("meldingen_token")
+
         if not meldingen_token:
-            email = settings.MELDINGEN_USERNAME
-            try:
-                validate_email(email)
-            except ValidationError:
-                email = f"{settings.MELDINGEN_USERNAME}@forzamor.nl"
+            instelling = Instelling.actieve_instelling()
+            if not instelling:
+                raise Exception(
+                    "De MOR-Core instellingen kunnen niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
+                )
             token_response = requests.post(
-                settings.MELDINGEN_TOKEN_API,
+                f"{self._base_url}{self._token_api}",
                 json={
-                    "username": email,
-                    "password": settings.MELDINGEN_PASSWORD,
+                    "username": instelling.mor_core_gebruiker_email,
+                    "password": instelling.mor_core_gebruiker_wachtwoord,
                 },
             )
             if token_response.status_code == 200:
                 meldingen_token = token_response.json().get("token")
-                cache.set(
-                    "meldingen_token", meldingen_token, settings.MELDINGEN_TOKEN_TIMEOUT
-                )
+                if self._token_timeout:
+                    cache.set("meldingen_token", meldingen_token, self._token_timeout)
             else:
                 raise MeldingenService.DataOphalenFout(
                     f"status code: {token_response.status_code}, response text: {token_response.text}"
@@ -54,7 +69,9 @@ class MeldingenService(BasisService):
         return meldingen_token
 
     def get_headers(self):
-        headers = {"Authorization": f"Token {self.haal_token()}"}
+        headers = {}
+        if self._use_token:
+            headers.update({"Authorization": f"Token {self.haal_token()}"})
         return headers
 
     def get_melding_lijst(self, query_string=""):
@@ -307,4 +324,144 @@ class MeldingenService(BasisService):
     def set_gebruiker(self, gebruiker):
         return self.do_request(
             f"{self._api_path}/gebruiker/", method="post", data=gebruiker
+        )
+
+    def melding_aantallen(self, datum=None, uur=None, days=1, force_cache=False):
+        datum_datetime = (
+            datetime.combine(datum, datetime.min.time())
+            if isinstance(datum, date)
+            else None
+        )
+        uur_int = uur if uur in range(0, 24) else None
+        cache_timeout = 0
+        params = {}
+        if datum_datetime:
+            td = timedelta(days=days)
+            origineel_aangemaakt_gte = datum_datetime
+            origineel_aangemaakt_lt = datum_datetime + td
+            if uur_int is not None:
+                origineel_aangemaakt_gte = origineel_aangemaakt_gte + timedelta(
+                    hours=uur_int
+                )
+                origineel_aangemaakt_lt = origineel_aangemaakt_gte + timedelta(
+                    hours=uur_int + 1
+                )
+            cache_timeout = (
+                60 * 60 * 24 * 30 if origineel_aangemaakt_lt < datetime.now() else 0
+            )
+            params.update(
+                {
+                    "origineel_aangemaakt_gte": origineel_aangemaakt_gte.isoformat(),
+                    "origineel_aangemaakt_lt": origineel_aangemaakt_lt.isoformat(),
+                }
+            )
+        return self.do_request(
+            f"{self._api_path}/melding/aantallen/",
+            params=params,
+            cache_timeout=cache_timeout,
+            force_cache=force_cache,
+            raw_response=False,
+        )
+
+    def signaal_aantallen(self, datum=None, uur=None, days=1, force_cache=False):
+        datum_datetime = (
+            datetime.combine(datum, datetime.min.time())
+            if isinstance(datum, date)
+            else None
+        )
+        uur_int = uur if uur in range(0, 24) else None
+        cache_timeout = 0
+        params = {}
+        if datum_datetime:
+            td = timedelta(days=days)
+            origineel_aangemaakt_gte = datum_datetime
+            origineel_aangemaakt_lt = datum_datetime + td
+            if uur_int is not None:
+                origineel_aangemaakt_gte = origineel_aangemaakt_gte + timedelta(
+                    hours=uur_int
+                )
+                origineel_aangemaakt_lt = origineel_aangemaakt_gte + timedelta(
+                    hours=uur_int + 1
+                )
+            cache_timeout = (
+                60 * 60 * 24 * 30 if origineel_aangemaakt_lt < datetime.now() else 0
+            )
+            params.update(
+                {
+                    "origineel_aangemaakt_gte": origineel_aangemaakt_gte.isoformat(),
+                    "origineel_aangemaakt_lt": origineel_aangemaakt_lt.isoformat(),
+                }
+            )
+        return self.do_request(
+            f"{self._api_path}/signaal/aantallen/",
+            params=params,
+            cache_timeout=cache_timeout,
+            force_cache=force_cache,
+            raw_response=False,
+        )
+
+    def status_veranderingen(self, datum=None, uur=None, days=1, force_cache=False):
+        datum_datetime = (
+            datetime.combine(datum, datetime.min.time())
+            if isinstance(datum, date)
+            else None
+        )
+        uur_int = uur if uur in range(0, 24) else None
+        cache_timeout = 0
+        params = {}
+        if datum_datetime:
+            td = timedelta(days=days)
+            aangemaakt_op_gte = datum_datetime
+            aangemaakt_op_lt = datum_datetime + td
+            if uur_int is not None:
+                aangemaakt_op_gte = aangemaakt_op_gte + timedelta(hours=uur_int)
+                aangemaakt_op_lt = aangemaakt_op_gte + timedelta(hours=uur_int + 1)
+            cache_timeout = (
+                60 * 60 * 24 * 30 if aangemaakt_op_lt < datetime.now() else 0
+            )
+            params.update(
+                {
+                    "aangemaakt_op_gte": aangemaakt_op_gte.isoformat(),
+                    "aangemaakt_op_lt": aangemaakt_op_lt.isoformat(),
+                }
+            )
+        return self.do_request(
+            f"{self._api_path}/status/veranderingen/",
+            params=params,
+            cache_timeout=cache_timeout,
+            force_cache=force_cache,
+            raw_response=False,
+        )
+
+    def afgehandelde_meldingen(self, datum=None, uur=None, days=1, force_cache=False):
+        datum_datetime = (
+            datetime.combine(datum, datetime.min.time())
+            if isinstance(datum, date)
+            else None
+        )
+        uur_int = uur if uur in range(0, 24) else None
+        cache_timeout = 0
+        params = {}
+        if datum_datetime:
+            td = timedelta(days=days)
+            aangemaakt_op_gte = datum_datetime
+            aangemaakt_op_lt = datum_datetime + td
+            if uur_int is not None:
+                aangemaakt_op_gte = aangemaakt_op_gte + timedelta(hours=uur_int)
+                aangemaakt_op_lt = aangemaakt_op_gte + timedelta(hours=uur_int + 1)
+            cache_timeout = (
+                60 * 60 * 24 * 30 if aangemaakt_op_lt < datetime.now() else 0
+            )
+            params.update(
+                {
+                    "aangemaakt_op_gte": aangemaakt_op_gte.isoformat(),
+                    "aangemaakt_op_lt": aangemaakt_op_lt.isoformat(),
+                }
+            )
+        return self.do_request(
+            f"{self._api_path}/status/afgehandeld/",
+            params=params,
+            cache_timeout=cache_timeout,
+            force_cache=force_cache,
+            raw_response=False,
         )

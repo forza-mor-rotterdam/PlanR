@@ -1,128 +1,346 @@
 import { Controller } from '@hotwired/stimulus'
-import $ from 'jquery' // Import jQuery
-// eslint-disable-next-line no-unused-vars
-import Select2 from 'select2'
-
-let form = null
-// eslint-disable-next-line no-unused-vars
-let inputList = null
-// eslint-disable-next-line no-unused-vars
-let formData = null
 const defaultErrorMessage = 'Vul a.u.b. dit veld in.'
 
 export default class extends Controller {
-  static targets = ['formTaakStarten', 'categorieField', 'taaktypeField']
-
-  initializeSelect2() {
-    $(this.formTaakStartenTarget.querySelector('.select2')).select2({
-      dropdownParent: $('#meldingDetailModal'),
-      matcher: (params, data) => {
-        const originalMatcher = $.fn.select2.defaults.defaults.matcher
-        const result = originalMatcher(params, data)
-
-        if (result && data.children && result.children && data.children.length) {
-          if (
-            data.children.length !== result.children.length &&
-            data.text.toLowerCase().includes(params.term.toLowerCase())
-          ) {
-            return {
-              ...result,
-              children: data.children,
-            }
-          }
-        }
-
-        return result
-      },
-    })
-
-    $(this.formTaakStartenTarget.querySelector('.select2')).on('select2:select', function (e) {
-      const select = e.target
-      const error = select.closest('.form-row').getElementsByClassName('invalid-text')[0]
-      if (select.validity.valid) {
-        select.closest('.form-row').classList.remove('is-invalid')
-        error.textContent = ''
-      } else {
-        error.textContent = defaultErrorMessage
-        select.closest('.form-row').classList.add('is-invalid')
-      }
-    })
-  }
+  static targets = [
+    'formTaakStarten',
+    'afdelingField',
+    'taaktypeField',
+    'onderwerpGerelateerdTaaktypeField',
+    'taaktypeSearch',
+  ]
 
   connect() {
-    form = this.formTaakStartenTarget
-    inputList = this.element.querySelectorAll('select')
+    this.form = this.formTaakStartenTarget
+    this.formData = new FormData(this.form)
+    const initialAfdeling = this.formTaakStartenTarget.dataset.initialAfdeling
+    this.taaktypes = JSON.parse(this.form.dataset.taakstartenformulierTaaktypes)
+    this.selectedTaaktype = null
 
-    formData = new FormData(form)
-    this.initializeSelect2()
-
-    form.addEventListener('submit', (event) => {
-      const allFieldsValid = this.checkValids()
-
-      if (!allFieldsValid) {
-        const errorList = this.element.querySelectorAll('div.is-invalid')
-        errorList[0].scrollIntoView({ behavior: 'smooth' })
+    this.form.addEventListener('submit', (event) => {
+      if (!this.checkValids()) {
         event.preventDefault()
+        const firstError = this.element.querySelector('.is-invalid')
+        if (firstError) {
+          firstError.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
       }
     })
+
+    if (initialAfdeling) {
+      this.filterTaaktypes(initialAfdeling)
+    }
     this.handleTaaktypeChoices()
+    this.handleOnderwerpGerelateerdTaaktypeChoices()
+    this.handleSearch()
   }
 
   handleTaaktypeChoices() {
-    this.categorieFieldTarget.addEventListener('change', () => {
-      const categorie = this.categorieFieldTarget.value
-      const taaktypeField = this.taaktypeFieldTarget
+    this.afdelingFieldTarget.addEventListener('change', () => {
+      const selectedAfdeling = event.target.value
+      this.clearSearch()
 
-      // Clear previous options
-      taaktypeField.innerHTML = ''
+      this.filterTaaktypes(selectedAfdeling)
+      this.clearFieldSelection(this.onderwerpGerelateerdTaaktypeFieldTarget)
+    })
 
-      // Add default option
-      const defaultOption = document.createElement('option')
-      defaultOption.textContent = 'Selecteer een taak'
-      defaultOption.value = ''
-      taaktypeField.appendChild(defaultOption)
-
-      // Add options based on selected categorie
-      const taaktypes = JSON.parse(form.dataset.taakstartenformulierTaaktypes)
-
-      taaktypes.forEach((categorieOptions) => {
-        const [category, options] = categorieOptions
-        const isMatchedCategory = !categorie || category === categorie
-
-        if (Array.isArray(options) && isMatchedCategory) {
-          const optgroup = document.createElement('optgroup')
-          optgroup.label = category
-
-          options.forEach((taaktype) => {
-            const [value, text] = taaktype
-            const option = document.createElement('option')
-            option.value = value
-            option.textContent = text
-            optgroup.appendChild(option)
-          })
-
-          taaktypeField.appendChild(optgroup)
-        }
-      })
+    this.taaktypeFieldTarget.addEventListener('change', (event) => {
+      this.selectedTaaktype = event.target.value
+      this.selectCorrespondingOnderwerpGerelateerdTaaktype()
     })
   }
 
-  checkValids() {
-    // Check all input fields (except checkboxes) for validity
-    // If one or more fields are invalid, don't send the form (return false)
-    const inputList = document.querySelectorAll('select')
-    let count = 0
-    for (const input of inputList) {
-      const error = input.closest('.form-row').getElementsByClassName('invalid-text')[0]
-      if (input.validity.valid) {
-        error.textContent = ''
-        input.closest('.form-row').classList.remove('is-invalid')
+  handleOnderwerpGerelateerdTaaktypeChoices() {
+    this.afdelingFieldTarget.addEventListener('change', () => {
+      const selectedAfdeling = event.target.value
+
+      this.filterTaaktypes(selectedAfdeling)
+    })
+    this.onderwerpGerelateerdTaaktypeFieldTarget.addEventListener('change', (event) => {
+      this.selectedTaaktype = event.target.value
+      this.clearSearch()
+
+      this.selectCorrespondingAfdeling()
+      const selectedAfdeling = this.afdelingFieldTarget.querySelector('input:checked')
+      if (selectedAfdeling) {
+        this.filterTaaktypes(selectedAfdeling.value)
+      }
+      this.selectCorrespondingTaaktype()
+    })
+  }
+
+  clearFieldSelection(fieldTarget) {
+    if (fieldTarget) {
+      fieldTarget.querySelectorAll('input[type="radio"]').forEach((radio) => {
+        radio.checked = false
+        // radio.value = ''
+      })
+    }
+  }
+
+  filterTaaktypes(selectedAfdeling) {
+    const selectedAfdelingTaaktypes = this.taaktypes.find(
+      ([afdeling]) => afdeling === selectedAfdeling
+    )
+
+    if (selectedAfdelingTaaktypes) {
+      const [afdeling, options] = selectedAfdelingTaaktypes
+      const taaktypesToRender = options.map((taaktype) => ({ afdeling, taaktype }))
+      this.renderTaaktypes(taaktypesToRender)
+    } else {
+      // If no matching afdeling is found, render an empty list
+      this.renderTaaktypes([])
+    }
+
+    // Update the selected afdeling radio button
+    const selectedAfdelingRadio = this.afdelingFieldTarget.querySelector(
+      `input[value="${selectedAfdeling}"]`
+    )
+    if (selectedAfdelingRadio) {
+      selectedAfdelingRadio.checked = true
+    }
+
+    // Maintain the selected taaktype if it belongs to the current afdeling
+    if (this.selectedTaaktype) {
+      const correspondingRadio = this.taaktypeFieldTarget.querySelector(
+        `input[value="${this.selectedTaaktype}"]`
+      )
+      if (correspondingRadio) {
+        correspondingRadio.checked = true
       } else {
-        error.textContent = defaultErrorMessage
-        input.closest('.form-row').classList.add('is-invalid')
-        count++
+        // If the selected taaktype is not in the current afdeling, clear the selection
+        this.selectedTaaktype = null
       }
     }
-    return count === 0
+  }
+
+  renderTaaktypes(taaktypes, attach_afdeling = false) {
+    const taaktypeField = this.taaktypeFieldTarget
+    taaktypeField.textContent = ''
+
+    const ul = document.createElement('ul')
+    const div = document.createElement('div')
+    const wrapper = document.createElement('div')
+    div.className = 'form-row'
+    wrapper.className = 'wrapper__columns'
+
+    ul.id = 'id_taaktype'
+    ul.className = 'form-check-input'
+
+    taaktypes.forEach(({ afdeling, taaktype }, index) => {
+      const [value, text] = taaktype
+      const li = document.createElement('li')
+
+      const input = document.createElement('input')
+      input.type = 'radio'
+      input.name = 'taaktype'
+      input.value = value
+      input.id = `id_taaktype_${index}`
+      input.className = 'form-check-input'
+      input.required = true
+      input.setAttribute('data-taakstartenformulier-target', 'taaktypeField')
+
+      const label = document.createElement('label')
+      label.htmlFor = `id_taaktype_${index}`
+      label.className = 'form-check-label'
+      label.textContent = `${text}`
+      if (afdeling && attach_afdeling) {
+        const strong = document.createElement('strong')
+        strong.className = 'green'
+        strong.textContent = ` ${afdeling}`
+        label.appendChild(strong)
+      }
+      li.appendChild(input)
+      li.appendChild(label)
+
+      ul.appendChild(li)
+    })
+    wrapper.appendChild(ul)
+    div.appendChild(wrapper)
+
+    // Add error message element
+    const errorElement = document.createElement('p')
+    errorElement.className = 'help-block invalid-text'
+    errorElement.setAttribute('data-error-for', 'taaktype')
+    errorElement.style.display = 'none' // Initially hidden
+    div.appendChild(errorElement)
+
+    taaktypeField.appendChild(div)
+  }
+
+  renderAllTaaktypes() {
+    const allTaaktypes = this.taaktypes.flatMap(([afdeling, taaktypes]) =>
+      taaktypes.map((taaktype) => ({ afdeling, taaktype }))
+    )
+    this.renderTaaktypes(allTaaktypes)
+
+    // Restore the previously selected taaktype if it exists
+    if (this.selectedTaaktype) {
+      const correspondingRadio = this.taaktypeFieldTarget.querySelector(
+        `ul input[value="${this.selectedTaaktype}"]`
+      )
+      if (correspondingRadio) {
+        correspondingRadio.checked = true
+      }
+    }
+
+    // Show all afdeling options
+    this.afdelingFieldTarget.querySelectorAll('input[type="radio"]').forEach((radio) => {
+      radio.closest('li').style.display = ''
+    })
+  }
+
+  selectCorrespondingOnderwerpGerelateerdTaaktype() {
+    const onderwerpGerelateerdTaaktypeField = this.onderwerpGerelateerdTaaktypeFieldTarget
+    const correspondingRadio = onderwerpGerelateerdTaaktypeField.querySelector(
+      `ul input[value="${this.selectedTaaktype}"]`
+    )
+    this.clearFieldSelection(onderwerpGerelateerdTaaktypeField)
+
+    if (correspondingRadio) {
+      correspondingRadio.checked = true
+    }
+  }
+
+  selectCorrespondingTaaktype() {
+    const taaktypeField = this.taaktypeFieldTarget
+    const correspondingRadio = taaktypeField.querySelector(
+      `input[value="${this.selectedTaaktype}"]`
+    )
+    if (correspondingRadio) {
+      correspondingRadio.checked = true
+    }
+
+    this.selectCorrespondingAfdeling()
+  }
+
+  selectCorrespondingAfdeling() {
+    const afdelingField = this.afdelingFieldTarget
+    const currentlySelectedAfdeling = afdelingField.querySelector('input:checked')
+    let taaktypeBelongsToCurrentAfdeling = false
+    // this.clearSearch() // Add this line
+
+    if (currentlySelectedAfdeling) {
+      const currentAfdelingValue = currentlySelectedAfdeling.value
+      taaktypeBelongsToCurrentAfdeling = this.taaktypes.some(
+        ([afdeling, options]) =>
+          afdeling === currentAfdelingValue &&
+          options.some((option) => option[0] === this.selectedTaaktype)
+      )
+    }
+
+    if (!taaktypeBelongsToCurrentAfdeling) {
+      for (const [afdeling, options] of this.taaktypes) {
+        if (options.some((option) => option[0] === this.selectedTaaktype)) {
+          const correspondingRadio = afdelingField.querySelector(`input[value="${afdeling}"]`)
+          if (correspondingRadio) {
+            correspondingRadio.checked = true
+          }
+          break
+        }
+      }
+    }
+  }
+
+  handleSearch() {
+    let debounceTimer
+    this.taaktypeSearchTarget.addEventListener('input', (event) => {
+      clearTimeout(debounceTimer)
+      debounceTimer = setTimeout(() => {
+        const searchTerm = event.target.value.toLowerCase().trim()
+        if (searchTerm.length >= 2) {
+          this.showSearchResults(searchTerm)
+        } else {
+          this.resetToCurrentAfdeling()
+        }
+      }, 300) // 300ms debounce
+    })
+  }
+
+  showSearchResults(searchTerm) {
+    const allTaaktypes = this.taaktypes.flatMap(([afdeling, taaktypes]) =>
+      taaktypes.map((taaktype) => ({ afdeling, taaktype }))
+    )
+
+    const matchingTaaktypes = allTaaktypes.filter(({ taaktype }) =>
+      taaktype[1].toLowerCase().includes(searchTerm)
+    )
+
+    // Store the currently selected taaktype before rendering
+    const currentlySelectedTaaktype =
+      this.selectedTaaktype || this.taaktypeFieldTarget.querySelector('input:checked')?.value
+
+    this.renderTaaktypes(matchingTaaktypes, true)
+
+    // After rendering, check if the previously selected taaktype is in the search results
+    if (currentlySelectedTaaktype) {
+      const correspondingRadio = this.taaktypeFieldTarget.querySelector(
+        `ul input[value="${currentlySelectedTaaktype}"]`
+      )
+      if (correspondingRadio) {
+        correspondingRadio.checked = true
+        this.selectedTaaktype = currentlySelectedTaaktype
+      }
+    }
+
+    this.afdelingFieldTarget.classList.add('inactive')
+  }
+
+  clearSearch() {
+    this.taaktypeSearchTarget.value = ''
+    this.afdelingFieldTarget.classList.remove('inactive')
+  }
+
+  resetToCurrentAfdeling() {
+    const selectedAfdeling = this.afdelingFieldTarget.querySelector('input:checked')?.value
+    this.afdelingFieldTarget.classList.remove('inactive')
+    if (selectedAfdeling) {
+      this.filterTaaktypes(selectedAfdeling)
+    }
+  }
+
+  checkValids() {
+    let isValid = true
+    const formFields = this.form.querySelectorAll(
+      'input[type="radio"][required], textarea[required]'
+    )
+    formFields.forEach((field) => {
+      const fieldSet = field.closest('.form-row')
+      const errorElement = fieldSet.querySelector('.help-block.invalid-text')
+
+      if (field.type === 'radio') {
+        const fieldName = field.name
+        const isChecked = this.form.querySelector(`input[name="${fieldName}"]:checked`)
+        if (!isChecked) {
+          this.showError(fieldSet, errorElement, defaultErrorMessage)
+          isValid = false
+        } else {
+          this.clearError(fieldSet, errorElement)
+        }
+      } else if (field.type === 'textarea' && !field.value.trim()) {
+        this.showError(fieldSet, errorElement, defaultErrorMessage)
+        isValid = false
+      } else {
+        this.clearError(fieldSet, errorElement)
+      }
+    })
+
+    return isValid
+  }
+
+  showError(element, errorElement, message) {
+    if (element) element.classList.add('is-invalid')
+    if (errorElement) {
+      errorElement.textContent = message
+      errorElement.style.display = 'block'
+    }
+  }
+
+  clearError(element, errorElement) {
+    if (element) element.classList.remove('is-invalid')
+    if (errorElement) {
+      errorElement.textContent = ''
+      errorElement.style.display = 'none'
+    }
   }
 }

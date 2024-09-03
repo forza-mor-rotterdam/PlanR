@@ -1,7 +1,7 @@
 import logging
 
+from apps.instellingen.models import Instelling
 from apps.services.basis import BasisService
-from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -49,12 +49,31 @@ def render_onderwerp_groepen(context):
 
 
 class OnderwerpenService(BasisService):
+    def __init__(self, *args, **kwargs: dict):
+        instelling = Instelling.actieve_instelling()
+        if not instelling:
+            raise Exception(
+                "De Onderwerpen url kon niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
+            )
+        self._base_url = instelling.onderwerpen_basis_url
+        super().__init__(*args, **kwargs)
+
+    # def get_url(self, url):
+    #     url_o = urlparse(url)
+    #     if not url_o.scheme and not url_o.netloc:
+    #         return f"{self._base_url}{url}"
+    #     if f"{url_o.scheme}://{url_o.netloc}" == self._base_url:
+    #         return url
+    #     raise OnderwerpenService.BasisUrlFout(
+    #         f"url: {url}, basis_url: {self._base_url}"
+    #     )
+
     def get_onderwerp(self, url) -> dict:
         return self.do_request(url, cache_timeout=60 * 60 * 24, raw_response=False)
 
     def get_onderwerpen(self):
         all_onderwerpen = []
-        next_page = f"{settings.ONDERWERPEN_URL}/api/v1/category"
+        next_page = f"{self._base_url}/api/v1/category"
         while next_page:
             response = self.do_request(
                 next_page, cache_timeout=60 * 60 * 24, raw_response=False
@@ -65,7 +84,7 @@ class OnderwerpenService(BasisService):
         return all_onderwerpen
 
     def get_groep(self, groep_uuid):
-        url = f"{settings.ONDERWERPEN_URL}/api/v1/group/{groep_uuid}"
+        url = f"{self._base_url}/api/v1/group/{groep_uuid}"
         onderwerp_groep = self.do_request(
             url,
             cache_timeout=60 * 60 * 24,

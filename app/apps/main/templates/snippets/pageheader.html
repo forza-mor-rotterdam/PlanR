@@ -4,6 +4,14 @@
     <div class="container__nav--tertiary">
         <ul class="list-nav--tertiary">
             {% if request.user.is_authenticated %}
+                {% comment %} <li>
+                    <a href="{% url 'dashboard' %}">
+                        <svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M14.1875 8C14.1875 4.5625 11.4375 1.8125 8 1.8125C4.5625 1.8125 1.8125 4.5625 1.8125 8C1.8125 11.4375 4.5625 14.1875 8 14.1875C11.4375 14.1875 14.1875 11.4375 14.1875 8ZM0.5 8C0.5 3.875 3.875 0.5 8 0.5C12.125 0.5 15.5 3.875 15.5 8C15.5 12.125 12.125 15.5 8 15.5C3.875 15.5 0.5 12.125 0.5 8ZM8.625 4.875V3.625H7.375V4.875H8.625ZM8.625 12.375V6.125H7.375V12.375H8.625Z" fill="#9DAFB6" />
+                        </svg>
+                        <small>Dashboard</small>
+                    </a>
+                </li> {% endcomment %}
                 <li>
                     <a href="{% url 'release_note_lijst_public' %}">
                         <svg width="20"

@@ -107,7 +107,7 @@
                     </button>
                 </li>
             {% endif %}
-            {% if perms.authorisatie.locatie_aanpassen %}
+            {% if perms.authorisatie.locatie_aanpassen and locaties.adressen %}
                 <li>
                     <button type="button"
                             class="btn btn-icon btn-textlink"

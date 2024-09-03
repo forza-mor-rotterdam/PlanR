@@ -24,6 +24,11 @@ DEPLOY_DATE = os.getenv("DEPLOY_DATE", "")
 ENVIRONMENT = os.getenv("ENVIRONMENT")
 DEBUG = ENVIRONMENT == "development"
 
+# Fernet Key
+FIELD_ENCRYPTION_KEY = os.getenv(
+    "FIELD_ENCRYPTION_KEY", "Fp9p5Ml9hK2BravAUDd4O4pn9_KcBTfFbh-QEuuBN0E="
+)
+
 ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
 
@@ -40,6 +45,7 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", DEFAULT_ALLOWED_HOSTS).split(",")
 INSTALLED_APPS = (
     # templates override
     "apps.health",
+    "django.contrib.humanize",
     "django.contrib.contenttypes",
     "django.contrib.staticfiles",
     "django.contrib.messages",
@@ -75,6 +81,9 @@ INSTALLED_APPS = (
     "apps.context",
     "apps.beheer",
     "apps.release_notes",
+    "apps.services",
+    "apps.instellingen",
+    "apps.dashboard",
 )
 
 MIDDLEWARE = (
@@ -345,7 +354,6 @@ THUMBNAIL_KLEIN = "128x128"
 THUMBNAIL_STANDAARD = "1480x1480"
 BESTANDEN_PREFIX = "bestanden"
 
-
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = os.getenv("EMAIL_HOST")
 EMAIL_PORT = os.getenv("EMAIL_PORT", 25)
@@ -354,44 +362,6 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "0") in TRUE_VALUES
 EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "0") in TRUE_VALUES
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "no-reply@forzamor.nl")
-
-MELDINGEN_URL = os.getenv("MELDINGEN_URL", "https://mor-core-acc.forzamor.nl")
-MELDINGEN_API_URL = os.getenv("MELDINGEN_API_URL", f"{MELDINGEN_URL}/api/v1")
-MELDINGEN_API_HEALTH_CHECK_URL = os.getenv(
-    "MELDINGEN_API_HEALTH_CHECK_URL", f"{MELDINGEN_URL}/health/"
-)
-MELDINGEN_TOKEN_API = os.getenv(
-    "MELDINGEN_TOKEN_API", f"{MELDINGEN_URL}/api-token-auth/"
-)
-MELDINGEN_TOKEN_TIMEOUT = 60 * 60
-MELDINGEN_USERNAME = os.getenv("MELDINGEN_USERNAME")
-MELDINGEN_PASSWORD = os.getenv("MELDINGEN_PASSWORD")
-
-MELDING_AANMAKEN_URL = os.getenv(
-    "MELDING_AANMAKEN_URL",
-    "https://serviceformulier-acc.benc.forzamor.nl/melding/aanmaken",
-)
-
-onderwerpen_urls = {
-    PRODUCTIE: "https://onderwerpen.forzamor.nl",
-    ACCEPTATIE: "https://onderwerpen-acc.forzamor.nl",
-    TEST: "https://onderwerpen-test.forzamor.nl",
-}
-ONDERWERPEN_URL = os.getenv(
-    "ONDERWERPEN_URL", onderwerpen_urls.get(APP_ENV, onderwerpen_urls[ACCEPTATIE])
-)
-
-
-taakr_urls = {
-    PRODUCTIE: "https://taakr.forzamor.nl",
-    ACCEPTATIE: "https://taakr-acc.forzamor.nl",
-    TEST: "https://taakr-test.forzamor.nl",
-}
-TAAKR_URL = (
-    "http://taakr.mor.local:8009"
-    if DEBUG
-    else os.getenv("TAAKR_URL", taakr_urls.get(APP_ENV, taakr_urls[ACCEPTATIE]))
-)
 
 
 def show_debug_toolbar(request):
@@ -554,5 +524,3 @@ CKEDITOR_CONFIGS = {
 }
 
 CKEDITOR_UPLOAD_PATH = "uploads/"
-
-EMAIL_BEHEER = os.getenv("EMAIL_BEHEER", "ForzaMOR@rotterdam.nl")

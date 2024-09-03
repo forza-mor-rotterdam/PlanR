@@ -285,21 +285,32 @@ class InformatieToevoegenForm(forms.Form):
 
 
 class TaakStartenForm(forms.Form):
-    categorie = forms.ChoiceField(
-        label="Filter op afdeling",
-        required=False,
-        widget=forms.Select(
+    afdeling = forms.ChoiceField(
+        label="Afdeling",
+        required=True,
+        widget=RadioSelect(
             attrs={
-                "data-taakstartenformulier-target": "categorieField",
+                "class": "form-check-input",
             }
         ),
     )
 
-    taaktype = forms.ChoiceField(
-        widget=Select2Widget(
+    onderwerp_gerelateerd_taaktype = forms.ChoiceField(
+        widget=RadioSelect(
             attrs={
-                "class": "select2",
+                "data-taakstartenformulier-target": "onderwerpGerelateerdTaaktypeField",
+                "class": "form-check-input",
+            }
+        ),
+        label="Onderwerp gerelateerde taak",
+        required=False,
+    )
+
+    taaktype = forms.ChoiceField(
+        widget=RadioSelect(
+            attrs={
                 "data-taakstartenformulier-target": "taaktypeField",
+                "class": "form-check-input",
             }
         ),
         label="Taak",
@@ -321,10 +332,31 @@ class TaakStartenForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         taaktype_choices = kwargs.pop("taaktypes", None)
-        categorie_choices = kwargs.pop("categories", None)
+        afdeling_choices = kwargs.pop("afdelingen", None)
+        onderwerp_gerelateerde_taaktypes = kwargs.pop(
+            "onderwerp_gerelateerde_taaktypes", None
+        )
         super().__init__(*args, **kwargs)
-        self.fields["taaktype"].choices = taaktype_choices
-        self.fields["categorie"].choices = categorie_choices
+
+        self.fields["afdeling"].choices = afdeling_choices
+
+        # Set all taaktype choices
+        if taaktype_choices:
+            all_taaktypes = [
+                (taaktype[0], taaktype[1])
+                for afdeling_taaktypes in taaktype_choices
+                for taaktype in afdeling_taaktypes[1]
+            ]
+            self.fields["taaktype"].choices = all_taaktypes
+        else:
+            self.fields["taaktype"].choices = []
+
+        if onderwerp_gerelateerde_taaktypes:
+            self.fields[
+                "onderwerp_gerelateerd_taaktype"
+            ].choices = onderwerp_gerelateerde_taaktypes
+        else:
+            self.fields["onderwerp_gerelateerd_taaktype"].widget = forms.HiddenInput()
 
 
 class TaakAfrondenForm(forms.Form):
@@ -374,7 +406,12 @@ class TaakAfrondenForm(forms.Form):
         if taakopdracht_opties:
             self.fields["taakopdracht"] = forms.ChoiceField(
                 label="Taak",
-                widget=forms.Select(),
+                widget=Select2Widget(
+                    attrs={
+                        "class": "select2",
+                        "data-select2Modal-target": "targetField",
+                    }
+                ),
                 choices=taakopdracht_opties,
                 required=True,
             )
@@ -388,11 +425,15 @@ class TaakAnnulerenForm(forms.Form):
         if taakopdracht_opties:
             self.fields["taakopdracht"] = forms.ChoiceField(
                 label="Taak",
-                widget=forms.Select(),
+                widget=Select2Widget(
+                    attrs={
+                        "class": "select2",
+                        "data-select2Modal-target": "targetField",
+                    }
+                ),
                 choices=taakopdracht_opties,
                 required=True,
             )
-
             self.fields["omschrijving_intern"] = forms.CharField(
                 label="Interne opmerking",
                 help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",
@@ -705,7 +746,7 @@ class MeldingAanmakenForm(forms.Form):
                 "class": "form-control",
             }
         ),
-        label="Huisnummer",
+        label="Huisletter",
         required=False,
         max_length=1,
     )
@@ -715,7 +756,7 @@ class MeldingAanmakenForm(forms.Form):
                 "class": "form-control",
             }
         ),
-        label="Huisnummer",
+        label="Toevoeging",
         required=False,
         max_length=4,
     )

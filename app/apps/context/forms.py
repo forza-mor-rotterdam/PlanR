@@ -115,8 +115,8 @@ class ContextAanpassenForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         kwargs.get("instance")
-        self.taaktypes = kwargs.pop("taaktypes", None)
-        self.onderwerp_alias_list = kwargs.pop("onderwerp_alias_list", None)
+        self.taaktypes = kwargs.pop("taaktypes", [])
+        self.onderwerp_alias_list = kwargs.pop("onderwerp_alias_list", [])
         self.onderwerpen_service = kwargs.pop("onderwerpen_service", None)
         super().__init__(*args, **kwargs)
 

@@ -1,6 +1,6 @@
 @mixin focus-outline {
     outline-style: solid !important;
-    outline-width: medium !important;
+    outline-width: thin !important;
     outline-color: $gray-tint11 !important;
 }
 
@@ -10,6 +10,7 @@ body {
     font-family: "Bolder", sans-serif;
     font-size: 1em;
     color: $gray-tint11;
+    background-color: $gray-tint00;
 
     @media (min-width: map-get($grid-breakpoints, sm)) {
         font-size: 1.125em;
@@ -39,6 +40,16 @@ header {
     }
 }
 
+body.wide--xl {
+    main,
+    header,
+    .container--env {
+        > .container {
+            max-width: 1250px;
+        }
+    }
+}
+
 main,
 header {
     padding: 0 map-get($container-margin, s) 16px;
@@ -63,16 +74,44 @@ main {
     }
 }
 
+.screen-xl {
+    display: none;
+
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        display: block;
+    }
+}
+.screen-xl--notification {
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        display: none;
+    }
+}
 .grid-container {
     display: grid;
     grid-auto-columns: minmax(0, 1fr);
     gap: 32px;
 
+    + .grid-container {
+        margin-top: 32px;
+    }
+
     @media (min-width: map-get($grid-breakpoints, md)) {
         grid-template-columns: 66fr 34fr;
+
+        &.grid-container--reversed {
+            grid-template-columns: 34fr 66fr;
+        }
+        &.grid-container--3cols {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+        &.grid-container--half {
+            grid-template-columns: 1fr 1fr;
+        }
     }
 
     .grid-item {
+        box-sizing: content-box;
+        min-width: 0; // when min-widh is not set, nested charts are not animating..
         &.bottom-left {
             display: flex;
             flex-direction: column;
@@ -427,6 +466,15 @@ li {
 }
 
 dl {
+    dt {
+        font-weight: 700;
+    }
+    dd {
+        margin: 0 0 0.5rem;
+        font-weight: 400;
+    }
+}
+dl {
     div {
         display: flex;
 
@@ -444,15 +492,9 @@ dl {
             padding-right: 0.5rem;
         }
     }
-}
 
-dl {
-    dt {
-        font-weight: 700;
-    }
-    dd {
-        margin: 0 0 0.5rem;
-        font-weight: 400;
+    &.list-horizontal {
+        display: flex;
     }
 }
 
@@ -471,10 +513,18 @@ dl {
 // SECTIONS
 section {
     &.section--seperated {
-        padding: 1rem 0 0.75rem;
+        padding: 1em 0 0.75em;
 
         &__no-border-bottom {
             border-bottom: 0;
+        }
+    }
+    &.section--seperated--l {
+        padding: 1em 0 4em;
+        border-bottom: 1px solid #a6a6a6;
+
+        &:last-child {
+            border: none;
         }
     }
 }
@@ -506,6 +556,9 @@ body.no-js {
 
 // HELPER-CLASSES
 
+.align-right {
+    text--align: right;
+}
 .foldout {
     height: auto;
     overflow: hidden;
@@ -561,6 +614,16 @@ body.no-js {
     pointer-events: none;
 }
 
+.bgc-white {
+    background-color: $white;
+}
+.bgc-gray01 {
+    background-color: $gray-tint01;
+}
+
+.green {
+    color: $green-tint01;
+}
 .nowrap {
     white-space: nowrap;
 }
@@ -573,6 +636,10 @@ body.no-js {
     margin: 0 !important;
 }
 
+.margin-top {
+    margin-top: 1em;
+}
+
 .no-margin-top {
     margin-top: 0 !important;
 }
@@ -583,6 +650,10 @@ body.no-js {
 
 .padding--bottom {
     padding-bottom: 1em !important;
+}
+
+.margin--bottom {
+    margin-bottom: 1em !important;
 }
 
 .display--flex {
@@ -611,6 +682,10 @@ body.no-js {
 
 .border-green {
     border-top: 8px solid $green-tint01;
+}
+
+.border-bottom {
+    border-bottom: 1px solid $gray-600;
 }
 
 .bar {
@@ -678,4 +753,49 @@ body.no-js {
 .link--whatsapp {
     display: inline-block;
     margin-left: 12px;
+}
+
+.container__overflow {
+    position: absolute;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    max-height: 2.7em;
+    -webkit-box-orient: vertical;
+    width: 100%;
+    z-index: 20;
+    transition: max-height 0.25s ease-in-out;
+    background-color: inherit;
+
+    svg {
+        display: none;
+        position: absolute;
+        bottom: 0;
+        right: 1em;
+        transform: rotate(90deg);
+        path {
+            fill: currentColor;
+        }
+    }
+
+    &.has-overflow {
+        margin-right: 1em;
+        padding-right: 1.6em;
+        box-sizing: border-box;
+        svg {
+            display: block;
+        }
+    }
+
+    &.show {
+        -webkit-line-clamp: unset;
+        max-height: 20em;
+        border: 1px solid $gray-600;
+        padding: 0.25em 1.35em 0.25em 0.25em;
+        svg {
+            transform: rotate(-90deg);
+            right: 0.75em;
+            bottom: 0.7em;
+        }
+    }
 }
