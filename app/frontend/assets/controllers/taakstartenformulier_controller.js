@@ -6,7 +6,7 @@ export default class extends Controller {
     'formTaakStarten',
     'afdelingField',
     'taaktypeField',
-    'onderwerpGerelateerdTaaktypeField',
+    'onderwerpGerelateerdTaaktypeField?',
     'taaktypeSearch',
   ]
 
@@ -51,29 +51,33 @@ export default class extends Controller {
   }
 
   handleOnderwerpGerelateerdTaaktypeChoices() {
-    this.afdelingFieldTarget.addEventListener('change', () => {
-      const selectedAfdeling = event.target.value
+    if (this.onderwerpGerelateerdTaaktypeFieldTarget) {
+      this.afdelingFieldTarget.addEventListener('change', () => {
+        const selectedAfdeling = event.target.value
 
-      this.filterTaaktypes(selectedAfdeling)
-    })
-    this.onderwerpGerelateerdTaaktypeFieldTarget.addEventListener('change', (event) => {
-      this.selectedTaaktype = event.target.value
-      this.clearSearch()
+        this.filterTaaktypes(selectedAfdeling)
+      })
+      this.onderwerpGerelateerdTaaktypeFieldTarget.addEventListener('change', (event) => {
+        this.selectedTaaktype = event.target.value
+        this.clearSearch()
 
-      this.selectCorrespondingAfdeling()
-      const selectedAfdeling = this.afdelingFieldTarget.querySelector('input:checked')
-      if (selectedAfdeling) {
-        this.filterTaaktypes(selectedAfdeling.value)
-      }
-      this.selectCorrespondingTaaktype()
-    })
+        this.selectCorrespondingAfdeling()
+        const selectedAfdeling = this.afdelingFieldTarget.querySelector('input:checked')
+        if (selectedAfdeling) {
+          this.filterTaaktypes(selectedAfdeling.value)
+        }
+        this.selectCorrespondingTaaktype()
+      })
+    }
   }
 
   clearFieldSelection(fieldTarget) {
-    fieldTarget.querySelectorAll('input[type="radio"]').forEach((radio) => {
-      radio.checked = false
-      // radio.value = ''
-    })
+    if (fieldTarget) {
+      fieldTarget.querySelectorAll('input[type="radio"]').forEach((radio) => {
+        radio.checked = false
+        // radio.value = ''
+      })
+    }
   }
 
   filterTaaktypes(selectedAfdeling) {
@@ -114,7 +118,7 @@ export default class extends Controller {
 
   renderTaaktypes(taaktypes, attach_afdeling = false) {
     const taaktypeField = this.taaktypeFieldTarget
-    taaktypeField.innerHTML = ''
+    taaktypeField.textContent = ''
 
     const ul = document.createElement('ul')
     const div = document.createElement('div')
@@ -141,16 +145,28 @@ export default class extends Controller {
       const label = document.createElement('label')
       label.htmlFor = `id_taaktype_${index}`
       label.className = 'form-check-label'
-      label.innerHTML = `${text} ${
-        afdeling && attach_afdeling ? '(<strong class="green">' + afdeling + '</strong>)' : ''
-      }`
-
+      label.textContent = `${text}`
+      if (afdeling && attach_afdeling) {
+        const strong = document.createElement('strong')
+        strong.className = 'green'
+        strong.textContent = ` ${afdeling}`
+        label.appendChild(strong)
+      }
       li.appendChild(input)
       li.appendChild(label)
+
       ul.appendChild(li)
     })
     wrapper.appendChild(ul)
     div.appendChild(wrapper)
+
+    // Add error message element
+    const errorElement = document.createElement('p')
+    errorElement.className = 'help-block invalid-text'
+    errorElement.setAttribute('data-error-for', 'taaktype')
+    errorElement.style.display = 'none' // Initially hidden
+    div.appendChild(errorElement)
+
     taaktypeField.appendChild(div)
   }
 
@@ -178,13 +194,15 @@ export default class extends Controller {
 
   selectCorrespondingOnderwerpGerelateerdTaaktype() {
     const onderwerpGerelateerdTaaktypeField = this.onderwerpGerelateerdTaaktypeFieldTarget
-    const correspondingRadio = onderwerpGerelateerdTaaktypeField.querySelector(
-      `ul input[value="${this.selectedTaaktype}"]`
-    )
-    this.clearFieldSelection(onderwerpGerelateerdTaaktypeField)
+    if (onderwerpGerelateerdTaaktypeField) {
+      const correspondingRadio = onderwerpGerelateerdTaaktypeField.querySelector(
+        `ul input[value="${this.selectedTaaktype}"]`
+      )
+      this.clearFieldSelection(onderwerpGerelateerdTaaktypeField)
 
-    if (correspondingRadio) {
-      correspondingRadio.checked = true
+      if (correspondingRadio) {
+        correspondingRadio.checked = true
+      }
     }
   }
 
@@ -290,10 +308,9 @@ export default class extends Controller {
     const formFields = this.form.querySelectorAll(
       'input[type="radio"][required], textarea[required]'
     )
-
     formFields.forEach((field) => {
       const fieldSet = field.closest('.form-row')
-      const errorElement = fieldSet.querySelector('.invalid-text')
+      const errorElement = fieldSet.querySelector('.help-block.invalid-text')
 
       if (field.type === 'radio') {
         const fieldName = field.name
@@ -317,11 +334,17 @@ export default class extends Controller {
 
   showError(element, errorElement, message) {
     if (element) element.classList.add('is-invalid')
-    if (errorElement) errorElement.textContent = message
+    if (errorElement) {
+      errorElement.textContent = message
+      errorElement.style.display = 'block'
+    }
   }
 
   clearError(element, errorElement) {
     if (element) element.classList.remove('is-invalid')
-    if (errorElement) errorElement.textContent = ''
+    if (errorElement) {
+      errorElement.textContent = ''
+      errorElement.style.display = 'none'
+    }
   }
 }

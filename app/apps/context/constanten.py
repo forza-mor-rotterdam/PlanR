@@ -5,6 +5,7 @@ from apps.services.onderwerpen import render_onderwerp, render_onderwerp_groepen
 from django.http import QueryDict
 from django.template.loader import get_template
 from django.urls import reverse
+from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from utils.datetime import stringdatetime_naar_datetime
 from utils.diversen import string_based_lookup
@@ -44,7 +45,7 @@ class StandaardKolom:
         return self._kolom_hoofd
 
     def td_label(self):
-        return string_based_lookup(self.context, self._kolom_inhoud)
+        return escape(string_based_lookup(self.context, self._kolom_inhoud))
 
     def th_inhoud(self):
         if not self._ordering_value:
@@ -221,7 +222,7 @@ class BegraafplaatsKolom(StandaardKolom):
             self.context.get("data", {}).get("filter_options", {}).get(self._key, {})
         )
         begraafplaats_naam = begraafplaatsen.get(begraafplaats, begraafplaats)
-        return begraafplaats_naam[0] if begraafplaats_naam else default
+        return escape(begraafplaats_naam[0]) if begraafplaats_naam else default
 
 
 class GrafnummerKolom(StandaardKolom):
@@ -249,7 +250,8 @@ class OnderwerpKolom(StandaardKolom):
         if not onderwerpen_urls:
             return default
         onderwerp_namen = [
-            render_onderwerp(onderwerp_url) for onderwerp_url in onderwerpen_urls
+            escape(render_onderwerp(onderwerp_url))
+            for onderwerp_url in onderwerpen_urls
         ]
         return ", ".join(onderwerp_namen) if onderwerp_namen else default
 
@@ -305,8 +307,8 @@ class StatusKolom(StandaardKolom):
             if taakopdrachten_voor_melding
             else ""
         )
-        status_naam = string_based_lookup(
-            self.context, self._kolom_inhoud, not_found_value=""
+        status_naam = escape(
+            string_based_lookup(self.context, self._kolom_inhoud, not_found_value="")
         )
         return mark_safe(
             f'<span class="display--flex--center badge badge--{colors.get(status_naam, "lightblue")}">{VERTALINGEN.get(status_naam, status_naam)}{taakopdrachten_voor_melding}</span>'
@@ -338,7 +340,7 @@ class MeldRNummerKolom(StandaardKolom):
 
         bron_signaal_ids_joined = (
             "<div class='clamped'>"
-            + "<br>".join([id for id in bron_signaal_ids if id])
+            + "<br>".join([escape(id) for id in bron_signaal_ids if id])
             + "</div>"
         )
 
