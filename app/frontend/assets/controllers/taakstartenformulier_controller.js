@@ -6,7 +6,7 @@ export default class extends Controller {
     'formTaakStarten',
     'afdelingField',
     'taaktypeField',
-    'onderwerpGerelateerdTaaktypeField?',
+    'onderwerpGerelateerdTaaktypeField',
     'taaktypeSearch',
   ]
 
@@ -51,24 +51,22 @@ export default class extends Controller {
   }
 
   handleOnderwerpGerelateerdTaaktypeChoices() {
-    if (this.onderwerpGerelateerdTaaktypeFieldTarget) {
-      this.afdelingFieldTarget.addEventListener('change', () => {
-        const selectedAfdeling = event.target.value
+    this.afdelingFieldTarget.addEventListener('change', () => {
+      const selectedAfdeling = event.target.value
 
-        this.filterTaaktypes(selectedAfdeling)
-      })
-      this.onderwerpGerelateerdTaaktypeFieldTarget.addEventListener('change', (event) => {
-        this.selectedTaaktype = event.target.value
-        this.clearSearch()
+      this.filterTaaktypes(selectedAfdeling)
+    })
+    this.onderwerpGerelateerdTaaktypeFieldTarget.addEventListener('change', (event) => {
+      this.selectedTaaktype = event.target.value
+      this.clearSearch()
 
-        this.selectCorrespondingAfdeling()
-        const selectedAfdeling = this.afdelingFieldTarget.querySelector('input:checked')
-        if (selectedAfdeling) {
-          this.filterTaaktypes(selectedAfdeling.value)
-        }
-        this.selectCorrespondingTaaktype()
-      })
-    }
+      this.selectCorrespondingAfdeling()
+      const selectedAfdeling = this.afdelingFieldTarget.querySelector('input:checked')
+      if (selectedAfdeling) {
+        this.filterTaaktypes(selectedAfdeling.value)
+      }
+      this.selectCorrespondingTaaktype()
+    })
   }
 
   clearFieldSelection(fieldTarget) {
@@ -194,15 +192,13 @@ export default class extends Controller {
 
   selectCorrespondingOnderwerpGerelateerdTaaktype() {
     const onderwerpGerelateerdTaaktypeField = this.onderwerpGerelateerdTaaktypeFieldTarget
-    if (onderwerpGerelateerdTaaktypeField) {
-      const correspondingRadio = onderwerpGerelateerdTaaktypeField.querySelector(
-        `ul input[value="${this.selectedTaaktype}"]`
-      )
-      this.clearFieldSelection(onderwerpGerelateerdTaaktypeField)
+    const correspondingRadio = onderwerpGerelateerdTaaktypeField.querySelector(
+      `ul input[value="${this.selectedTaaktype}"]`
+    )
+    this.clearFieldSelection(onderwerpGerelateerdTaaktypeField)
 
-      if (correspondingRadio) {
-        correspondingRadio.checked = true
-      }
+    if (correspondingRadio) {
+      correspondingRadio.checked = true
     }
   }
 
