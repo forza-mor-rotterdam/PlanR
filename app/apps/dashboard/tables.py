@@ -1,6 +1,9 @@
+import logging
 import statistics
 
 from apps.main.constanten import PDOK_WIJKEN
+
+logger = logging.getLogger(__name__)
 
 
 def average(lst):
@@ -224,7 +227,7 @@ def get_afgehandeld_tabs(afgehandeld, ticks=[], onderwerp=None, wijk=None):
 
     import json
 
-    print(json.dumps(afgehandeld, indent=4))
+    logger.info(json.dumps(afgehandeld, indent=4))
 
     tabs = (
         [
@@ -299,11 +302,17 @@ def get_afgehandeld_tabs(afgehandeld, ticks=[], onderwerp=None, wijk=None):
         for tab in tabs
     ]
 
-    def get_sum(d, _statussen):
-        all_values = [d.get(status) for status in _statussen]
-        values_without_null = [v for v in all_values if v is not None]
-        values_to_float = [float(v) for v in values_without_null]
-        return sum(values_to_float)
+    def tijdsvak_status_gemiddelden(dag, statussen, tab, dag_index):
+        status_gemiddelden = [
+            float(d.get(status))
+            for status in statussen
+            for d in dag
+            if bool(d.get("wijk") in tab.get("wijken")) != bool(tab.get("wijk_not_in"))
+            and (not onderwerp or onderwerp == d.get("onderwerp"))
+            and d.get(status) is not None
+        ]
+        gemiddeld = average(status_gemiddelden)
+        return gemiddeld
 
     tabs = [
         {
@@ -318,16 +327,10 @@ def get_afgehandeld_tabs(afgehandeld, ticks=[], onderwerp=None, wijk=None):
                     "borderColor": "#ffffff",
                     "fill": True,
                     "data": [
-                        sum(
-                            [
-                                get_sum(d, dataset.get("statussen", []))
-                                for d in dag
-                                if bool(d.get("wijk") in tab.get("wijken"))
-                                != bool(tab.get("wijk_not_in"))
-                                and (not onderwerp or onderwerp == d.get("onderwerp"))
-                            ]
+                        tijdsvak_status_gemiddelden(
+                            dag, dataset.get("statussen", []), tab, i
                         )
-                        for dag in dataset.get("bron")
+                        for i, dag in enumerate(dataset.get("bron"))
                     ],
                 }
                 for dataset in tab.get("datasets", [])
@@ -335,6 +338,8 @@ def get_afgehandeld_tabs(afgehandeld, ticks=[], onderwerp=None, wijk=None):
         }
         for tab in tabs
     ]
+
+    # print(json.dumps(tabs[0]["datasets"][0].get("data"), indent=4))
 
     def get_average(tbl):
         l2 = list(zip(*tbl))
@@ -472,7 +477,7 @@ def top_vijf_aantal_meldingen_onderwerp(meldingen, valide_onderwerpen, wijk=None
 def top_vijf_aantal_onderwerpen_ontdubbeld(
     meldingen, signalen, valide_onderwerpen, wijk=None
 ):
-    import json
+    pass
 
     meldingen = (
         [[d for d in kolom if d.get("wijk") == wijk] for kolom in meldingen]
@@ -519,7 +524,6 @@ def top_vijf_aantal_onderwerpen_ontdubbeld(
         key=lambda b: b.get("aantal"),
         reverse=True,
     )
-    print(json.dumps(onderwerpen_ontdubbeld, indent=4))
 
     def get_bar_percentage(_onderwerp, _onderwerpen):
         if float(_onderwerp.get("aantal")) <= 0:
