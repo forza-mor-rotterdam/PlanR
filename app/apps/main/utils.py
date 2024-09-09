@@ -24,7 +24,7 @@ def get_open_taakopdrachten(melding):
     return [
         to
         for to in melding.get("taakopdrachten_voor_melding", [])
-        if not to.get("resolutie")
+        if not to.get("resolutie") and not to.get("verwijderd_op")
     ]
 
 
@@ -84,22 +84,22 @@ def melding_naar_tijdlijn(melding: dict):
         taakgebeurtenis = (
             mg.get("taakgebeurtenis", {}) if mg.get("taakgebeurtenis", {}) else {}
         )
-        taakstatus_is_voltooid = (
-            taakgebeurtenis
-            and taakgebeurtenis.get("taakstatus")
-            and taakgebeurtenis.get("taakstatus", {}).get("naam")
-            in {"voltooid", "voltooid_met_feedback"}
+        taakstatus_is_voltooid = taakgebeurtenis and (
+            (
+                taakgebeurtenis.get("taakstatus")
+                and taakgebeurtenis.get("taakstatus", {}).get("naam")
+                in {"voltooid", "voltooid_met_feedback"}
+            )
+            or taakgebeurtenis.get("verwijderd_op")
         )
         taakstatus_event = (
             taakgebeurtenis
             and taakgebeurtenis.get("taakstatus")
             and taakgebeurtenis.get("taakstatus", {}).get("naam")
-            in [
-                "toegewezen",
-                "openstaand",
-            ]
+            not in ["voltooid", "voltooid_met_feedback"]
             or taakgebeurtenis
             and taakgebeurtenis.get("gebeurtenis_type") == "gedeeld"
+            and not taakgebeurtenis.get("verwijderd_op")
         )
         t_id = taakgebeurtenis.get("taakopdracht")
         if t_id and t_id not in t_ids:

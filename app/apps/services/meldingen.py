@@ -268,28 +268,11 @@ class MeldingenService(BasisService):
         )
         return response
 
-    def taak_status_aanpassen(
-        self,
-        taakopdracht_url,
-        status,
-        resolutie=None,
-        omschrijving_intern=None,
-        bijlagen=None,
-        gebruiker=None,
-    ):
-        data = {
-            "taakstatus": {
-                "naam": status,
-            },
-            "resolutie": resolutie,
-            "omschrijving_intern": omschrijving_intern,
-            "bijlagen": bijlagen,
-            "gebruiker": gebruiker,
-        }
+    def taak_verwijderen(self, taakopdracht_url, gebruiker=None):
         response = self.do_request(
-            f"{taakopdracht_url}status-aanpassen/",
-            method="patch",
-            data=data,
+            taakopdracht_url,
+            method="delete",
+            params={"gebruiker": gebruiker},
             raw_response=False,
         )
         return response

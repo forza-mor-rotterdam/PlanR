@@ -113,7 +113,7 @@ class TaakRService(BasisService):
                 list(
                     to.get("taaktype")
                     for to in melding.get("taakopdrachten_voor_melding", [])
-                    if not to.get("resolutie")
+                    if not to.get("resolutie") and not to.get("verwijderd_op")
                 )
             )
         ]
@@ -157,7 +157,7 @@ class TaakRService(BasisService):
                 list(
                     to.get("taaktype")
                     for to in melding.get("taakopdrachten_voor_melding", [])
-                    if not to.get("resolutie")
+                    if not to.get("resolutie") and not to.get("verwijderd_op")
                 )
             )
         ]
@@ -187,7 +187,7 @@ class TaakRService(BasisService):
                 list(
                     to.get("taaktype")
                     for to in melding.get("taakopdrachten_voor_melding", [])
-                    if not to.get("resolutie")
+                    if not to.get("resolutie") and not to.get("verwijderd_op")
                 )
             )
         ]

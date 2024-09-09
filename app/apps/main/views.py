@@ -9,8 +9,6 @@ from apps.context.utils import get_gebruiker_context
 from apps.instellingen.models import Instelling
 from apps.main.constanten import MSB_WIJKEN
 from apps.main.forms import (
-    TAAK_RESOLUTIE_GEANNULEERD,
-    TAAK_STATUS_VOLTOOID,
     FilterForm,
     InformatieToevoegenForm,
     LocatieAanpassenForm,
@@ -709,9 +707,10 @@ def melding_spoed_veranderen(request, id):
 def taak_starten(request, id):
     meldingen_service = MeldingenService(request=request)
     melding = meldingen_service.get_melding(id)
-
     taakr_service = TaakRService(request=request)
-    taaktypes_with_afdelingen = taakr_service.get_taaktypes_with_afdelingen(melding)
+    taaktypes_with_afdelingen = taakr_service.get_taaktypes_with_afdelingen(
+        melding, force_cache=True
+    )
 
     # Categorize taaktypes by afdeling and get gerelateerde onderwerpen
     afdelingen = {}
@@ -830,15 +829,11 @@ def taak_afronden(request, melding_uuid):
             for f in bijlagen:
                 file_name = default_storage.save(f.name, f)
                 bijlagen_base64.append({"bestand": to_base64(file_name)})
-            meldingen_service.taak_status_aanpassen(
+            meldingen_service.taak_verwijderen(
                 taakopdracht_url=taakopdracht_urls.get(
                     form.cleaned_data.get("taakopdracht")
                 ),
-                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
-                bijlagen=bijlagen_base64,
                 gebruiker=request.user.email,
-                status=TAAK_STATUS_VOLTOOID,
-                resolutie=form.cleaned_data.get("resolutie"),
             )
 
             return redirect("melding_detail", id=melding_uuid)
@@ -872,15 +867,11 @@ def taak_annuleren(request, melding_uuid):
     if request.POST:
         form = TaakAnnulerenForm(request.POST, taakopdracht_opties=taakopdracht_opties)
         if form.is_valid():
-            meldingen_service.taak_status_aanpassen(
+            meldingen_service.taak_verwijderen(
                 taakopdracht_url=taakopdracht_urls.get(
                     form.cleaned_data.get("taakopdracht")
                 ),
-                status=TAAK_STATUS_VOLTOOID,
-                resolutie=TAAK_RESOLUTIE_GEANNULEERD,
-                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
                 gebruiker=request.user.email,
-                bijlagen=[],
             )
 
             return redirect("melding_detail", id=melding_uuid)
