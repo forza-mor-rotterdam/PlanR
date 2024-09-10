@@ -58,7 +58,10 @@
                                 <h3 class="label">Onderwerpen</h3>
                                 {{ form.standaard_filters }}
                             </div>
-                            {{ form.taaktypes|render_rotterdam_formulier }}
+                            <div class="form-row">
+                                <h3 class="label">{{ form.taaktypes.label_tag }}</h3>
+                                {{ form.taaktypes }}
+                            </div>
                             {{ form.template|render_rotterdam_formulier }}
                         </fieldset>
                         <div class="form-row container__button">
