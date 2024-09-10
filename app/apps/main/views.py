@@ -998,6 +998,9 @@ def meldingen_bestand(request):
     return StreamingHttpResponse(
         response.raw,
         content_type=response.headers.get("content-type"),
+        headers={
+            "Content-Disposition": "inline",
+        },
         status=response.status_code,
         reason=response.reason,
     )
