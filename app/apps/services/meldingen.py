@@ -335,6 +335,8 @@ class MeldingenService(BasisService):
         uur_int = uur if uur in range(0, 24) else None
         cache_timeout = 0
         params = {}
+        if datum_datetime > datetime.now():
+            return []
         if datum_datetime:
             td = timedelta(days=days)
             origineel_aangemaakt_gte = datum_datetime
@@ -347,7 +349,7 @@ class MeldingenService(BasisService):
                     hours=uur_int + 1
                 )
             cache_timeout = (
-                60 * 60 * 24 * 30 if origineel_aangemaakt_lt < datetime.now() else 0
+                60 * 60 * 24 * 30 if origineel_aangemaakt_lt < datetime.now() else 60
             )
             params.update(
                 {
@@ -372,6 +374,8 @@ class MeldingenService(BasisService):
         uur_int = uur if uur in range(0, 24) else None
         cache_timeout = 0
         params = {}
+        if datum_datetime > datetime.now():
+            return []
         if datum_datetime:
             td = timedelta(days=days)
             origineel_aangemaakt_gte = datum_datetime
@@ -384,7 +388,7 @@ class MeldingenService(BasisService):
                     hours=uur_int + 1
                 )
             cache_timeout = (
-                60 * 60 * 24 * 30 if origineel_aangemaakt_lt < datetime.now() else 0
+                60 * 60 * 24 * 30 if origineel_aangemaakt_lt < datetime.now() else 60
             )
             params.update(
                 {
@@ -409,6 +413,8 @@ class MeldingenService(BasisService):
         uur_int = uur if uur in range(0, 24) else None
         cache_timeout = 0
         params = {}
+        if datum_datetime > datetime.now():
+            return []
         if datum_datetime:
             td = timedelta(days=days)
             aangemaakt_op_gte = datum_datetime
@@ -417,7 +423,7 @@ class MeldingenService(BasisService):
                 aangemaakt_op_gte = aangemaakt_op_gte + timedelta(hours=uur_int)
                 aangemaakt_op_lt = aangemaakt_op_gte + timedelta(hours=uur_int + 1)
             cache_timeout = (
-                60 * 60 * 24 * 30 if aangemaakt_op_lt < datetime.now() else 0
+                60 * 60 * 24 * 30 if aangemaakt_op_lt < datetime.now() else 60
             )
             params.update(
                 {
@@ -442,6 +448,8 @@ class MeldingenService(BasisService):
         uur_int = uur if uur in range(0, 24) else None
         cache_timeout = 0
         params = {}
+        if datum_datetime > datetime.now():
+            return []
         if datum_datetime:
             td = timedelta(days=days)
             aangemaakt_op_gte = datum_datetime
@@ -450,7 +458,7 @@ class MeldingenService(BasisService):
                 aangemaakt_op_gte = aangemaakt_op_gte + timedelta(hours=uur_int)
                 aangemaakt_op_lt = aangemaakt_op_gte + timedelta(hours=uur_int + 1)
             cache_timeout = (
-                60 * 60 * 24 * 30 if aangemaakt_op_lt < datetime.now() else 0
+                60 * 60 * 24 * 30 if aangemaakt_op_lt < datetime.now() else 60
             )
             params.update(
                 {

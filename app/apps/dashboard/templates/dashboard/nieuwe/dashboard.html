@@ -11,22 +11,29 @@
     <div class="screen-xl">
         <section class="section--seperated--l">
             <h2>Nieuwe meldingen</h2>
-            <div class="grid-container" data-controller="chart-utils">
+            <div class="grid-container grid-container--full"
+                 data-controller="chart-utils">
                 <div class="grid-item bgc-white"
                      data-controller="chart-line"
                      data-chart-line-data-value='{{ aantallen_tabs.0|json_encode }}'>
                     <div class="dashboard-item">
-                        <div class="container__flex">
+                        <div class="container__flex has-description">
                             <div>
                                 <span class="h6">
                                     {% include "icons/dashboard.svg" %}
-                                    Week {{ week }}
+                                    {{ title }}
                                 </span>
-                                <h4>
-                                    Nieuwe
-                                    <br>
-                                    meldingen/signalen
-                                </h4>
+                                <h4>Nieuwe meldingen</h4>
+                                <div class="container__description">
+                                    <div class="container__overflow" data-controller="overflow">
+                                        <p class="content__overflow">
+                                            Deze grafiek toont het aantal meldingen over de periode, samen met het aantal originele meldingen.
+                                            <br>
+                                            Hoe groter het verschil tussen de twee hoe meer er ontdubbeld is.
+                                        </p>
+                                        {% include "icons/arrow-right.svg" %}
+                                    </div>
+                                </div>
                             </div>
                             <div>
                                 <ul class="list-horizontal">
@@ -37,12 +44,18 @@
                                                     data-chart-line-datasets-param="{{ tab.datasets|json_encode }}"
                                                     class="{% if forloop.first %} active{% endif %}">
                                                 <span class="h3">
-                                                    {% for aantal in tab.aantallen %}
-                                                        <span data-chart-utils-target="numberAnimator"
-                                                              class="width--fixed"
-                                                              data-number="{{ aantal }}">{{ aantal }}</span>
-                                                        {% if not forloop.last %}/{% endif %}
-                                                    {% endfor %}
+                                                    <span data-chart-utils-target="numberAnimator"
+                                                          class="width--fixed"
+                                                          data-number="{{ tab.aantallen.0 }}">
+                                                        {{ tab.aantallen.0 }}
+                                                    </span>
+                                                </span>
+                                                <span class="h5">
+                                                    <span data-chart-utils-target="numberAnimator"
+                                                          class="width--fixed"
+                                                          data-number="{{ tab.aantallen.1 }}">
+                                                        {{ tab.aantallen.1 }}
+                                                    </span>
                                                 </span>
                                                 <span class="decorated">{{ tab.titel }}</span>
                                             </button>
@@ -54,18 +67,13 @@
                         <div>
                             <canvas data-chart-line-target="canvas"></canvas>
                         </div>
-                        <div class="dashboard-item-footer">
-                            <p>
-                                <a href="#">Toon deze meldingen</a>
-                            </p>
-                        </div>
                     </div>
                 </div>
-                <div class="grid-item bgc-white">...</div>
             </div>
         </section>
         <section class="section--seperated--l">
-            <div class="grid-container" data-controller="chart-utils">
+            <div class="grid-container grid-container--full"
+                 data-controller="chart-utils">
                 {% include "charts/base_chart.html" with title="Status veranderingen duur" description="" period_title=title tabs=status_veranderingen_tabs data_type="duration" only %}
             </div>
         </section>

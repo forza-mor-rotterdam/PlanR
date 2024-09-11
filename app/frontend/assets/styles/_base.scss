@@ -98,11 +98,20 @@ main {
     @media (min-width: map-get($grid-breakpoints, md)) {
         grid-template-columns: 66fr 34fr;
 
+        &.grid-container--full {
+            grid-template-columns: 1fr;
+        }
         &.grid-container--reversed {
             grid-template-columns: 34fr 66fr;
         }
         &.grid-container--3cols {
             grid-template-columns: 1fr 1fr 1fr;
+        }
+        &.grid-container--4cols {
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+        }
+        &.grid-container--5cols {
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
         }
         &.grid-container--half {
             grid-template-columns: 1fr 1fr;

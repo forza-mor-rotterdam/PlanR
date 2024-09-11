@@ -2,13 +2,14 @@ import logging
 import statistics
 
 from apps.main.constanten import PDOK_WIJKEN
+from apps.main.templatetags.date_tags import seconds_to_human
 
 logger = logging.getLogger(__name__)
 
 
 def average(lst):
     try:
-        return statistics.mean(lst)
+        return statistics.mean([li for li in lst if not li == 0])
     except Exception:
         ...
     return 0
@@ -229,6 +230,23 @@ def get_afgehandeld_tabs(afgehandeld, ticks=[], onderwerp=None, wijk=None):
 
     logger.info(json.dumps(afgehandeld, indent=4))
 
+    afgehandeld = (
+        [
+            [variant for variant in tijdsvak if variant.get("wijk") == wijk]
+            for tijdsvak in afgehandeld
+        ]
+        if wijk
+        else afgehandeld
+    )
+    afgehandeld = (
+        [
+            [variant for variant in tijdsvak if variant.get("onderwerp") == onderwerp]
+            for tijdsvak in afgehandeld
+        ]
+        if onderwerp
+        else afgehandeld
+    )
+
     tabs = (
         [
             {
@@ -302,17 +320,20 @@ def get_afgehandeld_tabs(afgehandeld, ticks=[], onderwerp=None, wijk=None):
         for tab in tabs
     ]
 
-    def tijdsvak_status_gemiddelden(dag, statussen, tab, dag_index):
-        status_gemiddelden = [
-            float(d.get(status))
-            for status in statussen
-            for d in dag
-            if bool(d.get("wijk") in tab.get("wijken")) != bool(tab.get("wijk_not_in"))
-            and (not onderwerp or onderwerp == d.get("onderwerp"))
-            and d.get(status) is not None
-        ]
-        gemiddeld = average(status_gemiddelden)
-        return gemiddeld
+    def tijdsvak_status_gemiddelden(tijdsvak, statussen, tab, dag_index):
+        status_gemiddelden_totaal = []
+        for status in statussen:
+            status_gemiddelden = []
+            for d in tijdsvak:
+                if (
+                    bool(d.get("wijk") in tab.get("wijken")) != tab.get("wijk_not_in")
+                    and d.get(status) is not None
+                ):
+                    status_gemiddelden = status_gemiddelden + [
+                        float(d.get(status)) for i in range(0, d.get("melding_aantal"))
+                    ]
+            status_gemiddelden_totaal.append(average(status_gemiddelden))
+        return sum(status_gemiddelden_totaal)
 
     tabs = [
         {
@@ -357,7 +378,7 @@ def get_afgehandeld_tabs(afgehandeld, ticks=[], onderwerp=None, wijk=None):
     return tabs
 
 
-def top_vijf_aantal_meldingen_wijk(meldingen, valide_wijken, onderwerp=None):
+def top_vijf_aantal_meldingen_wijk(meldingen, valide_wijken, onderwerp=None, aantal=5):
     meldingen_aantal = sum(
         [sum([d.get("count") for d in kolom]) for kolom in meldingen]
     )
@@ -404,19 +425,21 @@ def top_vijf_aantal_meldingen_wijk(meldingen, valide_wijken, onderwerp=None):
             }
             for wijk in wijken
         ],
-        key=lambda b: b.get("percentage"),
+        key=lambda b: b.get("aantal"),
         reverse=True,
     )
     aantal_meldingen_wijk = {
         "title": "Wijken met de meeste meldingen",
         "head": ["Wijk", "Aantal", "%"],
         "head_percentages": [65, 20, 15],
-        "body": wijken,
+        "body": wijken[:aantal],
     }
     return aantal_meldingen_wijk
 
 
-def top_vijf_aantal_meldingen_onderwerp(meldingen, valide_onderwerpen, wijk=None):
+def top_vijf_aantal_meldingen_onderwerp(
+    meldingen, valide_onderwerpen, wijk=None, aantal=5
+):
     meldingen_aantal = sum(
         [sum([d.get("count") for d in kolom]) for kolom in meldingen]
     )
@@ -462,23 +485,21 @@ def top_vijf_aantal_meldingen_onderwerp(meldingen, valide_onderwerpen, wijk=None
             }
             for onderwerp in onderwerpen
         ],
-        key=lambda b: b.get("percentage"),
+        key=lambda b: b.get("aantal"),
         reverse=True,
     )
     aantal_meldingen_onderwerp = {
         "title": "Meest gemelde onderwerpen",
         "head": ["Onderwerp", "Aantal", "%"],
         "head_percentages": [65, 20, 15],
-        "body": onderwerpen,
+        "body": onderwerpen[:aantal],
     }
     return aantal_meldingen_onderwerp
 
 
 def top_vijf_aantal_onderwerpen_ontdubbeld(
-    meldingen, signalen, valide_onderwerpen, wijk=None
+    meldingen, signalen, valide_onderwerpen, wijk=None, aantal=5
 ):
-    pass
-
     meldingen = (
         [[d for d in kolom if d.get("wijk") == wijk] for kolom in meldingen]
         if wijk
@@ -545,6 +566,204 @@ def top_vijf_aantal_onderwerpen_ontdubbeld(
         "title": "Meest ontdubbelde onderwerpen",
         "head": ["Onderwerp", "verhouding"],
         "head_percentages": [80, 20],
-        "body": onderwerpen_ontdubbeld,
+        "body": onderwerpen_ontdubbeld[:aantal],
     }
     return aantal_onderwerpen_ontdubbeld
+
+
+def top_doorlooptijden_per_onderwerp(
+    afgehandeld, valide_onderwerpen, wijk=None, fase=None, aantal=5
+):
+    statussen_per_fase = {
+        "Midoffice": [
+            "openstaand_duur_gemiddeld",
+            "controle_duur_gemiddeld",
+        ],
+        "Uitvoer": [
+            "in_behandeling_duur_gemiddeld",
+        ],
+        "Wachten": [
+            "wachten_melder_duur_gemiddeld",
+            "pauze_duur_gemiddeld",
+        ],
+        "Afgehandeld": [
+            "geannuleerd_duur_gemiddeld",
+            "afgehandeld_duur_gemiddeld",
+        ],
+    }
+
+    alle_statussen = [
+        status for f, statussen in statussen_per_fase.items() for status in statussen
+    ]
+    fase = None if fase not in list(statussen_per_fase.keys()) else fase
+    statussen = statussen_per_fase[fase] if fase else alle_statussen
+
+    def tijdsvak_status_gemiddelden(_afgehandeld, onderwerp, _statussen):
+        status_gemiddelden_totaal = []
+        for i, tijdsvak in enumerate(_afgehandeld):
+            melding_aantal = 0
+            tijdsvak_total = []
+            for status in _statussen:
+                status_gemiddelden = []
+                for d in tijdsvak:
+                    if onderwerp == d.get("onderwerp") and d.get(status) is not None:
+                        melding_aantal += d.get("melding_aantal")
+                        status_gemiddelden = status_gemiddelden + [
+                            float(d.get(status))
+                            for i in range(0, d.get("melding_aantal"))
+                        ]
+                tijdsvak_total.append(average(status_gemiddelden))
+            status_gemiddelden_totaal = status_gemiddelden_totaal + [
+                sum(tijdsvak_total) for i in range(0, melding_aantal)
+            ]
+        return average(status_gemiddelden_totaal)
+
+    afgehandeld = (
+        [
+            [variant for variant in tijdsvak if variant.get("wijk") == wijk]
+            for tijdsvak in afgehandeld
+        ]
+        if wijk
+        else afgehandeld
+    )
+    onderwerpen = sorted(
+        [
+            {
+                "label": onderwerp,
+                "aantal": tijdsvak_status_gemiddelden(
+                    afgehandeld, onderwerp, statussen
+                ),
+                "totaal_aantal": tijdsvak_status_gemiddelden(
+                    afgehandeld, onderwerp, alle_statussen
+                ),
+            }
+            for onderwerp in valide_onderwerpen
+        ],
+        key=lambda b: b.get("aantal"),
+        reverse=True,
+    )
+
+    onderwerpen = [
+        {
+            "label": onderwerp.get("label"),
+            "aantal": seconds_to_human(onderwerp.get("aantal")),
+            "percentage": round(
+                float(onderwerp.get("aantal") / onderwerp.get("totaal_aantal")) * 100
+            )
+            if onderwerp.get("totaal_aantal")
+            else 0,
+            "bar": round(
+                float(onderwerp.get("aantal") / onderwerp.get("totaal_aantal")) * 100
+            )
+            if onderwerp.get("totaal_aantal")
+            else 0,
+        }
+        for onderwerp in onderwerpen
+    ]
+
+    title = f"Fase '{fase}'" if fase else "Totaal voor onderwerpen"
+
+    doorlooptijden_per_onderwerp = {
+        "title": title,
+        "head": ["Onderwerp", "Duur", "%"],
+        "head_percentages": [60, 25, 15],
+        "body": onderwerpen[:aantal],
+    }
+    return doorlooptijden_per_onderwerp
+
+
+def top_doorlooptijden_per_wijk(
+    afgehandeld, valide_wijken, onderwerp=None, fase=None, aantal=5
+):
+    statussen_per_fase = {
+        "Midoffice": [
+            "openstaand_duur_gemiddeld",
+            "controle_duur_gemiddeld",
+        ],
+        "Uitvoer": [
+            "in_behandeling_duur_gemiddeld",
+        ],
+        "Wachten": [
+            "wachten_melder_duur_gemiddeld",
+            "pauze_duur_gemiddeld",
+        ],
+        "Afgehandeld": [
+            "geannuleerd_duur_gemiddeld",
+            "afgehandeld_duur_gemiddeld",
+        ],
+    }
+
+    alle_statussen = [
+        status for f, statussen in statussen_per_fase.items() for status in statussen
+    ]
+    fase = None if fase not in list(statussen_per_fase.keys()) else fase
+    statussen = statussen_per_fase[fase] if fase else alle_statussen
+
+    def tijdsvak_status_gemiddelden(_afgehandeld, wijk, _statussen):
+        status_gemiddelden_totaal = []
+        for i, tijdsvak in enumerate(_afgehandeld):
+            melding_aantal = 0
+            tijdsvak_total = []
+            for status in _statussen:
+                status_gemiddelden = []
+                for d in tijdsvak:
+                    if wijk == d.get("wijk") and d.get(status) is not None:
+                        melding_aantal += d.get("melding_aantal")
+                        status_gemiddelden = status_gemiddelden + [
+                            float(d.get(status))
+                            for i in range(0, d.get("melding_aantal"))
+                        ]
+                tijdsvak_total.append(average(status_gemiddelden))
+            status_gemiddelden_totaal = status_gemiddelden_totaal + [
+                sum(tijdsvak_total) for i in range(0, melding_aantal)
+            ]
+        return average(status_gemiddelden_totaal)
+
+    afgehandeld = (
+        [
+            [variant for variant in tijdsvak if variant.get("onderwerp") == onderwerp]
+            for tijdsvak in afgehandeld
+        ]
+        if onderwerp
+        else afgehandeld
+    )
+    wijken = sorted(
+        [
+            {
+                "label": wijk,
+                "aantal": tijdsvak_status_gemiddelden(afgehandeld, wijk, statussen),
+                "totaal_aantal": tijdsvak_status_gemiddelden(
+                    afgehandeld, wijk, alle_statussen
+                ),
+            }
+            for wijk in valide_wijken
+        ],
+        key=lambda b: b.get("aantal"),
+        reverse=True,
+    )
+
+    wijken = [
+        {
+            "label": wijk.get("label"),
+            "aantal": seconds_to_human(wijk.get("aantal")),
+            "percentage": round(
+                float(wijk.get("aantal") / wijk.get("totaal_aantal")) * 100
+            )
+            if wijk.get("totaal_aantal")
+            else 0,
+            "bar": round(float(wijk.get("aantal") / wijk.get("totaal_aantal")) * 100)
+            if wijk.get("totaal_aantal")
+            else 0,
+        }
+        for wijk in wijken
+    ]
+
+    title = f"Fase '{fase}'" if fase else "Totaal voor wijken"
+
+    doorlooptijden_per_wijk = {
+        "title": title,
+        "head": ["Wijk", "Duur", "%"],
+        "head_percentages": [55, 30, 15],
+        "body": wijken[:aantal],
+    }
+    return doorlooptijden_per_wijk

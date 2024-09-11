@@ -11,9 +11,14 @@ export default class extends ChartHelperController {
     const self = this
     super.connect()
     this.durationToHumanTargets.forEach((element) => {
-      element.textContent = self.getPeriod(parseInt(element.textContent))
+      element.textContent = self.getPeriod(
+        parseInt(element.textContent),
+        !element.dataset.durationToHumanLong
+      )
     })
-    this.chart.options.scales.y.ticks = this.getTicks()
+    if (this.hasYTicksValue) {
+      this.chart.options.scales.y.ticks = this.getTicks()
+    }
     if (this.hasTooltipLabelCallbackValue) {
       this.chart.options.plugins.tooltip.callbacks.label =
         self.tooltipLabelCallbacks[self.tooltipLabelCallbackValue]
@@ -26,8 +31,9 @@ export default class extends ChartHelperController {
     this.ticks = {
       y: {
         default: {
-          count: 8,
+          // count: 8,
           stepSize: 100,
+          beginAtZero: true,
         },
         duration: {
           count: 8,
@@ -42,6 +48,7 @@ export default class extends ChartHelperController {
     }
     this.tooltipLabelCallbacks = {
       duration: function (context) {
+        console.log(context.raw)
         return `${context.dataset.label}: ${self.getPeriod(parseInt(context.raw))}`
       },
     }
@@ -86,7 +93,7 @@ export default class extends ChartHelperController {
       },
       scales: {
         y: {
-          ticks: this.getTicks(),
+          // ticks: this.getTicks(),
         },
         x: {
           grid: {
