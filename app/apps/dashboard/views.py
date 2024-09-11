@@ -9,12 +9,20 @@ from apps.dashboard.tables import (
     get_aantallen_tabs,
     get_afgehandeld_tabs,
     get_status_veranderingen_tabs,
+    top_doorlooptijden_per_onderwerp,
+    top_doorlooptijden_per_wijk,
     top_vijf_aantal_meldingen_onderwerp,
     top_vijf_aantal_meldingen_wijk,
     top_vijf_aantal_onderwerpen_ontdubbeld,
 )
-from apps.main.constanten import DAGEN_VAN_DE_WEEK_KORT, MAANDEN, MAANDEN_KORT
+from apps.main.constanten import (
+    DAGEN_VAN_DE_WEEK_KORT,
+    MAANDEN,
+    MAANDEN_KORT,
+    PDOK_WIJKEN,
+)
 from apps.services.meldingen import MeldingenService
+from apps.services.onderwerpen import OnderwerpenService
 from django.contrib.auth.decorators import permission_required
 from django.contrib.gis.db import models
 from django.shortcuts import redirect
@@ -438,6 +446,10 @@ class MeldingenAfgehandeld(Dashboard):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        onderwerpen_service = OnderwerpenService()
+        onderwerpen = onderwerpen_service.get_onderwerpen()
+        valide_wijken = [c.get("wijknaam") for c in PDOK_WIJKEN]
+
         afgehandeld = []
         meldingen_service = MeldingenService()
         for tick in self.x_ticks:
@@ -451,6 +463,43 @@ class MeldingenAfgehandeld(Dashboard):
         afgehandeld_tabs = get_afgehandeld_tabs(
             afgehandeld, ticks=self.x_ticks, onderwerp=self.onderwerp, wijk=self.wijk
         )
+
+        valide_onderwerpen = [c.get("name") for c in onderwerpen]
+        doorlooptijden_onderwerp = [
+            top_doorlooptijden_per_onderwerp(
+                afgehandeld,
+                valide_onderwerpen=valide_onderwerpen,
+                wijk=self.wijk,
+                aantal=10,
+            )
+        ]
+        doorlooptijden_wijk = [
+            top_doorlooptijden_per_wijk(
+                afgehandeld,
+                valide_wijken=valide_wijken,
+                onderwerp=self.onderwerp,
+                aantal=10,
+            )
+        ]
+        for fase in ["Midoffice", "Uitvoer", "Wachten", "Afgehandeld"]:
+            doorlooptijden_onderwerp.append(
+                top_doorlooptijden_per_onderwerp(
+                    afgehandeld,
+                    valide_onderwerpen=valide_onderwerpen,
+                    wijk=self.wijk,
+                    fase=fase,
+                    aantal=10,
+                )
+            )
+            doorlooptijden_wijk.append(
+                top_doorlooptijden_per_wijk(
+                    afgehandeld,
+                    valide_wijken=valide_wijken,
+                    onderwerp=self.onderwerp,
+                    fase=fase,
+                    aantal=10,
+                )
+            )
 
         stacked_bars_options = {
             "plugins": {
@@ -483,6 +532,8 @@ class MeldingenAfgehandeld(Dashboard):
         context.update(
             {
                 "afgehandeld_tabs": afgehandeld_tabs,
+                "doorlooptijden_onderwerp": doorlooptijden_onderwerp,
+                "doorlooptijden_wijk": doorlooptijden_wijk,
                 "stacked_bars_options": stacked_bars_options,
             }
         )

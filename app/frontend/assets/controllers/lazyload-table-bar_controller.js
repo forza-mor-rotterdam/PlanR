@@ -20,7 +20,6 @@ export default class extends Controller {
         const numbersToAnimate = entry.target.querySelectorAll('.animated')
         numbersToAnimate.forEach((number) => {
           let splitted = number.textContent.split('.')
-          console.log(splitted)
           let end = parseInt(splitted[0])
           let isFloat = splitted.length > 1
           let floatStart = 0

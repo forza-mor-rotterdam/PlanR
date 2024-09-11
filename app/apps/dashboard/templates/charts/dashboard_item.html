@@ -1,3 +1,4 @@
+{% load is_float_or_int seconds_to_human from date_tags %}
 <div class="dashboard-item">
     <div>
         <span class="h6">
@@ -20,33 +21,34 @@
             </thead>
             <tbody>
                 {% for row in body %}
-                    {% if forloop.counter <= 5 %}
+                    <tr>
+                        {% for k, v in row.items %}
+                            {% if k != "bar" %}
+                                {% is_float_or_int v as v_is_float_or_int %}
+                                <td {% if not forloop.first and v_is_float_or_int %}class="animated"{% endif %}>{{ v }}</td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                    {% if row.bar %}
                         <tr>
-                            {% for k, v in row.items %}
-                                {% if k != "bar" %}
-                                    <td {% if not forloop.first %}class="animated"{% endif %}>{{ v }}</td>
-                                {% endif %}
-                            {% endfor %}
-                        </tr>
-                        {% if row.bar %}
-                            <tr>
-                                <td colspan="3">
-                                    <div class="container__bar">
-                                        <div class="bar-background">
-                                            <div class="bar bar--color-primary" style="max-width: {{ row.bar }}%;"></div>
-                                        </div>
+                            <td colspan="3">
+                                <div class="container__bar">
+                                    <div class="bar-background">
+                                        <div class="bar bar--color-primary" style="max-width: {{ row.bar }}%;"></div>
                                     </div>
-                                </td>
-                            </tr>
-                        {% endif %}
+                                </div>
+                            </td>
+                        </tr>
                     {% endif %}
                 {% endfor %}
             </tbody>
         </table>
     </div>
-    <div class="dashboard-item-footer">
-        <p class="align--center">
-            <a href="#">Toon meldingen met deze onderwerpen</a>
-        </p>
-    </div>
+    {% if toon_meldingen_link %}
+        <div class="dashboard-item-footer">
+            <p class="align--center">
+                <a href="#">Toon meldingen met deze onderwerpen</a>
+            </p>
+        </div>
+    {% endif %}
 </div>
