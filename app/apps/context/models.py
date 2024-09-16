@@ -1,7 +1,7 @@
 import json
 
 from apps.services.meldingen import MeldingenService
-from apps.services.onderwerpen import render_onderwerp
+from apps.services.onderwerpen import OnderwerpenService, render_onderwerp
 from apps.services.taakr import TaakRService
 from django.contrib.gis.db import models
 from utils.fields import DictJSONField, ListJSONField
@@ -40,6 +40,36 @@ class Context(BasisModel):
             in self.standaard_filters.get("pre_onderwerp", [])
         ]
         return onderwerpen
+
+    def onderwerp_opties_gegroepeerd(self):
+        onderwerp_alias_list = (
+            MeldingenService().onderwerp_alias_list().get("results", [])
+        )
+        onderwerpen_data = [
+            [
+                str(onderwerp_alias.get("pk")),
+                OnderwerpenService().get_onderwerp(onderwerp_alias.get("bron_url")),
+            ]
+            for onderwerp_alias in onderwerp_alias_list
+            if str(onderwerp_alias.get("pk"))
+            in self.standaard_filters.get("pre_onderwerp", [])
+        ]
+        onderwerpen_data = [
+            [onderwerp[1].get("group_uuid"), onderwerp]
+            for onderwerp in onderwerpen_data
+        ]
+        groepen = [
+            [
+                OnderwerpenService().get_groep(group_uuid).get("name", ""),
+                [
+                    [onderwerp[1][0], {"label": onderwerp[1][1].get("name")}]
+                    for onderwerp in onderwerpen_data
+                    if onderwerp[1][1].get("group_uuid") == group_uuid
+                ],
+            ]
+            for group_uuid in list(set([groep[0] for groep in onderwerpen_data]))
+        ]
+        return groepen
 
     @classmethod
     def urgentie_choices(cls):

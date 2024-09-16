@@ -1,7 +1,7 @@
 import string
 
-from apps.main.constanten import VERTALINGEN
-from apps.services.onderwerpen import render_onderwerp, render_onderwerp_groepen
+from apps.main.constanten import BEGRAAFPLAATSEN, VERTALINGEN
+from apps.services.onderwerpen import render_onderwerp
 from django.http import QueryDict
 from django.template.loader import get_template
 from django.urls import reverse
@@ -218,11 +218,10 @@ class BegraafplaatsKolom(StandaardKolom):
     def td_label(self):
         default = "-"
         begraafplaats = string_based_lookup(self.context, self._kolom_inhoud)
-        begraafplaatsen = (
-            self.context.get("data", {}).get("filter_options", {}).get(self._key, {})
-        )
-        begraafplaats_naam = begraafplaatsen.get(begraafplaats, begraafplaats)
-        return escape(begraafplaats_naam[0]) if begraafplaats_naam else default
+        begraafplaatsen = {
+            begraafplaats[0]: begraafplaats[1] for begraafplaats in BEGRAAFPLAATSEN
+        }
+        return escape(begraafplaatsen.get(begraafplaats, default))
 
 
 class GrafnummerKolom(StandaardKolom):
@@ -365,8 +364,9 @@ class StandaardFilter:
     _group = False
     _label = None
 
-    def __init__(self, context):
+    def __init__(self, context, gebruiker_context):
         self.context = context
+        self.gebruiker_context = gebruiker_context
 
     @classmethod
     def key(cls):
@@ -461,6 +461,12 @@ class SpoedFilter(StandaardFilter):
 class BegraafplaatsFilter(StandaardFilter):
     _key = "begraafplaats"
 
+    def opties(self):
+        return [
+            [begraafplaats[0], {"label": begraafplaats[1]}]
+            for begraafplaats in BEGRAAFPLAATSEN
+        ]
+
 
 class OnderwerpFilter(StandaardFilter):
     _key = "onderwerp"
@@ -472,21 +478,7 @@ class OnderwerpFilter(StandaardFilter):
         return render_onderwerp(optie_data[0], optie_data[1])
 
     def opties(self):
-        if self._group:
-            groups = render_onderwerp_groepen(self.context)
-            if groups:
-                return groups
-        opties = [
-            [
-                k,
-                {
-                    "label": self.optie_label(v),
-                    "item_count": v[1],
-                },
-            ]
-            for k, v in self.context.items()
-        ]
-        return opties
+        return self.gebruiker_context.onderwerp_opties_gegroepeerd()
 
 
 class WijkFilter(StandaardFilter):
