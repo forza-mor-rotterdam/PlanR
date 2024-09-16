@@ -187,12 +187,14 @@ class FilterForm(forms.Form):
             for cls in kolom_classes
         ]
 
-    def _get_filter_choices(self, filter_classes, filter_options):
+    def _get_filter_choices(self, filter_classes, filter_options, gebruiker_context):
         return [
             {
                 "key": cls.key(),
                 "naam": cls.label(),
-                "opties": cls(filter_options.get(cls.key(), {})).opties(),
+                "opties": cls(
+                    filter_options.get(cls.key(), {}), gebruiker_context
+                ).opties(),
                 "aantal_actief": len(self.data.getlist(cls.key(), [])),
             }
             for cls in filter_classes
@@ -209,6 +211,7 @@ class FilterForm(forms.Form):
         self.filter_velden = self._get_filter_choices(
             get_valide_filter_classes(gebruiker_context),
             meldingen_response_data.get("filter_options", {}),
+            gebruiker_context,
         )
 
         self.fields["offset"].choices = self._get_offset_choices()
