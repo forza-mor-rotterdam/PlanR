@@ -130,6 +130,13 @@ main {
                 align-self: flex-start;
             }
         }
+        &.vertical-scroll {
+            padding: $input-padding-y 0;
+            border-top: 1px solid $gray-tint04;
+            border-bottom: 1px solid $gray-tint04;
+            max-height: 250px;
+            overflow: auto;
+        }
     }
 }
 

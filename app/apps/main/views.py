@@ -759,6 +759,10 @@ def taak_starten(request, id):
     # Move "Overig" to the end if it exists
     afdeling_choices.sort(key=lambda x: (x[0] == "Overig", x[0]))
 
+    onderwerp_gerelateerde_taaktypes = list(
+        {tt[0]: tt for tt in onderwerp_gerelateerde_taaktypes}.values()
+    )
+
     form = TaakStartenForm(
         initial={"afdeling": initial_afdeling},
         taaktypes=taaktype_choices,

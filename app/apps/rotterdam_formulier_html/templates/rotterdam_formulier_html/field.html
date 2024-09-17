@@ -188,7 +188,7 @@
         {% endif %}
         <div>
             <textarea id="{{ field.auto_id }}"
-                      class="form-control {% if field.errors %}is-invalid{% endif %}"
+                      class="form-control {% if field.errors %}is-invalid{% endif %} {{field.field.widget.attrs.class}}"
                       {% if field.field.widget.attrs.rows %} rows="{{field.field.widget.attrs.rows}}" {% else %} rows="4" {% endif %}
                       name="{{field.html_name}}"
                       {% render_attrs field %}

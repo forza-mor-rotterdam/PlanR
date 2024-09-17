@@ -325,9 +325,9 @@ class TaakStartenForm(forms.Form):
         help_text="Deze tekst wordt niet naar de melder verstuurd.",
         widget=forms.Textarea(
             attrs={
-                "class": "form-control",
+                "class": "form-control full-width",
                 "data-testid": "information",
-                "rows": "4",
+                "rows": "2",
             }
         ),
         required=False,

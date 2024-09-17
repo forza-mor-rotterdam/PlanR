@@ -37,8 +37,7 @@
                 {% csrf_token %}
                 {{ form.errors }}
                 <section class="bgc-gray01 {% if onderwerp_gerelateerde_taaktypes|length == 0 %}js-hidden{% endif %}">
-                    <div class="form-control__with-helptext container__form-check-cols3"
-                         data-taakstartenformulier-target="onderwerpGerelateerdTaaktypeField">
+                    <div class="form-control__with-helptext container__form-check-cols3">
                         <div class="form-row">
                             <label>Vaak gekozen bij dit type melding</label>
                             <div class="wrapper__columns">{{ form.onderwerp_gerelateerd_taaktype }}</div>
@@ -49,7 +48,6 @@
                 <section>
                     <div class="form-control__with-helptext container__search">
                         <div class="form-row">
-                            <label for="taaktype-search">Zoek een andere taak</label>
                             <input type="search"
                                    id="taaktype-search"
                                    class="form-control"
@@ -60,7 +58,7 @@
                 </section>
                 <section>
                     <div class="grid-container grid-container--reversed">
-                        <div class="grid-item">
+                        <div class="grid-item vertical-scroll">
                             <div class="form-control__with-helptext">
                                 <div class="form-row input-labels">
                                     <div data-taakstartenformulier-target="afdelingField">{{ form.afdeling }}</div>
@@ -68,9 +66,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="grid-item">
+                        <div class="grid-item vertical-scroll">
                             <div class="form-control__with-helptext container__form-check-cols2"
-                                 data-taakstartenformulier-target="taaktypeField">
+                                 data-taakstartenformulier-target="taaktypeContainer">
                                 <div class="form-row">
                                     <div class="wrapper__columns">{{ form.taaktype }}</div>
                                     <p class="help-block invalid-text no-margin"></p>
@@ -91,7 +89,9 @@
                                     data-detail-target="modalAfhandelen">
                                 <span>Annuleren</span>
                             </button>
-                            <button type="submit" class="btn btn-action">
+                            <button type="submit"
+                                    data-taakstartenformulier-target="submitButton"
+                                    class="btn btn-action">
                                 <span>Start taak</span>
                             </button>
                         </div>

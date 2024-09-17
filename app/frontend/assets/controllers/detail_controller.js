@@ -252,12 +252,12 @@ export default class extends Controller {
     modal.classList.add('show')
     modalBackdrop.classList.add('show')
     document.body.classList.add('show-modal')
-    setTimeout(function () {
-      const closeButton = modal.querySelectorAll('.btn-close')[0]
-      if (closeButton) {
-        closeButton.focus()
-      }
-    }, 1000)
+    // setTimeout(function () {
+    //   const closeButton = modal.querySelectorAll('.btn-close')[0]
+    //   if (closeButton) {
+    //     closeButton.focus()
+    //   }
+    // }, 1000)
   }
 
   closeModal() {
