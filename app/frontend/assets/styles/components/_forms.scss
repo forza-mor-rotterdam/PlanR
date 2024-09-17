@@ -99,6 +99,11 @@ fieldset {
     option[disabled] {
         color: $text-muted;
     }
+    &.full-width {
+        height: 50px;
+        width: 100%;
+        max-width: none;
+    }
 }
 
 .is-invalid:is(.form-control, .form-select):hover:not(:focus):not([disabled]):not([read-only]) {
