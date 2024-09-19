@@ -9,6 +9,7 @@ from apps.dashboard.tables import (
     get_aantallen_tabs,
     get_afgehandeld_tabs,
     get_status_veranderingen_tabs,
+    get_taaktype_aantallen_per_melding_tabs,
     top_doorlooptijden_per_onderwerp,
     top_doorlooptijden_per_wijk,
     top_vijf_aantal_meldingen_onderwerp,
@@ -324,33 +325,39 @@ class Dashboard(FormView):
         return []
 
     def get_status_navigatie(self):
-        statussen = {
-            "nieuw": f"Nieuwe {self.kwargs.get('type')}",
-            "afgehandeld": f"Afgehandelde {self.kwargs.get('type')}",
-        }
+        link_data = [
+            ["meldingen", "nieuw", "Nieuwe meldingen"],
+            ["meldingen", "afgehandeld", "Afgehandelde meldingen"],
+            ["taken", "aantallen", "Taken aantallen"],
+        ]
 
-        statussen = {
-            k: [
-                v,
-                reverse(
+        def get_url(type, status):
+            try:
+                return reverse(
                     "dashboard",
                     kwargs={
                         **copy.deepcopy(self.kwargs),
                         **{
-                            "status": k,
+                            "type": type,
+                            "status": status,
                         },
                     },
-                ),
-            ]
-            for k, v in statussen.items()
-        }
+                )
+            except Exception:
+                return
 
-        statussen[self.kwargs.get("status")] = [
-            statussen[self.kwargs.get("status")][0],
-            "",
+        statussen = [
+            [
+                d[2],
+                ""
+                if self.kwargs.get("status") == d[1] and self.kwargs.get("type") == d[0]
+                else get_url(d[0], d[1]),
+            ]
+            for d in link_data
+            if get_url(d[0], d[1])
         ]
 
-        return [[v[0], v[1]] for k, v in statussen.items()]
+        return statussen
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -534,6 +541,73 @@ class MeldingenAfgehandeld(Dashboard):
                 "afgehandeld_tabs": afgehandeld_tabs,
                 "doorlooptijden_onderwerp": doorlooptijden_onderwerp,
                 "doorlooptijden_wijk": doorlooptijden_wijk,
+                "stacked_bars_options": stacked_bars_options,
+            }
+        )
+        return context
+
+
+@method_decorator(
+    permission_required("authorisatie.dashboard_bekijken"), name="dispatch"
+)
+class TaaktypeAantallen(Dashboard):
+    template_name = "dashboard/taken/taaktype_aantallen.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        taaktype_aantallen_per_melding = []
+        meldingen_service = MeldingenService()
+        for tick in self.x_ticks:
+            dag = tick.get("start_dt")
+            days = tick.get("days")
+            taaktype_aantallen_per_melding_tijdsvak = (
+                meldingen_service.taaktype_aantallen_per_melding(
+                    datum=dag, days=days, force_cache=False
+                )
+            )
+            taaktype_aantallen_per_melding.append(
+                taaktype_aantallen_per_melding_tijdsvak
+            )
+
+        taaktype_aantallen_per_melding_tabs = get_taaktype_aantallen_per_melding_tabs(
+            taaktype_aantallen_per_melding,
+            ticks=self.x_ticks,
+            onderwerp=self.onderwerp,
+            wijk=self.wijk,
+        )
+
+        stacked_bars_options = {
+            "plugins": {
+                "legend": {
+                    "display": True,
+                },
+                "tooltip": {
+                    "backgroundColor": "#ffffff",
+                    "borderColor": "rgba(0, 0 ,0 , .8)",
+                    "borderWidth": 1,
+                    "bodyAlign": "center",
+                    "bodyColor": "#000000",
+                    "titleColor": "#000000",
+                    "titleAlign": "center",
+                    "displayColors": False,
+                    "borderRadius": 0,
+                },
+            },
+            "scales": {
+                "x": {"stacked": True},
+                "y": {
+                    "stacked": True,
+                    "grid": {
+                        "display": False,
+                    },
+                },
+            },
+        }
+
+        context.update(
+            {
+                "taaktype_aantallen_per_melding_tabs": taaktype_aantallen_per_melding_tabs,
                 "stacked_bars_options": stacked_bars_options,
             }
         )

@@ -18,7 +18,11 @@ from apps.context.views import (
     ContextLijstView,
     ContextVerwijderenView,
 )
-from apps.dashboard.views import MeldingenAfgehandeld, NieuweMeldingen
+from apps.dashboard.views import (
+    MeldingenAfgehandeld,
+    NieuweMeldingen,
+    TaaktypeAantallen,
+)
 from apps.health.views import healthz
 from apps.main.views import (
     StandaardExterneOmschrijvingAanmakenView,
@@ -342,6 +346,7 @@ urlpatterns = [
         kwargs={"type": "meldingen", "status": "nieuw"},
         name="dashboard",
     ),
+    # jaren
     re_path(
         r"^dashboard/(?P<jaar>\d{4})/(?P<type>meldingen)/(?P<status>nieuw)/$",
         NieuweMeldingen.as_view(periode="jaar"),
@@ -355,6 +360,13 @@ urlpatterns = [
         name="dashboard",
     ),
     re_path(
+        r"^dashboard/(?P<jaar>\d{4})/(?P<type>taken)/(?P<status>aantallen)/$",
+        MeldingenAfgehandeld.as_view(periode="jaar"),
+        kwargs={"type": "taken", "status": "aantallen"},
+        name="dashboard",
+    ),
+    # weken
+    re_path(
         r"^dashboard/(?P<jaar>\d{4})/week/(?P<week>\d{2})/(?P<type>meldingen)/(?P<status>nieuw)/$",
         NieuweMeldingen.as_view(periode="week"),
         kwargs={"type": "meldingen", "status": "nieuw"},
@@ -367,6 +379,13 @@ urlpatterns = [
         name="dashboard",
     ),
     re_path(
+        r"^dashboard/(?P<jaar>\d{4})/week/(?P<week>\d{2})/(?P<type>taken)/(?P<status>aantallen)/$",
+        TaaktypeAantallen.as_view(periode="week"),
+        kwargs={"type": "taken", "status": "aantallen"},
+        name="dashboard",
+    ),
+    # maanden
+    re_path(
         r"^dashboard/(?P<jaar>\d{4})/maand/(?P<maand>\d{2})/(?P<type>meldingen)/(?P<status>nieuw)/$",
         NieuweMeldingen.as_view(periode="maand"),
         kwargs={"type": "meldingen", "status": "nieuw"},
@@ -376,6 +395,12 @@ urlpatterns = [
         r"^dashboard/(?P<jaar>\d{4})/maand/(?P<maand>\d{2})/(?P<type>meldingen)/(?P<status>afgehandeld)/$",
         MeldingenAfgehandeld.as_view(periode="maand"),
         kwargs={"type": "meldingen", "status": "afgehandeld"},
+        name="dashboard",
+    ),
+    re_path(
+        r"^dashboard/(?P<jaar>\d{4})/maand/(?P<maand>\d{2})/(?P<type>taken)/(?P<status>aantallen)/$",
+        TaaktypeAantallen.as_view(periode="maand"),
+        kwargs={"type": "taken", "status": "aantallen"},
         name="dashboard",
     ),
 ]
