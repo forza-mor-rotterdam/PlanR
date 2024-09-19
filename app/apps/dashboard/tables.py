@@ -800,7 +800,7 @@ def get_taaktype_aantallen_per_melding_tabs(
         hr = 7
         h = i - 2
         max = max - 2
-        step = h / (max - 1)
+        step = h / (max - 1) if max > 1 else 0
         ll = hr * step
         h = round(hr - ll)
         h = hex(h)
