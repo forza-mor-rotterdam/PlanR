@@ -767,3 +767,178 @@ def top_doorlooptijden_per_wijk(
         "body": wijken[:aantal],
     }
     return doorlooptijden_per_wijk
+
+
+def get_taaktype_aantallen_per_melding_tabs(
+    taaktype_aantallen_per_melding, ticks=[], onderwerp=None, wijk=None
+):
+    labels = [t.get("label") for t in ticks]
+
+    alle_wijken = [wijk.get("wijknaam") for wijk in PDOK_WIJKEN]
+    wijken = [wijk.get("wijknaam") for wijk in PDOK_WIJKEN]
+    wijken_noord = [
+        wijk.get("wijknaam") for wijk in PDOK_WIJKEN if wijk.get("stadsdeel") == "Noord"
+    ]
+    wijken_zuid = [
+        wijk.get("wijknaam") for wijk in PDOK_WIJKEN if wijk.get("stadsdeel") == "Zuid"
+    ]
+    maximum_taaktype_aantal_over_tijdsvakken = sorted(
+        [
+            taaktype.get("aantal_per_melding")
+            for tijdsvak in taaktype_aantallen_per_melding
+            for taaktype in tijdsvak
+        ],
+        reverse=True,
+    )
+    maximum_taaktype_aantal_over_tijdsvakken = (
+        maximum_taaktype_aantal_over_tijdsvakken[0] + 1
+        if maximum_taaktype_aantal_over_tijdsvakken
+        else 1
+    )
+
+    def get_kleur(i, max):
+        hr = 7
+        h = i - 2
+        max = max - 2
+        step = h / (max - 1)
+        ll = hr * step
+        h = round(hr - ll)
+        h = hex(h)
+        h = h.split("x")[1]
+        h = h.rstrip("L")
+        k = f"#ff{h}{h}00"
+        return k
+
+    datasets = [
+        {
+            "bron": taaktype_aantallen_per_melding,
+            "aantal": i,
+            "backgroundColor": get_kleur(i, maximum_taaktype_aantal_over_tijdsvakken),
+        }
+        for i in range(2, maximum_taaktype_aantal_over_tijdsvakken)
+    ]
+    tabs = (
+        [
+            {
+                "wijken": [],
+                "wijk_not_in": True,
+                "titel": "Heel Rotterdam",
+            },
+            {
+                "wijken": wijken_noord,
+                "wijk_not_in": False,
+                "titel": "Rotterdam noord",
+            },
+            {
+                "wijken": wijken_zuid,
+                "wijk_not_in": False,
+                "titel": "Rotterdam zuid",
+            },
+            {
+                "wijken": wijken,
+                "wijk_not_in": True,
+                "titel": "Onbekend of buiten Rotterdam",
+            },
+        ]
+        if not wijk
+        else [
+            {
+                "wijken": [w for w in alle_wijken if wijk == w],
+                "wijk_not_in": False,
+                "titel": wijk,
+            }
+        ]
+    )
+
+    def tab_aantal(tab):
+        t = [
+            round(
+                (
+                    sum(
+                        [
+                            d.get("melding_aantal")
+                            for d in tijdsvak
+                            if d.get("aantal_per_melding") > 1
+                            and bool(d.get("wijk") in tab.get("wijken"))
+                            != bool(tab.get("wijk_not_in"))
+                            and (not onderwerp or onderwerp == d.get("onderwerp"))
+                        ]
+                    )
+                    / sum(
+                        [
+                            d.get("melding_aantal")
+                            for d in tijdsvak
+                            if bool(d.get("wijk") in tab.get("wijken"))
+                            != bool(tab.get("wijk_not_in"))
+                            and (not onderwerp or onderwerp == d.get("onderwerp"))
+                        ]
+                    )
+                )
+                * 100
+            )
+            if sum(
+                [
+                    d.get("melding_aantal")
+                    for d in tijdsvak
+                    if bool(d.get("wijk") in tab.get("wijken"))
+                    != bool(tab.get("wijk_not_in"))
+                    and (not onderwerp or onderwerp == d.get("onderwerp"))
+                ]
+            )
+            else 0
+            for tijdsvak in taaktype_aantallen_per_melding
+        ]
+        return round(average(t))
+
+    def tijdsvak_data(tijdsvak, dataset, tab):
+        totaal_melding_aantallen = sum(
+            [
+                d.get("melding_aantal")
+                for d in tijdsvak
+                if bool(d.get("wijk") in tab.get("wijken"))
+                != bool(tab.get("wijk_not_in"))
+                and (not onderwerp or onderwerp == d.get("onderwerp"))
+            ]
+        )
+        melding_aantallen = sum(
+            [
+                d.get("melding_aantal")
+                for d in tijdsvak
+                if d.get("aantal_per_melding") == dataset.get("aantal")
+                and bool(d.get("wijk") in tab.get("wijken"))
+                != bool(tab.get("wijk_not_in"))
+                and (not onderwerp or onderwerp == d.get("onderwerp"))
+            ]
+        )
+        return (
+            round((melding_aantallen / totaal_melding_aantallen) * 100)
+            if totaal_melding_aantallen
+            else 0
+        )
+
+    def tijdsvak_label(dataset):
+        return f'Aantal {dataset.get("aantal")}'
+
+    tabs = [
+        {
+            "titel": tab.get("titel"),
+            "labels": labels,
+            "aantal": tab_aantal(tab),
+            "datasets": [
+                {
+                    "type": "bar",
+                    "label": tijdsvak_label(dataset),
+                    "borderColor": "#ffffff",
+                    "fill": True,
+                    "backgroundColor": dataset.get("backgroundColor"),
+                    "data": [
+                        tijdsvak_data(tijdsvak, dataset, tab)
+                        for tijdsvak in dataset.get("bron")
+                    ],
+                }
+                for dataset in datasets
+            ],
+        }
+        for tab in tabs
+    ]
+    return tabs

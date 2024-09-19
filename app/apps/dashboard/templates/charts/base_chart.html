@@ -33,7 +33,9 @@
                                     class="{% if forloop.first %} active{% endif %}">
                                 <span class="h3"
                                       {% if data_type %}data-chart-line-target="{{ data_type }}ToHuman" data-duration-to-human-long="true"{% endif %}
-                                      data-aantal="{{ tab.aantal }}">{{ tab.aantal }}</span>
+                                      data-aantal="{{ tab.aantal }}">{{ tab.aantal }}
+                                    {% if eenheid %}{{ eenheid }}{% endif %}
+                                </span>
                                 <span class="decorated">{{ tab.titel }}</span>
                             </button>
                         </li>
