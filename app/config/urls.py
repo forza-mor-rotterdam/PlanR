@@ -361,7 +361,7 @@ urlpatterns = [
     ),
     re_path(
         r"^dashboard/(?P<jaar>\d{4})/(?P<type>taken)/(?P<status>aantallen)/$",
-        MeldingenAfgehandeld.as_view(periode="jaar"),
+        TaaktypeAantallen.as_view(periode="jaar"),
         kwargs={"type": "taken", "status": "aantallen"},
         name="dashboard",
     ),
