@@ -1,7 +1,7 @@
 {% with id=widget.attrs.id %}
     <div {% if id %}id="{{ id }}"{% endif %} class="form-row">
         {% if not widget.attrs.hideLabel %}
-            <h3 class="label haai{% if widget.attrs.hasMoreInfo and widget.help_text %}has-more-info{% endif %}">
+            <h3 class="label{% if widget.attrs.hasMoreInfo and widget.help_text %}has-more-info{% endif %}">
                 {{ field.label }}{{ widget.attrs.hideLabel }}
             </h3>
         {% endif %}

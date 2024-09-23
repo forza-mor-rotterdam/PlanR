@@ -60,8 +60,14 @@ export default class extends Controller {
   handleTaaktypeChoices() {
     const self = this
 
-    this.afdelingFieldTarget.addEventListener('change', (event) => {
-      const selectedAfdeling = event.target.value
+    this.afdelingFieldTarget.addEventListener('change', (e) => {
+      const selectedAfdeling = e.target
+      const list = e.target.closest('ul').getElementsByTagName('label')
+
+      for (let item of list) {
+        item.classList.remove('checked')
+      }
+      e.target.parentNode.classList.add('checked')
       self.clearSearch()
 
       self.filterTaaktypes(selectedAfdeling)
@@ -163,7 +169,7 @@ export default class extends Controller {
       input.name = 'taaktype'
       input.value = value
       input.id = `id_taaktype_${index}`
-      input.className = 'form-check-input'
+      input.className = 'form-check-input hooooi'
       input.required = true
       input.setAttribute('data-taakstartenformulier-target', 'taaktypeField')
 

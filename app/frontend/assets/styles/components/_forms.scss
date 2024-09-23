@@ -285,11 +285,14 @@ textarea {
     ~ .form-radio-label {
         line-height: 1.5rem;
         font-weight: 400;
+        font-size: 1rem;
     }
 }
 
 .list--form-check-input,
-.list--form-radio-input {
+.list--form-radio-input,
+.list--form-check-input ul,
+.list--form-radio-input ul {
     @include list-clean();
     li {
         margin-bottom: 0.25rem;
@@ -517,6 +520,15 @@ input.form-radio-input {
             margin: 0;
         }
     }
+
+    .list--grouped {
+        font-weight: 700;
+        font-size: 1rem;
+        ul ul {
+            font-weight: 400;
+            margin: $input-padding-y 0;
+        }
+    }
 }
 
 .wrapper-horizontal {
@@ -673,6 +685,7 @@ input.form-radio-input {
                 border: 0;
                 border-radius: 0;
                 color: $white;
+                white-space: initial;
 
                 .select2-selection__choice__remove {
                     height: 100%;
@@ -821,8 +834,9 @@ form.taak--start {
             padding: $input-padding-y 0;
             border-top: 1px solid $gray-tint04;
             border-bottom: 1px solid $gray-tint04;
-            max-height: 295px;
+            max-height: 300px;
             overflow: auto;
+            box-sizing: border-box;
 
             ul {
                 margin: 0 0 0 2px;
@@ -845,6 +859,22 @@ form.taak--start {
                 margin-bottom: 0;
             }
         }
+        label {
+            display: block;
+            padding: 0.25em 0.5em;
+            border-left: 3px solid $gray-tint01;
+            line-height: 1.5em;
+            font-weight: 400;
+            cursor: pointer;
+
+            &.checked,
+            &:hover,
+            &:focus {
+                border-color: $green-tint01;
+                color: $green-tint01;
+                font-weight: 700;
+            }
+        }
         input.form-check-input {
             -webkit-appearance: none;
             position: relative;
@@ -853,24 +883,6 @@ form.taak--start {
             position: absolute;
             border: 0;
             box-shadow: none;
-
-            + label {
-                display: block;
-                padding: 0.25em 0.5em;
-                border-left: 3px solid $gray-tint01;
-                cursor: pointer;
-            }
-            &:checked,
-            &:hover,
-            &:focus {
-                border: 0;
-
-                + label {
-                    border-color: $green-tint01;
-                    color: $green-tint01;
-                    font-weight: 700;
-                }
-            }
         }
 
         .inactive {
