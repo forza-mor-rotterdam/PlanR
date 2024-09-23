@@ -229,7 +229,7 @@ urlpatterns = [
         RechtengroepVerwijderenView.as_view(),
         name="rechtengroep_verwijderen",
     ),
-    # Standaard externe omschrijving
+    # Standaard Tekst
     path(
         "beheer/standaardtekst/",
         StandaardExterneOmschrijvingLijstView.as_view(),

@@ -1035,13 +1035,13 @@ class MSBMeldingZoekenForm(forms.Form):
     )
 
 
-# Standaard externe omschrijving forms
+# Standaard teksts forms
 
 
 class StandaardExterneOmschrijvingAanpassenForm(forms.ModelForm):
     titel = forms.CharField(
         label="Afhandelreden",
-        help_text="Deze tekst wordt gebruikt om de juiste standaard externe omschrijving te selecteren.",
+        help_text="Deze tekst wordt gebruikt om de juiste standaard tekst te selecteren.",
         widget=forms.TextInput(
             attrs={
                 "data-externeomschrijvingformulier-target": "externeOmschrijvingTitel",

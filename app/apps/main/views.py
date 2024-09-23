@@ -1246,7 +1246,7 @@ def msb_importeer_melding(request):
     )
 
 
-# Standaard externe omschrijving views
+# Standaard tekst views
 class StandaardExterneOmschrijvingView(View):
     model = StandaardExterneOmschrijving
     success_url = reverse_lazy("standaard_externe_omschrijving_lijst")
