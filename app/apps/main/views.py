@@ -997,8 +997,7 @@ def meldingen_bestand(request):
     meldingen_service = MeldingenService(request=request)
     modified_path = request.path.replace(settings.MOR_CORE_URL_PREFIX, "")
     url = f"{instelling.mor_core_basis_url}{modified_path}"
-    headers = {"Authorization": f"Token {meldingen_service.haal_token()}"}
-    response = requests.get(url, stream=True, headers=headers)
+    response = requests.get(url, stream=True, headers=meldingen_service.get_headers())
     return StreamingHttpResponse(
         response.raw,
         content_type=response.headers.get("content-type"),
