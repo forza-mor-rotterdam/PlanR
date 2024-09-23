@@ -11,8 +11,8 @@ class StandaardExterneOmschrijving(BasisModel):
     )
 
     class Meta:
-        verbose_name = "Standaard externe omschrijving"
-        verbose_name_plural = "Standaard externe omschrijvingen"
+        verbose_name = "Standaard tekst"
+        verbose_name_plural = "Standaard teksten"
 
     def __str__(self):
         return self.titel
