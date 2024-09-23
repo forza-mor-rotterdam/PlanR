@@ -100,7 +100,6 @@ fieldset {
         color: $text-muted;
     }
     &.full-width {
-        height: 50px;
         width: 100%;
         max-width: none;
     }
@@ -815,7 +814,19 @@ form.taak--start {
     section {
         margin-bottom: $alert-padding-x;
         &.bgc-gray01 {
-            padding: $input-padding-x;
+            padding: $input-padding-x $input-padding-x 1px;
+        }
+
+        .grid-item.vertical-scroll {
+            padding: $input-padding-y 0;
+            border-top: 1px solid $gray-tint04;
+            border-bottom: 1px solid $gray-tint04;
+            max-height: 295px;
+            overflow: auto;
+
+            ul {
+                margin: 0 0 0 2px;
+            }
         }
     }
 
@@ -866,5 +877,9 @@ form.taak--start {
             opacity: 0.25;
             pointer-events: none;
         }
+    }
+
+    textarea {
+        height: 2.5em;
     }
 }
