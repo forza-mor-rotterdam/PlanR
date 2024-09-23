@@ -878,6 +878,9 @@ form.taak--start {
             pointer-events: none;
         }
     }
+    .help-block:not(.invalid-text) {
+        font-size: 0.8888rem;
+    }
 
     textarea {
         height: 2.5em;
