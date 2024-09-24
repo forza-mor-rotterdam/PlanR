@@ -36,7 +36,7 @@
                   novalidate>
                 {% csrf_token %}
                 {{ form.errors }}
-                <section class="bgc-gray01 {% if onderwerp_gerelateerde_taaktypes|length == 0 %}js-hidden{% endif %}">
+                <section class="container__gerelateerd bgc-gray01 {% if onderwerp_gerelateerde_taaktypes|length == 0 %}js-hidden{% endif %}">
                     <div class="form-control__with-helptext container__form-check-cols3">
                         <div class="form-row">
                             <label>Vaak gekozen bij dit type melding</label>
@@ -77,10 +77,8 @@
                         </div>
                     </div>
                 </section>
-                <section>
+                <section class="container--flex">
                     <div class="form-control__with-helptext">{{ form.bericht|render_rotterdam_formulier }}</div>
-                </section>
-                <section>
                     <div class="form--horizontal">
                         <div class="form-row btn-row">
                             <button type="reset"

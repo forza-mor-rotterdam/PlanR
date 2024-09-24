@@ -826,6 +826,34 @@ form.taak--start {
 
     section {
         margin-bottom: $alert-padding-x;
+
+        .wrapper__columns {
+            ul {
+                margin: 0;
+                li {
+                    margin-bottom: 0;
+                }
+            }
+        }
+        &.container__gerelateerd {
+            .wrapper__columns {
+                max-height: 4em;
+                overflow-y: auto;
+            }
+        }
+
+        &.container--flex {
+            display: flex;
+            justify-content: space-between;
+            > div {
+                flex: 1 1 50%;
+            }
+
+            .btn-row {
+                margin-top: 1.6em;
+            }
+        }
+
         &.bgc-gray01 {
             padding: $input-padding-x $input-padding-x 1px;
         }
@@ -834,13 +862,19 @@ form.taak--start {
             padding: $input-padding-y 0;
             border-top: 1px solid $gray-tint04;
             border-bottom: 1px solid $gray-tint04;
-            max-height: 300px;
+            height: 250px;
             overflow: auto;
             box-sizing: border-box;
 
             ul {
                 margin: 0 0 0 2px;
             }
+        }
+
+        textarea {
+            max-width: none;
+            line-height: 1.25em;
+            font-size: 0.8888rem;
         }
     }
 
@@ -892,9 +926,5 @@ form.taak--start {
     }
     .help-block:not(.invalid-text) {
         font-size: 0.8888rem;
-    }
-
-    textarea {
-        height: 2.5em;
     }
 }

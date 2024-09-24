@@ -169,7 +169,7 @@ export default class extends Controller {
       input.name = 'taaktype'
       input.value = value
       input.id = `id_taaktype_${index}`
-      input.className = 'form-check-input hooooi'
+      input.className = 'form-check-input'
       input.required = true
       input.setAttribute('data-taakstartenformulier-target', 'taaktypeField')
 
