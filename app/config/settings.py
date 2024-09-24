@@ -16,9 +16,12 @@ TRUE_VALUES = [True, "True", "true", "1"]
 SECRET_KEY = os.getenv(
     "DJANGO_SECRET_KEY", os.getenv("SECRET_KEY", os.getenv("APP_SECRET"))
 )
+
+# APP_ENV's
 PRODUCTIE = "productie"
 ACCEPTATIE = "acceptatie"
 TEST = "test"
+
 APP_ENV = os.getenv("APP_ENV", PRODUCTIE)  # acceptatie/test/productie
 GIT_SHA = os.getenv("GIT_SHA")
 DEPLOY_DATE = os.getenv("DEPLOY_DATE", "")
@@ -45,6 +48,7 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", DEFAULT_ALLOWED_HOSTS).split(",")
 
 INSTALLED_APPS = (
     # templates override
+    "apps.main",
     "apps.health",
     "django.contrib.humanize",
     "django.contrib.contenttypes",
@@ -56,6 +60,7 @@ INSTALLED_APPS = (
     "django.contrib.admin",
     "django.contrib.gis",
     "django.contrib.postgres",
+    "django.forms",
     "rest_framework",
     "rest_framework.authtoken",
     "drf_spectacular",
@@ -76,7 +81,6 @@ INSTALLED_APPS = (
     "django_select2",
     # Apps
     "apps.rotterdam_formulier_html",
-    "apps.main",
     "apps.authorisatie",
     "apps.authenticatie",
     "apps.context",
@@ -305,6 +309,7 @@ CSP_CONNECT_SRC = (
     )
 )
 
+FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",

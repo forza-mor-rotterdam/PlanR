@@ -62,7 +62,13 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.db.models import Q
-from django.http import HttpResponse, JsonResponse, QueryDict, StreamingHttpResponse
+from django.http import (
+    HttpResponse,
+    HttpResponseRedirect,
+    JsonResponse,
+    QueryDict,
+    StreamingHttpResponse,
+)
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
@@ -1298,6 +1304,9 @@ class StandaardExterneOmschrijvingVerwijderenView(
 
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
+
+    def render_to_response(self, context, **response_kwargs):
+        return HttpResponseRedirect(self.get_success_url())
 
 
 # Locatie views

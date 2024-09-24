@@ -3,7 +3,6 @@ from urllib.parse import urlparse
 from apps.context.constanten import FILTERS, KOLOMMEN
 from apps.context.models import Context
 from django import forms
-from utils.forms import RadioSelect
 
 
 class CheckboxSelectMultiplePaths(forms.CheckboxSelectMultiple):
@@ -50,7 +49,7 @@ class CheckboxSelectMultiplePaths(forms.CheckboxSelectMultiple):
 
 class ContextAanpassenForm(forms.ModelForm):
     template = forms.ChoiceField(
-        widget=RadioSelect(
+        widget=forms.RadioSelect(
             attrs={
                 "class": "list--form-radio-input",
             }
