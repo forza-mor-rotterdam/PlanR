@@ -49,15 +49,18 @@ export default class extends Controller {
       setTimeout(() => this.taaktypeSearchTarget.focus(), 1)
     }
 
-    this.selectCorrespondingOnderwerpGerelateerdTaaktype()
-    this.selectCorrespondingTaaktype()
+    this.selectCorrespondingAfdeling()
+    const selectedAfdeling = this.afdelingFieldTarget.querySelector('input:checked')
+    if (selectedAfdeling) {
+      this.filterTaaktypes(selectedAfdeling.value)
+    }
     this.setSubmitButton()
   }
 
   handleTaaktypeChoices() {
     const self = this
 
-    this.afdelingFieldTarget.addEventListener('change', () => {
+    this.afdelingFieldTarget.addEventListener('change', (event) => {
       const selectedAfdeling = event.target.value
       self.clearSearch()
 
