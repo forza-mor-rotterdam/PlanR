@@ -110,10 +110,14 @@ class GebruikerBulkImportForm(forms.Form):
                     "Er is al een gebruiker met dit e-mailadres in deze lijst aanwezig"
                 )
             row_is_not_valid = self.validate_row(default_row, errors)
-            if not row_is_not_valid:
-                valid_rows.append(default_row)
-                valid_checked_rows_email.append(default_row[0])
             default_row.append(row_is_not_valid)
+            default_row.append("")
+            if not row_is_not_valid:
+                if Gebruiker.objects.all().filter(email=default_row[0]):
+                    default_row[5] = "aanpassen"
+                valid_rows.append(default_row)
+
+                valid_checked_rows_email.append(default_row[0])
             all_rows.append(default_row)
         return {
             "all_rows": all_rows,
@@ -129,8 +133,6 @@ class GebruikerBulkImportForm(forms.Form):
             validate_email(email.strip())
         except ValidationError:
             errors.append(f"{email} is geen e-mailadres")
-        if Gebruiker.objects.all().filter(email=email):
-            errors.append("Een gebruiker met dit e-mailadres bestaat reeds")
         if first_name and len(first_name) > 150:
             errors.append("voornaam mag niet langer zijn dan 150 karakters")
         if last_name and len(last_name) > 150:
@@ -150,16 +152,29 @@ class GebruikerBulkImportForm(forms.Form):
             [
                 Gebruiker(**{f: row[i] for i, f in enumerate(gebruiker_fieldnames)})
                 for row in valid_rows
-            ]
+            ],
+            ignore_conflicts=False,
+            update_conflicts=True,
+            unique_fields=["email"],
+            update_fields=["first_name", "last_name", "telefoonnummer"],
         )
+
+        aangemaakte_aangepaste_gebruikers = []
         for gebruiker in aangemaakte_gebruikers:
+            if not gebruiker.id:
+                gebruiker = Gebruiker.objects.get(email=gebruiker.email)
+            gebruiker.groups.clear()
             gebruiker.groups.add(self.cleaned_data.get("group"))
-            Profiel.objects.create(
-                gebruiker=gebruiker,
-                context=self.cleaned_data.get("context"),
-            )
-            gebruiker.save()
-        return aangemaakte_gebruikers
+            if not hasattr(gebruiker, "profiel"):
+                Profiel.objects.create(
+                    gebruiker=gebruiker,
+                    context=self.cleaned_data.get("context"),
+                )
+            else:
+                gebruiker.profiel.context = self.cleaned_data.get("context")
+                gebruiker.profiel.save()
+            aangemaakte_aangepaste_gebruikers.append(gebruiker)
+        return aangemaakte_aangepaste_gebruikers
 
 
 class GebruikerProfielForm(forms.ModelForm):
