@@ -69,7 +69,7 @@ class MeldingenService(BasisService):
         return meldingen_token
 
     def get_headers(self):
-        headers = {}
+        headers = super().get_headers()
         if self._use_token:
             headers.update({"Authorization": f"Token {self.haal_token()}"})
         return headers

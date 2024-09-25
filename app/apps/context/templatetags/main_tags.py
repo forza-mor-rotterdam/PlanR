@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import datetime
 
 from django import template
@@ -87,3 +88,10 @@ def python_any(values):
     if values:
         return any(values)
     return values
+
+
+@register.filter
+def file_exists(file_path):
+    return os.path.isfile(
+        os.path.join(settings.BASE_DIR, "apps/main/templates/", file_path)
+    )

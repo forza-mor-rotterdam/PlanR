@@ -62,7 +62,13 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.db.models import Q
-from django.http import HttpResponse, JsonResponse, QueryDict, StreamingHttpResponse
+from django.http import (
+    HttpResponse,
+    HttpResponseRedirect,
+    JsonResponse,
+    QueryDict,
+    StreamingHttpResponse,
+)
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
@@ -997,8 +1003,7 @@ def meldingen_bestand(request):
     meldingen_service = MeldingenService(request=request)
     modified_path = request.path.replace(settings.MOR_CORE_URL_PREFIX, "")
     url = f"{instelling.mor_core_basis_url}{modified_path}"
-    headers = {"Authorization": f"Token {meldingen_service.haal_token()}"}
-    response = requests.get(url, stream=True, headers=headers)
+    response = requests.get(url, stream=True, headers=meldingen_service.get_headers())
     return StreamingHttpResponse(
         response.raw,
         content_type=response.headers.get("content-type"),
@@ -1299,6 +1304,9 @@ class StandaardExterneOmschrijvingVerwijderenView(
 
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
+
+    def render_to_response(self, context, **response_kwargs):
+        return HttpResponseRedirect(self.get_success_url())
 
 
 # Locatie views
