@@ -21,6 +21,7 @@ from apps.context.views import (
 from apps.dashboard.views import (
     MeldingenAfgehandeld,
     NieuweMeldingen,
+    NieuweTaakopdrachten,
     TaaktypeAantallen,
 )
 from apps.health.views import healthz
@@ -365,6 +366,12 @@ urlpatterns = [
         kwargs={"type": "taken", "status": "aantallen"},
         name="dashboard",
     ),
+    re_path(
+        r"^dashboard/(?P<jaar>\d{4})/(?P<type>taken)/(?P<status>nieuw)/$",
+        NieuweTaakopdrachten.as_view(periode="jaar"),
+        kwargs={"type": "taken", "status": "nieuw"},
+        name="dashboard",
+    ),
     # weken
     re_path(
         r"^dashboard/(?P<jaar>\d{4})/week/(?P<week>\d{2})/(?P<type>meldingen)/(?P<status>nieuw)/$",
@@ -384,6 +391,12 @@ urlpatterns = [
         kwargs={"type": "taken", "status": "aantallen"},
         name="dashboard",
     ),
+    re_path(
+        r"^dashboard/(?P<jaar>\d{4})/week/(?P<week>\d{2})/(?P<type>taken)/(?P<status>nieuw)/$",
+        NieuweTaakopdrachten.as_view(periode="week"),
+        kwargs={"type": "taken", "status": "nieuw"},
+        name="dashboard",
+    ),
     # maanden
     re_path(
         r"^dashboard/(?P<jaar>\d{4})/maand/(?P<maand>\d{2})/(?P<type>meldingen)/(?P<status>nieuw)/$",
@@ -401,6 +414,12 @@ urlpatterns = [
         r"^dashboard/(?P<jaar>\d{4})/maand/(?P<maand>\d{2})/(?P<type>taken)/(?P<status>aantallen)/$",
         TaaktypeAantallen.as_view(periode="maand"),
         kwargs={"type": "taken", "status": "aantallen"},
+        name="dashboard",
+    ),
+    re_path(
+        r"^dashboard/(?P<jaar>\d{4})/maand/(?P<maand>\d{2})/(?P<type>taken)/(?P<status>nieuw)/$",
+        NieuweTaakopdrachten.as_view(periode="maand"),
+        kwargs={"type": "taken", "status": "nieuw"},
         name="dashboard",
     ),
 ]

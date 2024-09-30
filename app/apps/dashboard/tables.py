@@ -124,6 +124,115 @@ def get_aantallen_tabs(meldingen, signalen, ticks=[], onderwerp=None, wijk=None)
     return tabs
 
 
+def get_meldingen_nieuw_vs_afgehandeld_tabs(
+    meldingen, afgehandeld, ticks=[], onderwerp=None, wijk=None
+):
+    labels = [t.get("label") for t in ticks]
+
+    alle_wijken = [wijk.get("wijknaam") for wijk in PDOK_WIJKEN]
+    wijken = [wijk.get("wijknaam") for wijk in PDOK_WIJKEN]
+    wijken_noord = [
+        wijk.get("wijknaam") for wijk in PDOK_WIJKEN if wijk.get("stadsdeel") == "Noord"
+    ]
+    wijken_zuid = [
+        wijk.get("wijknaam") for wijk in PDOK_WIJKEN if wijk.get("stadsdeel") == "Zuid"
+    ]
+    tabs = (
+        [
+            {
+                "wijken": [],
+                "wijk_not_in": True,
+                "titel": "Heel Rotterdam",
+            },
+            {
+                "wijken": wijken_noord,
+                "wijk_not_in": False,
+                "titel": "Rotterdam noord",
+            },
+            {
+                "wijken": wijken_zuid,
+                "wijk_not_in": False,
+                "titel": "Rotterdam zuid",
+            },
+            {
+                "wijken": wijken,
+                "wijk_not_in": True,
+                "titel": "Onbekend of buiten Rotterdam",
+            },
+        ]
+        if not wijk
+        else [
+            {
+                "wijken": [w for w in alle_wijken if wijk == w],
+                "wijk_not_in": False,
+                "titel": wijk,
+            }
+        ]
+    )
+
+    def afgehandeld_in_tijdsvak(t, tab):
+        afgehandeld_data = [
+            d.get("melding_aantal")
+            for d in afgehandeld[t]
+            if bool(d.get("wijk") in tab.get("wijken")) != bool(tab.get("wijk_not_in"))
+            and (not onderwerp or onderwerp == d.get("onderwerp"))
+        ]
+        return sum(afgehandeld_data)
+
+    def nieuw_in_tijdsvak(t, tab):
+        meldingen_data = [
+            d.get("count")
+            for d in meldingen[t]
+            if bool(d.get("wijk") in tab.get("wijken")) != bool(tab.get("wijk_not_in"))
+            and (not onderwerp or onderwerp == d.get("onderwerp"))
+        ]
+        return sum(meldingen_data)
+
+    tabs = [
+        {
+            **tab,
+            **{
+                "labels": labels,
+                "datasets": [
+                    {
+                        "type": "line",
+                        "label": "Aantal meldingen",
+                        "borderColor": "#00811F",
+                        "backgroundColor": "rgba(0,200,100,0.1)",
+                        "fill": {
+                            "target": "origin",
+                            "below": "rgba(200, 0, 0, .1)",
+                            "above": "rgba(0,200,100,0.1)",
+                        },
+                        "data": [
+                            afgehandeld_in_tijdsvak(t, tab) - nieuw_in_tijdsvak(t, tab)
+                            for t in range(0, len(labels))
+                        ],
+                    },
+                ],
+            },
+        }
+        for tab in tabs
+    ]
+
+    # print(json.dumps(tabs, indent=4))
+    tabs = [
+        {
+            **tab,
+            **{
+                "aantal": sum(
+                    [
+                        sum([d for d in dataset.get("data", [])])
+                        for dataset in tab.get("datasets", [])
+                    ]
+                )
+            },
+        }
+        for tab in tabs
+    ]
+    return tabs
+
+
 def get_status_veranderingen_tabs(veranderingen, ticks=[], onderwerp=None, wijk=None):
     labels = [t.get("label") for t in ticks]
 
@@ -359,8 +468,6 @@ def get_afgehandeld_tabs(afgehandeld, ticks=[], onderwerp=None, wijk=None):
         }
         for tab in tabs
     ]
-
-    # print(json.dumps(tabs[0]["datasets"][0].get("data"), indent=4))
 
     def get_average(tbl):
         l2 = list(zip(*tbl))
@@ -647,15 +754,15 @@ def top_doorlooptijden_per_onderwerp(
         {
             "label": onderwerp.get("label"),
             "aantal": seconds_to_human(onderwerp.get("aantal")),
-            "percentage": round(
-                float(onderwerp.get("aantal") / onderwerp.get("totaal_aantal")) * 100
-            )
-            if onderwerp.get("totaal_aantal")
-            else 0,
+            # "percentage": round(
+            #     float(onderwerp.get("aantal") / onderwerp.get("totaal_aantal")) * 100
+            # )
+            # if onderwerp.get("totaal_aantal")
+            # else 0,
             "bar": round(
-                float(onderwerp.get("aantal") / onderwerp.get("totaal_aantal")) * 100
+                float(onderwerp.get("aantal") / onderwerpen[0].get("aantal")) * 100
             )
-            if onderwerp.get("totaal_aantal")
+            if onderwerpen and onderwerpen[0].get("aantal")
             else 0,
         }
         for onderwerp in onderwerpen
@@ -665,8 +772,8 @@ def top_doorlooptijden_per_onderwerp(
 
     doorlooptijden_per_onderwerp = {
         "title": title,
-        "head": ["Onderwerp", "Duur", "%"],
-        "head_percentages": [60, 25, 15],
+        "head": ["Onderwerp", "Duur"],
+        "head_percentages": [65, 35],
         "body": onderwerpen[:aantal],
     }
     return doorlooptijden_per_onderwerp
@@ -746,13 +853,13 @@ def top_doorlooptijden_per_wijk(
         {
             "label": wijk.get("label"),
             "aantal": seconds_to_human(wijk.get("aantal")),
-            "percentage": round(
-                float(wijk.get("aantal") / wijk.get("totaal_aantal")) * 100
-            )
-            if wijk.get("totaal_aantal")
-            else 0,
-            "bar": round(float(wijk.get("aantal") / wijk.get("totaal_aantal")) * 100)
-            if wijk.get("totaal_aantal")
+            # "percentage": round(
+            #     float(wijk.get("aantal") / wijk.get("totaal_aantal")) * 100
+            # )
+            # if wijk.get("totaal_aantal")
+            # else 0,
+            "bar": round(float(wijk.get("aantal") / wijken[0].get("aantal")) * 100)
+            if wijken and wijken[0].get("aantal")
             else 0,
         }
         for wijk in wijken
@@ -762,17 +869,83 @@ def top_doorlooptijden_per_wijk(
 
     doorlooptijden_per_wijk = {
         "title": title,
-        "head": ["Wijk", "Duur", "%"],
-        "head_percentages": [55, 30, 15],
+        "head": ["Wijk", "Duur"],
+        "head_percentages": [65, 35],
         "body": wijken[:aantal],
     }
     return doorlooptijden_per_wijk
+
+
+def top_taaktype_aantallen(
+    taaktype_aantallen_per_melding, onderwerp=None, wijk=None, aantal=5
+):
+    taaktype_aantallen_per_melding = [
+        tt
+        for tijdsvak in taaktype_aantallen_per_melding
+        for tt in tijdsvak
+        if (not onderwerp or tt.get("onderwerp") == onderwerp)
+        and (not wijk or tt.get("wijk") == wijk)
+    ]
+    taaktypes = {
+        tt.get("taaktype"): tt.get("titel") for tt in taaktype_aantallen_per_melding
+    }
+    taaktype_aantallen = [
+        {
+            "taaktype": tt,
+            "label": titel,
+            "meer_dan_1": sum(
+                [
+                    d.get("melding_aantal")
+                    for d in taaktype_aantallen_per_melding
+                    for a in range(0, d.get("melding_aantal"))
+                    if d.get("taaktype") == tt and d.get("aantal_per_melding") > 1
+                ]
+            ),
+            "alles": sum(
+                [
+                    d.get("melding_aantal")
+                    for d in taaktype_aantallen_per_melding
+                    for a in range(0, d.get("melding_aantal"))
+                    if d.get("taaktype") == tt
+                ]
+            ),
+        }
+        for tt, titel in taaktypes.items()
+    ]
+
+    taaktype_aantallen = sorted(
+        [
+            {
+                "label": tt.get("label"),
+                # "aantal": tt.get("meer_dan_1"),
+                "percentage": round(float(tt.get("meer_dan_1") / tt.get("alles")) * 100)
+                if tt.get("alles")
+                else 0,
+                "bar": round(float(tt.get("meer_dan_1") / tt.get("alles")) * 100)
+                if tt.get("alles")
+                else 0,
+            }
+            for tt in taaktype_aantallen
+        ],
+        key=lambda b: b.get("percentage"),
+        reverse=True,
+    )
+
+    return {
+        "title": "Meer dan 1 taaktype per melding",
+        "head": ["Taaktype", "percentage"],
+        "head_percentages": [80, 20],
+        "body": taaktype_aantallen[:aantal],
+    }
 
 
 def get_taaktype_aantallen_per_melding_tabs(
     taaktype_aantallen_per_melding, ticks=[], onderwerp=None, wijk=None
 ):
     labels = [t.get("label") for t in ticks]
+    import json
+
+    print(json.dumps(taaktype_aantallen_per_melding[2], indent=4))
 
     alle_wijken = [wijk.get("wijknaam") for wijk in PDOK_WIJKEN]
     wijken = [wijk.get("wijknaam") for wijk in PDOK_WIJKEN]
@@ -797,6 +970,8 @@ def get_taaktype_aantallen_per_melding_tabs(
     )
 
     def get_kleur(i, max):
+        if i == 1:
+            return "#00811f"
         hr = 7
         h = i - 2
         max = max - 2
@@ -815,7 +990,7 @@ def get_taaktype_aantallen_per_melding_tabs(
             "aantal": i,
             "backgroundColor": get_kleur(i, maximum_taaktype_aantal_over_tijdsvakken),
         }
-        for i in range(2, maximum_taaktype_aantal_over_tijdsvakken)
+        for i in range(1, maximum_taaktype_aantal_over_tijdsvakken)
     ]
     tabs = (
         [
@@ -851,49 +1026,41 @@ def get_taaktype_aantallen_per_melding_tabs(
     )
 
     def tab_aantal(tab):
-        t = [
-            round(
-                (
-                    sum(
-                        [
-                            d.get("melding_aantal")
-                            for d in tijdsvak
-                            if d.get("aantal_per_melding") > 1
-                            and bool(d.get("wijk") in tab.get("wijken"))
-                            != bool(tab.get("wijk_not_in"))
-                            and (not onderwerp or onderwerp == d.get("onderwerp"))
-                        ]
-                    )
-                    / sum(
-                        [
-                            d.get("melding_aantal")
-                            for d in tijdsvak
-                            if bool(d.get("wijk") in tab.get("wijken"))
-                            != bool(tab.get("wijk_not_in"))
-                            and (not onderwerp or onderwerp == d.get("onderwerp"))
-                        ]
-                    )
-                )
-                * 100
-            )
-            if sum(
-                [
-                    d.get("melding_aantal")
-                    for d in tijdsvak
-                    if bool(d.get("wijk") in tab.get("wijken"))
-                    != bool(tab.get("wijk_not_in"))
-                    and (not onderwerp or onderwerp == d.get("onderwerp"))
-                ]
-            )
-            else 0
+        temp = [
+            {
+                "meer_dan_1": sum(
+                    [
+                        d.get("melding_aantal")  # * d.get("aantal_per_melding")
+                        for d in tijdsvak
+                        if d.get("aantal_per_melding") > 1
+                        and bool(d.get("wijk") in tab.get("wijken"))
+                        != bool(tab.get("wijk_not_in"))
+                        and (not onderwerp or onderwerp == d.get("onderwerp"))
+                    ]
+                ),
+                "alles": sum(
+                    [
+                        d.get("melding_aantal")  # * d.get("aantal_per_melding")
+                        for d in tijdsvak
+                        if bool(d.get("wijk") in tab.get("wijken"))
+                        != bool(tab.get("wijk_not_in"))
+                        and (not onderwerp or onderwerp == d.get("onderwerp"))
+                    ]
+                ),
+            }
             for tijdsvak in taaktype_aantallen_per_melding
         ]
-        return round(average(t))
+        totalen = [
+            (t.get("meer_dan_1") / t.get("alles") * 100)
+            for t in temp
+            for i in range(0, t.get("alles"))
+        ]
+        return round(average(totalen))
 
     def tijdsvak_data(tijdsvak, dataset, tab):
         totaal_melding_aantallen = sum(
             [
-                d.get("melding_aantal")
+                d.get("melding_aantal") * dataset.get("aantal")
                 for d in tijdsvak
                 if bool(d.get("wijk") in tab.get("wijken"))
                 != bool(tab.get("wijk_not_in"))
@@ -902,7 +1069,7 @@ def get_taaktype_aantallen_per_melding_tabs(
         )
         melding_aantallen = sum(
             [
-                d.get("melding_aantal")
+                d.get("melding_aantal") * dataset.get("aantal")
                 for d in tijdsvak
                 if d.get("aantal_per_melding") == dataset.get("aantal")
                 and bool(d.get("wijk") in tab.get("wijken"))
@@ -911,7 +1078,7 @@ def get_taaktype_aantallen_per_melding_tabs(
             ]
         )
         return (
-            round((melding_aantallen / totaal_melding_aantallen) * 100)
+            round((melding_aantallen / totaal_melding_aantallen) * 100, 3)
             if totaal_melding_aantallen
             else 0
         )
@@ -930,7 +1097,9 @@ def get_taaktype_aantallen_per_melding_tabs(
                     "label": tijdsvak_label(dataset),
                     "borderColor": "#ffffff",
                     "fill": True,
+                    "barPercentage": "0.5",
                     "backgroundColor": dataset.get("backgroundColor"),
+                    "aantal": dataset.get("aantal"),
                     "data": [
                         tijdsvak_data(tijdsvak, dataset, tab)
                         for tijdsvak in dataset.get("bron")
@@ -938,6 +1107,239 @@ def get_taaktype_aantallen_per_melding_tabs(
                 }
                 for dataset in datasets
             ],
+        }
+        for tab in tabs
+    ]
+    # remove datasets without relevant data
+    tabs = [
+        {
+            **tab,
+            "datasets": [
+                dataset
+                for dataset in tab.get("datasets", [])
+                if sum(dataset.get("data"))
+            ],
+        }
+        for tab in tabs
+    ]
+    return tabs
+
+
+def get_nieuwe_taakopdrachten_tabs(
+    nieuwe_taakopdrachten, ticks=[], onderwerp=None, wijk=None
+):
+    import json
+
+    print(json.dumps(nieuwe_taakopdrachten, indent=4))
+    labels = [t.get("label") for t in ticks]
+
+    alle_wijken = [wijk.get("wijknaam") for wijk in PDOK_WIJKEN]
+    wijken = [wijk.get("wijknaam") for wijk in PDOK_WIJKEN]
+    wijken_noord = [
+        wijk.get("wijknaam") for wijk in PDOK_WIJKEN if wijk.get("stadsdeel") == "Noord"
+    ]
+    wijken_zuid = [
+        wijk.get("wijknaam") for wijk in PDOK_WIJKEN if wijk.get("stadsdeel") == "Zuid"
+    ]
+    tabs = (
+        [
+            {
+                "wijken": [],
+                "wijk_not_in": True,
+                "titel": "Heel Rotterdam",
+            },
+            {
+                "wijken": wijken_noord,
+                "wijk_not_in": False,
+                "titel": "Rotterdam noord",
+            },
+            {
+                "wijken": wijken_zuid,
+                "wijk_not_in": False,
+                "titel": "Rotterdam zuid",
+            },
+            {
+                "wijken": wijken,
+                "wijk_not_in": True,
+                "titel": "Onbekend of buiten Rotterdam",
+            },
+        ]
+        if not wijk
+        else [
+            {
+                "wijken": [w for w in alle_wijken if wijk == w],
+                "wijk_not_in": False,
+                "titel": wijk,
+            }
+        ]
+    )
+
+    tabs = [
+        {
+            **tab,
+            **{
+                "datasets": [
+                    {
+                        "type": "line",
+                        "label": "Aantal taken",
+                        "bron": nieuwe_taakopdrachten,
+                    },
+                ]
+            },
+        }
+        for tab in tabs
+    ]
+
+    tabs = [
+        {
+            "titel": tab.get("titel"),
+            "labels": labels,
+            "datasets": [
+                {
+                    "type": dataset.get("type"),
+                    "label": dataset.get("label"),
+                    "barPercentage": "0.5",
+                    "borderColor": "#00811F",
+                    "fill": True,
+                    "backgroundColor": "rgba(0,200,100,0.1)",
+                    "data": [
+                        sum(
+                            [
+                                d.get("taakopdracht_aantal")
+                                for d in dag
+                                if bool(d.get("wijk") in tab.get("wijken"))
+                                != bool(tab.get("wijk_not_in"))
+                                and (not onderwerp or onderwerp == d.get("onderwerp"))
+                            ]
+                        )
+                        for dag in dataset.get("bron")
+                    ],
+                }
+                for dataset in tab.get("datasets", [])
+            ],
+        }
+        for tab in tabs
+    ]
+    tabs = [
+        {
+            **tab,
+            **{
+                "aantal": sum(
+                    [
+                        sum(dataset.get("data", []))
+                        for dataset in tab.get("datasets", [])
+                    ]
+                )
+            },
+        }
+        for tab in tabs
+    ]
+    return tabs
+
+
+def get_taken_nieuw_vs_afgehandeld_tabs(
+    nieuwe_taakopdrachten, afgehandeld, ticks=[], onderwerp=None, wijk=None
+):
+    labels = [t.get("label") for t in ticks]
+
+    alle_wijken = [wijk.get("wijknaam") for wijk in PDOK_WIJKEN]
+    wijken = [wijk.get("wijknaam") for wijk in PDOK_WIJKEN]
+    wijken_noord = [
+        wijk.get("wijknaam") for wijk in PDOK_WIJKEN if wijk.get("stadsdeel") == "Noord"
+    ]
+    wijken_zuid = [
+        wijk.get("wijknaam") for wijk in PDOK_WIJKEN if wijk.get("stadsdeel") == "Zuid"
+    ]
+    tabs = (
+        [
+            {
+                "wijken": [],
+                "wijk_not_in": True,
+                "titel": "Heel Rotterdam",
+            },
+            {
+                "wijken": wijken_noord,
+                "wijk_not_in": False,
+                "titel": "Rotterdam noord",
+            },
+            {
+                "wijken": wijken_zuid,
+                "wijk_not_in": False,
+                "titel": "Rotterdam zuid",
+            },
+            {
+                "wijken": wijken,
+                "wijk_not_in": True,
+                "titel": "Onbekend of buiten Rotterdam",
+            },
+        ]
+        if not wijk
+        else [
+            {
+                "wijken": [w for w in alle_wijken if wijk == w],
+                "wijk_not_in": False,
+                "titel": wijk,
+            }
+        ]
+    )
+
+    def afgehandeld_in_tijdsvak(t, tab):
+        afgehandeld_data = [
+            d.get("taakopdracht_aantal")
+            for d in afgehandeld[t]
+            if bool(d.get("wijk") in tab.get("wijken")) != bool(tab.get("wijk_not_in"))
+            and (not onderwerp or onderwerp == d.get("onderwerp"))
+        ]
+        return sum(afgehandeld_data)
+
+    def nieuw_in_tijdsvak(t, tab):
+        meldingen_data = [
+            d.get("taakopdracht_aantal")
+            for d in nieuwe_taakopdrachten[t]
+            if bool(d.get("wijk") in tab.get("wijken")) != bool(tab.get("wijk_not_in"))
+            and (not onderwerp or onderwerp == d.get("onderwerp"))
+        ]
+        return sum(meldingen_data)
+
+    tabs = [
+        {
+            **tab,
+            **{
+                "labels": labels,
+                "datasets": [
+                    {
+                        "type": "line",
+                        "label": "Aantal meldingen",
+                        "borderColor": "#00811F",
+                        "backgroundColor": "rgba(0,200,100,0.1)",
+                        "fill": {
+                            "target": "origin",
+                            "below": "rgba(200, 0, 0, .1)",
+                            "above": "rgba(0,200,100,0.1)",
+                        },
+                        "data": [
+                            afgehandeld_in_tijdsvak(t, tab) - nieuw_in_tijdsvak(t, tab)
+                            for t in range(0, len(labels))
+                        ],
+                    },
+                ],
+            },
+        }
+        for tab in tabs
+    ]
+
+    # print(json.dumps(tabs, indent=4))
+    tabs = [
+        {
+            **tab,
+            **{
+                "aantal": sum(
+                    [
+                        sum([d for d in dataset.get("data", [])])
+                        for dataset in tab.get("datasets", [])
+                    ]
+                )
+            },
         }
         for tab in tabs
     ]
