@@ -514,3 +514,75 @@ class MeldingenService(BasisService):
             force_cache=force_cache,
             raw_response=False,
         )
+
+    def taakopdracht_doorlooptijden(
+        self, datum=None, uur=None, days=1, force_cache=False
+    ):
+        datum_datetime = (
+            datetime.combine(datum, datetime.min.time())
+            if isinstance(datum, date)
+            else None
+        )
+        uur_int = uur if uur in range(0, 24) else None
+        cache_timeout = 0
+        params = {}
+        if datum_datetime > datetime.now():
+            return []
+        if datum_datetime:
+            td = timedelta(days=days)
+            afgesloten_op_gte = datum_datetime
+            afgesloten_op_lt = datum_datetime + td
+            if uur_int is not None:
+                afgesloten_op_gte = afgesloten_op_gte + timedelta(hours=uur_int)
+                afgesloten_op_lt = afgesloten_op_gte + timedelta(hours=uur_int + 1)
+            cache_timeout = (
+                60 * 60 * 24 * 30 if afgesloten_op_lt < datetime.now() else 60
+            )
+            params.update(
+                {
+                    "afgesloten_op_gte": afgesloten_op_gte.isoformat(),
+                    "afgesloten_op_lt": afgesloten_op_lt.isoformat(),
+                }
+            )
+        return self.do_request(
+            f"{self._api_path}/taakopdracht/taakopdracht-doorlooptijden/",
+            params=params,
+            cache_timeout=cache_timeout,
+            force_cache=force_cache,
+            raw_response=False,
+        )
+
+    def nieuwe_taakopdrachten(self, datum=None, uur=None, days=1, force_cache=False):
+        datum_datetime = (
+            datetime.combine(datum, datetime.min.time())
+            if isinstance(datum, date)
+            else None
+        )
+        uur_int = uur if uur in range(0, 24) else None
+        cache_timeout = 0
+        params = {}
+        if datum_datetime > datetime.now():
+            return []
+        if datum_datetime:
+            td = timedelta(days=days)
+            aangemaakt_op_gte = datum_datetime
+            aangemaakt_op_lt = datum_datetime + td
+            if uur_int is not None:
+                aangemaakt_op_gte = aangemaakt_op_gte + timedelta(hours=uur_int)
+                aangemaakt_op_lt = aangemaakt_op_gte + timedelta(hours=uur_int + 1)
+            cache_timeout = (
+                60 * 60 * 24 * 30 if aangemaakt_op_lt < datetime.now() else 60
+            )
+            params.update(
+                {
+                    "aangemaakt_op_gte": aangemaakt_op_gte.isoformat(),
+                    "aangemaakt_op_lt": aangemaakt_op_lt.isoformat(),
+                }
+            )
+        return self.do_request(
+            f"{self._api_path}/taakopdracht/nieuwe-taakopdrachten/",
+            params=params,
+            cache_timeout=cache_timeout,
+            force_cache=force_cache,
+            raw_response=False,
+        )

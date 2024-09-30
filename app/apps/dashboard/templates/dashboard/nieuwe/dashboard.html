@@ -74,7 +74,7 @@
         <section class="section--seperated--l">
             <div class="grid-container grid-container--full"
                  data-controller="chart-utils">
-                {% include "charts/base_chart.html" with title="Status veranderingen duur" description="" period_title=title tabs=status_veranderingen_tabs data_type="duration" only %}
+                {% include "charts/base_chart.html" with title="Aantal afgehandeld minus nieuw" description="" period_title=title tabs=nieuw_vs_afgehandeld_tabs only %}
             </div>
         </section>
         {% if not onderwerp or not wijk %}

@@ -8,10 +8,14 @@ from apps.dashboard.forms import DashboardForm
 from apps.dashboard.tables import (
     get_aantallen_tabs,
     get_afgehandeld_tabs,
+    get_meldingen_nieuw_vs_afgehandeld_tabs,
+    get_nieuwe_taakopdrachten_tabs,
     get_status_veranderingen_tabs,
     get_taaktype_aantallen_per_melding_tabs,
+    get_taken_nieuw_vs_afgehandeld_tabs,
     top_doorlooptijden_per_onderwerp,
     top_doorlooptijden_per_wijk,
+    top_taaktype_aantallen,
     top_vijf_aantal_meldingen_onderwerp,
     top_vijf_aantal_meldingen_wijk,
     top_vijf_aantal_onderwerpen_ontdubbeld,
@@ -45,36 +49,19 @@ class Dashboard(FormView):
     def get_success_url(self):
         return self.request.path
 
-    # def get(self, request, *args, **kwargs):
-    #     form_class = self.get_form_class()
-    #     form = self.get_form(form_class)
-    #     context = self.get_context_data(**kwargs)
-    #     context['form'] = form
-    #     return self.render_to_response(context)
-
     def get(self, *args, **kwargs):
         return self.post(*args, **kwargs)
 
     def form_valid(self, form):
-        print("VALiD")
-        print("form.cleaned_data")
-        print(form.cleaned_data)
         self.onderwerp = form.cleaned_data.get("onderwerp")
         self.wijk = form.cleaned_data.get("wijk")
-        # form = self.get_form()
-        # return super().form_valid(form)
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_invalid(self, form):
-        print("INVALiD")
-        print(form.cleaned_data)
-        # Add action to invalid form phase
-        print(form.errors)
         return self.render_to_response(self.get_context_data(form=form))
 
     def get_form_kwargs(self):
         """Return the keyword arguments for instantiating the form."""
-        print("get_form_kwargs")
         kwargs = {
             "initial": self.get_initial(),
             "prefix": self.get_prefix(),
@@ -119,11 +106,6 @@ class Dashboard(FormView):
 
         self.title = self.get_title()
         return super().dispatch(request, *args, **kwargs)
-
-    # def __init__(self, **kwargs):
-    #     super().__init__(**kwargs)
-    #     if not self.periode:
-    #         self.periode = self.PeriodeOpties.WEEK
 
     class PeriodeOpties(models.TextChoices):
         WEEK = "week", "Week"
@@ -187,7 +169,6 @@ class Dashboard(FormView):
             maanden = [
                 datetime(int(jaar_param), maand + 1, 1) for maand in range(0, 12)
             ]
-            print(maanden)
             ticks = [
                 {
                     "start_dt": dag,
@@ -197,7 +178,6 @@ class Dashboard(FormView):
                 }
                 for dag in maanden
             ]
-            print(ticks)
             return ticks
 
         return []
@@ -329,6 +309,7 @@ class Dashboard(FormView):
             ["meldingen", "nieuw", "Nieuwe meldingen"],
             ["meldingen", "afgehandeld", "Afgehandelde meldingen"],
             ["taken", "aantallen", "Taken aantallen"],
+            ["taken", "nieuw", "Nieuwe taken"],
         ]
 
         def get_url(type, status):
@@ -361,7 +342,6 @@ class Dashboard(FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        print(context)
         self.x_ticks = self.get_x_ticks()
         context["periode"] = self.periode
         context.update(
@@ -388,7 +368,7 @@ class NieuweMeldingen(Dashboard):
         context = super().get_context_data(**kwargs)
         meldingen = []
         signalen = []
-        veranderingen = []
+        afgehandeld = []
         meldingen_service = MeldingenService()
         for tick in self.x_ticks:
             dag = tick.get("start_dt")
@@ -399,12 +379,13 @@ class NieuweMeldingen(Dashboard):
             signaal_aantallen = meldingen_service.signaal_aantallen(
                 datum=dag, days=days
             )
-            status_veranderingen = meldingen_service.status_veranderingen(
+
+            status_afgehandeld = meldingen_service.afgehandelde_meldingen(
                 datum=dag, days=days
             )
+            afgehandeld.append(status_afgehandeld)
             meldingen.append(melding_aantallen)
             signalen.append(signaal_aantallen)
-            veranderingen.append(status_veranderingen)
 
         aantallen_tabs = get_aantallen_tabs(
             meldingen,
@@ -413,8 +394,12 @@ class NieuweMeldingen(Dashboard):
             onderwerp=self.onderwerp,
             wijk=self.wijk,
         )
-        status_veranderingen_tabs = get_status_veranderingen_tabs(
-            veranderingen, ticks=self.x_ticks, onderwerp=self.onderwerp, wijk=self.wijk
+        nieuw_vs_afgehandeld_tabs = get_meldingen_nieuw_vs_afgehandeld_tabs(
+            meldingen,
+            afgehandeld,
+            ticks=self.x_ticks,
+            onderwerp=self.onderwerp,
+            wijk=self.wijk,
         )
 
         onderwerp_opties = list(
@@ -422,14 +407,10 @@ class NieuweMeldingen(Dashboard):
         )
         wijk_opties = list(set([d.get("wijk") for kolom in meldingen for d in kolom]))
 
-        import json
-
-        print(json.dumps(meldingen, indent=4))
-
         context.update(
             {
                 "aantallen_tabs": aantallen_tabs,
-                "status_veranderingen_tabs": status_veranderingen_tabs,
+                "nieuw_vs_afgehandeld_tabs": nieuw_vs_afgehandeld_tabs,
                 "aantal_meldingen_onderwerp": top_vijf_aantal_meldingen_onderwerp(
                     meldingen, onderwerp_opties, wijk=self.wijk
                 ),
@@ -458,6 +439,7 @@ class MeldingenAfgehandeld(Dashboard):
         valide_wijken = [c.get("wijknaam") for c in PDOK_WIJKEN]
 
         afgehandeld = []
+        veranderingen = []
         meldingen_service = MeldingenService()
         for tick in self.x_ticks:
             dag = tick.get("start_dt")
@@ -465,12 +447,18 @@ class MeldingenAfgehandeld(Dashboard):
             status_afgehandeld = meldingen_service.afgehandelde_meldingen(
                 datum=dag, days=days
             )
+            status_veranderingen = meldingen_service.status_veranderingen(
+                datum=dag, days=days
+            )
             afgehandeld.append(status_afgehandeld)
+            veranderingen.append(status_veranderingen)
 
         afgehandeld_tabs = get_afgehandeld_tabs(
             afgehandeld, ticks=self.x_ticks, onderwerp=self.onderwerp, wijk=self.wijk
         )
-
+        status_veranderingen_tabs = get_status_veranderingen_tabs(
+            veranderingen, ticks=self.x_ticks, onderwerp=self.onderwerp, wijk=self.wijk
+        )
         valide_onderwerpen = [c.get("name") for c in onderwerpen]
         doorlooptijden_onderwerp = [
             top_doorlooptijden_per_onderwerp(
@@ -539,6 +527,7 @@ class MeldingenAfgehandeld(Dashboard):
         context.update(
             {
                 "afgehandeld_tabs": afgehandeld_tabs,
+                "status_veranderingen_tabs": status_veranderingen_tabs,
                 "doorlooptijden_onderwerp": doorlooptijden_onderwerp,
                 "doorlooptijden_wijk": doorlooptijden_wijk,
                 "stacked_bars_options": stacked_bars_options,
@@ -576,6 +565,12 @@ class TaaktypeAantallen(Dashboard):
             onderwerp=self.onderwerp,
             wijk=self.wijk,
         )
+        top_10_taaktype_aantallen = top_taaktype_aantallen(
+            taaktype_aantallen_per_melding,
+            onderwerp=self.onderwerp,
+            wijk=self.wijk,
+            aantal=10,
+        )
 
         stacked_bars_options = {
             "plugins": {
@@ -608,7 +603,54 @@ class TaaktypeAantallen(Dashboard):
         context.update(
             {
                 "taaktype_aantallen_per_melding_tabs": taaktype_aantallen_per_melding_tabs,
+                "top_10_taaktype_aantallen": top_10_taaktype_aantallen,
                 "stacked_bars_options": stacked_bars_options,
+            }
+        )
+        return context
+
+
+class NieuweTaakopdrachten(Dashboard):
+    template_name = "dashboard/taken/nieuwe_taakopdrachten.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        nieuwe_taakopdrachten = []
+        taakopdracht_doorlooptijden = []
+        meldingen_service = MeldingenService()
+        for tick in self.x_ticks:
+            dag = tick.get("start_dt")
+            days = tick.get("days")
+            nieuwe_taakopdrachten_tijdsvak = meldingen_service.nieuwe_taakopdrachten(
+                datum=dag, days=days, force_cache=False
+            )
+            taakopdracht_doorlooptijden_tijdsvak = (
+                meldingen_service.taakopdracht_doorlooptijden(
+                    datum=dag, days=days, force_cache=False
+                )
+            )
+            nieuwe_taakopdrachten.append(nieuwe_taakopdrachten_tijdsvak)
+            taakopdracht_doorlooptijden.append(taakopdracht_doorlooptijden_tijdsvak)
+
+        nieuwe_taakopdrachten_tabs = get_nieuwe_taakopdrachten_tabs(
+            nieuwe_taakopdrachten,
+            ticks=self.x_ticks,
+            onderwerp=self.onderwerp,
+            wijk=self.wijk,
+        )
+        taken_nieuw_vs_afgehandeld_tabs = get_taken_nieuw_vs_afgehandeld_tabs(
+            nieuwe_taakopdrachten,
+            taakopdracht_doorlooptijden,
+            ticks=self.x_ticks,
+            onderwerp=self.onderwerp,
+            wijk=self.wijk,
+        )
+
+        context.update(
+            {
+                "nieuwe_taakopdrachten_tabs": nieuwe_taakopdrachten_tabs,
+                "taken_nieuw_vs_afgehandeld_tabs": taken_nieuw_vs_afgehandeld_tabs,
             }
         )
         return context
