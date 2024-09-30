@@ -275,20 +275,6 @@ def melding_detail(request, id):
     categorized_taaktypes = TaakRService(request=request).categorize_taaktypes(
         melding, taaktypes
     )
-    melding_bijlagen = [
-        [bijlage for bijlage in meldinggebeurtenis.get("bijlagen", [])]
-        + [
-            b
-            for b in (
-                meldinggebeurtenis.get("taakgebeurtenis", {}).get("bijlagen", [])
-                if meldinggebeurtenis.get("taakgebeurtenis")
-                else []
-            )
-        ]
-        for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
-    ]
-
-    bijlagen_flat = [b for bl in melding_bijlagen for b in bl]
     form = InformatieToevoegenForm()
     overview_querystring = request.session.get("overview_querystring", "")
     if request.method == "POST":
@@ -345,7 +331,6 @@ def melding_detail(request, id):
             "locaties": locaties,
             "form": form,
             "overview_querystring": overview_querystring,
-            "bijlagen_extra": bijlagen_flat,
             "taaktypes": categorized_taaktypes,
             "aantal_actieve_taken": aantal_actieve_taken,
             "aantal_opgeloste_taken": aantal_opgeloste_taken,
