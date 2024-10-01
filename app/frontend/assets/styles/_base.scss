@@ -27,17 +27,42 @@ html {
     height: 100%;
 }
 
-body,
-main,
-header {
-    margin: 0 auto;
+.container__toplevel {
+    display: flex;
 
-    > .container,
-    > .container--env .container {
-        display: block;
-        max-width: map-get($container-max-widths, xxl);
-        margin: 0 auto;
+    aside {
+        width: 227px;
+        height: 100vh;
+        border-right: 1px solid $green-400;
+        box-sizing: border-box;
+        transition: width 0.25s ease-in-out;
     }
+    .container__main {
+        flex: 1;
+
+        > .bar {
+            border-bottom: 1px solid $green-400;
+            height: 68px;
+            width: 100%;
+            background-color: transparent;
+        }
+        main {
+            padding: 1em 0.75em 0;
+            margin-bottom: 5em;
+        }
+    }
+}
+
+body,
+main {
+    // margin: 0 auto;
+
+    // > .container,
+    // > .container--env .container {
+    //     display: block;
+    //     max-width: map-get($container-max-widths, xxl);
+    //     margin: 0 auto;
+    // }
 }
 
 body.wide--xl {
@@ -700,9 +725,6 @@ body.no-js {
 .bar {
     background-color: $gray-tint01;
     &--top {
-        height: 48px;
-        width: 100%;
-
         .list-nav--tertiary {
             small {
                 @extend .visually-hidden;
