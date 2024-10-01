@@ -46,14 +46,14 @@ services:
       - "6379"
 
   database:
-    image: postgis/postgis:11-3.3
+    image: postgis/postgis:16-3.4
     shm_size: "1024m"
     ports:
       - "7997:5432"
     env_file:
       - .env.local
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres-data-16:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
       interval: 5s
@@ -115,7 +115,7 @@ services:
       - mercure_config:/config
 
 volumes:
-  postgres-data:
+  postgres-data-16:
   mercure_data:
   mercure_config:
 

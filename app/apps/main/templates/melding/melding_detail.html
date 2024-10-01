@@ -288,12 +288,12 @@
                                                                         {% elif signaal.aanvullende_informatie %}
                                                                             <li>
                                                                                 <h3 class="h5">Aanvullende informatie</h3>
-                                                                                <p>{{ signaal.aanvullende_informatie|replace_n|safe }}</p>
+                                                                                <p>{{ signaal.aanvullende_informatie }}</p>
                                                                             </li>
                                                                         {% elif signaal.meta.aanvullendeInformatieField %}
                                                                             <li>
                                                                                 <h3 class="h5">Aanvullende informatie</h3>
-                                                                                <p>{{ signaal.meta.aanvullendeInformatieField|replace_n|safe }}</p>
+                                                                                <p>{{ signaal.meta.aanvullendeInformatieField }}</p>
                                                                             </li>
                                                                         {% endif %}
                                                                     {% endwith %}
@@ -381,12 +381,12 @@
                                                             {% elif melding.signalen_voor_melding.0.aanvullende_informatie %}
                                                                 <li>
                                                                     <h3 class="h5">Aanvullende informatie</h3>
-                                                                    <p>{{ melding.signalen_voor_melding.0.aanvullende_informatie|replace_n|safe }}</p>
+                                                                    <p>{{ melding.signalen_voor_melding.0.aanvullende_informatie }}</p>
                                                                 </li>
                                                             {% elif melding.meta.aanvullendeInformatieField %}
                                                                 <li>
                                                                     <h3 class="h5">Aanvullende informatie</h3>
-                                                                    <p>{{ melding.meta.aanvullendeInformatieField|replace_n|safe }}</p>
+                                                                    <p>{{ melding.meta.aanvullendeInformatieField }}</p>
                                                                 </li>
                                                             {% endif %}
                                                         {% endwith %}

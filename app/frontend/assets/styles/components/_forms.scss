@@ -99,6 +99,10 @@ fieldset {
     option[disabled] {
         color: $text-muted;
     }
+    &.full-width {
+        width: 100%;
+        max-width: none;
+    }
 }
 
 .is-invalid:is(.form-control, .form-select):hover:not(:focus):not([disabled]):not([read-only]) {
@@ -281,11 +285,14 @@ textarea {
     ~ .form-radio-label {
         line-height: 1.5rem;
         font-weight: 400;
+        font-size: 1rem;
     }
 }
 
 .list--form-check-input,
-.list--form-radio-input {
+.list--form-radio-input,
+.list--form-check-input ul,
+.list--form-radio-input ul {
     @include list-clean();
     li {
         margin-bottom: 0.25rem;
@@ -513,6 +520,15 @@ input.form-radio-input {
             margin: 0;
         }
     }
+
+    .list--grouped {
+        font-weight: 700;
+        font-size: 1rem;
+        ul ul {
+            font-weight: 400;
+            margin: $input-padding-y 0;
+        }
+    }
 }
 
 .wrapper-horizontal {
@@ -669,6 +685,7 @@ input.form-radio-input {
                 border: 0;
                 border-radius: 0;
                 color: $white;
+                white-space: initial;
 
                 .select2-selection__choice__remove {
                     height: 100%;
@@ -809,8 +826,55 @@ form.taak--start {
 
     section {
         margin-bottom: $alert-padding-x;
+
+        .wrapper__columns {
+            ul {
+                margin: 0;
+                li {
+                    margin-bottom: 0;
+                }
+            }
+        }
+        &.container__gerelateerd {
+            .wrapper__columns {
+                max-height: 4em;
+                overflow-y: auto;
+            }
+        }
+
+        &.container--flex {
+            display: flex;
+            justify-content: space-between;
+            > div {
+                flex: 1 1 50%;
+            }
+
+            .btn-row {
+                margin-top: 1.6em;
+            }
+        }
+
         &.bgc-gray01 {
-            padding: $input-padding-x;
+            padding: $input-padding-x $input-padding-x 1px;
+        }
+
+        .grid-item.vertical-scroll {
+            padding: $input-padding-y 0;
+            border-top: 1px solid $gray-tint04;
+            border-bottom: 1px solid $gray-tint04;
+            height: 250px;
+            overflow: auto;
+            box-sizing: border-box;
+
+            ul {
+                margin: 0 0 0 2px;
+            }
+        }
+
+        textarea {
+            max-width: none;
+            line-height: 1.25em;
+            font-size: 0.8888rem;
         }
     }
 
@@ -829,6 +893,26 @@ form.taak--start {
                 margin-bottom: 0;
             }
         }
+        label {
+            display: block;
+            padding: 0.25em 0.5em;
+            border-left: 3px solid $gray-tint01;
+            line-height: 1.5em;
+            font-weight: 400;
+            cursor: pointer;
+
+            &.checked,
+            &:hover,
+            &:has(input:focus) {
+                border-color: $green-tint01;
+                color: $green-tint01;
+            }
+            &:has(input:focus):has(input:checked) {
+                border-color: $green-tint01;
+                color: $green-tint01;
+                text-decoration: underline;
+            }
+        }
         input.form-check-input {
             -webkit-appearance: none;
             position: relative;
@@ -837,29 +921,14 @@ form.taak--start {
             position: absolute;
             border: 0;
             box-shadow: none;
-
-            + label {
-                display: block;
-                padding: 0.25em 0.5em;
-                border-left: 3px solid $gray-tint01;
-                cursor: pointer;
-            }
-            &:checked,
-            &:hover,
-            &:focus {
-                border: 0;
-
-                + label {
-                    border-color: $green-tint01;
-                    color: $green-tint01;
-                    font-weight: 700;
-                }
-            }
         }
 
         .inactive {
             opacity: 0.25;
             pointer-events: none;
         }
+    }
+    .help-block:not(.invalid-text) {
+        font-size: 0.8888rem;
     }
 }

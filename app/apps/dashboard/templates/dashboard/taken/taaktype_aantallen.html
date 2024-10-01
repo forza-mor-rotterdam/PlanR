@@ -1,0 +1,52 @@
+{% extends "dashboard/base.html" %}
+{% load rotterdam_formulier_html %}
+{% load l10n %}
+{% load humanize %}
+{% load tz %}
+{% load json_encode from json_tags %}
+{% block title %}
+    Dashboard | PlanR
+{% endblock title %}
+{% block content %}
+    <div class="screen-xl">
+        <section class="section--seperated--l">
+            <div class="grid-container grid-container--full"
+                 data-controller="chart-utils">
+                {% include "charts/base_chart.html" with title="Ping pong taken" description="Toont in de rood tinten taken die meer dan 1 keer zijn aangemaakt in afgehandelde meldingen. Het getal in de popup is het percentage van het totaal aantal meldingen waarin dit gebeurde." period_title=title tabs=taaktype_aantallen_per_melding_tabs options=stacked_bars_options eenheid="%" only %}
+            </div>
+        </section>
+        <section class="section--seperated--l">
+            <div>
+                <h2>Top tien</h2>
+                <div class="grid-container grid-container--2cols">
+                    <div class="grid-item bgc-white">
+                        {% include "charts/dashboard_item.html" with title=top_10_taaktype_aantallen.title description="" period_title=title head=top_10_taaktype_aantallen.head body=top_10_taaktype_aantallen.body only %}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <div class="screen-xl--notification">
+        <p>Deze pagina is alleen te bekijken op een groter scherm.</p>
+    </div>
+    <div class="sidesheet sidesheet--dashboardfilter">
+        <button type="button"
+                class="btn-close"
+                aria-label="Sluit"
+                data-action="sidesheet#toggleFilter">{% include "icons/close.svg" %}</button>
+        <div class="sidesheet-backdrop sidesheet-exit"
+             data-action="click->sidesheet#toggleFilter"></div>
+        <div class="content">{% include "dashboard/form.html" %}</div>
+    </div>
+    <div class="sidesheet" data-sidesheet-target="sidesheet">
+        <button type="button"
+                class="btn-close"
+                aria-label="Sluit"
+                data-action="sidesheet#closeSidesheet">{% include "icons/close.svg" %}</button>
+        <div class="sidesheet-backdrop sidesheet-exit"
+             data-action="click->sidesheet#closeSidesheet"></div>
+        <div class="turboframe-container">
+            <turbo-frame id="sidesheet" data-sidesheet-target="turboframe"></turbo-frame>
+        </div>
+    </div>
+{% endblock content %}

@@ -62,7 +62,13 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.db.models import Q
-from django.http import HttpResponse, JsonResponse, QueryDict, StreamingHttpResponse
+from django.http import (
+    HttpResponse,
+    HttpResponseRedirect,
+    JsonResponse,
+    QueryDict,
+    StreamingHttpResponse,
+)
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
@@ -269,20 +275,6 @@ def melding_detail(request, id):
     categorized_taaktypes = TaakRService(request=request).categorize_taaktypes(
         melding, taaktypes
     )
-    melding_bijlagen = [
-        [bijlage for bijlage in meldinggebeurtenis.get("bijlagen", [])]
-        + [
-            b
-            for b in (
-                meldinggebeurtenis.get("taakgebeurtenis", {}).get("bijlagen", [])
-                if meldinggebeurtenis.get("taakgebeurtenis")
-                else []
-            )
-        ]
-        for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
-    ]
-
-    bijlagen_flat = [b for bl in melding_bijlagen for b in bl]
     form = InformatieToevoegenForm()
     overview_querystring = request.session.get("overview_querystring", "")
     if request.method == "POST":
@@ -339,7 +331,6 @@ def melding_detail(request, id):
             "locaties": locaties,
             "form": form,
             "overview_querystring": overview_querystring,
-            "bijlagen_extra": bijlagen_flat,
             "taaktypes": categorized_taaktypes,
             "aantal_actieve_taken": aantal_actieve_taken,
             "aantal_opgeloste_taken": aantal_opgeloste_taken,
@@ -759,6 +750,10 @@ def taak_starten(request, id):
     # Move "Overig" to the end if it exists
     afdeling_choices.sort(key=lambda x: (x[0] == "Overig", x[0]))
 
+    onderwerp_gerelateerde_taaktypes = list(
+        {tt[0]: tt for tt in onderwerp_gerelateerde_taaktypes}.values()
+    )
+
     form = TaakStartenForm(
         initial={"afdeling": initial_afdeling},
         taaktypes=taaktype_choices,
@@ -993,11 +988,13 @@ def meldingen_bestand(request):
     meldingen_service = MeldingenService(request=request)
     modified_path = request.path.replace(settings.MOR_CORE_URL_PREFIX, "")
     url = f"{instelling.mor_core_basis_url}{modified_path}"
-    headers = {"Authorization": f"Token {meldingen_service.haal_token()}"}
-    response = requests.get(url, stream=True, headers=headers)
+    response = requests.get(url, stream=True, headers=meldingen_service.get_headers())
     return StreamingHttpResponse(
         response.raw,
         content_type=response.headers.get("content-type"),
+        headers={
+            "Content-Disposition": "inline",
+        },
         status=response.status_code,
         reason=response.reason,
     )
@@ -1239,7 +1236,7 @@ def msb_importeer_melding(request):
     )
 
 
-# Standaard externe omschrijving views
+# Standaard tekst views
 class StandaardExterneOmschrijvingView(View):
     model = StandaardExterneOmschrijving
     success_url = reverse_lazy("standaard_externe_omschrijving_lijst")
@@ -1292,6 +1289,9 @@ class StandaardExterneOmschrijvingVerwijderenView(
 
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
+
+    def render_to_response(self, context, **response_kwargs):
+        return HttpResponseRedirect(self.get_success_url())
 
 
 # Locatie views

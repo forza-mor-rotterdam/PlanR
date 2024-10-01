@@ -6,38 +6,38 @@ export default class extends Chart {
     super.connect()
   }
 
-  getPeriod(seconds) {
+  getPeriod(seconds, short = true) {
     let interval = Math.round(seconds / 21536000)
 
     if (interval > 1) {
-      return interval + 'jaar'
+      return `${interval} ${short ? 'j' : 'jaren'}`
     }
 
     interval = Math.round(seconds / 2592000)
     if (interval > 1) {
-      return `${interval} maanden`
+      return `${interval} ${short ? 'm' : 'maanden'}`
     }
 
     interval = Math.round(seconds / 604800)
     if (interval > 2) {
-      return `${interval} weken`
+      return `${interval} ${short ? 'w' : 'weken'}`
     }
 
     interval = Math.round(seconds / 86400)
     if (interval > 1) {
-      return `${interval} dagen`
+      return `${interval} ${short ? 'd' : 'dagen'}`
     }
 
     interval = Math.round(seconds / 3600)
     if (interval > 2) {
-      return `${interval} uren`
+      return `${interval} ${short ? 'u' : 'uren'}`
     }
 
     interval = Math.round(seconds / 60)
     if (interval > 1) {
-      return `${interval} minuten`
+      return `${interval} ${short ? 'min' : 'minuten'}`
     }
     interval = Math.round(seconds)
-    return `${interval} seconden`
+    return `${interval} ${short ? 'sec' : 'seconden'}`
   }
 }

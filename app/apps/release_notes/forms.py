@@ -28,7 +28,8 @@ class ReleaseNoteAanpassenForm(forms.ModelForm):
             }
         ),
         label="Beschrijving",
-        max_length=1000,
+        help_text="Max 5000 tekens.",  # @TODO @Remco Add validation and counter.
+        max_length=5000,
     )
 
     # Currently not used
@@ -48,7 +49,7 @@ class ReleaseNoteAanpassenForm(forms.ModelForm):
                 "accept": ".jpg, .jpeg, .png, .heic, .gif",
                 "data-action": "change->bijlagen#updateImageDisplay",
                 "data-bijlagen-target": "bijlagenExtra",
-                "multiple": "multiple",
+                # "multiple": "multiple",
                 "hideLabel": True,
             }
         ),

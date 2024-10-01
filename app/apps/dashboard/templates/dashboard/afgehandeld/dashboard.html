@@ -14,10 +14,110 @@
             <p>
                 De informatie die verzameld is voor onderstaande grafieken, is samengesteld op basis van de afhandel datum van meldingen in de gekozen periode. Hier is dan ook informatie verzameld over meldingen die ver voor de gekozen periode gestart kunnen zijn.
             </p>
-            <div class="grid-container" data-controller="chart-utils">
+            <p>
+                Een afgehandelde melding bestaat grofweg uit 4 fasen die elkaar afwisselen. Iedere fase bestaat weer uit 1 of meer statussen.
+            </p>
+            <div class="grid-container grid-container--4cols">
+                <div class="grid-item">
+                    <strong>Midoffice</strong>
+                    <ul>
+                        <li>Openstaande</li>
+                        <li>Controle</li>
+                    </ul>
+                </div>
+                <div class="grid-item">
+                    <strong>Uitvoer</strong>
+                    <ul>
+                        <li>In behandeling</li>
+                    </ul>
+                </div>
+                <div class="grid-item">
+                    <strong>Wachten</strong>
+                    <ul>
+                        <li>Pauze</li>
+                        <li>Wachten op melder</li>
+                    </ul>
+                </div>
+                <div class="grid-item">
+                    <strong>Afgehandeld</strong>
+                    <ul>
+                        <li>Geannuleerd</li>
+                        <li>Afgehandeld</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <section class="section--seperated--l">
+            <div class="grid-container grid-container--full"
+                 data-controller="chart-utils">
                 {% include "charts/base_chart.html" with title="Doorlooptijden" description="Midoffice duur is bepaald door de optelling van alle tijd dat de melding in controle staat en de optelling van dat de melding op openstaand staat. De uitvoer duur wordt bepaald door de optellingen van alle keren dat de melding in behandeling staat. Wachten wordt berekend door de duur van alle pauze statussen op te tellen. De afgehandeld duur wordt bepaald doordat de melding heropend is, dus dan heeft de melding meer dan 1 afgehandeld status." period_title=title tabs=afgehandeld_tabs options=stacked_bars_options data_type="duration" only %}
             </div>
         </section>
+        <section class="section--seperated--l">
+            <div class="grid-container grid-container--full"
+                 data-controller="chart-utils">
+                {% include "charts/base_chart.html" with title="Doorlooptijden per status verandering" description="" period_title=title tabs=status_veranderingen_tabs data_type="duration" only %}
+            </div>
+        </section>
+        {% if not wijk or not onderwerp %}
+            <section class="section--seperated--l">
+                <div>
+                    <h2>Top 10 totaal gemiddelde doorlooptijden</h2>
+                    <div class="grid-container grid-container--half">
+                        {% for tabel in doorlooptijden_onderwerp %}
+                            {% if forloop.first %}
+                                {% if not onderwerp %}
+                                    <div class="grid-item bgc-white">
+                                        {% include "charts/dashboard_item.html" with title=tabel.title description="" period_title=title head=tabel.head body=tabel.body only %}
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        {% for tabel in doorlooptijden_wijk %}
+                            {% if forloop.first %}
+                                {% if not wijk %}
+                                    <div class="grid-item bgc-white">
+                                        {% include "charts/dashboard_item.html" with title=tabel.title description="" period_title=title head=tabel.head body=tabel.body only %}
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+        {% endif %}
+        {% if not onderwerp %}
+            <section class="section--seperated--l">
+                <div>
+                    <h2>Top 10 gemiddelde doorlooptijden van alle onderwerp per fase</h2>
+                    <div class="grid-container grid-container--4cols">
+                        {% for tabel in doorlooptijden_onderwerp %}
+                            {% if forloop.counter >= 2 and forloop.counter < 7 %}
+                                <div class="grid-item bgc-white">
+                                    {% include "charts/dashboard_item.html" with title=tabel.title description="" period_title=title head=tabel.head body=tabel.body only %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+        {% endif %}
+        {% if not wijk %}
+            <section class="section--seperated--l">
+                <div>
+                    <h2>Top 10 gemiddelde doorlooptijden van alle wijken per fase</h2>
+                    <div class="grid-container grid-container--4cols">
+                        {% for tabel in doorlooptijden_wijk %}
+                            {% if forloop.counter >= 2 and forloop.counter < 7 %}
+                                <div class="grid-item bgc-white">
+                                    {% include "charts/dashboard_item.html" with title=tabel.title description="" period_title=title head=tabel.head body=tabel.body only %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+        {% endif %}
     </div>
     <div class="screen-xl--notification">
         <p>Deze pagina is alleen te bekijken op een groter scherm.</p>

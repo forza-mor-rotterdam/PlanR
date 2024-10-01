@@ -32,7 +32,10 @@
                                     data-chart-line-datasets-param="{{ tab.datasets|json_encode }}"
                                     class="{% if forloop.first %} active{% endif %}">
                                 <span class="h3"
-                                      {% if data_type %}data-chart-line-target="{{ data_type }}ToHuman"{% endif %}>{{ tab.aantal }}</span>
+                                      {% if data_type %}data-chart-line-target="{{ data_type }}ToHuman" data-duration-to-human-long="true"{% endif %}
+                                      data-aantal="{{ tab.aantal }}">{{ tab.aantal }}
+                                    {% if eenheid %}{{ eenheid }}{% endif %}
+                                </span>
                                 <span class="decorated">{{ tab.titel }}</span>
                             </button>
                         </li>
@@ -43,10 +46,12 @@
         <div>
             <canvas data-chart-line-target="canvas"></canvas>
         </div>
-        <div class="dashboard-item-footer">
-            <p>
-                <a href="#">Toon deze meldingen</a>
-            </p>
-        </div>
+        {% if toon_meldingen_link %}
+            <div class="dashboard-item-footer">
+                <p>
+                    <a href="#">Toon deze meldingen</a>
+                </p>
+            </div>
+        {% endif %}
     </div>
 </div>

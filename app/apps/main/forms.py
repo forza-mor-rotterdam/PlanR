@@ -18,6 +18,24 @@ from utils.rd_convert import rd_to_wgs
 logger = logging.getLogger(__name__)
 
 
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = [single_file_clean(data, initial)]
+        return result
+
+
 class CheckboxSelectMultiple(forms.CheckboxSelectMultiple):
     template_name = "widgets/checkbox_options_grouped.html"
 
@@ -187,12 +205,14 @@ class FilterForm(forms.Form):
             for cls in kolom_classes
         ]
 
-    def _get_filter_choices(self, filter_classes, filter_options):
+    def _get_filter_choices(self, filter_classes, filter_options, gebruiker_context):
         return [
             {
                 "key": cls.key(),
                 "naam": cls.label(),
-                "opties": cls(filter_options.get(cls.key(), {})).opties(),
+                "opties": cls(
+                    filter_options.get(cls.key(), {}), gebruiker_context
+                ).opties(),
                 "aantal_actief": len(self.data.getlist(cls.key(), [])),
             }
             for cls in filter_classes
@@ -209,6 +229,7 @@ class FilterForm(forms.Form):
         self.filter_velden = self._get_filter_choices(
             get_valide_filter_classes(gebruiker_context),
             meldingen_response_data.get("filter_options", {}),
+            gebruiker_context,
         )
 
         self.fields["offset"].choices = self._get_offset_choices()
@@ -270,13 +291,14 @@ class InformatieToevoegenForm(forms.Form):
         max_length=5000,
     )
 
-    bijlagen_extra = forms.FileField(
-        widget=forms.widgets.FileInput(
+    bijlagen_extra = MultipleFileField(
+        widget=MultipleFileInput(
             attrs={
                 "accept": ".jpg, .jpeg, .png, .heic",
                 "data-action": "change->bijlagen#updateImageDisplay",
                 "data-bijlagen-target": "bijlagenExtra",
-                "multiple": "multiple",
+                "class": "file-upload-input",
+                # "multiple": "multiple",
             }
         ),
         label="Voeg één of meerdere foto's toe",
@@ -288,7 +310,7 @@ class TaakStartenForm(forms.Form):
     afdeling = forms.ChoiceField(
         label="Afdeling",
         required=True,
-        widget=RadioSelect(
+        widget=forms.RadioSelect(
             attrs={
                 "class": "form-check-input",
             }
@@ -296,7 +318,7 @@ class TaakStartenForm(forms.Form):
     )
 
     onderwerp_gerelateerd_taaktype = forms.ChoiceField(
-        widget=RadioSelect(
+        widget=forms.RadioSelect(
             attrs={
                 "data-taakstartenformulier-target": "onderwerpGerelateerdTaaktypeField",
                 "class": "form-check-input",
@@ -307,7 +329,7 @@ class TaakStartenForm(forms.Form):
     )
 
     taaktype = forms.ChoiceField(
-        widget=RadioSelect(
+        widget=forms.RadioSelect(
             attrs={
                 "data-taakstartenformulier-target": "taaktypeField",
                 "class": "form-check-input",
@@ -324,7 +346,7 @@ class TaakStartenForm(forms.Form):
             attrs={
                 "class": "form-control",
                 "data-testid": "information",
-                "rows": "4",
+                "rows": "2",
             }
         ),
         required=False,
@@ -361,7 +383,7 @@ class TaakStartenForm(forms.Form):
 
 class TaakAfrondenForm(forms.Form):
     resolutie = forms.ChoiceField(
-        widget=RadioSelect(
+        widget=forms.RadioSelect(
             attrs={
                 "class": "list--form-radio-input",
                 "data-action": "change->bijlagen#updateImageDisplay",
@@ -371,13 +393,14 @@ class TaakAfrondenForm(forms.Form):
         choices=[[x[4], x[1]] for x in TAAK_BEHANDEL_OPTIES],
         required=True,
     )
-    bijlagen = forms.FileField(
-        widget=forms.widgets.FileInput(
+    bijlagen = MultipleFileField(
+        widget=MultipleFileInput(
             attrs={
                 "accept": ".jpg, .jpeg, .png, .heic",
                 "data-action": "change->bijlagen#updateImageDisplay",
                 "data-bijlagen-target": "bijlagenAfronden",
-                "multiple": "multiple",
+                "class": "file-upload-input",
+                # "multiple": "multiple",
             }
         ),
         label="Foto's",
@@ -815,13 +838,14 @@ class MeldingAanmakenForm(forms.Form):
         required=True,
     )
 
-    bijlagen = forms.FileField(
-        widget=forms.widgets.FileInput(
+    bijlagen = MultipleFileField(
+        widget=MultipleFileInput(
             attrs={
                 "accept": ".jpg, .jpeg, .png, .heic",
                 "data-action": "change->bijlagen#updateImageDisplay",
                 "data-bijlagen-target": "bijlagenNieuw",
-                "multiple": "multiple",
+                "class": "file-upload-input",
+                # "multiple": "multiple",
             }
         ),
         label="Foto's",
@@ -1032,13 +1056,13 @@ class MSBMeldingZoekenForm(forms.Form):
     )
 
 
-# Standaard externe omschrijving forms
+# Standaard teksts forms
 
 
 class StandaardExterneOmschrijvingAanpassenForm(forms.ModelForm):
     titel = forms.CharField(
         label="Afhandelreden",
-        help_text="Deze tekst wordt gebruikt om de juiste standaard externe omschrijving te selecteren.",
+        help_text="Deze tekst wordt gebruikt om de juiste standaard tekst te selecteren.",
         widget=forms.TextInput(
             attrs={
                 "data-externeomschrijvingformulier-target": "externeOmschrijvingTitel",

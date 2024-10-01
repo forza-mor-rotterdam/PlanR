@@ -151,7 +151,7 @@ class RechtengroepVerwijderenPermissie(BasisPermissie):
     codenaam = "rechtengroep_verwijderen"
 
 
-# Rechten voor Standaard Externe Omschrijvingen
+# Rechten voor Standaard Teksten
 
 
 class StandaardExterneOmschrijvingLijstBekijkenPermissie(BasisPermissie):
