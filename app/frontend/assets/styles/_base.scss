@@ -33,12 +33,22 @@ html {
     aside {
         width: 227px;
         height: 100vh;
-        border-right: 1px solid $green-400;
         box-sizing: border-box;
         transition: width 0.25s ease-in-out;
+        position: fixed;
+        border-right: 1px solid $green-400;
+        &.nav--small {
+            width: 60px;
+        }
+    }
+
+    .nav--small + .container__main {
+        margin-left: 60px;
     }
     .container__main {
+        margin-left: 227px;
         flex: 1;
+        transition: margin-left 0.25s ease-in-out;
 
         > .bar {
             border-bottom: 1px solid $green-400;

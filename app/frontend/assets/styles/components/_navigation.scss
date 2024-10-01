@@ -6,6 +6,7 @@
 }
 
 .list-nav--secondary {
+    margin: 0.6em 0;
     a {
         font-size: 0.6em;
     }
@@ -55,13 +56,19 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    overflow: hidden;
     h1 {
         font-size: 1.2em;
         white-space: nowrap;
-        padding-left: 0.5em;
+        padding-left: 0.9em;
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
     }
-    a,
-    button {
+    .btn,
+    .menu-toggle {
         color: $black;
         text-decoration: none;
         font-weight: 700;
@@ -73,11 +80,22 @@
         position: relative;
         background-color: transparent;
         white-space: nowrap;
+        border: 0;
+        line-height: inherit;
+        margin-bottom: 0;
+        text-align: left;
         svg {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
             left: 8px;
+            path {
+                fill: $black;
+            }
+        }
+
+        span {
+            padding: 0;
         }
 
         &:hover,
@@ -126,11 +144,14 @@
             border: none;
             width: 100%;
             text-align: left;
-            padding-left: 48px;
+            padding: 14px 0 14px 48px;
+            height: 45px;
+            cursor: pointer;
 
             svg {
                 left: 20px;
                 transform: scaleX(-1) translateY(-50%);
+                transition: transform 0.25s ease-in-out;
             }
         }
     }
@@ -150,38 +171,42 @@
     .container__logo {
         height: 1em;
         padding: 1em 0.6em 1em calc(8px + 0.6em);
+        position: relative;
         .logo {
-            margin: 0 0 0 8px;
+            // margin: 0 0 0 8px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.25s ease-in-out;
 
             &--large {
-                display: block;
+                opacity: 1;
                 height: 28px;
                 width: 141px;
             }
             &--small {
-                display: none;
+                opacity: 0;
                 height: 16px;
                 width: 81px;
-                margin-left: -28px;
             }
         }
     }
 
     &.nav--small {
-        width: 60px;
-
         .nav--wide {
             display: none;
             opacity: 0;
         }
         .logo--large {
-            display: none;
+            opacity: 0;
         }
         .logo--small {
-            display: block;
+            opacity: 1;
         }
 
         .menu-toggle {
+            padding: 14px 0 14px 48px;
             svg {
                 transform: scaleX(1) translateY(-50%);
             }
