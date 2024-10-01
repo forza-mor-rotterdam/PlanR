@@ -903,10 +903,14 @@ form.taak--start {
 
             &.checked,
             &:hover,
-            &:focus {
+            &:has(input:focus) {
                 border-color: $green-tint01;
                 color: $green-tint01;
-                font-weight: 700;
+            }
+            &:has(input:focus):has(input:checked) {
+                border-color: $green-tint01;
+                color: $green-tint01;
+                text-decoration: underline;
             }
         }
         input.form-check-input {
