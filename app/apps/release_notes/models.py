@@ -196,7 +196,9 @@ class ReleaseNote(BasisModel):
             tag.attrs = {
                 k: v
                 for k, v in tag.attrs.items()
-                if not k.startswith("on") and "javascript:" not in v
+                if not k.startswith("on")
+                and k not in ["srcdoc"]
+                and "javascript:" not in v
             }
 
         self.beschrijving = str(soup)
