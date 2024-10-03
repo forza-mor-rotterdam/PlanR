@@ -15,6 +15,11 @@
         @media (min-width: map-get($grid-breakpoints, md)) {
             display: flex;
             flex: 1;
+            flex-wrap: wrap;
+
+            > div {
+                margin-bottom: 0.25em;
+            }
         }
     }
 
@@ -34,23 +39,10 @@
 }
 
 .filter-header {
-    h1 {
-        margin: 0 16px 16px 0;
-    }
-
+    font-size: 0.7em;
     @media (min-width: map-get($grid-breakpoints, md)) {
         display: flex;
         justify-content: space-between;
-
-        h1 {
-            margin-bottom: 0;
-        }
-    }
-
-    .container__flex {
-        display: flex;
-        align-items: baseline;
-        flex: 1;
     }
 }
 
@@ -88,7 +80,6 @@
     }
 
     @media (min-width: map-get($grid-breakpoints, md)) {
-        padding: 0 12px 0 0;
         width: 455px;
     }
 }

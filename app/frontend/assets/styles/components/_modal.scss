@@ -189,7 +189,7 @@ body.show-modal--first-filter {
                 transform: translateY(-50%);
 
                 opacity: 1;
-                transition: opacity 0.25s ease-in;
+                transition: opacity $transition-duration-default ease-in;
 
                 span {
                     display: block;

@@ -7,13 +7,13 @@ export default class extends Controller {
 
   connect() {
     console.log(sessionStorage.getItem('navSmall'))
-    this.element.classList.add(sessionStorage.getItem('navSmall'))
+    document.body.classList.add(sessionStorage.getItem('navSmall'))
   }
 
   toggleMenu(e) {
-    this.element.classList.toggle('nav--small')
+    document.body.classList.toggle('nav--small')
     console.log(sessionStorage.getItem('navSmall') === 'true')
-    let navSize = this.element.classList.contains('nav--small')
+    let navSize = document.body.classList.contains('nav--small')
       ? 'nav--small'
       : 'sessionStorage.setItem'
     sessionStorage.setItem('navSmall', navSize)

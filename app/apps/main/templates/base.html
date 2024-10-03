@@ -81,7 +81,9 @@
             {% endblock aside %}
             <div class="container__main">
                 {% block header %}
-                    {% include "snippets/pageheader.html" %}
+                    {% with pageTitle="PlanR" %}
+                        {% include "snippets/pageheader.html" %}
+                    {% endwith %}
                 {% endblock header %}
                 <main data-controller="main">
                     <div class="container">
