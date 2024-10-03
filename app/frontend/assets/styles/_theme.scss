@@ -17,6 +17,7 @@ $green-tint01: #00811f;
 $green-tint02: #006e32;
 $green-tint03: #006e32;
 $green-tint04: #ebf5ed;
+$green-400: #cfdbd5;
 $green-600: #e3f4dd;
 
 //badges, beetje vreemde kleuren, nog niet elders tegengekomen
@@ -134,7 +135,7 @@ $h5-font-size: 1rem;
 $h6-font-size: 0.8888rem;
 $font-size-base: 1rem;
 
-$body-color: $gray-tint11;
+$body-color: $black;
 $text-muted: $gray-tint09;
 
 // Form text
@@ -264,3 +265,7 @@ $card-height: 100%;
 
 // Labels
 $dt-font-weight: 700;
+
+//transition
+$transition-duration-default: 0.25s;
+$transition-ease-default: ease-in-out;

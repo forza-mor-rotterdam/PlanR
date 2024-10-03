@@ -3,8 +3,12 @@
 {% block title %}
     Bedankt | PlanR
 {% endblock title %}
+{% block header %}
+    {% with pageTitle="Bedankt" %}
+        {% include "snippets/pageheader.html" %}
+    {% endwith %}
+{% endblock header %}
 {% block body %}
-    <h1>Bedankt</h1>
     <p>Het serviceverzoek is ingediend</p>
     {% if meldingen_signaal %}<p>Het verzoeknummer is: {{ meldingen_signaal.melding }}</p>{% endif %}
     <a href="{% url 'melding_aanmaken' %}" class="btn btn-action">

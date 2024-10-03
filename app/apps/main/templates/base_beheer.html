@@ -2,6 +2,11 @@
 {% block title %}
     Beheer | PlanR
 {% endblock title %}
+{% block header %}
+    {% with pageTitle="Beheer" %}
+        {% include "snippets/pageheader.html" %}
+    {% endwith %}
+{% endblock header %}
 {% block pageheader %}
     {% with hide_menu=True screen_wide=True page_title="PlaRR" %}{{ block.super }}{% endwith %}
 {% endblock pageheader %}

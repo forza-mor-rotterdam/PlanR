@@ -2,11 +2,16 @@
 {% block title %}
     Rollen | Beheer | PlanR
 {% endblock title %}
+{% block header %}
+    {% with pageTitle="Rollen" %}
+        {% include "snippets/pageheader.html" %}
+    {% endwith %}
+{% endblock header %}
 {% block body %}
     <turbo-frame id="beheer" data-turbo-action="advance">
     <div class="page__beheer" data-controller="row-search">
         <div>
-            <a href="{% url 'beheer' %}" class="link--back">
+            <a href="{% url 'beheer' %}" class="link--back" data-turbo-frame="_top">
                 <svg width="25"
                      height="16"
                      viewBox="0 0 25 16"
@@ -18,7 +23,7 @@
             </a>
         </div>
         <div class="container__flex">
-            <h1>Rollen</h1>
+            <h1>Rollen overzicht</h1>
             <a class="btn btn-action" href="{% url 'context_aanmaken' %}">
                 <svg width="24"
                      height="24"

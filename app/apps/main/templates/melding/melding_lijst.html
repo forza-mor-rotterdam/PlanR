@@ -10,6 +10,11 @@
 {% block title %}
     Meldingen overzicht | PlanR
 {% endblock title %}
+{% block header %}
+    {% with pageTitle="Meldingen" %}
+        {% include "snippets/pageheader.html" %}
+    {% endwith %}
+{% endblock header %}
 {% block body %}
     <turbo-frame id="overview">
     <div data-controller="overview">
@@ -20,17 +25,13 @@
               data-turbo-action="advance">
             {% csrf_token %}
             <div class="filter-header">
-                <div class="container__flex">
-                    <h1 class="page-title">Meldingen</h1>
-                    <span class="help-text">
-                        {% if form.limit.value|add:0 <= data.count %}
-                            {{ form.pagina_eerste_melding }} - {{ form.pagina_laatste_melding }} van {{ data.count }} resultaten
-                        {% else %}
-                            {{ data.count }} resultaten
-                        {% endif %}
-                    </span>
-                </div>
-                <div class="container__search" data-filter-target="containerSearch">{{ form.q|render_rotterdam_formulier }}</div>
+                <span>
+                    {% if form.limit.value|add:0 <= data.count %}
+                        {{ form.pagina_eerste_melding }} - {{ form.pagina_laatste_melding }} van {{ data.count }} resultaten
+                    {% else %}
+                        {{ data.count }} resultaten
+                    {% endif %}
+                </span>
             </div>
             <div class="container__tools">
                 <div class="container__filter" data-filter-target="filterOverview">
@@ -50,6 +51,7 @@
                         {% endwith %}
                     {% endfor %}
                 </div>
+                <div class="container__search" data-filter-target="containerSearch">{{ form.q|render_rotterdam_formulier }}</div>
             </div>
             <div class="container__table">
                 <table class="table--overview">

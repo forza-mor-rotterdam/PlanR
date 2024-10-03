@@ -3,12 +3,16 @@
 {% block title %}
     Nieuw in PlanR | PlanR
 {% endblock title %}
+{% block header %}
+    {% with pageTitle="Nieuw in PlanR" %}
+        {% include "snippets/pageheader.html" %}
+    {% endwith %}
+{% endblock header %}
 {% block body %}
     <turbo-frame id="release_notes" data-turbo-action="advance">
     <div class="page__beheer" data-controller="row-search">
         <div>
-            <h1 class="pagetitle">Nieuw in PlanR</h1>
-            <ul class="list-clean border-top">
+            <ul class="list-clean">
                 {% for release_note in release_notes %}
                     <li class="list-item{% if not release_note.is_unwatched %} inactive{% endif %}">
                         <a class="no--link"

@@ -9,7 +9,7 @@ body {
     margin: 0;
     font-family: "Bolder", sans-serif;
     font-size: 1em;
-    color: $gray-tint11;
+    color: $body-color;
     background-color: $gray-tint00;
 
     @media (min-width: map-get($grid-breakpoints, sm)) {
@@ -27,17 +27,56 @@ html {
     height: 100%;
 }
 
-body,
-main,
-header {
-    margin: 0 auto;
+.container__toplevel {
+    display: flex;
 
-    > .container,
-    > .container--env .container {
-        display: block;
-        max-width: map-get($container-max-widths, xxl);
-        margin: 0 auto;
+    aside {
+        width: 227px;
+        height: 100vh;
+        box-sizing: border-box;
+        transition: width $transition-duration-default $transition-ease-default;
+        position: fixed;
+        border-right: 1px solid $green-400;
+
+        .nav--small & {
+            width: 60px;
+        }
     }
+
+    .container__main {
+        margin-left: 227px;
+        flex: 1;
+        transition: margin-left $transition-duration-default $transition-ease-default;
+
+        > .bar {
+            border-bottom: 1px solid $green-400;
+            height: 67px;
+            width: 100%;
+            background-color: transparent;
+        }
+        main {
+            padding: 1em 0.75em 0;
+            margin-bottom: 5em;
+        }
+    }
+}
+
+.nav--small {
+    aside + .container__main {
+        margin-left: 60px;
+    }
+}
+
+body,
+main {
+    // margin: 0 auto;
+
+    // > .container,
+    // > .container--env .container {
+    //     display: block;
+    //     max-width: map-get($container-max-widths, xxl);
+    //     margin: 0 auto;
+    // }
 }
 
 body.wide--xl {
@@ -583,7 +622,7 @@ body.no-js {
 .show-vertical {
     max-height: 100%;
     padding-top: 16px;
-    transition: all 0.25s ease-in;
+    transition: all $transition-duration-default ease-in;
 
     &.container__sorting {
         max-height: 100px;
@@ -604,9 +643,9 @@ body.no-js {
     padding-top: 0;
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.25s ease-in;
+    transition: max-height $transition-duration-default ease-in;
     &.container__sorting {
-        transition: all 0.25s ease-in;
+        transition: all $transition-duration-default ease-in;
     }
 }
 
@@ -697,37 +736,6 @@ body.no-js {
     border-bottom: 1px solid $gray-600;
 }
 
-.bar {
-    background-color: $gray-tint01;
-    &--top {
-        height: 48px;
-        width: 100%;
-
-        .list-nav--tertiary {
-            small {
-                @extend .visually-hidden;
-            }
-        }
-
-        @media (min-width: map-get($grid-breakpoints, lg)) {
-            .list-nav--tertiary {
-                small {
-                    display: inline;
-                    position: relative;
-                    overflow: visible;
-                    clip: auto;
-                    height: auto;
-                    width: auto;
-                    margin: 0;
-                    padding: 0;
-                    border: 0;
-                    pointer-events: all;
-                }
-            }
-        }
-    }
-}
-
 .counter {
     display: block;
     margin-top: -1.5em;
@@ -773,7 +781,7 @@ body.no-js {
     -webkit-box-orient: vertical;
     width: 100%;
     z-index: 20;
-    transition: max-height 0.25s ease-in-out;
+    transition: max-height $transition-duration-default $transition-ease-default;
     background-color: inherit;
 
     svg {

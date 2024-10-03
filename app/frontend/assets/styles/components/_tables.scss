@@ -75,9 +75,14 @@
     }
 
     tbody tr {
+        background-color: $white;
+
+        td {
+            border-bottom: 1px solid $green-400;
+        }
         &:hover {
             cursor: pointer;
-            background-color: $gray-tint02;
+            background-color: $gray-tint01;
         }
     }
 
