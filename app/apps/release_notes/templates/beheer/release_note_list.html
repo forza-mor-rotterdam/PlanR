@@ -21,7 +21,8 @@
         <div class="container__flex">
             <h1>Release Notes</h1>
             <a class="btn btn-action btn-240"
-               href="{% url 'release_note_aanmaken' %}">
+               href="{% url 'release_note_aanmaken' %}"
+               data-turbo="false">
                 <svg width="24"
                      height="24"
                      viewBox="0 0 32 32"
@@ -67,7 +68,8 @@
                         <td data-row-search-target="searchable">{{ release_note.publicatie_datum }}</td>
                         <td>
                             <a href="{% url 'release_note_aanpassen' release_note.pk %}"
-                               aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
+                               aria-label="Aanpassen"
+                               data-turbo="false">{% include "icons/edit.svg" %}</a>
                         </td>
                         <td>
                             <a href="{% url 'release_note_verwijderen' release_note.pk %}"
