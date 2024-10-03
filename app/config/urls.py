@@ -422,6 +422,7 @@ urlpatterns = [
         kwargs={"type": "taken", "status": "nieuw"},
         name="dashboard",
     ),
+    path("ckeditor5/", include("django_ckeditor_5.urls")),
 ]
 
 if settings.OIDC_ENABLED:

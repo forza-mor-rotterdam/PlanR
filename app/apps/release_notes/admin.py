@@ -1,11 +1,11 @@
 from apps.main.utils import truncate_tekst
 from apps.release_notes.tasks import task_aanmaken_afbeelding_versies
-from ckeditor.widgets import CKEditorWidget
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
-from django.db import models
 
 from .models import Bijlage, ReleaseNote
+
+# from django_ckeditor_5.widgets import CKEditor5Widget
 
 
 class BijlageInline(GenericTabularInline):
@@ -17,9 +17,9 @@ class ReleaseNoteAdmin(admin.ModelAdmin):
     def korte_tekst(self, obj):
         return truncate_tekst(obj.beschrijving)
 
-    formfield_overrides = {
-        models.TextField: {"widget": CKEditorWidget()},
-    }
+    # formfield_overrides = {
+    #     models.TextField: {"widget": CKEditor5Widget()},
+    # }
     list_display = ("titel", "korte_tekst", "aangemaakt_op", "publicatie_datum")
     search_fields = ("titel",)
     list_filter = ("aangemaakt_op", "publicatie_datum")
