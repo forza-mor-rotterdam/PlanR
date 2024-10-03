@@ -26,3 +26,14 @@ class ReleaseNoteTest(TestCase):
         )
         release_note.save()
         self.assertEqual(release_note.beschrijving, beschrijving_clean)
+
+    def test_beschrijving_strip_attr_with_js(self):
+        beschrijving_clean = "<p>mock</p>"
+        beschrijving_dirty = "<p href=\"javascript:alert('hi');\">mock</p>"
+        release_note = ReleaseNote(
+            titel="mock",
+            publicatie_datum=datetime.datetime.now(),
+            beschrijving=beschrijving_dirty,
+        )
+        release_note.save()
+        self.assertEqual(release_note.beschrijving, beschrijving_clean)
