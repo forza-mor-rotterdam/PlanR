@@ -30,7 +30,7 @@
                 > a {
                     font-weight: 700;
                     text-decoration: none;
-                    color: inherit;
+                    color: $black;
                     font-size: 0.7em;
                     padding: 0.7em 0 0.5em;
 
@@ -56,17 +56,19 @@
 
         @media (min-width: map-get($grid-breakpoints, lg)) {
             .list-nav--tertiary {
-                small {
-                    display: inline;
-                    position: relative;
-                    overflow: visible;
-                    clip: auto;
-                    height: auto;
-                    width: auto;
-                    margin: 0;
-                    padding: 0;
-                    border: 0;
-                    pointer-events: all;
+                a {
+                    color: inherit;
+                    font-weight: 700;
+                    text-decoration: none;
+                    font-size: 0.7em;
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
+
+                    svg {
+                        margin-right: 0.5em;
+                    }
                 }
             }
         }
