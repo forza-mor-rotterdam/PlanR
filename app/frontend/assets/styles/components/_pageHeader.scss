@@ -32,16 +32,23 @@
                     text-decoration: none;
                     color: inherit;
                     font-size: 0.7em;
+                    padding: 0.7em 0 0.5em;
 
                     svg {
                         vertical-align: sub;
                         margin-left: 0.5em;
                     }
                 }
+                .legenda {
+                    top: 25px;
+                    right: -5px;
+                    left: auto;
+                }
             }
         }
 
         .list-nav--tertiary {
+            display: block;
             small {
                 @extend .visually-hidden;
             }
