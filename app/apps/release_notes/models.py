@@ -193,7 +193,11 @@ class ReleaseNote(BasisModel):
 
         # remove attributes starting with 'on'
         for tag in soup.find_all(True):
-            tag.attrs = {k: v for k, v in tag.attrs.items() if not k.startswith("on")}
+            tag.attrs = {
+                k: v
+                for k, v in tag.attrs.items()
+                if not k.startswith("on") and "javascript:" not in v
+            }
 
         self.beschrijving = str(soup)
 
