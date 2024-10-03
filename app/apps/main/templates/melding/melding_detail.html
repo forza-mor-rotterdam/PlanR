@@ -20,6 +20,11 @@
     {% endfor %}
     {{ melding.id }} | PlanR
 {% endblock title %}
+{% block header %}
+    {% with pageTitle="Meldingen" %}
+        {% include "snippets/pageheader.html" %}
+    {% endwith %}
+{% endblock header %}
 {% block body_class %}
     has-page-navigation
 {% endblock body_class %}

@@ -4,6 +4,11 @@
 {% block title %}
     Gebruikerslijst | Beheer | PlanR
 {% endblock title %}
+{% block header %}
+    {% with pageTitle="Gebruikers" %}
+        {% include "snippets/pageheader.html" %}
+    {% endwith %}
+{% endblock header %}
 {% block body %}
     <turbo-frame id="beheer" data-turbo-action="advance">
     <div class="page__beheer"
@@ -12,7 +17,8 @@
         <div>
             <a href="{% url 'beheer' %}"
                class="link--back"
-               data-turbo-action="advance">
+               data-turbo-action="advance"
+               data-turbo-frame="_top">
                 <svg width="25"
                      height="16"
                      viewBox="0 0 25 16"

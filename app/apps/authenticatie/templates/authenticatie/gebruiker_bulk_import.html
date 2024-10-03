@@ -4,6 +4,11 @@
 {% block title %}
     Gebruiker bulk import | Beheer | PlanR
 {% endblock title %}
+{% block header %}
+    {% with pageTitle="Gebruikers" %}
+        {% include "snippets/pageheader.html" %}
+    {% endwith %}
+{% endblock header %}
 {% block body %}
     <turbo-frame id="beheer" data-turbo-action="advance">
     <div class="page__beheer" data-controller="row-search">
@@ -186,7 +191,7 @@
             </ul>
             <a href="{% url 'gebruiker_bulk_import' %}">Nog meer gebruikers aanmaken</a>
             <br>
-            <a href="{% url 'beheer' %}">Beheer</a>
+            <a href="{% url 'beheer' %}" data-turbo-frame="_top">Beheer</a>
         {% endif %}
     </div>
     </turbo-frame>

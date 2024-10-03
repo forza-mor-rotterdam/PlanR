@@ -4,6 +4,11 @@
 {% block title %}
     Taaktype Categorie Aanmaken | Beheer | PlanR
 {% endblock title %}
+{% block header %}
+    {% with pageTitle="Taaktype Categorieën" %}
+        {% include "snippets/pageheader.html" %}
+    {% endwith %}
+{% endblock header %}
 {% block body %}
     <turbo-frame id="beheer" data-turbo-action="advance">
     <div class="page__beheer">

@@ -8,6 +8,11 @@
     {% endif %}
     | Beheer | PlanR
 {% endblock title %}
+{% block header %}
+    {% with pageTitle="Rechtengroepen" %}
+        {% include "snippets/pageheader.html" %}
+    {% endwith %}
+{% endblock header %}
 {% block body %}
     <turbo-frame id="beheer">
     <div class="page__beheer" data-turbo-action="advance">

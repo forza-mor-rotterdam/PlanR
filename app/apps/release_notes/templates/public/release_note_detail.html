@@ -3,6 +3,11 @@
 {% block title %}
     {{ release_note.titel|capfirst }} | Nieuw in PlanR | PlanR
 {% endblock title %}
+{% block header %}
+    {% with pageTitle="Nieuw in PlanR" %}
+        {% include "snippets/pageheader.html" %}
+    {% endwith %}
+{% endblock header %}
 {% block body %}
     <turbo-frame id="release_notes" data-turbo-action="advance">
     <div class="page__beheer" data-controller="row-search">
@@ -17,7 +22,7 @@
                 </svg>
             </a>
         </div>
-        <h1 class="pagetitle">{{ release_note.titel|capfirst }}</h1>
+        <h1 class="pagetitle h2">{{ release_note.titel|capfirst }}</h1>
         {% if release_note.publicatie_datum %}<p class="release-date">{{ release_note.publicatie_datum }}</p>{% endif %}
         <p class="description">{{ release_note.beschrijving|safe }}</p>
         <div class="container padding--bottom">

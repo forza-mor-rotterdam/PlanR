@@ -4,8 +4,12 @@
 {% block title %}
     Nieuw melding | PlanR
 {% endblock title %}
+{% block header %}
+    {% with pageTitle="Nieuwe melding" %}
+        {% include "snippets/pageheader.html" %}
+    {% endwith %}
+{% endblock header %}
 {% block body %}
-    <h1>Nieuwe melding</h1>
     <turbo-frame id="melding_aanmaken">
     <form action="{% url 'melding_aanmaken' %}"
           class="form__request"

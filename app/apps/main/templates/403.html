@@ -19,7 +19,7 @@
                         <a href="{% url 'melding_lijst' %}">Meldingen overzicht</a>
                     </li>
                     <li>
-                        <a href="{% url 'beheer' %}" target="_top">Beheer</a>
+                        <a href="{% url 'beheer' %}" data-turbo-frame="_top">Beheer</a>
                     </li>
                 </ul>
                 <div>{% include "auth/rollen_rechten.html" %}</div>

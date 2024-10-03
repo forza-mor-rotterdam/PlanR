@@ -165,9 +165,9 @@
         transition-duration: $transition-duration-default;
         transition-timing-function: $transition-ease-default;
         transition-behavior: allow-discrete;
-        @starting-style {
-            opacity: 0;
-        }
+        // @starting-style {
+        //     opacity: 0;
+        // }
     }
 
     .container__logo {
