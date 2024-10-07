@@ -7,7 +7,6 @@ export default class extends Controller {
 
   connect() {
     let self = this
-    self.searchTimeout = null
     const previousFocusElement = document.getElementById(focusElement?.getAttribute('id'))
     if (previousFocusElement) {
       if (previousFocusElement.name == 'q') {
@@ -33,15 +32,10 @@ export default class extends Controller {
     document.removeEventListener('click', this.clickOutsideHandler)
   }
   onChangeFilter(e) {
-    const self = this
     focusElement = e.target
     clearTimeout(this.searchTimeout)
     if (focusElement.name == 'q') {
-      if (focusElement.value.length <= 2 && focusElement.value.length > 0) {
-        return
-      } else {
-        this.searchTimeout = setTimeout(() => self.element.requestSubmit(), 400)
-      }
+      return
     } else {
       this.element.requestSubmit()
     }
