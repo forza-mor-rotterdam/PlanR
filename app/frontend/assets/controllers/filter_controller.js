@@ -1,11 +1,22 @@
 import { Controller } from '@hotwired/stimulus'
 
 let targetElementInView = null
+let focusElement = null
 export default class extends Controller {
   static targets = ['filterOverview', 'filterButton', 'foldoutStateField', 'containerSearch']
 
   connect() {
     let self = this
+    self.searchTimeout = null
+    const previousFocusElement = document.getElementById(focusElement?.getAttribute('id'))
+    if (previousFocusElement) {
+      if (previousFocusElement.name == 'q') {
+        previousFocusElement.selectionStart = previousFocusElement.selectionEnd =
+          previousFocusElement.value.length
+        previousFocusElement.focus()
+      }
+    }
+
     self.element[self.identifier] = self
     self.containerSelector = '.container__multiselect'
     self.showClass = 'show'
@@ -16,26 +27,24 @@ export default class extends Controller {
         this.positionIntoViewport(rect)
       }
     }
-
-    if (this.hasContainerSearchTarget) {
-      const searchInput = this.containerSearchTarget.querySelector('input[type=search]')
-      searchInput.addEventListener('search', function () {
-        self.element.requestSubmit()
-      })
-      searchInput.addEventListener('blur', function () {
-        if (self.containerSearchTarget.querySelector(['input']).value.length === 0) {
-          self.element.requestSubmit()
-        }
-      })
-    }
-
     window.addEventListener('click', self.clickOutsideHandler.bind(self))
   }
   disconnect() {
     document.removeEventListener('click', this.clickOutsideHandler)
   }
-  onChangeFilter() {
-    this.element.requestSubmit()
+  onChangeFilter(e) {
+    const self = this
+    focusElement = e.target
+    clearTimeout(this.searchTimeout)
+    if (focusElement.name == 'q') {
+      if (focusElement.value.length <= 2 && focusElement.value.length > 0) {
+        return
+      } else {
+        this.searchTimeout = setTimeout(() => self.element.requestSubmit(), 400)
+      }
+    } else {
+      this.element.requestSubmit()
+    }
   }
   clickOutsideHandler(e) {
     let self = this
