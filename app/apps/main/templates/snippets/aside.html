@@ -9,7 +9,8 @@
         <ul class="list-nav--primary">
             {% if request.user.is_authenticated %}
                 <li>
-                    <a class="btn" href="{% url 'root' %}">
+                    <a class="btn {% if '/melding/' in request.path %}active{% endif %}"
+                       href="{% url 'root' %}">
                         {% include "icons/meldingen.svg" %}
                         <span class="nav--wide">Meldingen</span>
                     </a>
@@ -17,7 +18,8 @@
             {% endif %}
             {% if perms.authorisatie.dashboard_bekijken %}
                 <li>
-                    <a class="btn" href="{% url 'dashboard' %}">
+                    <a class="btn {% if '/dashboard/' in request.path %}active{% endif %}"
+                       href="{% url 'dashboard' %}">
                         {% include "icons/dashboard.svg" %}
                         <span class="nav--wide">Dashboard</span>
                     </a>
@@ -29,7 +31,8 @@
         <ul class="list-nav--secondary">
             {% if request.user.is_authenticated %}
                 <li>
-                    <a class="btn" href="{% url 'release_note_lijst_public' %}">
+                    <a class="btn  {% if '/release-notes/' in request.path %}active{% endif %}"
+                       href="{% url 'release_note_lijst_public' %}">
                         {% include "icons/nieuw.svg" %}
                         <span class="nav--wide">Nieuw in PlanR</span>
                         {% if UNWATCHED_COUNT > 0 %}
@@ -46,7 +49,8 @@
             {% endif %}
             {% if perms.authorisatie.beheer_bekijken %}
                 <li>
-                    <a class="btn" href="{% url 'beheer' %}">
+                    <a class="btn  {% if 'beheer' in request.path %}active{% endif %}"
+                       href="{% url 'beheer' %}">
                         {% include "icons/setting_small.svg" %}
                         <span class="nav--wide">Beheer</span>
                     </a>

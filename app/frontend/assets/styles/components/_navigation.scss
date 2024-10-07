@@ -84,7 +84,6 @@
         white-space: nowrap;
         border: 0;
         line-height: inherit;
-        margin-bottom: 0;
         text-align: left;
         svg {
             position: absolute;
@@ -102,7 +101,7 @@
 
         &:hover,
         &:focus,
-        &.selected {
+        &.active {
             background-color: $white;
             svg {
                 path {
@@ -110,6 +109,10 @@
                 }
             }
         }
+    }
+
+    .btn {
+        margin-bottom: 2px;
     }
 
     .container {
@@ -205,6 +208,9 @@
         }
         .logo--small {
             opacity: 1;
+        }
+        .btn {
+            padding-left: 27px;
         }
 
         .menu-toggle {
