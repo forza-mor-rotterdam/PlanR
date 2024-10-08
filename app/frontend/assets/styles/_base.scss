@@ -50,11 +50,11 @@ html {
 
         > .bar {
             border-bottom: 1px solid $green-400;
-            height: 67px;
+            min-height: 67px;
             width: 100%;
             background-color: transparent;
             position: relative;
-            z-index: 1;
+            z-index: 15;
         }
         main {
             padding: 1em 0.75em 0;

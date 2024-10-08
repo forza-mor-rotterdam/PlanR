@@ -33,6 +33,7 @@ export default class extends Controller {
     'navigateImagesLeft',
     'navigateImagesRight',
     'imageCounter',
+    'btnToTop',
   ]
 
   initialize() {
@@ -179,11 +180,31 @@ export default class extends Controller {
     }
 
     document.addEventListener('keyup', keyFunctions)
+    window.addEventListener(
+      'scroll',
+      function () {
+        if (document.body.scrollTop >= 100 || document.documentElement.scrollTop >= 100) {
+          this.btnToTopTarget.classList.add('show')
+        } else {
+          this.btnToTopTarget.classList.remove('show')
+        }
+      }.bind(this),
+      false
+    )
   }
 
   disconnect() {
     document.removeEventListener('keyup', keyFunctions)
   }
+
+  scrollToTop(e) {
+    e.target.blur()
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+  }
+
   selectTab(tabIndex) {
     this.deselectTabs()
     const tabs = Array.from(this.element.querySelectorAll('.btn--tab'))
