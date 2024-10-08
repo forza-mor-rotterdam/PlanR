@@ -3,7 +3,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.contrib.gis.db import models
 from django.forms.models import model_to_dict
-from django.utils.html import mark_safe
 from utils.fields import DictJSONField
 from utils.models import BasisModel
 
@@ -23,25 +22,13 @@ class Gebruiker(AbstractUser):
             return f"{self.first_name}{' ' if self.last_name else ''}{self.last_name}"
         return self.email
 
-    def rollen_verbose(self):
-        return mark_safe(
-            f"rol: <strong>{self.profiel.context.naam if self.profiel.context else '- geen rol - '}</strong>"
-        )
-
-    def rechten_verbose(self):
-        return mark_safe(
-            f"rechten: <strong>{self.groups.all().first().name if self.groups.all() else '- geen rechten - '}</strong>"
-        )
-
     @property
     def rechtengroep(self):
-        return mark_safe(
-            f"{self.groups.all().first().name if self.groups.all() else ''}"
-        )
+        return f"{self.groups.all().first().name if self.groups.all() else ''}"
 
     @property
     def rol(self):
-        return mark_safe(f"{self.profiel.context.naam if self.profiel.context else ''}")
+        return f"{self.profiel.context.naam if self.profiel.context else ''}"
 
     def serialized_instance(self):
         if not self.is_authenticated:
