@@ -36,12 +36,14 @@
                         {% include "icons/nieuw.svg" %}
                         <span class="nav--wide">Nieuw in PlanR</span>
                         {% if UNWATCHED_COUNT > 0 %}
-                            <span class="badge--unread-count nav--wide">
-                                {% if UNWATCHED_COUNT < 101 %}
-                                    {{ UNWATCHED_COUNT }}
-                                {% else %}
-                                    +99
-                                {% endif %}
+                            <span class="badge--unread-count">
+                                <span>
+                                    {% if UNWATCHED_COUNT < 101 %}
+                                        {{ UNWATCHED_COUNT }}
+                                    {% else %}
+                                        +99
+                                    {% endif %}
+                                </span>
                             </span>
                         {% endif %}
                     </a>
@@ -49,7 +51,7 @@
             {% endif %}
             {% if perms.authorisatie.beheer_bekijken %}
                 <li>
-                    <a class="btn  {% if 'beheer' in request.path %}active{% endif %}"
+                    <a class="btn  {% if 'beheer' in request.path and not 'release-notes' in request.path %}active{% endif %}"
                        href="{% url 'beheer' %}">
                         {% include "icons/setting_small.svg" %}
                         <span class="nav--wide">Beheer</span>

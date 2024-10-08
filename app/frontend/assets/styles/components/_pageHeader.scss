@@ -24,26 +24,51 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 0 0.75em;
+            padding: 0 1.2em;
 
             .container__uitklapper {
-                > span,
-                a {
+                > span {
                     font-weight: 700;
                     text-decoration: none;
                     color: $black;
-                    font-size: 0.7em;
-                    padding: 0.7em 0 0.5em;
+                    font-size: 0.8em;
+                    padding: 0.7em 0 1em 1em;
+                    cursor: pointer;
 
                     svg {
                         vertical-align: sub;
-                        margin-left: 0.5em;
+                        margin-left: 1em;
+                        transform: scale(1.5);
                     }
                 }
+
                 .legenda {
-                    top: 25px;
+                    top: 35px;
                     right: -5px;
                     left: auto;
+                    padding: 0;
+                    box-shadow: 0 4px 10px 1px rgba(0, 0, 0, 0.25);
+
+                    &:before {
+                        content: "";
+                        width: 0px;
+                        height: 0px;
+                        border-style: solid;
+                        border-width: 0 15px 15px 15px;
+                        border-color: transparent transparent #fff transparent;
+                        transform: rotate(0deg);
+                        position: absolute;
+                        top: -10px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                    }
+
+                    li {
+                        margin-bottom: 1px;
+                    }
+                    span {
+                        font-size: 0.87em;
+                    }
                 }
             }
         }
@@ -57,20 +82,27 @@
 
         @media (min-width: map-get($grid-breakpoints, lg)) {
             .list-nav--tertiary {
-                a {
-                    color: inherit;
-                    font-weight: 700;
-                    text-decoration: none;
-                    font-size: 0.7em;
+                // a {
+                //     color: inherit;
+                //     font-weight: 700;
+                //     text-decoration: none;
+                //     font-size: 0.9em;
+                //     display: block;
 
-                    &:hover {
-                        text-decoration: underline;
-                    }
+                //     svg {
+                //         margin-right: 0.5em;
+                //     }
 
-                    svg {
-                        margin-right: 0.5em;
-                    }
-                }
+                //     &:hover {
+                //         background-color: $blue-100;
+
+                //         svg {
+                //             path {
+                //                 fill: $green-tint01;
+                //             }
+                //         }
+                //     }
+                // }
             }
         }
     }

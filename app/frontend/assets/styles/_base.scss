@@ -10,7 +10,7 @@ body {
     font-family: "Bolder", sans-serif;
     font-size: 1em;
     color: $body-color;
-    background-color: $gray-tint00;
+    background-color: $blue-100;
 
     @media (min-width: map-get($grid-breakpoints, sm)) {
         font-size: 1.125em;
