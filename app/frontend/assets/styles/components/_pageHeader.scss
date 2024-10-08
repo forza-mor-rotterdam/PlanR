@@ -27,7 +27,8 @@
             padding: 0 0.75em;
 
             .container__uitklapper {
-                > a {
+                > span,
+                a {
                     font-weight: 700;
                     text-decoration: none;
                     color: $black;

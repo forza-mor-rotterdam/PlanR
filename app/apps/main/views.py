@@ -144,7 +144,7 @@ def melding_lijst(request):
     gebruiker_context = get_gebruiker_context(gebruiker)
 
     standaard_waardes = {
-        "limit": "10",
+        "limit": "25",
         "ordering": get_ordering(gebruiker),
         "foldout_states": "[]",
     }

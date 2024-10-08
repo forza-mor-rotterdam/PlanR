@@ -285,7 +285,8 @@
         }
     }
 
-    &:hover {
+    &:hover,
+    &:focus {
         .legenda {
             display: block;
         }
