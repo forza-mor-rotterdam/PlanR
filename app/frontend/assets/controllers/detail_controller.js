@@ -11,7 +11,9 @@ let markerIcon,
   selectedImageIndex = 0,
   imagesList = null,
   fullSizeImageContainer = null,
-  keyFunctions = null
+  keyFunctions = null,
+  distance = 0,
+  actionsHeight = 0
 
 export default class extends Controller {
   static values = {
@@ -34,6 +36,7 @@ export default class extends Controller {
     'navigateImagesRight',
     'imageCounter',
     'btnToTop',
+    'containerActions',
   ]
 
   initialize() {
@@ -180,17 +183,38 @@ export default class extends Controller {
     }
 
     document.addEventListener('keyup', keyFunctions)
+    actionsHeight = this.containerActionsTarget.offsetHeight
+    console.log('actionsHeight', actionsHeight)
     window.addEventListener(
       'scroll',
       function () {
-        if (document.body.scrollTop >= 100 || document.documentElement.scrollTop >= 100) {
-          this.btnToTopTarget.classList.add('show')
-        } else {
-          this.btnToTopTarget.classList.remove('show')
-        }
+        this.checkScrollPosition()
       }.bind(this),
       false
     )
+  }
+
+  checkScrollPosition() {
+    if (window.innerWidth > 767) {
+      if (distance === 0) {
+        distance = this.containerActionsTarget.getBoundingClientRect().top
+      }
+      // scrolltotop
+      if (document.body.scrollTop >= 100 || document.documentElement.scrollTop >= 100) {
+        this.btnToTopTarget.classList.add('show')
+      } else {
+        this.btnToTopTarget.classList.remove('show')
+      }
+      // actioncontainer
+      if (document.documentElement.scrollTop > distance) {
+        this.containerActionsTarget.classList.add('stayFixed')
+
+        this.containerActionsTarget.nextElementSibling.style.marginTop = `${actionsHeight}px`
+      } else {
+        this.containerActionsTarget.classList.remove('stayFixed')
+        this.containerActionsTarget.nextElementSibling.style.marginTop = 0
+      }
+    }
   }
 
   disconnect() {

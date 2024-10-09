@@ -33,6 +33,12 @@
 }
 
 .container__actions {
+    background-color: $blue-100;
+    width: 100%;
+    padding: 0 1em 1em;
+    z-index: 1000;
+    border: 1px solid transparent;
+    box-sizing: border-box;
     p {
         margin-bottom: 0.5rem;
     }
@@ -49,6 +55,19 @@
             vertical-align: middle;
             margin-right: 0;
             transform: translateY(-3px);
+        }
+    }
+
+    &.stayFixed {
+        @media (min-width: map-get($grid-breakpoints, md)) {
+            position: fixed;
+            top: 0;
+            // right: 20px;
+            background-color: $white;
+            border: 1px solid $gray-tint04;
+            transition-property: background-color, border-color;
+            transition-duration: $transition-duration-default;
+            transition-timing-function: $transition-ease-default;
         }
     }
 }
