@@ -184,7 +184,6 @@ export default class extends Controller {
 
     document.addEventListener('keyup', keyFunctions)
     actionsHeight = this.containerActionsTarget.offsetHeight
-    console.log('actionsHeight', actionsHeight)
     window.addEventListener(
       'scroll',
       function () {
