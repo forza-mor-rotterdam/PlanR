@@ -41,7 +41,9 @@
                 }
 
                 .legenda {
-                    top: 35px;
+                    display: block;
+                    top: -100%;
+                    transform: translateY(-200%);
                     right: -5px;
                     left: auto;
                     padding: 0;
@@ -68,6 +70,14 @@
                         font-size: 0.87em;
                     }
                 }
+
+                &:hover,
+                &:focus-within {
+                    .legenda {
+                        top: 35px;
+                        transform: translateY(0);
+                    }
+                }
             }
         }
 
@@ -75,32 +85,6 @@
             display: block;
             small {
                 @extend .visually-hidden;
-            }
-        }
-
-        @media (min-width: map-get($grid-breakpoints, lg)) {
-            .list-nav--tertiary {
-                // a {
-                //     color: inherit;
-                //     font-weight: 700;
-                //     text-decoration: none;
-                //     font-size: 0.9em;
-                //     display: block;
-
-                //     svg {
-                //         margin-right: 0.5em;
-                //     }
-
-                //     &:hover {
-                //         background-color: $blue-100;
-
-                //         svg {
-                //             path {
-                //                 fill: $green-tint01;
-                //             }
-                //         }
-                //     }
-                // }
             }
         }
     }
