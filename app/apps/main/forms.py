@@ -346,9 +346,12 @@ class TaakStartenForm(forms.Form):
         help_text="Deze tekst wordt niet naar de melder verstuurd.",
         widget=forms.Textarea(
             attrs={
+                "data-controller": "characterCount",
+                "data-action": "characterCount#onChangeText",
                 "class": "form-control",
                 "data-testid": "information",
                 "rows": "2",
+                "maxlength": "5000",
             }
         ),
         required=False,
@@ -536,6 +539,7 @@ class MeldingAfhandelenForm(forms.Form):
                     "class": "form-control",
                     "rows": "4",
                     "data-meldingbehandelformulier-target": "internalText",
+                    "data-action": "meldingbehandelformulier#onChangeInternalText",
                     "maxlength": "5000",
                 }
             ),
