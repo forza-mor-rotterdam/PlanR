@@ -144,7 +144,7 @@ def melding_lijst(request):
     gebruiker_context = get_gebruiker_context(gebruiker)
 
     standaard_waardes = {
-        "limit": "10",
+        "limit": "25",
         "ordering": get_ordering(gebruiker),
         "foldout_states": "[]",
     }
@@ -993,7 +993,7 @@ def meldingen_bestand(request):
         response.raw,
         content_type=response.headers.get("content-type"),
         headers={
-            "Content-Disposition": "inline",
+            "Content-Disposition": "attachment",
         },
         status=response.status_code,
         reason=response.reason,

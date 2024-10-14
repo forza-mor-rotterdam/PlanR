@@ -375,6 +375,52 @@ textarea {
             transform: translateY(70%);
         }
     }
+
+    &-to-top {
+        font-size: 0.7em;
+        padding: 0.5em 0.8em 0.5em 0;
+        width: auto;
+        position: fixed;
+        bottom: 0.5em;
+        right: 0.5em;
+        background-color: $white;
+        box-shadow: 0 4px 10px 1px rgba(0, 0, 0, 0.25);
+        z-index: 1100;
+        opacity: 0;
+        display: none;
+        transition-property: opacity, display;
+        transition-duration: $transition-duration-default;
+        transition-timing-function: $transition-ease-default;
+        transition-behavior: allow-discrete;
+
+        svg {
+            width: 32px;
+            height: 32px;
+            transform: rotate(-90deg);
+            vertical-align: middle;
+        }
+
+        &.show {
+            opacity: 1;
+            display: block;
+            transition-property: opacity, display;
+            transition-duration: $transition-duration-default;
+            transition-timing-function: $transition-ease-default;
+            transition-behavior: allow-discrete;
+            @starting-style {
+                opacity: 0;
+            }
+        }
+
+        &:hover,
+        &:focus {
+            svg {
+                path {
+                    fill: $green-tint01;
+                }
+            }
+        }
+    }
 }
 
 a.btn {

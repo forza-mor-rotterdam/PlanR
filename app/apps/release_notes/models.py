@@ -4,6 +4,7 @@ import os
 from os.path import exists
 
 from apps.authenticatie.forms import Gebruiker
+from bs4 import BeautifulSoup
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
@@ -144,3 +145,64 @@ class ReleaseNote(BasisModel):
     def __str__(self):
         formatted_date = self.aangemaakt_op.strftime("%d-%m-%Y %H:%M:%S")
         return f"{self.titel} - {formatted_date}"
+
+    def clean(self):
+        data = self.beschrijving
+
+        soup = BeautifulSoup(data)
+
+        soup.head.decompose()
+        soup.body.unwrap()
+        soup.html.unwrap()
+
+        unwanted_tags = [
+            tag
+            for tag in soup.find_all(True)
+            if tag.name
+            not in [
+                "strong",
+                "em",
+                "b",
+                "p",
+                "i",
+                "u",
+                "strike",
+                "ol",
+                "ul",
+                "li",
+                "blockquote",
+                "div",
+                "h1",
+                "h2",
+                "h3",
+                "h4",
+                "h5",
+                "h6",
+                "pre",
+                "address",
+                "a",
+                "img",
+                "span",
+                "iframe",
+                "video",
+            ]
+        ]
+
+        for tag in unwanted_tags:
+            tag.decompose()
+
+        # remove attributes starting with 'on'
+        for tag in soup.find_all(True):
+            tag.attrs = {
+                k: v
+                for k, v in tag.attrs.items()
+                if not k.startswith("on")
+                and k not in ["srcdoc"]
+                and "javascript:" not in v
+            }
+
+        self.beschrijving = str(soup)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)

@@ -30,8 +30,8 @@
                   data-turbo-frame="_top"
                   data-controller="taakstartenformulier"
                   data-taakstartenformulier-target="formTaakStarten"
-                  data-taakstartenformulier-taaktypes="{{ taaktype_choices|json_encode }}"
-                  data-initial-afdeling="{{ initial_afdeling }}"
+                  data-taakstartenformulier-taaktypes-value="{{ taaktype_choices|json_encode }}"
+                  data-taakstartenformulier-initial-afdeling-value="{{ initial_afdeling }}"
                   enctype="multipart/form-data"
                   novalidate>
                 {% csrf_token %}
@@ -40,7 +40,10 @@
                     <div class="form-control__with-helptext container__form-check-cols3">
                         <div class="form-row">
                             <label>Vaak gekozen bij dit type melding</label>
-                            <div class="wrapper__columns">{{ form.onderwerp_gerelateerd_taaktype }}</div>
+                            <div class="wrapper__columns"
+                                 data-taakstartenformulier-target="onderwerpGerelateerdTaaktypeContainer">
+                                {{ form.onderwerp_gerelateerd_taaktype }}
+                            </div>
                             <p class="help-block invalid-text no-margin"></p>
                         </div>
                     </div>
@@ -61,7 +64,7 @@
                         <div class="grid-item vertical-scroll">
                             <div class="form-control__with-helptext">
                                 <div class="form-row input-labels">
-                                    <div data-taakstartenformulier-target="afdelingField">{{ form.afdeling }}</div>
+                                    <div data-taakstartenformulier-target="afdelingContainer">{{ form.afdeling }}</div>
                                     <p class="help-block invalid-text no-margin"></p>
                                 </div>
                             </div>

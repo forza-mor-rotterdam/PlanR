@@ -1,4 +1,4 @@
-<div class="container__actions">
+<div class="container__actions" data-detail-target="containerActions">
     <p>
         {% if perms.authorisatie.taak_aanmaken and taaktypes and melding.status.naam != 'afgehandeld' and melding.status.naam != 'geannuleerd' and melding.status.naam != "pauze" and melding.status.naam != "wachten_melder" %}
             <button type="button"

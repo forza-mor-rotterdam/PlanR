@@ -843,8 +843,10 @@ form.taak--start {
         }
 
         &.container--flex {
-            display: flex;
-            justify-content: space-between;
+            @media (min-width: map-get($grid-breakpoints, lg)) {
+                display: flex;
+                justify-content: space-between;
+            }
             > div {
                 flex: 1 1 50%;
             }

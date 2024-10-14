@@ -3,11 +3,16 @@
 {% block title %}
     Release notes | PlanR
 {% endblock title %}
+{% block header %}
+    {% with pageTitle="Release notes" %}
+        {% include "snippets/pageheader.html" %}
+    {% endwith %}
+{% endblock header %}
 {% block body %}
     <turbo-frame id="beheer" data-turbo-action="advance">
     <div class="page__beheer" data-controller="row-search">
         <div>
-            <a href="{% url 'beheer' %}" class="link--back">
+            <a href="{% url 'beheer' %}" class="link--back" data-turbo-frame="_top">
                 <svg width="25"
                      height="16"
                      viewBox="0 0 25 16"
@@ -19,9 +24,10 @@
             </a>
         </div>
         <div class="container__flex">
-            <h1>Release Notes</h1>
+            <h1>Release notes overzicht</h1>
             <a class="btn btn-action btn-240"
-               href="{% url 'release_note_aanmaken' %}">
+               href="{% url 'release_note_aanmaken' %}"
+               data-turbo="false">
                 <svg width="24"
                      height="24"
                      viewBox="0 0 32 32"
@@ -67,7 +73,8 @@
                         <td data-row-search-target="searchable">{{ release_note.publicatie_datum }}</td>
                         <td>
                             <a href="{% url 'release_note_aanpassen' release_note.pk %}"
-                               aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
+                               aria-label="Aanpassen"
+                               data-turbo="false">{% include "icons/edit.svg" %}</a>
                         </td>
                         <td>
                             <a href="{% url 'release_note_verwijderen' release_note.pk %}"

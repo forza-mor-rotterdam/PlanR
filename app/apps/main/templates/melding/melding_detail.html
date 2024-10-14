@@ -20,6 +20,11 @@
     {% endfor %}
     {{ melding.id }} | PlanR
 {% endblock title %}
+{% block header %}
+    {% with pageTitle="Meldingen" %}
+        {% include "snippets/pageheader.html" %}
+    {% endwith %}
+{% endblock header %}
 {% block body_class %}
     has-page-navigation
 {% endblock body_class %}
@@ -67,7 +72,7 @@
                                         <turbo-frame style="display: inline;" id="melding_next_volgend" src="{% url 'melding_next_volgend' melding.uuid %}" data-spinner="hide"></turbo-frame>
                                     {% endif %}
                                 </div>
-                                <div>
+                                <div class="padding--left">
                                     {% if melding.status %}
                                         <span class="badge badge--{% if melding.status.naam == 'afgehandeld' %}green{% elif melding.status.naam == 'controle' %}yellow{% elif melding.status.naam == 'in_behandeling' %}darkblue{% elif melding.status.naam == 'geannuleerd' %}red{% else %}lightblue{% endif %}">{{ melding.status.naam|vertaal }}
                                             {% if melding.status.naam == 'afgehandeld' or melding.status.naam == 'geannuleerd' %}
@@ -448,6 +453,12 @@
                             </div>
                         </div>
                     </div>
+                    <button data-detail-target="btnToTop"
+                            data-action="detail#scrollToTop"
+                            class="btn btn-to-top">
+                        {% include "icons/arrow-double.svg" %}
+                        Terug naar boven
+                    </button>
                 </div>
                 <div class="modal"
                      data-detail-target="modalAfhandelen"

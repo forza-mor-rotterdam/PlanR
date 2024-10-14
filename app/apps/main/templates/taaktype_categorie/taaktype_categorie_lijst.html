@@ -1,11 +1,19 @@
 {% extends "base.html" %}
 {% load rotterdam_formulier_html %}
 {% load json_encode from json_tags %}
+{% block title %}
+    Taaktype Categorieën | Beheer | PlanR
+{% endblock title %}
+{% block header %}
+    {% with pageTitle="Taaktype Categorieën" %}
+        {% include "snippets/pageheader.html" %}
+    {% endwith %}
+{% endblock header %}
 {% block body %}
     <turbo-frame id="beheer" data-turbo-action="advance">
     <div class="page__beheer" data-controller="row-search">
         <div>
-            <a href="{% url 'beheer' %}" class="link--back">
+            <a href="{% url 'beheer' %}" class="link--back" data-turbo-frame="_top">
                 <svg width="25"
                      height="16"
                      viewBox="0 0 25 16"
@@ -17,9 +25,10 @@
             </a>
         </div>
         <div class="container__flex">
-            <h1>Taaktype Categorieën</h1>
+            <h1>Taaktype Categorieën overzicht</h1>
             <a class="btn btn-action btn-240"
-               href="{% url 'taaktype_categorie_aanmaken' %}">
+               href="{% url 'taaktype_categorie_aanmaken' %}"
+               data-turbo-frame="_top">
                 <svg width="24"
                      height="24"
                      viewBox="0 0 32 32"
@@ -61,7 +70,8 @@
                         <td data-row-search-target="searchable">{{ object.taaktype_namen|join:", " }}</td>
                         <td>
                             <a href="{% url 'taaktype_categorie_aanpassen' object.pk %}"
-                               aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
+                               aria-label="Aanpassen"
+                               data-turbo-frame="_top">{% include "icons/edit.svg" %}</a>
                         </td>
                         <td>
                             <a href="{% url 'taaktype_categorie_verwijderen' object.pk %}"

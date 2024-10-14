@@ -107,6 +107,7 @@ class FilterForm(forms.Form):
                 "class": "list--form-text-input",
                 "hideLabel": True,
                 "typeOfInput": "search",
+                "data-action": "filter#onChangeFilter",
                 "placeHolder": "Zoek op straatnaam, contactgegevens of MeldR-nummer",
             }
         ),
@@ -312,6 +313,7 @@ class TaakStartenForm(forms.Form):
         required=True,
         widget=forms.RadioSelect(
             attrs={
+                "data-taakstartenformulier-target": "afdelingField",
                 "class": "form-check-input",
             }
         ),

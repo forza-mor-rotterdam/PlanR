@@ -5,18 +5,20 @@
 {% block title %}
     Dashboard | PlanR
 {% endblock title %}
+{% block header %}
+    {% with pageTitle="Dashboard" %}
+        {% include "snippets/pageheader.html" %}
+    {% endwith %}
+{% endblock header %}
 {% block body_class %}
     wide--xl
 {% endblock body_class %}
 {% block body %}
     <turbo-frame id="overview" data-controller="sidesheet">
-    <div>
-        <h1>Actueel</h1>
-    </div>
     <div class="screen-xl">
         <section class="section--seperated--l section--dashboard">
             <div class="container__flex flex--wide">
-                <h2>Dashboard</h2>
+                <h2>Actueel</h2>
                 <button type="button"
                         class="btn btn-info"
                         data-action="sidesheet#openSidesheet"
