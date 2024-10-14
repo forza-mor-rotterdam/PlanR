@@ -539,7 +539,7 @@ def top_vijf_aantal_meldingen_wijk(meldingen, valide_wijken, onderwerp=None, aan
         "title": "Wijken met de meeste meldingen",
         "head": ["Wijk", "Aantal", "%"],
         "head_percentages": [65, 20, 15],
-        "body": wijken[:aantal],
+        "body": wijken[:aantal] if aantal else wijken,
     }
     return aantal_meldingen_wijk
 
@@ -599,7 +599,7 @@ def top_vijf_aantal_meldingen_onderwerp(
         "title": "Meest gemelde onderwerpen",
         "head": ["Onderwerp", "Aantal", "%"],
         "head_percentages": [65, 20, 15],
-        "body": onderwerpen[:aantal],
+        "body": onderwerpen[:aantal] if aantal else onderwerpen,
     }
     return aantal_meldingen_onderwerp
 
@@ -673,7 +673,7 @@ def top_vijf_aantal_onderwerpen_ontdubbeld(
         "title": "Meest ontdubbelde onderwerpen",
         "head": ["Onderwerp", "verhouding"],
         "head_percentages": [80, 20],
-        "body": onderwerpen_ontdubbeld[:aantal],
+        "body": onderwerpen_ontdubbeld[:aantal] if aantal else onderwerpen_ontdubbeld,
     }
     return aantal_onderwerpen_ontdubbeld
 
@@ -774,7 +774,7 @@ def top_doorlooptijden_per_onderwerp(
         "title": title,
         "head": ["Onderwerp", "Duur"],
         "head_percentages": [65, 35],
-        "body": onderwerpen[:aantal],
+        "body": onderwerpen[:aantal] if aantal else onderwerpen,
     }
     return doorlooptijden_per_onderwerp
 
@@ -871,7 +871,7 @@ def top_doorlooptijden_per_wijk(
         "title": title,
         "head": ["Wijk", "Duur"],
         "head_percentages": [65, 35],
-        "body": wijken[:aantal],
+        "body": wijken[:aantal] if aantal else wijken,
     }
     return doorlooptijden_per_wijk
 
@@ -935,7 +935,7 @@ def top_taaktype_aantallen(
         "title": "Meer dan 1 taaktype per melding",
         "head": ["Taaktype", "percentage"],
         "head_percentages": [80, 20],
-        "body": taaktype_aantallen[:aantal],
+        "body": taaktype_aantallen[:aantal] if aantal else taaktype_aantallen,
     }
 
 
