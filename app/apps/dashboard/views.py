@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 
 import isoweek
 from apps.dashboard.forms import DashboardForm
+from apps.dashboard.models import DoorlooptijdenAfgehandeldeMeldingen, Tijdsvak
 from apps.dashboard.tables import (
     get_aantallen_tabs,
     get_afgehandeld_tabs,
@@ -45,6 +46,7 @@ class Dashboard(FormView):
     periode = None
     title = None
     week = maand = jaar = onderwerp = wijk = None
+    tijdsvak_classes = []
 
     def get_success_url(self):
         return self.request.path
@@ -78,7 +80,7 @@ class Dashboard(FormView):
         jaar_param = kwargs.get("jaar")
         maand_param = kwargs.get("maand")
         week_param = kwargs.get("week")
-
+        self.tijdsvak_periode = Tijdsvak.PeriodeOpties.DAG
         try:
             self.week = isoweek.Week(int(jaar_param), int(week_param))
         except Exception as e:
@@ -89,6 +91,7 @@ class Dashboard(FormView):
                 print(f"Tried maand, next try jaar: {e}")
                 try:
                     self.jaar = int(jaar_param)
+                    self.tijdsvak_periode = Tijdsvak.PeriodeOpties.MAAND
                 except Exception as e:
                     print(f"Tried jaar, next redirect to current week: {e}")
                     vandaag = datetime.now().date()
@@ -355,6 +358,27 @@ class Dashboard(FormView):
             }
         )
         context.update(self.kwargs)
+        onderwerpen_service = OnderwerpenService()
+        for cls in self.tijdsvak_classes:
+            cls.onderwerpen = onderwerpen_service.get_onderwerpen()
+            cls.wijken = [c.get("wijknaam") for c in PDOK_WIJKEN]
+            cls.wijken_noord = [
+                wijk.get("wijknaam")
+                for wijk in PDOK_WIJKEN
+                if wijk.get("stadsdeel") == "Noord"
+            ]
+            cls.wijken_zuid = [
+                wijk.get("wijknaam")
+                for wijk in PDOK_WIJKEN
+                if wijk.get("stadsdeel") == "Zuid"
+            ]
+            cls.wijk = self.wijk
+            cls.onderwerp = self.onderwerp
+            cls.x_ticks = self.x_ticks
+            cls.periode_titel = self.title
+
+        context.update({cls.__name__: cls for cls in self.tijdsvak_classes})
+
         return context
 
 
@@ -412,13 +436,13 @@ class NieuweMeldingen(Dashboard):
                 "aantallen_tabs": aantallen_tabs,
                 "nieuw_vs_afgehandeld_tabs": nieuw_vs_afgehandeld_tabs,
                 "aantal_meldingen_onderwerp": top_vijf_aantal_meldingen_onderwerp(
-                    meldingen, onderwerp_opties, wijk=self.wijk
+                    meldingen, onderwerp_opties, wijk=self.wijk, aantal=0
                 ),
                 "aantal_meldingen_wijk": top_vijf_aantal_meldingen_wijk(
-                    meldingen, wijk_opties, onderwerp=self.onderwerp
+                    meldingen, wijk_opties, onderwerp=self.onderwerp, aantal=0
                 ),
                 "aantal_onderwerpen_ontdubbeld": top_vijf_aantal_onderwerpen_ontdubbeld(
-                    meldingen, signalen, onderwerp_opties, wijk=self.wijk
+                    meldingen, signalen, onderwerp_opties, wijk=self.wijk, aantal=0
                 ),
             }
         )
@@ -430,6 +454,9 @@ class NieuweMeldingen(Dashboard):
 )
 class MeldingenAfgehandeld(Dashboard):
     template_name = "dashboard/afgehandeld/dashboard.html"
+    tijdsvak_classes = [
+        DoorlooptijdenAfgehandeldeMeldingen,
+    ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -441,16 +468,29 @@ class MeldingenAfgehandeld(Dashboard):
         afgehandeld = []
         veranderingen = []
         meldingen_service = MeldingenService()
+
+        afgehandeld = list(
+            DoorlooptijdenAfgehandeldeMeldingen.objects.filter(
+                periode=self.tijdsvak_periode,
+                start_datumtijd__gte=self.x_ticks[0].get("start_dt"),
+                start_datumtijd__lte=self.x_ticks[-1].get("start_dt"),
+            ).values_list("resultaat", flat=True)
+        )
+        print("doorlooptijden")
+        print(len(afgehandeld))
+
+        DoorlooptijdenAfgehandeldeMeldingen.tijdsvakken = afgehandeld
+
         for tick in self.x_ticks:
             dag = tick.get("start_dt")
             days = tick.get("days")
-            status_afgehandeld = meldingen_service.afgehandelde_meldingen(
-                datum=dag, days=days
-            )
+            # status_afgehandeld = meldingen_service.afgehandelde_meldingen(
+            #     datum=dag, days=days
+            # )
             status_veranderingen = meldingen_service.status_veranderingen(
                 datum=dag, days=days
             )
-            afgehandeld.append(status_afgehandeld)
+            # afgehandeld.append(status_afgehandeld)
             veranderingen.append(status_veranderingen)
 
         afgehandeld_tabs = get_afgehandeld_tabs(
@@ -531,6 +571,7 @@ class MeldingenAfgehandeld(Dashboard):
                 "doorlooptijden_onderwerp": doorlooptijden_onderwerp,
                 "doorlooptijden_wijk": doorlooptijden_wijk,
                 "stacked_bars_options": stacked_bars_options,
+                # "DoorlooptijdenAfgehandeldeMeldingen": DoorlooptijdenAfgehandeldeMeldingen,
             }
         )
         return context

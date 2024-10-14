@@ -586,3 +586,10 @@ class MeldingenService(BasisService):
             force_cache=force_cache,
             raw_response=False,
         )
+
+    def tijdsvak_data_halen(self, url, params):
+        return self.do_request(
+            url,
+            params=params,
+            raw_response=False,
+        )
