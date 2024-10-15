@@ -19,12 +19,6 @@
         <section class="section--seperated--l">
             <div class="grid-container grid-container--full"
                  data-controller="chart-utils">
-                {% include "charts/base_chart.html" with title="Nieuwe taken" description="" period_title=title tabs=nieuwe_taakopdrachten_tabs only %}
-            </div>
-        </section>
-        <section class="section--seperated--l">
-            <div class="grid-container grid-container--full"
-                 data-controller="chart-utils">
                 {% include "charts/base_chart.html" with title="Aantal taken afgehandeld minus nieuw" description="" period_title=title tabs=taken_nieuw_vs_afgehandeld_tabs only %}
             </div>
         </section>
