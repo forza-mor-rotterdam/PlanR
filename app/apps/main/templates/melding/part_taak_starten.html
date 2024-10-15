@@ -29,6 +29,7 @@
                   class="taak--start"
                   data-turbo-frame="_top"
                   data-controller="taakstartenformulier"
+                  data-action="formfieldInvalid->taakstartenformulier#isFormFieldInvalid"
                   data-taakstartenformulier-target="formTaakStarten"
                   data-taakstartenformulier-taaktypes-value="{{ taaktype_choices|json_encode }}"
                   data-taakstartenformulier-initial-afdeling-value="{{ initial_afdeling }}"
