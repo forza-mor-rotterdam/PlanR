@@ -567,7 +567,7 @@ input.form-radio-input {
     }
 
     textarea {
-        margin-bottom: 1rem;
+        margin-bottom: 0;
     }
 
     .label--file {
@@ -581,6 +581,13 @@ input.form-radio-input {
         padding: 0;
         border: 0;
         pointer-events: none;
+    }
+
+    .help-block {
+        font-size: 0.8em;
+    }
+    .help-block + .help-block {
+        margin-bottom: 1em;
     }
 }
 

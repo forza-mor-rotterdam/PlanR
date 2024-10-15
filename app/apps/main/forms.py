@@ -285,7 +285,8 @@ class InformatieToevoegenForm(forms.Form):
                 "class": "form-control",
                 "data-testid": "information",
                 "rows": "4",
-                "maxlength": "5000",
+                "data-controller": "characterCount",
+                "data-action": "characterCount#onChangeText",
             }
         ),
         required=False,
@@ -351,10 +352,10 @@ class TaakStartenForm(forms.Form):
                 "class": "form-control",
                 "data-testid": "information",
                 "rows": "2",
-                "maxlength": "5000",
             }
         ),
         required=False,
+        max_length=5000,
     )
 
     def __init__(self, *args, **kwargs):
@@ -416,11 +417,11 @@ class TaakAfrondenForm(forms.Form):
         help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",
         widget=forms.Textarea(
             attrs={
+                "data-controller": "characterCount",
+                "data-action": "characterCount#onChangeText",
                 "class": "form-control",
                 "data-testid": "information",
                 "rows": "4",
-                "data-meldingbehandelformulier-target": "internalText",
-                "maxlength": "5000",
             }
         ),
         required=False,
@@ -467,11 +468,12 @@ class TaakAnnulerenForm(forms.Form):
                 help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",
                 widget=forms.Textarea(
                     attrs={
+                        "data-controller": "characterCount",
+                        "data-action": "characterCount#onChangeText",
                         "class": "form-control",
                         "data-testid": "information",
                         "rows": "4",
                         "data-meldingbehandelformulier-target": "internalText",
-                        "maxlength": "5000",
                     }
                 ),
                 required=False,
@@ -538,9 +540,8 @@ class MeldingAfhandelenForm(forms.Form):
                 attrs={
                     "class": "form-control",
                     "rows": "4",
-                    "data-meldingbehandelformulier-target": "internalText",
-                    "data-action": "meldingbehandelformulier#onChangeInternalText",
-                    "maxlength": "5000",
+                    "data-controller": "characterCount",
+                    "data-action": "characterCount#onChangeText",
                 }
             ),
             required=False,
@@ -558,8 +559,8 @@ class MeldingAnnulerenForm(forms.Form):
                 attrs={
                     "class": "form-control",
                     "rows": "4",
-                    "data-meldingbehandelformulier-target": "internalText",
-                    "maxlength": "5000",
+                    "data-controller": "characterCount",
+                    "data-action": "characterCount#onChangeText",
                 }
             ),
             required=False,
@@ -577,8 +578,8 @@ class MeldingHeropenenForm(forms.Form):
                 attrs={
                     "class": "form-control",
                     "rows": "4",
-                    "data-meldingbehandelformulier-target": "internalText",
-                    "maxlength": "5000",
+                    "data-controller": "characterCount",
+                    "data-action": "characterCount#onChangeText",
                 }
             ),
             required=True,
@@ -607,7 +608,8 @@ class MeldingPauzerenForm(forms.Form):
             attrs={
                 "class": "form-control",
                 "rows": "4",
-                "maxlength": "5000",
+                "data-controller": "characterCount",
+                "data-action": "characterCount#onChangeText",
             }
         ),
         required=False,
@@ -623,7 +625,8 @@ class MeldingHervattenForm(forms.Form):
             attrs={
                 "class": "form-control",
                 "rows": "4",
-                "maxlength": "5000",
+                "data-controller": "characterCount",
+                "data-action": "characterCount#onChangeText",
             }
         ),
         required=False,
@@ -644,7 +647,8 @@ class MeldingSpoedForm(forms.Form):
             attrs={
                 "class": "form-control",
                 "rows": "4",
-                "maxlength": "5000",
+                "data-controller": "characterCount",
+                "data-action": "characterCount#onChangeText",
             }
         ),
         required=False,
@@ -667,8 +671,8 @@ class LocatieAanpassenForm(forms.Form):
             attrs={
                 "class": "form-control",
                 "rows": "4",
-                "data-locatieaanpassenformulier-target": "internalText",
-                "maxlength": "5000",
+                "data-controller": "characterCount",
+                "data-action": "characterCount#onChangeText",
             }
         ),
         required=False,
