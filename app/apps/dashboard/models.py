@@ -4,6 +4,7 @@ import statistics
 from datetime import datetime, timedelta
 
 from apps.dashboard.querysets import TijdsvakQuerySet
+from apps.services.taakr import TaakRService
 from django.contrib.gis.db import models
 from django.core.exceptions import ValidationError
 from django.template.loader import render_to_string
@@ -428,6 +429,180 @@ class NieuweTaakopdrachten(Tijdsvak):
         proxy = True
         verbose_name = "Nieuwe taakopdrachten"
         verbose_name_plural = "Nieuwe taakopdrachten"
+
+    @classmethod
+    def stacked_chart_tabs(cls):
+        labels = [t.get("label") for t in cls.x_ticks]
+        wijk = cls.wijk
+        onderwerp = cls.onderwerp
+        wijken = cls.wijken
+        wijken_noord = cls.wijken_noord
+        wijken_zuid = cls.wijken_zuid
+
+        taakr_service = TaakRService()
+        afdelingen = taakr_service.get_afdelingen()
+        taaktypes = taakr_service.get_taaktypes()
+        onderdelen = ("schoon", "heel", "veilig")
+        externe_afdelingen = [
+            afdeling for afdeling in afdelingen if not afdeling["onderdeel"]
+        ]
+        onderdeel_taaktypes = {
+            onderdeel: [
+                taaktype["_links"]["taakapplicatie_taaktype_url"]
+                for afdeling in afdelingen
+                for taaktype in taaktypes
+                if afdeling["onderdeel"] == onderdeel
+                and afdeling["_links"]["self"] in taaktype["afdelingen"]
+            ]
+            for onderdeel in onderdelen
+        }
+        onderdeel_taaktypes["extern"] = [
+            taaktype["_links"]["taakapplicatie_taaktype_url"]
+            for afdeling in externe_afdelingen
+            for taaktype in taaktypes
+            if afdeling["_links"]["self"] in taaktype["afdelingen"]
+        ]
+        onderdeel_taaktypes["overig"] = [
+            taaktype["_links"]["taakapplicatie_taaktype_url"]
+            for taaktype in taaktypes
+            if not taaktype["afdelingen"]
+        ]
+
+        data = copy.deepcopy(cls.tijdsvakken if hasattr(cls, "tijdsvakken") else [])
+
+        tabs = (
+            [
+                {
+                    "wijken": [],
+                    "wijk_not_in": True,
+                    "titel": "Heel Rotterdam",
+                },
+                {
+                    "wijken": wijken_noord,
+                    "wijk_not_in": False,
+                    "titel": "Rotterdam noord",
+                },
+                {
+                    "wijken": wijken_zuid,
+                    "wijk_not_in": False,
+                    "titel": "Rotterdam zuid",
+                },
+                {
+                    "wijken": wijken,
+                    "wijk_not_in": True,
+                    "titel": "Onbekend of buiten Rotterdam",
+                },
+            ]
+            if not wijk
+            else [
+                {
+                    "wijken": [w for w in wijken if wijk == w],
+                    "wijk_not_in": False,
+                    "titel": wijk,
+                }
+            ]
+        )
+        tabs = [
+            {
+                **tab,
+                **{
+                    "datasets": [
+                        {
+                            "type": "bar",
+                            "label": "Schoon",
+                            "backgroundColor": "#FFA500",
+                            "onderdeel": "schoon",
+                            "bron": data,
+                        },
+                        {
+                            "type": "bar",
+                            "label": "Heel",
+                            "backgroundColor": "#00811f",
+                            "onderdeel": "heel",
+                            "bron": data,
+                        },
+                        {
+                            "type": "bar",
+                            "label": "Veilg",
+                            "backgroundColor": "#0000ff",
+                            "onderdeel": "veilig",
+                            "bron": data,
+                        },
+                        {
+                            "type": "bar",
+                            "label": "Extern",
+                            "backgroundColor": "#bbb",
+                            "onderdeel": "extern",
+                            "bron": data,
+                        },
+                        {
+                            "type": "bar",
+                            "label": "Overig",
+                            "backgroundColor": "#ddd",
+                            "onderdeel": "overig",
+                            "bron": data,
+                        },
+                    ]
+                },
+            }
+            for tab in tabs
+        ]
+        tabs = [
+            {
+                "titel": tab.get("titel"),
+                "labels": labels,
+                "datasets": [
+                    {
+                        "type": dataset.get("type"),
+                        "label": dataset.get("label"),
+                        "backgroundColor": dataset.get("backgroundColor"),
+                        "fill": True,
+                        "data": [
+                            sum(
+                                [
+                                    d.get("taakopdracht_aantal")
+                                    for d in dag
+                                    if bool(d.get("wijk") in tab.get("wijken"))
+                                    != bool(tab.get("wijk_not_in"))
+                                    and (
+                                        not onderwerp or onderwerp == d.get("onderwerp")
+                                    )
+                                    and d["taaktype"]
+                                    in onderdeel_taaktypes[dataset["onderdeel"]]
+                                ]
+                            )
+                            for dag in dataset.get("bron")
+                        ],
+                    }
+                    for dataset in tab.get("datasets", [])
+                ],
+            }
+            for tab in tabs
+        ]
+        tabs = [
+            {
+                **tab,
+                **{
+                    "aantal": sum(
+                        [
+                            sum(dataset.get("data", []))
+                            for dataset in tab.get("datasets", [])
+                        ]
+                    )
+                },
+            }
+            for tab in tabs
+        ]
+        return render_to_string(
+            "charts/base_chart.html",
+            {
+                "tabs": tabs,
+                "title": "Nieuwe taken",
+                "period_title": cls.periode_titel,
+                "description": "De taken zijn onderverdeeld in afdelingen. De taken die (nog) niet ondervdeeld zijn, worden hier getoond onder 'Overig'. Als in de afdeling het onderdeel ontbreekt, wordt de taak onderverdeeld onder 'Extern'. De overige taken worden onverdeeld in schoon, heel en veilig).",
+                "options": cls.stacked_bars_options,
+            },
+        )
 
 
 class TaaktypeAantallenPerMelding(Tijdsvak):

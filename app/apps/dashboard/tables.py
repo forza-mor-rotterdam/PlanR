@@ -943,9 +943,8 @@ def get_taaktype_aantallen_per_melding_tabs(
     taaktype_aantallen_per_melding, ticks=[], onderwerp=None, wijk=None
 ):
     labels = [t.get("label") for t in ticks]
-    import json
 
-    print(json.dumps(taaktype_aantallen_per_melding[2], indent=4))
+    # print(json.dumps(taaktype_aantallen_per_melding[2], indent=4))
 
     alle_wijken = [wijk.get("wijknaam") for wijk in PDOK_WIJKEN]
     wijken = [wijk.get("wijknaam") for wijk in PDOK_WIJKEN]
@@ -1128,9 +1127,9 @@ def get_taaktype_aantallen_per_melding_tabs(
 def get_nieuwe_taakopdrachten_tabs(
     nieuwe_taakopdrachten, ticks=[], onderwerp=None, wijk=None
 ):
-    import json
+    pass
 
-    print(json.dumps(nieuwe_taakopdrachten, indent=4))
+    # print(json.dumps(nieuwe_taakopdrachten, indent=4))
     labels = [t.get("label") for t in ticks]
 
     alle_wijken = [wijk.get("wijknaam") for wijk in PDOK_WIJKEN]

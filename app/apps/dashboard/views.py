@@ -5,7 +5,11 @@ from datetime import datetime, timedelta
 
 import isoweek
 from apps.dashboard.forms import DashboardForm
-from apps.dashboard.models import DoorlooptijdenAfgehandeldeMeldingen, Tijdsvak
+from apps.dashboard.models import (
+    DoorlooptijdenAfgehandeldeMeldingen,
+    NieuweTaakopdrachten,
+    Tijdsvak,
+)
 from apps.dashboard.tables import (
     get_aantallen_tabs,
     get_afgehandeld_tabs,
@@ -358,7 +362,9 @@ class Dashboard(FormView):
             }
         )
         context.update(self.kwargs)
+
         onderwerpen_service = OnderwerpenService()
+
         for cls in self.tijdsvak_classes:
             cls.onderwerpen = onderwerpen_service.get_onderwerpen()
             cls.wijken = [c.get("wijknaam") for c in PDOK_WIJKEN]
@@ -376,6 +382,13 @@ class Dashboard(FormView):
             cls.onderwerp = self.onderwerp
             cls.x_ticks = self.x_ticks
             cls.periode_titel = self.title
+            cls.tijdsvakken = list(
+                cls.objects.filter(
+                    periode=self.tijdsvak_periode,
+                    start_datumtijd__gte=self.x_ticks[0].get("start_dt"),
+                    start_datumtijd__lte=self.x_ticks[-1].get("start_dt"),
+                ).values_list("resultaat", flat=True)
+            )
 
         context.update({cls.__name__: cls for cls in self.tijdsvak_classes})
 
@@ -469,17 +482,17 @@ class MeldingenAfgehandeld(Dashboard):
         veranderingen = []
         meldingen_service = MeldingenService()
 
-        afgehandeld = list(
-            DoorlooptijdenAfgehandeldeMeldingen.objects.filter(
-                periode=self.tijdsvak_periode,
-                start_datumtijd__gte=self.x_ticks[0].get("start_dt"),
-                start_datumtijd__lte=self.x_ticks[-1].get("start_dt"),
-            ).values_list("resultaat", flat=True)
-        )
-        print("doorlooptijden")
-        print(len(afgehandeld))
+        # afgehandeld = list(
+        #     DoorlooptijdenAfgehandeldeMeldingen.objects.filter(
+        #         periode=self.tijdsvak_periode,
+        #         start_datumtijd__gte=self.x_ticks[0].get("start_dt"),
+        #         start_datumtijd__lte=self.x_ticks[-1].get("start_dt"),
+        #     ).values_list("resultaat", flat=True)
+        # )
+        # print("doorlooptijden")
+        # print(len(afgehandeld))
 
-        DoorlooptijdenAfgehandeldeMeldingen.tijdsvakken = afgehandeld
+        # DoorlooptijdenAfgehandeldeMeldingen.tijdsvakken = afgehandeld
 
         for tick in self.x_ticks:
             dag = tick.get("start_dt")
@@ -653,6 +666,9 @@ class TaaktypeAantallen(Dashboard):
 
 class NieuweTaakopdrachten(Dashboard):
     template_name = "dashboard/taken/nieuwe_taakopdrachten.html"
+    tijdsvak_classes = [
+        NieuweTaakopdrachten,
+    ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
