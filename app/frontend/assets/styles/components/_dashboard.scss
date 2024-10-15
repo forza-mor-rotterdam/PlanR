@@ -114,6 +114,16 @@ canvas {
         text-overflow: ellipsis;
     }
 
+    .h6 {
+        display: inline-block;
+        font-weight: 700;
+        margin-bottom: 0.5em;
+
+        svg {
+            vertical-align: middle;
+        }
+    }
+
     p {
         margin-top: 0;
         font-size: 0.6em;
@@ -121,6 +131,24 @@ canvas {
 
     .width--fixed {
         display: inline-block;
+    }
+
+    a {
+        svg {
+            vertical-align: middle;
+            path {
+                fill: $black;
+            }
+        }
+
+        &:hover,
+        &:focus {
+            svg {
+                path {
+                    fill: $green-tint01;
+                }
+            }
+        }
     }
 
     button {

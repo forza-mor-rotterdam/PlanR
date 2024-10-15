@@ -208,6 +208,16 @@ p {
     max-width: map-get($container-max-widths, lg);
 }
 
+a {
+    transition: color $transition-duration-default $transition-ease-default;
+
+    svg {
+        path {
+            transition: fill $transition-duration-default $transition-ease-default;
+        }
+    }
+}
+
 @mixin has-icon {
     display: inline-block;
     margin-left: 25px;
