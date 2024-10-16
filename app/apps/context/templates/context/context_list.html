@@ -63,40 +63,28 @@
                         <td data-row-search-target="searchable">{{ object.naam }}</td>
                         <td data-row-search-target="searchable">
                             {% if object.filters.fields %}
-                                {% for filter in object.filters.fields %}
-                                    {{ filter }}
-                                    {% if not forloop.last %},{% endif %}
-                                {% endfor %}
+                                {{ object.filters.fields|length }}
                             {% else %}
                                 -
                             {% endif %}
                         </td>
                         <td data-row-search-target="searchable">
                             {% if object.kolommen.sorted %}
-                                {% for kolom in object.kolommen.sorted %}
-                                    {{ kolom }}
-                                    {% if not forloop.last %},{% endif %}
-                                {% endfor %}
+                                {{ object.kolommen.sorted|length }}
                             {% else %}
                                 -
                             {% endif %}
                         </td>
                         <td data-row-search-target="searchable">
                             {% if object.standaard_filters %}
-                                {% for onderwerp in object.onderwerpen %}
-                                    {{ onderwerp }}
-                                    {% if not forloop.last %},{% endif %}
-                                {% endfor %}
+                                {{ object.onderwerpen|length }}
                             {% else %}
                                 -
                             {% endif %}
                         </td>
                         <td data-row-search-target="searchable">
                             {% if object.taaktypes %}
-                                {% for taaktype in object.taaktype_namen %}
-                                    {{ taaktype }}
-                                    {% if not forloop.last %},{% endif %}
-                                {% endfor %}
+                                {{ object.taaktype_namen|length }}
                             {% else %}
                                 -
                             {% endif %}
