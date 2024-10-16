@@ -129,11 +129,13 @@ canvas {
         display: inline-block;
     }
 
-    a {
+    a,
+    button {
         svg {
             vertical-align: middle;
             path {
                 fill: $black;
+                transition: fill $transition-duration-default $transition-ease-default;
             }
         }
 
