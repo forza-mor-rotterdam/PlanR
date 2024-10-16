@@ -44,17 +44,17 @@
                                 {% endif %}
                             {% endfor %}
                         </tr>
-                        {% if row.bar %}
-                            <tr>
-                                <td colspan="4">
-                                    <div class="container__bar">
-                                        <div class="bar-background">
-                                            <div class="bar bar--color-primary" style="max-width: {{ row.bar }}%;"></div>
-                                        </div>
+                        {% comment %} {% if row.bar %} {% endcomment %}
+                        <tr>
+                            <td colspan="4">
+                                <div class="container__bar">
+                                    <div class="bar-background">
+                                        <div class="bar bar--color-primary" style="max-width: {{ row.bar }}%;"></div>
                                     </div>
-                                </td>
-                            </tr>
-                        {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% comment %} {% endif %} {% endcomment %}
                     {% endfor %}
                 </tbody>
             </table>
