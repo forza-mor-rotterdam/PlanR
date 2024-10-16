@@ -103,7 +103,20 @@ def maanden_aanmaken(self):
 
 
 @shared_task(bind=True, base=BaseTaskWithRetry)
-def tijdsvakdata_vernieuwen(self, tijdsvak_id):
+def tijdsvakdata_vernieuwen(self):
+    from apps.dashboard.models import Tijdsvak
+
+    tijdsvakken = Tijdsvak.objects.filter(valide_data=False, resultaat__isnull=True)
+    for tijdsvak in tijdsvakken:
+        tijdsvakitem_data_vernieuwen.delay(tijdsvak.id)
+
+    return {
+        "aantal_tijdsvakken": tijdsvakken.count(),
+    }
+
+
+@shared_task(bind=True, base=BaseTaskWithRetry)
+def tijdsvakitem_data_vernieuwen(self, tijdsvak_id):
     from apps.dashboard.models import Tijdsvak
     from apps.services.meldingen import MeldingenService
 
