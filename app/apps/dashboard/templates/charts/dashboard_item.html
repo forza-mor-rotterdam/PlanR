@@ -18,42 +18,56 @@
         <h4>{{ title }}</h4>
         <p>{{ description }}</p>
     </div>
-    <div class="container__table lazy" data-controller="lazyload-table-bar">
-        <table class="dashboard">
-            <colgroup>
-                {% for h in head_percentages %}
-                    <col span="1" style="width: {{ h }}%;">
-                {% endfor %}
-            </colgroup>
-            <thead>
-                <tr>
-                    {% for h in head %}<th>{{ h }}</th>{% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in body %}
+    <div class="container__table lazy"
+         data-controller="lazyload-table-bar table-paginated">
+        <div data-table-paginated-target="container">
+            <table class="dashboard">
+                <colgroup>
+                    {% for h in head_percentages %}
+                        <col span="1" style="width: {{ h }}%;">
+                    {% endfor %}
+                </colgroup>
+                <thead data-table-paginated-target="tablehead">
                     <tr>
-                        {% for k, v in row.items %}
-                            {% if k != "bar" %}
-                                {% is_float_or_int v as v_is_float_or_int %}
-                                <td {% if not forloop.first and v_is_float_or_int %}class="animated"{% endif %}>{{ v }}</td>
-                            {% endif %}
-                        {% endfor %}
+                        <th>&nbsp;</th>
+                        {% for h in head %}<th>{{ h }}</th>{% endfor %}
                     </tr>
-                    {% if row.bar %}
+                </thead>
+                <tbody data-table-paginated-target="tablebody">
+                    {% for row in body %}
                         <tr>
-                            <td colspan="3">
-                                <div class="container__bar">
-                                    <div class="bar-background">
-                                        <div class="bar bar--color-primary" style="max-width: {{ row.bar }}%;"></div>
-                                    </div>
-                                </div>
-                            </td>
+                            <td>{{ forloop.counter }}</td>
+                            {% for k, v in row.items %}
+                                {% if k != "bar" %}
+                                    {% is_float_or_int v as v_is_float_or_int %}
+                                    <td {% if not forloop.first and v_is_float_or_int %}class="animated"{% endif %}>{{ v }}</td>
+                                {% endif %}
+                            {% endfor %}
                         </tr>
-                    {% endif %}
-                {% endfor %}
-            </tbody>
-        </table>
+                        {% if row.bar %}
+                            <tr>
+                                <td colspan="4">
+                                    <div class="container__bar">
+                                        <div class="bar-background">
+                                            <div class="bar bar--color-primary" style="max-width: {{ row.bar }}%;"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div data-table-paginated-target="pagination" class="pagination">
+            <button data-table-paginated-target="prevButton"
+                    data-action="table-paginated#showPreviousPage"
+                    aria-label="Vorige">{% include "icons/arrow-double.svg" %}</button>
+            <span data-table-paginated-target="pageDisplay"></span>
+            <button data-table-paginated-target="nextButton"
+                    data-action="table-paginated#showNextPage"
+                    aria-label="Volgende">{% include "icons/arrow-double.svg" %}</button>
+        </div>
     </div>
     {% if toon_meldingen_link %}
         <div class="dashboard-item-footer">
