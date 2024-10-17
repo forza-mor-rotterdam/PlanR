@@ -513,6 +513,9 @@ class MeldingenAfgehandeld(Dashboard):
             veranderingen, ticks=self.x_ticks, onderwerp=self.onderwerp, wijk=self.wijk
         )
         valide_onderwerpen = [c.get("name") for c in onderwerpen]
+
+        afgehandeld = DoorlooptijdenAfgehandeldeMeldingen.tijdsvakken
+
         doorlooptijden_onderwerp = [
             top_doorlooptijden_per_onderwerp(
                 afgehandeld,
