@@ -106,7 +106,7 @@ def maanden_aanmaken(self):
 def tijdsvakdata_vernieuwen(self):
     from apps.dashboard.models import Tijdsvak
 
-    tijdsvakken = Tijdsvak.objects.filter(valide_data=False, resultaat__isnull=True)
+    tijdsvakken = Tijdsvak.objects.filter(valide_data=False)
     for tijdsvak in tijdsvakken:
         tijdsvakitem_data_vernieuwen.delay(tijdsvak.id)
 
@@ -129,6 +129,7 @@ def tijdsvakitem_data_vernieuwen(self, tijdsvak_id):
                 tijdsvak.databron.eind_datumtijd_param: tijdsvak.eind_datumtijd.isoformat(),
             },
         )
+        logger.info(resultaat)
         tijdsvak.valide_data = True
         tijdsvak.resultaat = resultaat
     except Exception as e:
@@ -138,6 +139,7 @@ def tijdsvakitem_data_vernieuwen(self, tijdsvak_id):
             tijdsvak.save()
         except Exception:
             ...
+        logger.error(f"Er ging iets mis: {e}, {ee}")
         raise Exception(f"Er ging iets mis: {e}, {ee}")
 
     tijdsvak.save()
