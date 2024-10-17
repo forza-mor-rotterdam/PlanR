@@ -518,7 +518,7 @@ class MeldingenAfgehandeld(Dashboard):
                 afgehandeld,
                 valide_onderwerpen=valide_onderwerpen,
                 wijk=self.wijk,
-                aantal=10,
+                aantal=0,
             )
         ]
         doorlooptijden_wijk = [
@@ -526,7 +526,7 @@ class MeldingenAfgehandeld(Dashboard):
                 afgehandeld,
                 valide_wijken=valide_wijken,
                 onderwerp=self.onderwerp,
-                aantal=10,
+                aantal=0,
             )
         ]
         for fase in ["Midoffice", "Uitvoer", "Wachten", "Afgehandeld"]:
@@ -536,7 +536,7 @@ class MeldingenAfgehandeld(Dashboard):
                     valide_onderwerpen=valide_onderwerpen,
                     wijk=self.wijk,
                     fase=fase,
-                    aantal=10,
+                    aantal=0,
                 )
             )
             doorlooptijden_wijk.append(
@@ -545,7 +545,7 @@ class MeldingenAfgehandeld(Dashboard):
                     valide_wijken=valide_wijken,
                     onderwerp=self.onderwerp,
                     fase=fase,
-                    aantal=10,
+                    aantal=0,
                 )
             )
 
@@ -623,7 +623,7 @@ class TaaktypeAantallen(Dashboard):
             taaktype_aantallen_per_melding,
             onderwerp=self.onderwerp,
             wijk=self.wijk,
-            aantal=10,
+            aantal=0,
         )
 
         stacked_bars_options = {
