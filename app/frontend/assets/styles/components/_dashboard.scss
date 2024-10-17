@@ -338,6 +338,10 @@ canvas {
                 color: $gray-600;
                 font-weight: 300;
                 border: none;
+
+                &:first-child {
+                    width: 1.5em;
+                }
             }
         }
         thead,

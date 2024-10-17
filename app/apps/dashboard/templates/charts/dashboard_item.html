@@ -35,7 +35,7 @@
                 </thead>
                 <tbody data-table-paginated-target="tablebody">
                     {% for row in body %}
-                        <tr>
+                        <tr style="display: none;">
                             <td>{{ forloop.counter }}</td>
                             {% for k, v in row.items %}
                                 {% if k != "bar" %}
@@ -44,8 +44,7 @@
                                 {% endif %}
                             {% endfor %}
                         </tr>
-                        {% comment %} {% if row.bar %} {% endcomment %}
-                        <tr>
+                        <tr style="display: none;">
                             <td colspan="4">
                                 <div class="container__bar">
                                     <div class="bar-background">
@@ -54,7 +53,6 @@
                                 </div>
                             </td>
                         </tr>
-                        {% comment %} {% endif %} {% endcomment %}
                     {% endfor %}
                 </tbody>
             </table>
