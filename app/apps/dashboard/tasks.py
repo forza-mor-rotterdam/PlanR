@@ -106,7 +106,7 @@ def maanden_aanmaken(self):
 def tijdsvakdata_vernieuwen(self):
     from apps.dashboard.models import Tijdsvak
 
-    tijdsvakken = Tijdsvak.objects.filter(valide_data=False, resultaat__isnull=True)
+    tijdsvakken = Tijdsvak.objects.filter(valide_data=False)
     for tijdsvak in tijdsvakken:
         tijdsvakitem_data_vernieuwen.delay(tijdsvak.id)
 
