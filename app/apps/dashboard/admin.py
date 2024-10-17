@@ -9,7 +9,7 @@ from apps.dashboard.models import (
     TaaktypeAantallenPerMelding,
     Tijdsvak,
 )
-from apps.dashboard.tasks import tijdsvakdata_vernieuwen
+from apps.dashboard.tasks import tijdsvakitem_data_vernieuwen
 from django import forms
 from django.contrib import admin
 from django.contrib.admin import DateFieldListFilter
@@ -18,7 +18,7 @@ from django.contrib.admin import DateFieldListFilter
 @admin.action(description="Tijdsvak data vernieuwen")
 def action_tijdsvak_data_vernieuwen(modeladmin, request, queryset):
     for tijdsvak in queryset.all():
-        tijdsvakdata_vernieuwen.delay(tijdsvak.id)
+        tijdsvakitem_data_vernieuwen.delay(tijdsvak.id)
 
 
 class TijdsvakExtendsForm(forms.ModelForm):
