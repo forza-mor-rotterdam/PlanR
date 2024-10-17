@@ -132,6 +132,7 @@ textarea {
 
         &-v2 {
             background-color: $blue-900;
+            color: $white;
             border-color: $blue-900;
             transition: background-color 0.15s ease-in-out;
 
@@ -147,6 +148,7 @@ textarea {
         background-color: $white;
         border-color: $gray-tint08;
         color: $gray-tint11;
+        font-weight: 400;
 
         svg {
             path {

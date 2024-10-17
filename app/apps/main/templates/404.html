@@ -8,31 +8,49 @@
 {% block body_class %}
     no-js errorpage
 {% endblock body_class %}
+{% block header %}
+    {% with pageTitle="Foutmelding" %}
+        {% include "snippets/pageheader.html" %}
+    {% endwith %}
+{% endblock header %}
 {% block body %}
-    <div class="container__details">
-        <div>
-            <h1 class="h3 block--black">Fout 404 - De pagina wordt niet gevonden</h1>
-            <p>Haal even diep adem, neem een bak koffie en probeer het straks nog een keer.</p>
-            <div class="no-js">
-                <p>Tot die tijd, hier een leuk quizje om te spelen over typisch Rotterdamse uitspraken. Wat betekent:</p>
-                <figure class="question">
-                    <q id="errorpageQuestion"></q>
-                </figure>
-                <div class="container__answers" id="errorpageContainerAnswers"></div>
+    <div class="grid-container">
+        <div class="grid-item">
+            <div class="container__details">
+                <div class="container__error show">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjUiIHZpZXdCb3g9IjAgMCA2NCA2NSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3QgeD0iNy40NDYyOSIgeT0iMTkuODM1OSIgd2lkdGg9IjMzLjQ2NDkiIGhlaWdodD0iNi42Njg0NSIgZmlsbD0iI0JGRDJEOSIvPgo8cmVjdCB4PSI3LjQ0NjI5IiB5PSIzNC4yMDMxIiB3aWR0aD0iMzMuNDY0OSIgaGVpZ2h0PSI2LjY2ODQ1IiBmaWxsPSIjQkZEMkQ5Ii8+CjxyZWN0IHg9IjcuNDQ2MjkiIHk9IjQ4LjU3MDMiIHdpZHRoPSIzMy40NjQ5IiBoZWlnaHQ9IjYuNjY4NDUiIGZpbGw9IiNCRkQyRDkiLz4KPHBhdGggZD0iTTQyLjIzNzIgMTYuMDMxMkg3LjA1NzI0QzUuOTEwNzkgMTYuMDMxMiA0Ljk2NDg0IDE2Ljk3NzIgNC45NjQ4NCAxOC4xMjM2VjI3LjI0MjhDNC45NjQ4NCAyOC4zODkyIDUuOTEwNzkgMjkuMzM1MiA3LjA1NzI0IDI5LjMzNTJINDIuMjM3MkM0My4zODM2IDI5LjMzNTIgNDQuMzI5NSAyOC4zODkyIDQ0LjMyOTUgMjcuMjQyOFYxOC4xMjM2QzQ0LjMyOTUgMTYuOTc3MiA0My4zODM2IDE2LjAzMTIgNDIuMjM3MiAxNi4wMzEyWk0xMS44NDE4IDI0LjU1MjlDMTAuNzk0NiAyNC41NTI5IDkuOTQ3ODkgMjMuNzA2MiA5Ljk0Nzg5IDIyLjY1OUM5Ljk0Nzg5IDIxLjYxMTggMTAuNzk0NiAyMC43NjUyIDExLjg0MTggMjAuNzY1MkMxMi44ODkgMjAuNzY1MiAxMy43MzU3IDIxLjYxMTggMTMuNzM1NyAyMi42NTlDMTMuNzM1NyAyMy43MDQzIDEyLjg4NyAyNC41NTI5IDExLjg0MTggMjQuNTUyOVpNMTguNTE3OCAyNC41NTI5QzE3LjQ3MDYgMjQuNTUyOSAxNi42MjM5IDIzLjcwNjIgMTYuNjIzOSAyMi42NTlDMTYuNjIzOSAyMS42MTE4IDE3LjQ3MDYgMjAuNzY1MiAxOC41MTc4IDIwLjc2NTJDMTkuNTY1IDIwLjc2NTIgMjAuNDExNyAyMS42MTE4IDIwLjQxMTcgMjIuNjU5QzIwLjQxMTcgMjMuNzA0MyAxOS41NjUgMjQuNTUyOSAxOC41MTc4IDI0LjU1MjlaTTM5LjI5NTggMjMuMzU1OUMzOS4yOTU4IDIzLjgwMzYgMzguOTQ3NCAyNC4xMDMzIDM4LjU0ODQgMjQuMTAzM0gyNC43OTY3QzI0LjM5NzcgMjQuMTAzMyAyNC4wNDkzIDIzLjc1NDkgMjQuMDQ5MyAyMy4zNTU5VjIyLjAxMDlDMjQuMDQ5MyAyMS41NjMyIDI0LjM5NzcgMjEuMjYzNSAyNC43OTY3IDIxLjI2MzVIMzguNTUwM0MzOC45NDk0IDIxLjI2MzUgMzkuMjk3OCAyMS42MTE5IDM5LjI5NzggMjIuMDEwOUwzOS4yOTU4IDIzLjM1NTlaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNNDIuMjM3MiAzMS4wMTU2SDcuMDU3MjRDNS45MTA3OSAzMS4wMTU2IDQuOTY0ODQgMzEuOTYxNiA0Ljk2NDg0IDMzLjEwOFY0Mi4yMjcxQzQuOTY0ODQgNDMuMzczNiA1LjkxMDc5IDQ0LjMxOTUgNy4wNTcyNCA0NC4zMTk1SDQyLjIzNzJDNDMuMzgzNiA0NC4zMTk1IDQ0LjMyOTUgNDMuMzczNiA0NC4zMjk1IDQyLjIyNzFWMzMuMTU2OUM0NC4zMjk1IDMxLjk2MTggNDMuMzgzNiAzMS4wMTU2IDQyLjIzNzIgMzEuMDE1NlpNMTEuODQxOCAzOS41ODU2QzEwLjc5NDYgMzkuNTg1NiA5Ljk0Nzg5IDM4LjczODkgOS45NDc4OSAzNy42OTE3QzkuOTQ3ODkgMzYuNjQ0NSAxMC43OTQ2IDM1Ljc5NzkgMTEuODQxOCAzNS43OTc5QzEyLjg4OSAzNS43OTc5IDEzLjczNTcgMzYuNjQ0NSAxMy43MzU3IDM3LjY5MTdDMTMuNzM1NyAzOC43Mzg5IDEyLjg4NyAzOS41ODU2IDExLjg0MTggMzkuNTg1NlpNMTguNTE3OCAzOS41ODU2QzE3LjQ3MDYgMzkuNTg1NiAxNi42MjM5IDM4LjczODkgMTYuNjIzOSAzNy42OTE3QzE2LjYyMzkgMzYuNjQ0NSAxNy40NzA2IDM1Ljc5NzkgMTguNTE3OCAzNS43OTc5QzE5LjU2NSAzNS43OTc5IDIwLjQxMTcgMzYuNjQ0NSAyMC40MTE3IDM3LjY5MTdDMjAuNDExNyAzOC43Mzg5IDE5LjU2NSAzOS41ODU2IDE4LjUxNzggMzkuNTg1NlpNMzkuMjk1OCAzOC4zMzk5QzM5LjI5NTggMzguNzg3NiAzOC45NDc0IDM5LjA4NzMgMzguNTQ4NCAzOS4wODczSDI0Ljc5NjdDMjQuMzk3NyAzOS4wODczIDI0LjA0OTMgMzguNzM4OSAyNC4wNDkzIDM4LjMzOTlWMzYuOTk0OUMyNC4wNDkzIDM2LjU0NzMgMjQuMzk3NyAzNi4yNDc1IDI0Ljc5NjcgMzYuMjQ3NUgzOC41NTAzQzM4Ljk0OTQgMzYuMjQ3NSAzOS4yOTc4IDM2LjU5NTkgMzkuMjk3OCAzNi45OTQ5TDM5LjI5NTggMzguMzM5OVoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik00Mi4yMzcyIDQ2SDcuMDU3MjRDNS45MTA3OSA0NiA0Ljk2NDg0IDQ2Ljk0NTkgNC45NjQ4NCA0OC4wOTI0VjU3LjIxMTVDNC45NjQ4NCA1OC4zNTggNS45MTA3OSA1OS4zMDM5IDcuMDU3MjQgNTkuMzAzOUg0Mi4yMzcyQzQzLjM4MzYgNTkuMzAzOSA0NC4zMjk1IDU4LjM1OCA0NC4zMjk1IDU3LjIxMTVWNDguMDkyNEM0NC4zMjk1IDQ2Ljk0NTkgNDMuMzgzNiA0NiA0Mi4yMzcyIDQ2Wk0xMS44NDE4IDU0LjUxOTdDMTAuNzk0NiA1NC41MTk3IDkuOTQ3ODkgNTMuNjczIDkuOTQ3ODkgNTIuNjI1OEM5Ljk0Nzg5IDUxLjU3ODYgMTAuNzk0NiA1MC43MzE5IDExLjg0MTggNTAuNzMxOUMxMi44ODkgNTAuNzMxOSAxMy43MzU3IDUxLjU3ODYgMTMuNzM1NyA1Mi42MjU4QzEzLjczNTcgNTMuNjczIDEyLjg4NyA1NC41MTk3IDExLjg0MTggNTQuNTE5N1pNMTguNTE3OCA1NC41MTk3QzE3LjQ3MDYgNTQuNTE5NyAxNi42MjM5IDUzLjY3MyAxNi42MjM5IDUyLjYyNThDMTYuNjIzOSA1MS41Nzg2IDE3LjQ3MDYgNTAuNzMxOSAxOC41MTc4IDUwLjczMTlDMTkuNTY1IDUwLjczMTkgMjAuNDExNyA1MS41Nzg2IDIwLjQxMTcgNTIuNjI1OEMyMC40MTE3IDUzLjY3MyAxOS41NjUgNTQuNTE5NyAxOC41MTc4IDU0LjUxOTdaTTM5LjI5NTggNTMuMzI0NkMzOS4yOTU4IDUzLjc3MjMgMzguOTQ3NCA1NC4wNzIgMzguNTQ4NCA1NC4wNzJIMjQuNzk2N0MyNC4zOTc3IDU0LjA3MiAyNC4wNDkzIDUzLjcyMzYgMjQuMDQ5MyA1My4zMjQ2VjUxLjk3OTZDMjQuMDQ5MyA1MS41MzE5IDI0LjM5NzcgNTEuMjMyMiAyNC43OTY3IDUxLjIzMjJIMzguNTUwM0MzOC45NDk0IDUxLjIzMjIgMzkuMjk3OCA1MS41ODA2IDM5LjI5NzggNTEuOTc5NkwzOS4yOTU4IDUzLjMyNDZaIiBmaWxsPSJ3aGl0ZSIvPgo8cmVjdCB4PSIwLjY0NzQ2MSIgeT0iMTEuNzgxMiIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjUxLjc4MTIiIHJ4PSIyLjUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS1kYXNoYXJyYXk9IjIgMiIvPgo8Y2lyY2xlIGN4PSI0OS4wMzI4IiBjeT0iMTUuMTY2NyIgcj0iMTMiIHRyYW5zZm9ybT0icm90YXRlKDEuOTU0MyA0OS4wMzI4IDE1LjE2NjcpIiBmaWxsPSIjMDA4MTFGIiBzdHJva2U9IiNGN0Y5RkEiIHN0cm9rZS13aWR0aD0iMyIvPgo8cGF0aCBkPSJNNDkuOTk2OSAxNy4xNzQ4SDQ4LjI4MUw0Ny44Mzg4IDEzLjY4OTlWOC42NDg0NEg1MC40NTY4VjEzLjY4OTlMNDkuOTk2OSAxNy4xNzQ4Wk00Ny42OTczIDE4LjU1NDVINTAuNTk4M1YyMS4zMTQxSDQ3LjY5NzNWMTguNTU0NVoiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo="
+                         alt="" />
+                    <h1 class="h3">Pagina niet gevonden fout: 404</h1>
+                    <p>
+                        Oeps, er is iets misgegaan. Probeer PlanR over 10 seconden te refreshen, als dit probleem zich blijft voordoen, meld deze fout dan.
+                    </p>
+                    <div class="container__flex">
+                        <a href="/melding" class="btn btn-action-v2">Refresh</a>
+                        <button class="btn btn-tertiary" id="showAction">Fout melden</button>
+                    </div>
+                </div>
+                <div class="container__error">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjYiIGhlaWdodD0iNTMiIHZpZXdCb3g9IjAgMCA2NiA1MyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik04Ljc1NzUyIDQ1LjQ1ODdWNDAuOTQzNEw0LjA1MzQgNDUuNjY2N0w0LjA1Mjg5IDQ1LjY2NzFDNC4wMDcyNSA0NS40NjQ2IDMuOTg3NDEgNDUuMjU2MyAzLjk4OTM5IDQ1LjA0NzlMMy45ODkzOSAxOS42NzkzQzMuOTg3NDEgMTguODk3NSA0LjI5NTAxIDE4LjE0NzMgNC44NDY2NSAxNy41OTM3QzUuMzk2MzYgMTcuMDQwMSA2LjE0NDQ0IDE2LjcyODUgNi45MjYzIDE2LjcyNjZMNDQuOTk1IDE2LjcyNjZDNDUuNzc2OCAxNi43Mjg1IDQ2LjUyNSAxNy4wNDAxIDQ3LjA3NDYgMTcuNTkzN0M0Ny42MjYzIDE4LjE0NzQgNDcuOTMzOCAxOC44OTc1IDQ3LjkzMTkgMTkuNjc5M1Y0NS4wNDc5QzQ3LjkzMzggNDUuMjU2MyA0Ny45MTQgNDUuNDY0NyA0Ny44Njg0IDQ1LjY2NzFMNDQuNzgyMyA0Mi41NjU4VjQ1LjY3NzdINDMuMzgxNUw0NS42MTQxIDQ3LjkyMTJDNDUuNDEzNiA0Ny45ODA4IDQ1LjIwMzMgNDguMDA2NiA0NC45OTQ5IDQ4LjAwMDZMNi45MjYyNSA0OC4wMDA2QzYuNzE3ODkgNDguMDA2NiA2LjUwNzU1IDQ3Ljk4MDggNi4zMDcxIDQ3LjkyMTJMOC43NTc1MiA0NS40NTg3WiIgZmlsbD0iI0JGRDJEOSIvPgo8cmVjdCB4PSIwLjY0NzQ2MSIgeT0iMTMuMTU2MiIgd2lkdGg9IjUxLjEyNSIgaGVpZ2h0PSIzOC40MDA0IiByeD0iMi41IiBzdHJva2U9ImJsYWNrIiBzdHJva2UtZGFzaGFycmF5PSIyIDIiLz4KPHBhdGggZD0iTTI1LjY5MDUgMzYuMjg1Nkw2LjMwNzIgMTYuODA2OEM2LjUwNzYyIDE2Ljc0NzIgNi43MTc5NyAxNi43MjE0IDYuOTI2MzYgMTYuNzI3NEg0NC45OTVDNDUuMjAzNCAxNi43MjE0IDQ1LjQxMzcgMTYuNzQ3MiA0NS42MTQyIDE2LjgwNjhMMjYuMjMwOCAzNi4yODU2QzI2LjA0MDMgMzYuNDkyIDI1Ljg4MTYgMzYuNDc2MSAyNS42OTExIDM2LjI4NTZIMjUuNjkwNVpNNDcuODY3OSAxOS4wNjEzTDI4LjQ4NDUgMzguNTIzOUMyNy44MTk4IDM5LjIwMjUgMjYuOTEwOSAzOS41ODU1IDI1Ljk2MDQgMzkuNTg3NUMyNS4wMTM4IDM5LjU4MzUgMjQuMTA3IDM5LjIwODUgMjMuNDM2MiAzOC41Mzk4TDQuMDUyODkgMTkuMDYwOUM0LjAwNzI1IDE5LjI2MzMgMy45ODc0MSAxOS40NzE3IDMuOTg5MzkgMTkuNjgwMVY0NS4wNDg3QzMuOTg3NDEgNDUuODMwNSA0LjI5NDk5IDQ2LjU4MDYgNC44NDY2NSA0Ny4xMzQzQzUuMzk2MyA0Ny42ODc5IDYuMTQ0NDQgNDcuOTk5NSA2LjkyNjMgNDguMDAxNEg0NC45OTVDNDUuNzc2OCA0Ny45OTk1IDQ2LjUyNDkgNDcuNjg3OSA0Ny4wNzQ2IDQ3LjEzNDNDNDcuNjI2MiA0Ni41ODA3IDQ3LjkzMzggNDUuODMwNSA0Ny45MzE5IDQ1LjA0ODdWMTkuNjgwMUM0Ny45MzM4IDE5LjQ3MTcgNDcuOTE0IDE5LjI2MzQgNDcuODY4NCAxOS4wNjA5TDQ3Ljg2NzkgMTkuMDYxM1oiIGZpbGw9IndoaXRlIi8+CjxjaXJjbGUgY3g9IjUxLjE1NzgiIGN5PSIxNC45MTY3IiByPSIxMyIgdHJhbnNmb3JtPSJyb3RhdGUoMS45NTQzIDUxLjE1NzggMTQuOTE2NykiIGZpbGw9IiMwMDgxMUYiIHN0cm9rZT0iI0Y3RjlGQSIgc3Ryb2tlLXdpZHRoPSIzIi8+CjxwYXRoIGQ9Ik01Mi4xMjE5IDE2LjkyNDhINTAuNDA2TDQ5Ljk2MzggMTMuNDM5OVY4LjM5ODQ0SDUyLjU4MThWMTMuNDM5OUw1Mi4xMjE5IDE2LjkyNDhaTTQ5LjgyMjMgMTguMzA0NUg1Mi43MjMzVjIxLjA2NDFINDkuODIyM1YxOC4zMDQ1WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+Cg=="
+                         alt="" />
+                    <h1 class="h3">Fout melden via e-mail</h1>
+                    <p>Door op ‘Verstuur via e-mail’  te klikken, meld je de volgende gegevens bij deze melding.</p>
+                    <ul>
+                        <li>Type foutmelding: Pagina niet gevonden fout: 404 {{ server_id }}</li>
+                        <li>Tijdstip van de foutmelding: {{ current_time }}</li>
+                        <li>Pagina URL van de foutmelding: {{ path }}</li>
+                        <li>Gebruikte browser: {{ user_agent }}</li>
+                    </ul>
+                    <div class="container__flex">
+                        <a href="mailto:...?subject=Pagina niet gevonden fout: 404&body=Type foutmelding: Pagina niet gevonden fout: 404 PlanR {{ server_id }}%0D%0ATijdstip van de foutmelding: {{ current_time }}%0D%0AURL van de foutmelding: {{ path }}%0D%0ABrowser: {{ user_agent }}%0D%0A%0D%0AWellicht heb je nog meer  informatie voor ons:%0D%0AKomt deze fout vaker voor:%0D%0AHeb je een patroon kunnen ontdekken:%0D%0AErvaren je collega’s dezelfde fout:%0D%0A %0D%0AHoe meer informatie we ontvangen, des te beter we de fout kunnen analyseren. Dank voor het melden van de fout.%0D%0A %0D%0A"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="btn btn-action-v2"
+                           id="sendEmail">Verstuur via e-mail</a>
+                        <a href="/melding" class="btn btn-action-v2 hidden">Naar overzicht</a>
+                    </div>
+                </div>
             </div>
-            <div>
-                <a href="/melding">Naar overzicht</a>
-                <a class="link--whatsapp"
-                   id="errorPageWaLink"
-                   data-errorValue="PlanR - 404 - gebruiker: {{ request.user }}"
-                   href=""
-                   target="_blank">Whatsapp de melding door</a>
-            </div>
-        </div>
-        <div class="full-width">
-            <img src="/static/images/skyline.svg" alt="" />
         </div>
     </div>
-    <canvas id="confetti"></canvas>
     <script src="/static/script/errorpages.js"></script>
 {% endblock body %}

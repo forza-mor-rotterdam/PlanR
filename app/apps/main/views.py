@@ -1,6 +1,8 @@
 import base64
 import logging
 import math
+import os
+from datetime import datetime
 
 import requests
 import weasyprint
@@ -88,16 +90,34 @@ def http_403(request):
 
 
 def http_404(request):
+    current_time = datetime.now()
+    server_id = os.getenv("APP_ENV", "Onbekend")
+
     return render(
         request,
         "404.html",
+        {
+            "current_time": current_time,
+            "server_id": server_id,
+            "user_agent": request.META.get("HTTP_USER_AGENT", "Onbekend"),
+            "path": request.path,
+        },
     )
 
 
 def http_500(request):
+    current_time = datetime.now()
+    server_id = os.getenv("APP_ENV", "Onbekend")
+
     return render(
         request,
         "500.html",
+        {
+            "current_time": current_time,
+            "server_id": server_id,
+            "user_agent": request.META.get("HTTP_USER_AGENT", "Onbekend"),
+            "path": request.path,
+        },
     )
 
 
