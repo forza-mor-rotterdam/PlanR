@@ -40,8 +40,12 @@ export default class extends Controller {
   toCSV() {
     const arr = this.json_data
     if (Array.isArray(arr) && arr.length > 0) {
-      return [Object.keys(arr[0])]
-        .concat(arr)
+      const fArr = arr.map((o) => {
+        // eslint-disable-next-line no-unused-vars
+        return (({ bar, ...rest }) => rest)(o)
+      })
+      return [Object.keys(fArr[0])]
+        .concat(fArr)
         .map((row) => {
           return Object.values(row)
             .map((value) => {

@@ -9,7 +9,7 @@
             </span>
             <a data-controller="csv-download"
                data-csv-download-data-value='{{ body|json_encode }}'
-               data-csv-download-title-value='{{ title|slugify }}_{{ period_title|slugify }}'
+               data-csv-download-title-value='{{ title_unique|slugify }}'
                href="#"
                aria-label="download volledige tabel als .csv"
                title="download volledige tabel als .csv"
@@ -22,11 +22,6 @@
          data-controller="lazyload-table-bar table-paginated">
         <div data-table-paginated-target="container">
             <table class="dashboard">
-                <colgroup>
-                    {% for h in head_percentages %}
-                        <col span="1" style="width: {{ h }}%;">
-                    {% endfor %}
-                </colgroup>
                 <thead data-table-paginated-target="tablehead">
                     <tr>
                         <th>&nbsp;</th>
