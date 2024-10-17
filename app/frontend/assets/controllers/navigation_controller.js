@@ -13,9 +13,7 @@ export default class extends Controller {
   toggleMenu(e) {
     document.body.classList.toggle('nav--small')
     console.log(sessionStorage.getItem('navSmall') === 'true')
-    let navSize = document.body.classList.contains('nav--small')
-      ? 'nav--small'
-      : 'sessionStorage.setItem'
+    let navSize = document.body.classList.contains('nav--small') ? 'nav--small' : ''
     sessionStorage.setItem('navSmall', navSize)
     e.target.closest('button').blur()
   }
