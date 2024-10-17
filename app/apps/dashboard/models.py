@@ -4,6 +4,7 @@ import statistics
 from datetime import datetime, timedelta
 
 from apps.dashboard.querysets import TijdsvakQuerySet
+from apps.main.templatetags.date_tags import seconds_to_human
 from apps.services.taakr import TaakRService
 from django.contrib.gis.db import models
 from django.core.exceptions import ValidationError
@@ -188,6 +189,26 @@ class DoorlooptijdenAfgehandeldeMeldingen(Tijdsvak):
         verbose_name_plural = "Doorlooptijden afgehandelde meldingen"
 
     @classmethod
+    def melding_fases(cls):
+        return {
+            "Midoffice": [
+                "openstaand_duur_gemiddeld",
+                "controle_duur_gemiddeld",
+            ],
+            "Uitvoer": [
+                "in_behandeling_duur_gemiddeld",
+            ],
+            "Wachten": [
+                "wachten_melder_duur_gemiddeld",
+                "pauze_duur_gemiddeld",
+            ],
+            "Afgehandeld": [
+                "geannuleerd_duur_gemiddeld",
+                "afgehandeld_duur_gemiddeld",
+            ],
+        }
+
+    @classmethod
     def stacked_chart_tabs(cls):
         labels = [t.get("label") for t in cls.x_ticks]
         wijk = cls.wijk
@@ -355,6 +376,174 @@ class DoorlooptijdenAfgehandeldeMeldingen(Tijdsvak):
                 "description": "Midoffice duur is bepaald door de optelling van alle tijd dat de melding in controle staat en de optelling van dat de melding op openstaand staat. De uitvoer duur wordt bepaald door de optellingen van alle keren dat de melding in behandeling staat. Wachten wordt berekend door de duur van alle pauze statussen op te tellen. De afgehandeld duur wordt bepaald doordat de melding heropend is, dus dan heeft de melding meer dan 1 afgehandeld status.",
                 "data_type": "duration",
                 "options": cls.stacked_bars_options,
+            },
+        )
+
+    @classmethod
+    def tabel_wijken_midoffice(cls):
+        fase = list(cls.melding_fases().keys())[0]
+        return cls.tabel_wijken(fase=fase)
+
+    @classmethod
+    def tabel_wijken_uitvoer(cls):
+        fase = list(cls.melding_fases().keys())[1]
+        return cls.tabel_wijken(fase=fase)
+
+    @classmethod
+    def tabel_wijken_wachten(cls):
+        fase = list(cls.melding_fases().keys())[2]
+        return cls.tabel_wijken(fase=fase)
+
+    @classmethod
+    def tabel_wijken_afgehandeld(cls):
+        fase = list(cls.melding_fases().keys())[3]
+        return cls.tabel_wijken(fase=fase)
+
+    @classmethod
+    def tabel_onderwerpen_midoffice(cls):
+        fase = list(cls.melding_fases().keys())[0]
+        return cls.tabel_onderwerpen(fase=fase)
+
+    @classmethod
+    def tabel_onderwerpen_uitvoer(cls):
+        fase = list(cls.melding_fases().keys())[1]
+        return cls.tabel_onderwerpen(fase=fase)
+
+    @classmethod
+    def tabel_onderwerpen_wachten(cls):
+        fase = list(cls.melding_fases().keys())[2]
+        return cls.tabel_onderwerpen(fase=fase)
+
+    @classmethod
+    def tabel_onderwerpen_afgehandeld(cls):
+        fase = list(cls.melding_fases().keys())[3]
+        return cls.tabel_onderwerpen(fase=fase)
+
+    @classmethod
+    def tabel_onderwerpen(cls, fase=None):
+        return cls.tabel("onderwerp", fase=fase)
+
+    @classmethod
+    def tabel_wijken(cls, fase=None):
+        return cls.tabel("wijk", fase=fase)
+
+    @classmethod
+    def tabel(cls, data_type="onderwerp", fase=None):
+        data_types = {
+            "onderwerp": {
+                "plural": "onderwerpen",
+                "varianten": cls.onderwerpen,
+                "filter_type": cls.wijk,
+                "filter_naam": "wijk",
+            },
+            "wijk": {
+                "plural": "wijken",
+                "varianten": cls.wijken,
+                "filter_type": cls.onderwerp,
+                "filter_naam": "onderwerp",
+            },
+        }
+        naam_plural = data_types[data_type]["plural"]
+        varianten = data_types[data_type]["varianten"]
+        filter_type = data_types[data_type]["filter_type"]
+        filter_naam = data_types[data_type]["filter_naam"]
+
+        statussen_per_fase = cls.melding_fases()
+
+        alle_statussen = [
+            status
+            for f, statussen in statussen_per_fase.items()
+            for status in statussen
+        ]
+        fase = None if fase not in list(statussen_per_fase.keys()) else fase
+        statussen = statussen_per_fase[fase] if fase else alle_statussen
+
+        def tijdsvak_status_gemiddelden(_afgehandeld, onderwerp, _statussen):
+            status_gemiddelden_totaal = []
+            for i, tijdsvak in enumerate(_afgehandeld):
+                melding_aantal = 0
+                tijdsvak_total = []
+                for status in _statussen:
+                    status_gemiddelden = []
+                    for d in tijdsvak:
+                        if onderwerp == d.get(data_type) and d.get(status) is not None:
+                            melding_aantal += d.get("melding_aantal")
+                            status_gemiddelden = status_gemiddelden + [
+                                float(d.get(status))
+                                for i in range(0, d.get("melding_aantal"))
+                            ]
+                    tijdsvak_total.append(average(status_gemiddelden))
+                status_gemiddelden_totaal = status_gemiddelden_totaal + [
+                    sum(tijdsvak_total) for i in range(0, melding_aantal)
+                ]
+            return average(status_gemiddelden_totaal)
+
+        data = copy.deepcopy(cls.tijdsvakken if hasattr(cls, "tijdsvakken") else [])
+
+        data = (
+            [
+                [
+                    variant
+                    for variant in tijdsvak
+                    if variant.get(filter_naam) == filter_type
+                ]
+                for tijdsvak in data
+            ]
+            if filter_type
+            else data
+        )
+
+        table = sorted(
+            [
+                {
+                    "label": variant_naam,
+                    "aantal": tijdsvak_status_gemiddelden(
+                        data, variant_naam, statussen
+                    ),
+                    "totaal_aantal": tijdsvak_status_gemiddelden(
+                        data, variant_naam, alle_statussen
+                    ),
+                }
+                for variant_naam in varianten
+            ],
+            key=lambda b: b.get("aantal"),
+            reverse=True,
+        )
+
+        table = [
+            {
+                data_type.title(): variant.get("label"),
+                "Duur": seconds_to_human(variant.get("aantal")),
+                "bar": round(
+                    float(variant.get("aantal") / table[0].get("aantal")) * 100
+                )
+                if table and table[0].get("aantal")
+                else 0,
+            }
+            for variant in table
+        ]
+
+        filters = (
+            f" filters: {cls.onderwerp if cls.onderwerp else ''}, {cls.wijk if cls.wijk else ''}"
+            if cls.onderwerp or cls.wijk
+            else ""
+        )
+        title = f"Fase '{fase}'" if fase else f"Totaal voor {naam_plural}"
+        title_unique = (
+            f"Doorlooptijden fase '{fase}' voor {naam_plural}"
+            if fase
+            else f"Doorlooptijden totaal voor {naam_plural}"
+        )
+        title_unique = (
+            f"{cls.type}-{cls.status} {title_unique}: {cls.periode_titel}{filters}"
+        )
+        return render_to_string(
+            "charts/dashboard_item.html",
+            {
+                "title": title,
+                "title_unique": title_unique,
+                "head": [data_type.title(), "Duur"],
+                "body": table,
             },
         )
 

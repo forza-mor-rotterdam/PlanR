@@ -12,14 +12,11 @@ from apps.dashboard.models import (
 )
 from apps.dashboard.tables import (
     get_aantallen_tabs,
-    get_afgehandeld_tabs,
     get_meldingen_nieuw_vs_afgehandeld_tabs,
     get_nieuwe_taakopdrachten_tabs,
     get_status_veranderingen_tabs,
     get_taaktype_aantallen_per_melding_tabs,
     get_taken_nieuw_vs_afgehandeld_tabs,
-    top_doorlooptijden_per_onderwerp,
-    top_doorlooptijden_per_wijk,
     top_taaktype_aantallen,
     top_vijf_aantal_meldingen_onderwerp,
     top_vijf_aantal_meldingen_wijk,
@@ -366,7 +363,9 @@ class Dashboard(FormView):
         onderwerpen_service = OnderwerpenService()
 
         for cls in self.tijdsvak_classes:
-            cls.onderwerpen = onderwerpen_service.get_onderwerpen()
+            cls.onderwerpen = [
+                c.get("name") for c in onderwerpen_service.get_onderwerpen()
+            ]
             cls.wijken = [c.get("wijknaam") for c in PDOK_WIJKEN]
             cls.wijken_noord = [
                 wijk.get("wijknaam")
@@ -382,6 +381,8 @@ class Dashboard(FormView):
             cls.onderwerp = self.onderwerp
             cls.x_ticks = self.x_ticks
             cls.periode_titel = self.title
+            cls.type = self.kwargs.get("type")
+            cls.status = self.kwargs.get("status")
             cls.tijdsvakken = list(
                 cls.objects.filter(
                     periode=self.tijdsvak_periode,
@@ -475,10 +476,9 @@ class MeldingenAfgehandeld(Dashboard):
         context = super().get_context_data(**kwargs)
 
         onderwerpen_service = OnderwerpenService()
-        onderwerpen = onderwerpen_service.get_onderwerpen()
-        valide_wijken = [c.get("wijknaam") for c in PDOK_WIJKEN]
+        onderwerpen_service.get_onderwerpen()
+        [c.get("wijknaam") for c in PDOK_WIJKEN]
 
-        afgehandeld = []
         veranderingen = []
         meldingen_service = MeldingenService()
 
@@ -506,88 +506,13 @@ class MeldingenAfgehandeld(Dashboard):
             # afgehandeld.append(status_afgehandeld)
             veranderingen.append(status_veranderingen)
 
-        afgehandeld_tabs = get_afgehandeld_tabs(
-            afgehandeld, ticks=self.x_ticks, onderwerp=self.onderwerp, wijk=self.wijk
-        )
         status_veranderingen_tabs = get_status_veranderingen_tabs(
             veranderingen, ticks=self.x_ticks, onderwerp=self.onderwerp, wijk=self.wijk
         )
-        valide_onderwerpen = [c.get("name") for c in onderwerpen]
-
-        afgehandeld = DoorlooptijdenAfgehandeldeMeldingen.tijdsvakken
-
-        doorlooptijden_onderwerp = [
-            top_doorlooptijden_per_onderwerp(
-                afgehandeld,
-                valide_onderwerpen=valide_onderwerpen,
-                wijk=self.wijk,
-                aantal=0,
-            )
-        ]
-        doorlooptijden_wijk = [
-            top_doorlooptijden_per_wijk(
-                afgehandeld,
-                valide_wijken=valide_wijken,
-                onderwerp=self.onderwerp,
-                aantal=0,
-            )
-        ]
-        for fase in ["Midoffice", "Uitvoer", "Wachten", "Afgehandeld"]:
-            doorlooptijden_onderwerp.append(
-                top_doorlooptijden_per_onderwerp(
-                    afgehandeld,
-                    valide_onderwerpen=valide_onderwerpen,
-                    wijk=self.wijk,
-                    fase=fase,
-                    aantal=0,
-                )
-            )
-            doorlooptijden_wijk.append(
-                top_doorlooptijden_per_wijk(
-                    afgehandeld,
-                    valide_wijken=valide_wijken,
-                    onderwerp=self.onderwerp,
-                    fase=fase,
-                    aantal=0,
-                )
-            )
-
-        stacked_bars_options = {
-            "plugins": {
-                "legend": {
-                    "display": True,
-                },
-                "tooltip": {
-                    "backgroundColor": "#ffffff",
-                    "borderColor": "rgba(0, 0 ,0 , .8)",
-                    "borderWidth": 1,
-                    "bodyAlign": "center",
-                    "bodyColor": "#000000",
-                    "titleColor": "#000000",
-                    "titleAlign": "center",
-                    "displayColors": False,
-                    "borderRadius": 0,
-                },
-            },
-            "scales": {
-                "x": {"stacked": True},
-                "y": {
-                    "stacked": True,
-                    "grid": {
-                        "display": False,
-                    },
-                },
-            },
-        }
 
         context.update(
             {
-                "afgehandeld_tabs": afgehandeld_tabs,
                 "status_veranderingen_tabs": status_veranderingen_tabs,
-                "doorlooptijden_onderwerp": doorlooptijden_onderwerp,
-                "doorlooptijden_wijk": doorlooptijden_wijk,
-                "stacked_bars_options": stacked_bars_options,
-                # "DoorlooptijdenAfgehandeldeMeldingen": DoorlooptijdenAfgehandeldeMeldingen,
             }
         )
         return context

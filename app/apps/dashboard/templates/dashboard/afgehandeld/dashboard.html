@@ -62,24 +62,8 @@
                 <div>
                     <h2>Top 10 totaal gemiddelde doorlooptijden</h2>
                     <div class="grid-container grid-container--half">
-                        {% for tabel in doorlooptijden_onderwerp %}
-                            {% if forloop.first %}
-                                {% if not onderwerp %}
-                                    <div class="grid-item bgc-white">
-                                        {% include "charts/dashboard_item.html" with title=tabel.title description="" period_title=title head=tabel.head body=tabel.body only %}
-                                    </div>
-                                {% endif %}
-                            {% endif %}
-                        {% endfor %}
-                        {% for tabel in doorlooptijden_wijk %}
-                            {% if forloop.first %}
-                                {% if not wijk %}
-                                    <div class="grid-item bgc-white">
-                                        {% include "charts/dashboard_item.html" with title=tabel.title description="" period_title=title head=tabel.head body=tabel.body only %}
-                                    </div>
-                                {% endif %}
-                            {% endif %}
-                        {% endfor %}
+                        <div class="grid-item bgc-white">{{ DoorlooptijdenAfgehandeldeMeldingen.tabel_onderwerpen }}</div>
+                        <div class="grid-item bgc-white">{{ DoorlooptijdenAfgehandeldeMeldingen.tabel_wijken }}</div>
                     </div>
                 </div>
             </section>
@@ -89,13 +73,10 @@
                 <div>
                     <h2>Top 10 gemiddelde doorlooptijden van alle onderwerp per fase</h2>
                     <div class="grid-container grid-container--4cols">
-                        {% for tabel in doorlooptijden_onderwerp %}
-                            {% if forloop.counter >= 2 and forloop.counter < 7 %}
-                                <div class="grid-item bgc-white">
-                                    {% include "charts/dashboard_item.html" with title=tabel.title description="" period_title=title head=tabel.head body=tabel.body only %}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
+                        <div class="grid-item bgc-white">{{ DoorlooptijdenAfgehandeldeMeldingen.tabel_onderwerpen_midoffice }}</div>
+                        <div class="grid-item bgc-white">{{ DoorlooptijdenAfgehandeldeMeldingen.tabel_onderwerpen_uitvoer }}</div>
+                        <div class="grid-item bgc-white">{{ DoorlooptijdenAfgehandeldeMeldingen.tabel_onderwerpen_wachten }}</div>
+                        <div class="grid-item bgc-white">{{ DoorlooptijdenAfgehandeldeMeldingen.tabel_onderwerpen_afgehandeld }}</div>
                     </div>
                 </div>
             </section>
@@ -105,13 +86,10 @@
                 <div>
                     <h2>Top 10 gemiddelde doorlooptijden van alle wijken per fase</h2>
                     <div class="grid-container grid-container--4cols">
-                        {% for tabel in doorlooptijden_wijk %}
-                            {% if forloop.counter >= 2 and forloop.counter < 7 %}
-                                <div class="grid-item bgc-white">
-                                    {% include "charts/dashboard_item.html" with title=tabel.title description="" period_title=title head=tabel.head body=tabel.body only %}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
+                        <div class="grid-item bgc-white">{{ DoorlooptijdenAfgehandeldeMeldingen.tabel_wijken_midoffice }}</div>
+                        <div class="grid-item bgc-white">{{ DoorlooptijdenAfgehandeldeMeldingen.tabel_wijken_uitvoer }}</div>
+                        <div class="grid-item bgc-white">{{ DoorlooptijdenAfgehandeldeMeldingen.tabel_wijken_wachten }}</div>
+                        <div class="grid-item bgc-white">{{ DoorlooptijdenAfgehandeldeMeldingen.tabel_wijken_afgehandeld }}</div>
                     </div>
                 </div>
             </section>
