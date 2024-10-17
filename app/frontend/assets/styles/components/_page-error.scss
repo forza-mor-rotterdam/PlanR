@@ -38,6 +38,15 @@
             width: auto;
             white-space: nowrap;
             padding: 0 1em;
+
+            &.hidden {
+                display: none;
+            }
+
+            &.disabled {
+                opacity: 0.25;
+                pointer-events: none;
+            }
         }
     }
 }

@@ -25,7 +25,7 @@
                         Oeps, er is iets misgegaan. Probeer PlanR over 10 seconden te refreshen, als dit probleem zich blijft voordoen, meld deze fout dan.
                     </p>
                     <div class="container__flex">
-                        <a href="/melding" class="btn btn-action-v2">Naar overzicht</a>
+                        <a href="/melding" class="btn btn-action-v2">Refresh</a>
                         <button class="btn btn-tertiary" id="showAction">Fout melden</button>
                     </div>
                 </div>
@@ -34,24 +34,19 @@
                          alt="" />
                     <h1 class="h3">Fout melden via e-mail</h1>
                     <p>Door op ‘Verstuur via e-mail’  te klikken, meld je de volgende gegevens bij deze melding.</p>
-                    <p>Tijdstip van de foutmelding: {{ current_time }}</p>
-                    <p>Pagina URL van de foutmelding: {{ path }}</p>
-                    <p>Type foutmelding: Internal Server Error</p>
-                    <p>Gebruikte browser: {{ user_agent }}</p>
-                    <p>DynaTrace Request ID: {{ dyna_trace_request_id }}</p>
-                    <p>Server ID: {{ server_id }}</p>
                     <ul>
-                        <li>Tijdstip, pagina en type van de foutmelding</li>
-                        <li>Gebruikte browser</li>
-                        <li>DynaTrace Request ID</li>
-                        <li>Server ID</li>
+                        <li>Type foutmelding: Interne serverfout: 500 {{ server_id }}</li>
+                        <li>Tijdstip van de foutmelding: {{ current_time }}</li>
+                        <li>Pagina URL van de foutmelding: {{ path }}</li>
+                        <li>Gebruikte browser: {{ user_agent }}</li>
                     </ul>
                     <div class="container__flex">
-                        <a href="mailto:...?subject=Interne serverfout: 500&body="
-                           target
-                           _blank
+                        <a href="mailto:...?subject=Interne serverfout: 500&body=Type foutmelding: Interne serverfout: 500 PlanR {{ server_id }}%0D%0ATijdstip van de foutmelding: {{ current_time }}%0D%0AURL van de foutmelding: {{ path }}%0D%0ABrowser: {{ user_agent }}%0D%0A%0D%0AWellicht heb je nog meer  informatie voor ons:%0D%0AKomt deze fout vaker voor:%0D%0AHeb je een patroon kunnen ontdekken:%0D%0AErvaren je collega’s dezelfde fout:%0D%0A %0D%0AHoe meer informatie we ontvangen, des te beter we de fout kunnen analyseren. Dank voor het melden van de fout.%0D%0A %0D%0A"
+                           target="_blank"
                            rel="noopener noreferrer"
-                           class="btn btn-action-v2">Verstuur via e-mail</a>
+                           class="btn btn-action-v2"
+                           id="sendEmail">Verstuur via e-mail</a>
+                        <a href="/melding" class="btn btn-action-v2 hidden">Naar overzicht</a>
                     </div>
                 </div>
             </div>

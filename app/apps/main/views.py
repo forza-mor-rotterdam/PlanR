@@ -90,16 +90,24 @@ def http_403(request):
 
 
 def http_404(request):
+    current_time = datetime.now()
+    server_id = os.getenv("APP_ENV", "Onbekend")
+
     return render(
         request,
         "404.html",
+        {
+            "current_time": current_time,
+            "server_id": server_id,
+            "user_agent": request.META.get("HTTP_USER_AGENT", "Onbekend"),
+            "path": request.path,
+        },
     )
 
 
 def http_500(request):
     current_time = datetime.now()
-    server_id = os.getenv("SERVER_ID", "Onbekend")
-    dyna_trace_request_id = request.META.get("DYNATRACE_REQUEST_ID", "Niet beschikbaar")
+    server_id = os.getenv("APP_ENV", "Onbekend")
 
     return render(
         request,
@@ -107,7 +115,6 @@ def http_500(request):
         {
             "current_time": current_time,
             "server_id": server_id,
-            "dyna_trace_request_id": dyna_trace_request_id,
             "user_agent": request.META.get("HTTP_USER_AGENT", "Onbekend"),
             "path": request.path,
         },
