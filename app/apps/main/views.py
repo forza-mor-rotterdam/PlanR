@@ -265,6 +265,7 @@ def melding_lijst(request):
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def melding_detail(request, id):
     mor_core_service = MORCoreService(request=request)
+    gebruiker_context = get_gebruiker_context(request.user)
     melding = mor_core_service.get_melding(id)
 
     if (
@@ -292,7 +293,7 @@ def melding_detail(request, id):
     locaties = melding_locaties(melding)
     taaktypes = TaakRService(request=request).get_niet_actieve_taaktypes(melding)
     categorized_taaktypes = TaakRService(request=request).categorize_taaktypes(
-        melding, taaktypes
+        melding, taaktypes, gebruiker_context.taaktypes
     )
     form = InformatieToevoegenForm()
     overview_querystring = request.session.get("overview_querystring", "")
@@ -718,10 +719,13 @@ def melding_spoed_veranderen(request, id):
 @permission_required("authorisatie.taak_aanmaken", raise_exception=True)
 def taak_starten(request, id):
     mor_core_service = MORCoreService(request=request)
+    gebruiker_context = get_gebruiker_context(request.user)
     melding = mor_core_service.get_melding(id)
 
     taakr_service = TaakRService(request=request)
-    taaktypes_with_afdelingen = taakr_service.get_taaktypes_with_afdelingen(melding)
+    taaktypes_with_afdelingen = taakr_service.get_taaktypes_with_afdelingen(
+        melding, gebruiker_context.taaktypes
+    )
 
     # Categorize taaktypes by afdeling and get gerelateerde onderwerpen
     afdelingen = {}
