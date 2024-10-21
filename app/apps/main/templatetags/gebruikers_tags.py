@@ -1,4 +1,4 @@
-from apps.services.meldingen import MeldingenService
+from apps.main.services import MORCoreService
 from django import template
 from django.contrib.auth import get_user_model
 from utils.diversen import gebruikersnaam as gebruikersnaam_basis
@@ -28,7 +28,7 @@ def get_field_from_gebruiker_middels_email(value, field_name=None):
 def get_gebruiker_object_middels_email(value):
     if not value:
         return None
-    gebruiker_response = MeldingenService().get_gebruiker(
+    gebruiker_response = MORCoreService().get_gebruiker(
         gebruiker_email=value,
     )
     if gebruiker_response.status_code == 200:

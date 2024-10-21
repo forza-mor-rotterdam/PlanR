@@ -7,7 +7,7 @@ django-webpack-loader==1.7.0
 requests==2.29.0
 debugpy
 django-health-check==3.17.0
-django_redis
+django_redis==5.4.0
 django-permissions-policy==4.14.0
 django-cors-headers==3.13.0
 django-ckeditor-5==0.2.13
@@ -33,3 +33,4 @@ django-debug-toolbar==4.0.0
 django-encrypted-model-fields==0.6.5
 isoweek==1.3.3
 beautifulsoup4==4.12.3
+git+https://github.com/forza-mor-rotterdam/mor-api-services.git@7432190e7cb5efba7a33aaaf4b2e4c35c38ed7d9

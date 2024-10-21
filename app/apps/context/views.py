@@ -1,8 +1,6 @@
 from apps.context.forms import ContextAanmakenForm, ContextAanpassenForm
 from apps.context.models import Context
-from apps.services.meldingen import MeldingenService
-from apps.services.onderwerpen import OnderwerpenService
-from apps.services.taakr import TaakRService
+from apps.main.services import MORCoreService, OnderwerpenService, TaakRService
 from django.contrib.auth.decorators import permission_required
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -47,7 +45,7 @@ class ContextAanpassenView(ContextAanmakenAanpassenView, UpdateView):
             force_cache=True
         )
         kwargs["onderwerp_alias_list"] = (
-            MeldingenService(request=self.request)
+            MORCoreService(request=self.request)
             .onderwerp_alias_list()
             .get("results", [])
         )
@@ -73,7 +71,7 @@ class ContextAanmakenView(ContextAanmakenAanpassenView, CreateView):
             force_cache=True
         )
         kwargs["onderwerp_alias_list"] = (
-            MeldingenService(request=self.request)
+            MORCoreService(request=self.request)
             .onderwerp_alias_list()
             .get("results", [])
         )

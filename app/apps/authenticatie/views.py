@@ -7,7 +7,7 @@ from apps.authenticatie.forms import (
     GebruikerProfielForm,
 )
 from apps.instellingen.models import Instelling
-from apps.services.meldingen import MeldingenService
+from apps.main.services import MORCoreService
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, permission_required
@@ -138,7 +138,7 @@ class GebruikerProfielView(GebruikerView, UpdateView):
         return initial
 
     def form_valid(self, form):
-        MeldingenService().set_gebruiker(
+        MORCoreService().set_gebruiker(
             gebruiker=self.request.user.serialized_instance(),
         )
         messages.success(self.request, "Gebruikersgegevens succesvol opgeslagen.")

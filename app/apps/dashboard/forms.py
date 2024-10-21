@@ -1,7 +1,7 @@
 import logging
 
 from apps.main.constanten import PDOK_WIJKEN
-from apps.services.onderwerpen import OnderwerpenService
+from apps.main.services import OnderwerpenService
 from django import forms
 
 logger = logging.getLogger(__name__)
@@ -37,8 +37,6 @@ class DashboardForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        print(kwargs)
-        print(args)
         super().__init__(*args, **kwargs)
         onderwerpen_service = OnderwerpenService()
         onderwerpen = onderwerpen_service.get_onderwerpen()

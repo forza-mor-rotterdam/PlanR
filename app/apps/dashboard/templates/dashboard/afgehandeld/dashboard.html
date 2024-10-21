@@ -56,7 +56,8 @@
         <section class="section--seperated--l">
             <div class="grid-container grid-container--full"
                  data-controller="chart-utils">
-                {% include "charts/base_chart.html" with title="Doorlooptijden per status verandering" description="" period_title=title tabs=status_veranderingen_tabs data_type="duration" only %}
+                {{ StatusVeranderingDuurMeldingen.chart_tabs }}
+                {% comment %} {% include "charts/base_chart.html" with title="Doorlooptijden per status verandering" description="" period_title=title tabs=status_veranderingen_tabs data_type="duration" only %} {% endcomment %}
             </div>
         </section>
         {% if not wijk or not onderwerp %}

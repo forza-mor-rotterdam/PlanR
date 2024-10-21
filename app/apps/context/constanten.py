@@ -1,7 +1,7 @@
 import string
 
 from apps.main.constanten import BEGRAAFPLAATSEN, VERTALINGEN
-from apps.services.onderwerpen import render_onderwerp
+from apps.main.services import render_onderwerp
 from django.http import QueryDict
 from django.template.loader import get_template
 from django.urls import reverse
