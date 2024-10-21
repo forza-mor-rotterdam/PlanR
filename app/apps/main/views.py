@@ -293,7 +293,7 @@ def melding_detail(request, id):
     locaties = melding_locaties(melding)
     taaktypes = TaakRService(request=request).get_niet_actieve_taaktypes(melding)
     categorized_taaktypes = TaakRService(request=request).categorize_taaktypes(
-        melding, taaktypes, gebruiker_context.taaktypes
+        melding, taaktypes, context_taaktypes=gebruiker_context.taaktypes
     )
     form = InformatieToevoegenForm()
     overview_querystring = request.session.get("overview_querystring", "")
@@ -724,7 +724,7 @@ def taak_starten(request, id):
 
     taakr_service = TaakRService(request=request)
     taaktypes_with_afdelingen = taakr_service.get_taaktypes_with_afdelingen(
-        melding, gebruiker_context.taaktypes
+        melding, context_taaktypes=gebruiker_context.taaktypes
     )
 
     # Categorize taaktypes by afdeling and get gerelateerde onderwerpen
