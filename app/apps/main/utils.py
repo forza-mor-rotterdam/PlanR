@@ -3,7 +3,7 @@ import logging
 from collections import OrderedDict
 from re import sub
 
-from apps.services.mercure import MercureService
+from apps.main.services import MercureService
 from django.core.files.storage import default_storage
 from django.http import QueryDict
 

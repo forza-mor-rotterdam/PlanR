@@ -78,6 +78,7 @@ INSTALLED_APPS = (
     "django_celery_results",
     "sorl.thumbnail",
     "django_select2",
+    "mor_api_services",
     # Apps
     "apps.rotterdam_formulier_html",
     "apps.authorisatie",
@@ -85,7 +86,6 @@ INSTALLED_APPS = (
     "apps.context",
     "apps.beheer",
     "apps.release_notes",
-    "apps.services",
     "apps.instellingen",
     "apps.dashboard",
 )

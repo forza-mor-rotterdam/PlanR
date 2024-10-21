@@ -118,11 +118,11 @@ def tijdsvakdata_vernieuwen(self):
 @shared_task(bind=True, base=BaseTaskWithRetry)
 def tijdsvakitem_data_vernieuwen(self, tijdsvak_id):
     from apps.dashboard.models import Tijdsvak
-    from apps.services.meldingen import MeldingenService
+    from apps.main.services import MORCoreService
 
     tijdsvak = Tijdsvak.objects.get(id=tijdsvak_id)
     try:
-        resultaat = MeldingenService().tijdsvak_data_halen(
+        resultaat = MORCoreService().tijdsvak_data_halen(
             url=tijdsvak.databron.url,
             params={
                 tijdsvak.databron.start_datumtijd_param: tijdsvak.start_datumtijd.isoformat(),

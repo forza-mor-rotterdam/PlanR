@@ -5,16 +5,12 @@ from datetime import datetime, timedelta
 
 import isoweek
 from apps.dashboard.forms import DashboardForm
-from apps.dashboard.models import (
-    DoorlooptijdenAfgehandeldeMeldingen,
-    NieuweTaakopdrachten,
-    Tijdsvak,
-)
+from apps.dashboard.models import DoorlooptijdenAfgehandeldeMeldingen
+from apps.dashboard.models import NieuweTaakopdrachten as NieuweTaakopdrachtenModel
+from apps.dashboard.models import StatusVeranderingDuurMeldingen, Tijdsvak
 from apps.dashboard.tables import (
     get_aantallen_tabs,
     get_meldingen_nieuw_vs_afgehandeld_tabs,
-    get_nieuwe_taakopdrachten_tabs,
-    get_status_veranderingen_tabs,
     get_taaktype_aantallen_per_melding_tabs,
     get_taken_nieuw_vs_afgehandeld_tabs,
     top_taaktype_aantallen,
@@ -28,8 +24,7 @@ from apps.main.constanten import (
     MAANDEN_KORT,
     PDOK_WIJKEN,
 )
-from apps.services.meldingen import MeldingenService
-from apps.services.onderwerpen import OnderwerpenService
+from apps.main.services import MORCoreService, OnderwerpenService
 from django.contrib.auth.decorators import permission_required
 from django.contrib.gis.db import models
 from django.shortcuts import redirect
@@ -407,18 +402,14 @@ class NieuweMeldingen(Dashboard):
         meldingen = []
         signalen = []
         afgehandeld = []
-        meldingen_service = MeldingenService()
+        mor_core_service = MORCoreService()
         for tick in self.x_ticks:
             dag = tick.get("start_dt")
             days = tick.get("days")
-            melding_aantallen = meldingen_service.melding_aantallen(
-                datum=dag, days=days
-            )
-            signaal_aantallen = meldingen_service.signaal_aantallen(
-                datum=dag, days=days
-            )
+            melding_aantallen = mor_core_service.melding_aantallen(datum=dag, days=days)
+            signaal_aantallen = mor_core_service.signaal_aantallen(datum=dag, days=days)
 
-            status_afgehandeld = meldingen_service.afgehandelde_meldingen(
+            status_afgehandeld = mor_core_service.afgehandelde_meldingen(
                 datum=dag, days=days
             )
             afgehandeld.append(status_afgehandeld)
@@ -470,52 +461,33 @@ class MeldingenAfgehandeld(Dashboard):
     template_name = "dashboard/afgehandeld/dashboard.html"
     tijdsvak_classes = [
         DoorlooptijdenAfgehandeldeMeldingen,
+        StatusVeranderingDuurMeldingen,
     ]
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
 
-        onderwerpen_service = OnderwerpenService()
-        onderwerpen_service.get_onderwerpen()
-        [c.get("wijknaam") for c in PDOK_WIJKEN]
+    #     veranderingen = []
+    #     mor_core_service = MORCoreService()
 
-        veranderingen = []
-        meldingen_service = MeldingenService()
+    #     for tick in self.x_ticks:
+    #         dag = tick.get("start_dt")
+    #         days = tick.get("days")
+    #         status_veranderingen = mor_core_service.status_veranderingen(
+    #             datum=dag, days=days
+    #         )
+    #         veranderingen.append(status_veranderingen)
 
-        # afgehandeld = list(
-        #     DoorlooptijdenAfgehandeldeMeldingen.objects.filter(
-        #         periode=self.tijdsvak_periode,
-        #         start_datumtijd__gte=self.x_ticks[0].get("start_dt"),
-        #         start_datumtijd__lte=self.x_ticks[-1].get("start_dt"),
-        #     ).values_list("resultaat", flat=True)
-        # )
-        # print("doorlooptijden")
-        # print(len(afgehandeld))
+    #     status_veranderingen_tabs = get_status_veranderingen_tabs(
+    #         veranderingen, ticks=self.x_ticks, onderwerp=self.onderwerp, wijk=self.wijk
+    #     )
 
-        # DoorlooptijdenAfgehandeldeMeldingen.tijdsvakken = afgehandeld
-
-        for tick in self.x_ticks:
-            dag = tick.get("start_dt")
-            days = tick.get("days")
-            # status_afgehandeld = meldingen_service.afgehandelde_meldingen(
-            #     datum=dag, days=days
-            # )
-            status_veranderingen = meldingen_service.status_veranderingen(
-                datum=dag, days=days
-            )
-            # afgehandeld.append(status_afgehandeld)
-            veranderingen.append(status_veranderingen)
-
-        status_veranderingen_tabs = get_status_veranderingen_tabs(
-            veranderingen, ticks=self.x_ticks, onderwerp=self.onderwerp, wijk=self.wijk
-        )
-
-        context.update(
-            {
-                "status_veranderingen_tabs": status_veranderingen_tabs,
-            }
-        )
-        return context
+    #     context.update(
+    #         {
+    #             "status_veranderingen_tabs": status_veranderingen_tabs,
+    #         }
+    #     )
+    #     return context
 
 
 @method_decorator(
@@ -528,12 +500,12 @@ class TaaktypeAantallen(Dashboard):
         context = super().get_context_data(**kwargs)
 
         taaktype_aantallen_per_melding = []
-        meldingen_service = MeldingenService()
+        mor_core_service = MORCoreService()
         for tick in self.x_ticks:
             dag = tick.get("start_dt")
             days = tick.get("days")
             taaktype_aantallen_per_melding_tijdsvak = (
-                meldingen_service.taaktype_aantallen_per_melding(
+                mor_core_service.taaktype_aantallen_per_melding(
                     datum=dag, days=days, force_cache=False
                 )
             )
@@ -595,37 +567,25 @@ class TaaktypeAantallen(Dashboard):
 class NieuweTaakopdrachten(Dashboard):
     template_name = "dashboard/taken/nieuwe_taakopdrachten.html"
     tijdsvak_classes = [
-        NieuweTaakopdrachten,
+        NieuweTaakopdrachtenModel,
     ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        nieuwe_taakopdrachten = []
         taakopdracht_doorlooptijden = []
-        meldingen_service = MeldingenService()
+        mor_core_service = MORCoreService()
         for tick in self.x_ticks:
             dag = tick.get("start_dt")
             days = tick.get("days")
-            nieuwe_taakopdrachten_tijdsvak = meldingen_service.nieuwe_taakopdrachten(
-                datum=dag, days=days, force_cache=False
-            )
             taakopdracht_doorlooptijden_tijdsvak = (
-                meldingen_service.taakopdracht_doorlooptijden(
+                mor_core_service.taakopdracht_doorlooptijden(
                     datum=dag, days=days, force_cache=False
                 )
             )
-            nieuwe_taakopdrachten.append(nieuwe_taakopdrachten_tijdsvak)
             taakopdracht_doorlooptijden.append(taakopdracht_doorlooptijden_tijdsvak)
 
-        nieuwe_taakopdrachten_tabs = get_nieuwe_taakopdrachten_tabs(
-            nieuwe_taakopdrachten,
-            ticks=self.x_ticks,
-            onderwerp=self.onderwerp,
-            wijk=self.wijk,
-        )
         taken_nieuw_vs_afgehandeld_tabs = get_taken_nieuw_vs_afgehandeld_tabs(
-            nieuwe_taakopdrachten,
+            NieuweTaakopdrachtenModel.tijdsvakken,
             taakopdracht_doorlooptijden,
             ticks=self.x_ticks,
             onderwerp=self.onderwerp,
@@ -634,7 +594,6 @@ class NieuweTaakopdrachten(Dashboard):
 
         context.update(
             {
-                "nieuwe_taakopdrachten_tabs": nieuwe_taakopdrachten_tabs,
                 "taken_nieuw_vs_afgehandeld_tabs": taken_nieuw_vs_afgehandeld_tabs,
             }
         )

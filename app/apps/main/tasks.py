@@ -1,6 +1,6 @@
 import celery
+from apps.main.services import MercureService
 from apps.main.utils import publiceer_topic_met_subscriptions
-from apps.services.mercure import MercureService
 from celery import shared_task
 from celery.utils.log import get_task_logger
 

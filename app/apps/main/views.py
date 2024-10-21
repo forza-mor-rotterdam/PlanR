@@ -36,6 +36,7 @@ from apps.main.forms import (
     TaaktypeCategorieSearchForm,
 )
 from apps.main.models import StandaardExterneOmschrijving, TaaktypeCategorie
+from apps.main.services import MORCoreService, TaakRService
 from apps.main.templatetags.gebruikers_tags import get_gebruiker_object_middels_email
 from apps.main.utils import (
     get_actieve_filters,
@@ -50,8 +51,6 @@ from apps.main.utils import (
     to_base64,
     update_qd_met_standaard_meldingen_filter_qd,
 )
-from apps.services.meldingen import MeldingenService
-from apps.services.taakr import TaakRService
 from config.context_processors import general_settings
 from deepdiff import DeepDiff
 from django.conf import settings
@@ -156,8 +155,8 @@ def sidesheet_actueel(request):
 @login_required
 @permission_required("authorisatie.melding_lijst_bekijken", raise_exception=True)
 def melding_lijst(request):
-    meldingen_service = MeldingenService(request=request)
-    meldingen_service.set_gebruiker(
+    mor_core_service = MORCoreService(request=request)
+    mor_core_service.set_gebruiker(
         gebruiker=request.user.serialized_instance(),
     )
     gebruiker = request.user
@@ -222,7 +221,7 @@ def melding_lijst(request):
     meldingen_filter_query_dict = update_qd_met_standaard_meldingen_filter_qd(
         form_qs, gebruiker_context
     )
-    meldingen_data = meldingen_service.get_melding_lijst(
+    meldingen_data = mor_core_service.get_melding_lijst(
         query_string=FilterManager().get_query_string(meldingen_filter_query_dict)
     )
     if (
@@ -233,11 +232,11 @@ def melding_lijst(request):
         meldingen_filter_query_dict["offset"] = "0"
         form_qs["offset"] = "0"
         request.session["offset"] = "0"
-        meldingen_data = meldingen_service.get_melding_lijst(
+        meldingen_data = mor_core_service.get_melding_lijst(
             query_string=FilterManager().get_query_string(meldingen_filter_query_dict)
         )
     request.session["pagina_melding_ids"] = [
-        r.get("uuid") for r in meldingen_data.get("results")
+        r.get("uuid") for r in meldingen_data.get("results", [])
     ]
     request.session["melding_count"] = meldingen_data.get("count", 0)
 
@@ -265,8 +264,8 @@ def melding_lijst(request):
 @login_required
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def melding_detail(request, id):
-    meldingen_service = MeldingenService(request=request)
-    melding = meldingen_service.get_melding(id)
+    mor_core_service = MORCoreService(request=request)
+    melding = mor_core_service.get_melding(id)
 
     if (
         request.GET.get("melding_ids")
@@ -307,7 +306,7 @@ def melding_detail(request, id):
                 file_name = default_storage.save(f.name, f)
                 bijlagen_base64.append({"bestand": to_base64(file_name)})
 
-            meldingen_service.melding_gebeurtenis_toevoegen(
+            mor_core_service.melding_gebeurtenis_toevoegen(
                 id,
                 bijlagen=bijlagen_base64,
                 omschrijving_intern=opmerking,
@@ -365,7 +364,7 @@ def melding_detail(request, id):
 @login_required
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def melding_next(request, id, richting):
-    meldingen_service = MeldingenService(request=request)
+    mor_core_service = MORCoreService(request=request)
     melding_id = str(id)
     frame_id = "melding_next_volgend" if richting > 0 else "melding_next_vorige"
     label = "Volgende" if richting > 0 else "Vorige"
@@ -422,7 +421,7 @@ def melding_next(request, id, richting):
         meldingen_filter_query_dict = update_qd_met_standaard_meldingen_filter_qd(
             form_qs, gebruiker_context
         )
-        meldingen_data = meldingen_service.get_melding_lijst(
+        meldingen_data = mor_core_service.get_melding_lijst(
             query_string=meldingen_filter_query_dict.urlencode()
         )
 
@@ -465,8 +464,8 @@ def publiceer_topic(request, id):
 @login_required
 @permission_required("authorisatie.melding_afhandelen", raise_exception=True)
 def melding_afhandelen(request, id):
-    meldingen_service = MeldingenService(request=request)
-    melding = meldingen_service.get_melding(id)
+    mor_core_service = MORCoreService(request=request)
+    melding = mor_core_service.get_melding(id)
 
     melding_bijlagen = [
         [
@@ -509,7 +508,7 @@ def melding_afhandelen(request, id):
                 file_name = default_storage.save(f.name, f)
                 bijlagen_base64.append({"bestand": to_base64(file_name)})
 
-            meldingen_service.melding_status_aanpassen(
+            mor_core_service.melding_status_aanpassen(
                 id,
                 omschrijving_extern=form.cleaned_data.get("omschrijving_extern"),
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
@@ -543,8 +542,8 @@ def melding_afhandelen(request, id):
 @login_required
 @permission_required("authorisatie.melding_annuleren", raise_exception=True)
 def melding_annuleren(request, id):
-    meldingen_service = MeldingenService(request=request)
-    melding = meldingen_service.get_melding(id)
+    mor_core_service = MORCoreService(request=request)
+    melding = mor_core_service.get_melding(id)
 
     melding_bijlagen = [
         [
@@ -569,7 +568,7 @@ def melding_annuleren(request, id):
                 file_name = default_storage.save(f.name, f)
                 bijlagen_base64.append({"bestand": to_base64(file_name)})
 
-            meldingen_service.melding_annuleren(
+            mor_core_service.melding_annuleren(
                 id,
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
                 bijlagen=bijlagen_base64,
@@ -600,13 +599,13 @@ def melding_annuleren(request, id):
 @login_required
 @permission_required("authorisatie.melding_heropenen", raise_exception=True)
 def melding_heropenen(request, id):
-    meldingen_service = MeldingenService(request=request)
-    melding = meldingen_service.get_melding(id)
+    mor_core_service = MORCoreService(request=request)
+    melding = mor_core_service.get_melding(id)
     form = MeldingHeropenenForm()
     if request.POST:
         form = MeldingHeropenenForm(request.POST)
         if form.is_valid():
-            meldingen_service.melding_heropenen(
+            mor_core_service.melding_heropenen(
                 id,
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
                 gebruiker=request.user.email,
@@ -626,8 +625,8 @@ def melding_heropenen(request, id):
 @login_required
 @permission_required("authorisatie.melding_pauzeren", raise_exception=True)
 def melding_pauzeren(request, id):
-    meldingen_service = MeldingenService(request=request)
-    melding = meldingen_service.get_melding(id)
+    mor_core_service = MORCoreService(request=request)
+    melding = mor_core_service.get_melding(id)
     form = MeldingPauzerenForm()
     actieve_taken = [
         taakopdracht
@@ -638,7 +637,7 @@ def melding_pauzeren(request, id):
     if request.POST:
         form = MeldingPauzerenForm(request.POST)
         if form.is_valid():
-            meldingen_service.melding_status_aanpassen(
+            mor_core_service.melding_status_aanpassen(
                 id,
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
                 gebruiker=request.user.email,
@@ -660,14 +659,14 @@ def melding_pauzeren(request, id):
 @login_required
 @permission_required("authorisatie.melding_hervatten", raise_exception=True)
 def melding_hervatten(request, id):
-    meldingen_service = MeldingenService(request=request)
-    melding = meldingen_service.get_melding(id)
+    mor_core_service = MORCoreService(request=request)
+    melding = mor_core_service.get_melding(id)
     form = MeldingHervattenForm()
 
     if request.POST:
         form = MeldingHervattenForm(request.POST)
         if form.is_valid():
-            meldingen_service.melding_status_aanpassen(
+            mor_core_service.melding_status_aanpassen(
                 id,
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
                 gebruiker=request.user.email,
@@ -688,8 +687,8 @@ def melding_hervatten(request, id):
 @login_required
 @permission_required("authorisatie.melding_spoed_veranderen", raise_exception=True)
 def melding_spoed_veranderen(request, id):
-    meldingen_service = MeldingenService(request=request)
-    melding = meldingen_service.get_melding(id)
+    mor_core_service = MORCoreService(request=request)
+    melding = mor_core_service.get_melding(id)
     form = MeldingSpoedForm(
         initial={"urgentie": 0.5 if melding.get("urgentie", 0.2) == 0.2 else 0.2}
     )
@@ -697,7 +696,7 @@ def melding_spoed_veranderen(request, id):
     if request.POST:
         form = MeldingSpoedForm(request.POST)
         if form.is_valid():
-            meldingen_service.melding_spoed_aanpassen(
+            mor_core_service.melding_spoed_aanpassen(
                 id,
                 urgentie=form.cleaned_data.get("urgentie"),
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
@@ -718,8 +717,8 @@ def melding_spoed_veranderen(request, id):
 @login_required
 @permission_required("authorisatie.taak_aanmaken", raise_exception=True)
 def taak_starten(request, id):
-    meldingen_service = MeldingenService(request=request)
-    melding = meldingen_service.get_melding(id)
+    mor_core_service = MORCoreService(request=request)
+    melding = mor_core_service.get_melding(id)
 
     taakr_service = TaakRService(request=request)
     taaktypes_with_afdelingen = taakr_service.get_taaktypes_with_afdelingen(melding)
@@ -796,7 +795,7 @@ def taak_starten(request, id):
             }
             taaktypes_dict.update(dict(onderwerp_gerelateerde_taaktypes))
 
-            meldingen_service.taak_aanmaken(
+            mor_core_service.taak_aanmaken(
                 melding_uuid=id,
                 taakapplicatie_taaktype_url=data.get("taaktype"),
                 titel=taaktypes_dict.get(data.get("taaktype"), data.get("taaktype")),
@@ -823,8 +822,8 @@ def taak_starten(request, id):
 @login_required
 @permission_required("authorisatie.taak_afronden", raise_exception=True)
 def taak_afronden(request, melding_uuid):
-    meldingen_service = MeldingenService(request=request)
-    melding = meldingen_service.get_melding(melding_uuid)
+    mor_core_service = MORCoreService(request=request)
+    melding = mor_core_service.get_melding(melding_uuid)
 
     open_taakopdrachten = get_open_taakopdrachten(melding)
     taakopdracht_urls = {
@@ -845,7 +844,7 @@ def taak_afronden(request, melding_uuid):
             for f in bijlagen:
                 file_name = default_storage.save(f.name, f)
                 bijlagen_base64.append({"bestand": to_base64(file_name)})
-            meldingen_service.taak_status_aanpassen(
+            mor_core_service.taak_status_aanpassen(
                 taakopdracht_url=taakopdracht_urls.get(
                     form.cleaned_data.get("taakopdracht")
                 ),
@@ -871,8 +870,8 @@ def taak_afronden(request, melding_uuid):
 @login_required
 @permission_required("authorisatie.taak_annuleren", raise_exception=True)
 def taak_annuleren(request, melding_uuid):
-    meldingen_service = MeldingenService(request=request)
-    melding = meldingen_service.get_melding(melding_uuid)
+    mor_core_service = MORCoreService(request=request)
+    melding = mor_core_service.get_melding(melding_uuid)
 
     open_taakopdrachten = get_open_taakopdrachten(melding)
     taakopdracht_urls = {
@@ -887,7 +886,7 @@ def taak_annuleren(request, melding_uuid):
     if request.POST:
         form = TaakAnnulerenForm(request.POST, taakopdracht_opties=taakopdracht_opties)
         if form.is_valid():
-            meldingen_service.taak_status_aanpassen(
+            mor_core_service.taak_status_aanpassen(
                 taakopdracht_url=taakopdracht_urls.get(
                     form.cleaned_data.get("taakopdracht")
                 ),
@@ -912,7 +911,7 @@ def taak_annuleren(request, melding_uuid):
 @login_required
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def informatie_toevoegen(request, id):
-    meldingen_service = MeldingenService(request=request)
+    mor_core_service = MORCoreService(request=request)
     form = InformatieToevoegenForm()
     if request.method == "POST":
         form = InformatieToevoegenForm(request.POST, request.FILES)
@@ -924,7 +923,7 @@ def informatie_toevoegen(request, id):
                 file_name = default_storage.save(f.name, f)
                 bijlagen_base64.append({"bestand": to_base64(file_name)})
 
-            meldingen_service.melding_gebeurtenis_toevoegen(
+            mor_core_service.melding_gebeurtenis_toevoegen(
                 id,
                 bijlagen=bijlagen_base64,
                 omschrijving_intern=opmerking,
@@ -956,8 +955,8 @@ def gebruiker_info(request, gebruiker_email):
 @login_required
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def melding_pdf_download(request, id):
-    meldingen_service = MeldingenService(request=request)
-    melding = meldingen_service.get_melding(id)
+    mor_core_service = MORCoreService(request=request)
+    melding = mor_core_service.get_melding(id)
     base_url = request.build_absolute_uri()
     path_to_css_file = (
         "/app/frontend/public/build/app.css" if settings.DEBUG else "/static/app.css"
@@ -1005,10 +1004,9 @@ def meldingen_bestand(request):
         raise Exception(
             "De MOR-Core url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
         )
-    meldingen_service = MeldingenService(request=request)
+    mor_core_service = MORCoreService(request=request)
     modified_path = request.path.replace(settings.MOR_CORE_URL_PREFIX, "")
-    url = f"{instelling.mor_core_basis_url}{modified_path}"
-    response = requests.get(url, stream=True, headers=meldingen_service.get_headers())
+    response = mor_core_service.bestand_halen(modified_path)
     return StreamingHttpResponse(
         response.raw,
         content_type=response.headers.get("content-type"),
@@ -1052,7 +1050,7 @@ def melding_aanmaken(request):
         is_valid = form.is_valid()
         if is_valid:
             signaal_data = form.signaal_data(file_names)
-            signaal_response = MeldingenService().signaal_aanmaken(
+            signaal_response = MORCoreService().signaal_aanmaken(
                 data=signaal_data,
             )
             return redirect(
@@ -1243,7 +1241,7 @@ def msb_importeer_melding(request):
         b64 = _to_base64(f_response.content)
         post_data["bijlagen"].append({"bestand": b64})
 
-    MeldingenService().signaal_aanmaken(
+    MORCoreService().signaal_aanmaken(
         data=post_data,
     )
     del request.session["msb_melding"]
@@ -1321,8 +1319,8 @@ class StandaardExterneOmschrijvingVerwijderenView(
 @permission_required("authorisatie.locatie_aanpassen", raise_exception=True)
 def locatie_aanpassen(request, id):
     try:
-        meldingen_service = MeldingenService(request=request)
-        melding = meldingen_service.get_melding(id)
+        mor_core_service = MORCoreService(request=request)
+        melding = mor_core_service.get_melding(id)
 
         locaties_voor_melding = melding.get("locaties_voor_melding", [])
 
@@ -1355,7 +1353,7 @@ def locatie_aanpassen(request, id):
                     "plaatsnaam": form.cleaned_data.get("plaatsnaam"),
                 }
 
-                meldingen_service.locatie_aanpassen(
+                mor_core_service.locatie_aanpassen(
                     id,
                     omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
                     locatie=locatie_data,
@@ -1380,7 +1378,7 @@ def locatie_aanpassen(request, id):
                 "aantal_actieve_taken": len(actieve_taken),
             },
         )
-    except MeldingenService.AntwoordFout as e:
+    except MORCoreService.AntwoordFout as e:
         return JsonResponse(
             {"error": str(e)},
             status=getattr(e, "status_code", 500),

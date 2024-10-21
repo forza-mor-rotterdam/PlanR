@@ -4,8 +4,8 @@ import statistics
 from datetime import datetime, timedelta
 
 from apps.dashboard.querysets import TijdsvakQuerySet
+from apps.main.services import TaakRService
 from apps.main.templatetags.date_tags import seconds_to_human
-from apps.services.taakr import TaakRService
 from django.contrib.gis.db import models
 from django.core.exceptions import ValidationError
 from django.template.loader import render_to_string
@@ -564,6 +564,109 @@ class StatusVeranderingDuurMeldingen(Tijdsvak):
         proxy = True
         verbose_name = "Status verandering duur voor meldingen"
         verbose_name_plural = "Status verandering duur voor meldingen"
+
+    @classmethod
+    def chart_tabs(cls):
+        labels = [t.get("label") for t in cls.x_ticks]
+        wijk = cls.wijk
+        onderwerp = cls.onderwerp
+        cls.wijken
+        cls.wijken_noord
+        cls.wijken_zuid
+
+        data = copy.deepcopy(cls.tijdsvakken if hasattr(cls, "tijdsvakken") else [])
+
+        tabs = [
+            {
+                "begin_status": "openstaand",
+                "eind_status": "in_behandeling",
+                "titel": "Openstaand -> in behandeling",
+            },
+            {
+                "begin_status": "in_behandeling",
+                "eind_status": "controle",
+                "titel": "In behandeling -> controle",
+            },
+            {
+                "begin_status": "controle",
+                "eind_status": "afgehandeld",
+                "titel": "Controle -> afgehandeld",
+            },
+        ]
+        tabs = [
+            {
+                **tab,
+                **{
+                    "datasets": [
+                        {
+                            "type": "line",
+                            "label": "gemiddelde duur",
+                            "bron": data,
+                        },
+                    ]
+                },
+            }
+            for tab in tabs
+        ]
+        tabs = [
+            {
+                "titel": tab.get("titel"),
+                "labels": labels,
+                "datasets": [
+                    {
+                        "type": dataset.get("type"),
+                        "label": dataset.get("label"),
+                        "barPercentage": "0.2",
+                        "borderColor": "#00811F",
+                        "fill": True,
+                        "backgroundColor": "rgba(0,200,100,0.1)",
+                        "data": [
+                            average(
+                                [
+                                    float(d.get("duur_seconden_gemiddeld"))
+                                    for d in dag
+                                    if d.get("begin_status") == tab.get("begin_status")
+                                    and d.get("eind_status") == tab.get("eind_status")
+                                    and (
+                                        not onderwerp or onderwerp == d.get("onderwerp")
+                                    )
+                                    and (not wijk or wijk == d.get("wijk"))
+                                ]
+                            )
+                            for dag in dataset.get("bron")
+                        ],
+                    }
+                    for dataset in tab.get("datasets", [])
+                ],
+            }
+            for tab in tabs
+        ]
+        tabs = [
+            {
+                **tab,
+                **{
+                    "aantal": int(
+                        average(
+                            [
+                                average([d for d in dataset.get("data", []) if d != 0])
+                                for dataset in tab.get("datasets", [])
+                            ]
+                        )
+                    )
+                },
+            }
+            for tab in tabs
+        ]
+        return render_to_string(
+            "charts/base_chart.html",
+            {
+                "tabs": tabs,
+                "title": "Doorlooptijden per status verandering",
+                "period_title": cls.periode_titel,
+                "description": "",
+                "data_type": "duration",
+            },
+        )
 
 
 class NieuweMeldingAantallen(Tijdsvak):

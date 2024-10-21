@@ -1,4 +1,4 @@
-from apps.services.meldingen import MeldingenService
+from apps.main.services import MORCoreService
 from health_check.backends import BaseHealthCheckBackend
 from health_check.exceptions import HealthCheckException
 
@@ -8,7 +8,7 @@ class MeldingenTokenCheck(BaseHealthCheckBackend):
 
     def check_status(self):
         try:
-            MeldingenService().haal_token()
+            MORCoreService().haal_token()
             return "OK"
         except Exception as e:
             raise HealthCheckException(e)
