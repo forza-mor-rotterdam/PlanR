@@ -48,25 +48,25 @@ window.onload = () => {
   )
   console.log(
     `2 >${document.querySelector('#errorTime').textContent.trim()}<, ${
-      document.querySelector('#errorTime').textContent.length
+      document.querySelector('#errorTime').textContent.trim().length
     }`
   )
 
   if (
     document.querySelector('#errorTime') &&
-    document.querySelector('#errorTime').textContent.length === 0
+    document.querySelector('#errorTime').textContent.trim().length === 0
   ) {
     document.querySelector('#errorTime').textContent = getCurrentDate()
   }
   if (
     document.querySelector('#errorURL') &&
-    document.querySelector('#errorURL').textContent.length === 0
+    document.querySelector('#errorURL').textContent.trim().length === 0
   ) {
     document.querySelector('#errorURL').textContent = errorURL
   }
   if (
     document.querySelector('#errorAgent') &&
-    document.querySelector('#errorAgent').textContent.length === 0
+    document.querySelector('#errorAgent').textContent.trim().length === 0
   ) {
     document.querySelector('#errorAgent').textContent = errorAgent
   }
