@@ -1,8 +1,7 @@
 let errorTime,
   errorURL,
-  errorAgent = null
-// let mailtoLink =
-// 'mailto:productowner-morsb@rotterdam.nl?subject=Interne serverfout: 500&body=Type foutmelding: Interne serverfout 500, PlanR {{ server_id }}%0D%0ATijdstip van de foutmelding: {{ current_time }}%0D%0AURL van de foutmelding: {{ path }}%0D%0ABrowser: {{ user_agent }}%0D%0A%0D%0AWellicht heb je nog meer  informatie voor ons:%0D%0AKomt deze fout vaker voor:%0D%0AHeb je een patroon kunnen ontdekken:%0D%0AErvaren je collega’s dezelfde fout:%0D%0A %0D%0AHoe meer informatie we ontvangen, des te beter we de fout kunnen analyseren. Dank voor het melden van de fout.%0D%0A %0D%0A'
+  errorAgent,
+  mailtoLink = null
 
 document.body.classList.remove('no-js')
 
@@ -23,28 +22,41 @@ const getCurrentDate = () => {
   const today = new Date()
   const date = `${today.getDate()}-${
     today.getMonth() + 1
-  }-${today.getFullYear()}, ${today.getHours()}:${today.getMinutes()}`
+  }-${today.getFullYear()}, ${today.getHours()}:${today.getMinutes()} (Computertijd)`
   return date
 }
 
+document.querySelector('#sendEmail').addEventListener('click', (e) => {
+  e.preventDefault()
+  window.location.href = mailtoLink
+})
+
 window.onload = () => {
-  // setvars
   errorAgent = navigator.userAgent
   errorTime = getCurrentDate()
   errorURL = window.location.href
-  console.log('agent', errorAgent)
-  console.log('time', errorTime)
-  console.log('url', errorURL)
-  console.log('hostname', window.location.hostname)
-  console.log('pathname', window.location.pathname)
+  mailtoLink = `${document
+    .querySelector('#sendEmail')
+    .getAttribute(
+      'href'
+    )}%0D%0ATijdstip van de foutmelding: ${errorTime}%0D%0AURL van de foutmelding: ${errorURL} %0D%0ABrowser: ${errorAgent} %0D%0A%0D%0AWellicht heb je nog meer informatie voor ons:%0D%0AKomt deze fout vaker voor:%0D%0AHeb je een patroon kunnen ontdekken:%0D%0AErvaren je collega’s dezelfde fout:%0D%0A %0D%0AHoe meer informatie we ontvangen, des te beter we de fout kunnen analyseren. Dank voor het melden van de fout.%0D%0A %0D%0A`
 
-  if (document.querySelector('#errorTime').textContent.length === 0) {
+  if (
+    document.querySelector('#errorTime') &&
+    document.querySelector('#errorTime').textContent.length === 0
+  ) {
     document.querySelector('#errorTime').textContent = getCurrentDate()
   }
-  if (document.querySelector('#errorURL').textContent.length === 0) {
+  if (
+    document.querySelector('#errorURL') &&
+    document.querySelector('#errorURL').textContent.length === 0
+  ) {
     document.querySelector('#errorURL').textContent = errorURL
   }
-  if (document.querySelector('#errorAgent').textContent.length === 0) {
+  if (
+    document.querySelector('#errorAgent') &&
+    document.querySelector('#errorAgent').textContent.length === 0
+  ) {
     document.querySelector('#errorAgent').textContent = errorAgent
   }
 }
