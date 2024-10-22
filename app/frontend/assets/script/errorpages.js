@@ -41,17 +41,6 @@ window.onload = () => {
       'href'
     )}%0D%0ATijdstip van de foutmelding: ${errorTime}%0D%0AURL van de foutmelding: ${errorURL} %0D%0ABrowser: ${errorAgent} %0D%0A%0D%0AWellicht heb je nog meer informatie voor ons:%0D%0AKomt deze fout vaker voor:%0D%0AHeb je een patroon kunnen ontdekken:%0D%0AErvaren je collega’s dezelfde fout:%0D%0A %0D%0AHoe meer informatie we ontvangen, des te beter we de fout kunnen analyseren. Dank voor het melden van de fout.%0D%0A %0D%0A`
 
-  console.log(
-    `1 >${document.querySelector('#errorTime').textContent}<, ${
-      document.querySelector('#errorTime').textContent.length
-    }`
-  )
-  console.log(
-    `2 >${document.querySelector('#errorTime').textContent.trim()}<, ${
-      document.querySelector('#errorTime').textContent.trim().length
-    }`
-  )
-
   if (
     document.querySelector('#errorTime') &&
     document.querySelector('#errorTime').textContent.trim().length === 0
