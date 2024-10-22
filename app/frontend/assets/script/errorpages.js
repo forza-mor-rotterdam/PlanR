@@ -1,7 +1,4 @@
-let errorTime,
-  errorURL,
-  errorAgent,
-  mailtoLink = null
+let mailtoLink
 
 document.body.classList.remove('no-js')
 
@@ -32,9 +29,9 @@ document.querySelector('#sendEmail').addEventListener('click', (e) => {
 })
 
 window.onload = () => {
-  errorAgent = navigator.userAgent
-  errorTime = getCurrentDate()
-  errorURL = window.location.href
+  let errorAgent = navigator.userAgent
+  let errorTime = getCurrentDate()
+  let errorURL = window.location.href
   mailtoLink = `${document
     .querySelector('#sendEmail')
     .getAttribute(
