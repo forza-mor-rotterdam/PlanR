@@ -45,6 +45,11 @@ window.onload = () => {
     document.querySelector('#errorTime') &&
     document.querySelector('#errorTime').textContent.length === 0
   ) {
+    console.log(
+      `>${document.querySelector('#errorTime').textContent}<, ${
+        document.querySelector('#errorTime').textContent.length
+      }`
+    )
     document.querySelector('#errorTime').textContent = getCurrentDate()
   }
   if (
