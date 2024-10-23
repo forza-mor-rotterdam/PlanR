@@ -13,7 +13,7 @@ document.querySelector('#sendEmail').addEventListener('click', (e) => {
   document.querySelector('.btn-action-v2.hidden').classList.remove('hidden')
 })
 
-const setData = () => {
+function setData() {
   const today = new Date()
   let errorAgent = navigator.userAgent
   let errorTime = `${today.getDate()}-${
