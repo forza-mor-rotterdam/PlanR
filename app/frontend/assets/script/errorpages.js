@@ -1,5 +1,3 @@
-let mailtoLink
-
 document.body.classList.remove('no-js')
 
 document.querySelector('#showAction').addEventListener('click', () => {
@@ -15,11 +13,6 @@ document.querySelector('#sendEmail').addEventListener('click', (e) => {
   document.querySelector('.btn-action-v2.hidden').classList.remove('hidden')
 })
 
-document.querySelector('#sendEmail').addEventListener('click', (e) => {
-  e.preventDefault()
-  window.location.href = mailtoLink
-})
-
 const getCurrentDate = () => {
   const today = new Date()
   const date = `${today.getDate()}-${
@@ -32,13 +25,14 @@ const setData = () => {
   let errorAgent = navigator.userAgent
   let errorTime = getCurrentDate()
   let errorURL = window.location.href
-  mailtoLink = `${document
+  let mailtoLink = `${document
     .querySelector('#sendEmail')
     .getAttribute(
       'href'
     )}%0D%0ATijdstip van de foutmelding: ${errorTime}%0D%0AURL van de foutmelding: ${errorURL} %0D%0ABrowser: ${errorAgent} %0D%0A%0D%0AWellicht heb je nog meer informatie voor ons:%0D%0AKomt deze fout vaker voor:%0D%0AHeb je een patroon kunnen ontdekken:%0D%0AErvaren je collega’s dezelfde fout:%0D%0A %0D%0AHoe meer informatie we ontvangen, des te beter we de fout kunnen analyseren. Dank voor het melden van de fout.%0D%0A %0D%0A`
 
   console.log('errorTime', document.querySelector('#errorTime'))
+
   if (
     document.querySelector('#errorTime') &&
     document.querySelector('#errorTime').textContent.trim().length === 0
@@ -57,6 +51,12 @@ const setData = () => {
   ) {
     document.querySelector('#errorAgent').textContent = errorAgent
   }
+
+  document.querySelector('#sendEmail').addEventListener('click', (e) => {
+    console.log(e)
+    e.preventDefault()
+    window.location.href = mailtoLink
+  })
 }
 
 setData()
