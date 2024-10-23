@@ -12,93 +12,21 @@
 {% block content %}
     <div class="screen-xl">
         <section class="section--seperated--l">
-            <h2>Nieuwe meldingen</h2>
             <div class="grid-container grid-container--full"
-                 data-controller="chart-utils">
-                <div class="grid-item bgc-white"
-                     data-controller="chart-line"
-                     data-chart-line-data-value='{{ aantallen_tabs.0|json_encode }}'>
-                    <div class="dashboard-item">
-                        <div class="container__flex has-description">
-                            <div>
-                                <span class="h6">
-                                    {% include "icons/dashboard.svg" %}
-                                    {{ title }}
-                                </span>
-                                <h4>Nieuwe meldingen</h4>
-                                <div class="container__description">
-                                    <div class="container__overflow" data-controller="overflow">
-                                        <p class="content__overflow">
-                                            Deze grafiek toont het aantal meldingen over de periode, samen met het aantal originele meldingen.
-                                            <br>
-                                            Hoe groter het verschil tussen de twee hoe meer er ontdubbeld is.
-                                        </p>
-                                        {% include "icons/arrow-right.svg" %}
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <ul class="list-horizontal">
-                                    {% for tab in aantallen_tabs %}
-                                        <li>
-                                            <button data-chart-line-target="button"
-                                                    data-action="chart-line#update"
-                                                    data-chart-line-datasets-param="{{ tab.datasets|json_encode }}"
-                                                    class="{% if forloop.first %} active{% endif %}">
-                                                <span class="h3">
-                                                    <span data-chart-utils-target="numberAnimator"
-                                                          class="width--fixed"
-                                                          data-number="{{ tab.aantallen.0 }}">
-                                                        {{ tab.aantallen.0 }}
-                                                    </span>
-                                                </span>
-                                                <span class="h5">
-                                                    <span data-chart-utils-target="numberAnimator"
-                                                          class="width--fixed"
-                                                          data-number="{{ tab.aantallen.1 }}">
-                                                        {{ tab.aantallen.1 }}
-                                                    </span>
-                                                </span>
-                                                <span class="decorated">{{ tab.titel }}</span>
-                                            </button>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        </div>
-                        <div>
-                            <canvas data-chart-line-target="canvas"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                 data-controller="chart-utils">{{ NieuweMeldingAantallen.tabs_grafiek_met_signalen }}</div>
         </section>
         <section class="section--seperated--l">
             <div class="grid-container grid-container--full"
-                 data-controller="chart-utils">
-                {% include "charts/base_chart.html" with title="Aantal afgehandeld minus nieuw" description="" period_title=title tabs=nieuw_vs_afgehandeld_tabs only %}
-            </div>
+                 data-controller="chart-utils">{{ NieuweMeldingAantallen.tabs_grafiek_nieuw_vs_afgehandeld }}</div>
         </section>
         {% if not onderwerp or not wijk %}
             <section class="section--seperated--l">
                 <div>
                     <h2>Top tien</h2>
                     <div class="grid-container grid-container--3cols">
-                        {% if not onderwerp %}
-                            <div class="grid-item bgc-white">
-                                {% include "charts/dashboard_item.html" with title=aantal_meldingen_onderwerp.title description="" period_title=title head=aantal_meldingen_onderwerp.head body=aantal_meldingen_onderwerp.body only %}
-                            </div>
-                        {% endif %}
-                        {% if not wijk %}
-                            <div class="grid-item bgc-white">
-                                {% include "charts/dashboard_item.html" with title=aantal_meldingen_wijk.title description="" period_title=title head=aantal_meldingen_wijk.head body=aantal_meldingen_wijk.body only %}
-                            </div>
-                        {% endif %}
-                        {% if not onderwerp %}
-                            <div class="grid-item bgc-white">
-                                {% include "charts/dashboard_item.html" with title=aantal_onderwerpen_ontdubbeld.title description="" period_title=title head=aantal_onderwerpen_ontdubbeld.head body=aantal_onderwerpen_ontdubbeld.body only %}
-                            </div>
-                        {% endif %}
+                        {% if not onderwerp %}{{ NieuweMeldingAantallen.tabel_aantal_meldingen_per_onderwerp }}{% endif %}
+                        {% if not wijk %}{{ NieuweMeldingAantallen.tabel_aantal_meldingen_per_wijk }}{% endif %}
+                        {% if not onderwerp %}{{ NieuweMeldingAantallen.tabel_verhouding_ontdubbeld_per_onderwerp }}{% endif %}
                     </div>
                 </div>
             </section>

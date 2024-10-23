@@ -121,13 +121,14 @@ def tijdsvakitem_data_vernieuwen(self, tijdsvak_id):
     from apps.main.services import MORCoreService
 
     tijdsvak = Tijdsvak.objects.get(id=tijdsvak_id)
+    params = {
+        tijdsvak.databron.start_datumtijd_param: tijdsvak.start_datumtijd.astimezone().isoformat(),
+        tijdsvak.databron.eind_datumtijd_param: tijdsvak.eind_datumtijd.astimezone().isoformat(),
+    }
     try:
         resultaat = MORCoreService().tijdsvak_data_halen(
             url=tijdsvak.databron.url,
-            params={
-                tijdsvak.databron.start_datumtijd_param: tijdsvak.start_datumtijd.isoformat(),
-                tijdsvak.databron.eind_datumtijd_param: tijdsvak.eind_datumtijd.isoformat(),
-            },
+            params=params,
         )
         logger.info(resultaat)
         tijdsvak.valide_data = True
