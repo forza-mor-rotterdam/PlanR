@@ -44,6 +44,7 @@ class TijdsvakExtendsAdmin(admin.ModelAdmin):
         "databron",
         "periode",
         "valide_data",
+        "aangepast_op",
     )
     form = TijdsvakExtendsForm
     actions = (action_tijdsvak_data_vernieuwen,)

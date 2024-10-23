@@ -31,11 +31,24 @@
                                     data-action="chart-line#update"
                                     data-chart-line-datasets-param="{{ tab.datasets|json_encode }}"
                                     class="{% if forloop.first %} active{% endif %}">
-                                <span class="h3"
-                                      {% if data_type %}data-chart-line-target="{{ data_type }}ToHuman" data-duration-to-human-long="true"{% endif %}
-                                      data-aantal="{{ tab.aantal }}">{{ tab.aantal }}
-                                    {% if eenheid %}{{ eenheid }}{% endif %}
-                                </span>
+                                {% if tab.aantallen %}
+                                    <span class="h3">
+                                        <span data-chart-utils-target="numberAnimator"
+                                              class="width--fixed"
+                                              data-number="{{ tab.aantallen.0 }}">{{ tab.aantallen.0 }}</span>
+                                    </span>
+                                    <span class="h5">
+                                        <span data-chart-utils-target="numberAnimator"
+                                              class="width--fixed"
+                                              data-number="{{ tab.aantallen.1 }}">{{ tab.aantallen.1 }}</span>
+                                    </span>
+                                {% else %}
+                                    <span class="h3"
+                                          {% if data_type %}data-chart-line-target="{{ data_type }}ToHuman" data-duration-to-human-long="true"{% endif %}
+                                          data-aantal="{{ tab.aantal }}">{{ tab.aantal }}
+                                        {% if eenheid %}{{ eenheid }}{% endif %}
+                                    </span>
+                                {% endif %}
                                 <span class="decorated">{{ tab.titel }}</span>
                             </button>
                         </li>

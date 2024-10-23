@@ -5,18 +5,17 @@ from datetime import datetime, timedelta
 
 import isoweek
 from apps.dashboard.forms import DashboardForm
-from apps.dashboard.models import DoorlooptijdenAfgehandeldeMeldingen
+from apps.dashboard.models import (
+    DoorlooptijdenAfgehandeldeMeldingen,
+    NieuweMeldingAantallen,
+    NieuweSignaalAantallen,
+)
 from apps.dashboard.models import NieuweTaakopdrachten as NieuweTaakopdrachtenModel
-from apps.dashboard.models import StatusVeranderingDuurMeldingen, Tijdsvak
-from apps.dashboard.tables import (
-    get_aantallen_tabs,
-    get_meldingen_nieuw_vs_afgehandeld_tabs,
-    get_taaktype_aantallen_per_melding_tabs,
-    get_taken_nieuw_vs_afgehandeld_tabs,
-    top_taaktype_aantallen,
-    top_vijf_aantal_meldingen_onderwerp,
-    top_vijf_aantal_meldingen_wijk,
-    top_vijf_aantal_onderwerpen_ontdubbeld,
+from apps.dashboard.models import (
+    StatusVeranderingDuurMeldingen,
+    TaakopdrachtDoorlooptijden,
+    TaaktypeAantallenPerMelding,
+    Tijdsvak,
 )
 from apps.main.constanten import (
     DAGEN_VAN_DE_WEEK_KORT,
@@ -24,7 +23,7 @@ from apps.main.constanten import (
     MAANDEN_KORT,
     PDOK_WIJKEN,
 )
-from apps.main.services import MORCoreService, OnderwerpenService
+from apps.main.services import OnderwerpenService
 from django.contrib.auth.decorators import permission_required
 from django.contrib.gis.db import models
 from django.shortcuts import redirect
@@ -392,70 +391,32 @@ class Dashboard(FormView):
 
 
 @method_decorator(
-    permission_required("authorisatie.dashboard_bekijken"), name="dispatch"
+    permission_required("authorisatie.dashboard_bekijken", raise_exception=True),
+    name="dispatch",
 )
 class NieuweMeldingen(Dashboard):
     template_name = "dashboard/nieuwe/dashboard.html"
 
+    tijdsvak_classes = [
+        NieuweMeldingAantallen,
+        NieuweSignaalAantallen,
+        DoorlooptijdenAfgehandeldeMeldingen,
+    ]
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        meldingen = []
-        signalen = []
-        afgehandeld = []
-        mor_core_service = MORCoreService()
-        for tick in self.x_ticks:
-            dag = tick.get("start_dt")
-            days = tick.get("days")
-            melding_aantallen = mor_core_service.melding_aantallen(datum=dag, days=days)
-            signaal_aantallen = mor_core_service.signaal_aantallen(datum=dag, days=days)
 
-            status_afgehandeld = mor_core_service.afgehandelde_meldingen(
-                datum=dag, days=days
-            )
-            afgehandeld.append(status_afgehandeld)
-            meldingen.append(melding_aantallen)
-            signalen.append(signaal_aantallen)
-
-        aantallen_tabs = get_aantallen_tabs(
-            meldingen,
-            signalen,
-            ticks=self.x_ticks,
-            onderwerp=self.onderwerp,
-            wijk=self.wijk,
-        )
-        nieuw_vs_afgehandeld_tabs = get_meldingen_nieuw_vs_afgehandeld_tabs(
-            meldingen,
-            afgehandeld,
-            ticks=self.x_ticks,
-            onderwerp=self.onderwerp,
-            wijk=self.wijk,
+        NieuweMeldingAantallen.signaal_data = NieuweSignaalAantallen.tijdsvakken
+        NieuweMeldingAantallen.afgehandeld_tijdsvakken = (
+            DoorlooptijdenAfgehandeldeMeldingen.tijdsvakken
         )
 
-        onderwerp_opties = list(
-            set([d.get("onderwerp") for kolom in meldingen for d in kolom])
-        )
-        wijk_opties = list(set([d.get("wijk") for kolom in meldingen for d in kolom]))
-
-        context.update(
-            {
-                "aantallen_tabs": aantallen_tabs,
-                "nieuw_vs_afgehandeld_tabs": nieuw_vs_afgehandeld_tabs,
-                "aantal_meldingen_onderwerp": top_vijf_aantal_meldingen_onderwerp(
-                    meldingen, onderwerp_opties, wijk=self.wijk, aantal=0
-                ),
-                "aantal_meldingen_wijk": top_vijf_aantal_meldingen_wijk(
-                    meldingen, wijk_opties, onderwerp=self.onderwerp, aantal=0
-                ),
-                "aantal_onderwerpen_ontdubbeld": top_vijf_aantal_onderwerpen_ontdubbeld(
-                    meldingen, signalen, onderwerp_opties, wijk=self.wijk, aantal=0
-                ),
-            }
-        )
         return context
 
 
 @method_decorator(
-    permission_required("authorisatie.dashboard_bekijken"), name="dispatch"
+    permission_required("authorisatie.dashboard_bekijken", raise_exception=True),
+    name="dispatch",
 )
 class MeldingenAfgehandeld(Dashboard):
     template_name = "dashboard/afgehandeld/dashboard.html"
@@ -464,137 +425,35 @@ class MeldingenAfgehandeld(Dashboard):
         StatusVeranderingDuurMeldingen,
     ]
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-
-    #     veranderingen = []
-    #     mor_core_service = MORCoreService()
-
-    #     for tick in self.x_ticks:
-    #         dag = tick.get("start_dt")
-    #         days = tick.get("days")
-    #         status_veranderingen = mor_core_service.status_veranderingen(
-    #             datum=dag, days=days
-    #         )
-    #         veranderingen.append(status_veranderingen)
-
-    #     status_veranderingen_tabs = get_status_veranderingen_tabs(
-    #         veranderingen, ticks=self.x_ticks, onderwerp=self.onderwerp, wijk=self.wijk
-    #     )
-
-    #     context.update(
-    #         {
-    #             "status_veranderingen_tabs": status_veranderingen_tabs,
-    #         }
-    #     )
-    #     return context
-
 
 @method_decorator(
-    permission_required("authorisatie.dashboard_bekijken"), name="dispatch"
+    permission_required("authorisatie.dashboard_bekijken", raise_exception=True),
+    name="dispatch",
 )
 class TaaktypeAantallen(Dashboard):
     template_name = "dashboard/taken/taaktype_aantallen.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        taaktype_aantallen_per_melding = []
-        mor_core_service = MORCoreService()
-        for tick in self.x_ticks:
-            dag = tick.get("start_dt")
-            days = tick.get("days")
-            taaktype_aantallen_per_melding_tijdsvak = (
-                mor_core_service.taaktype_aantallen_per_melding(
-                    datum=dag, days=days, force_cache=False
-                )
-            )
-            taaktype_aantallen_per_melding.append(
-                taaktype_aantallen_per_melding_tijdsvak
-            )
-
-        taaktype_aantallen_per_melding_tabs = get_taaktype_aantallen_per_melding_tabs(
-            taaktype_aantallen_per_melding,
-            ticks=self.x_ticks,
-            onderwerp=self.onderwerp,
-            wijk=self.wijk,
-        )
-        top_10_taaktype_aantallen = top_taaktype_aantallen(
-            taaktype_aantallen_per_melding,
-            onderwerp=self.onderwerp,
-            wijk=self.wijk,
-            aantal=0,
-        )
-
-        stacked_bars_options = {
-            "plugins": {
-                "legend": {
-                    "display": True,
-                },
-                "tooltip": {
-                    "backgroundColor": "#ffffff",
-                    "borderColor": "rgba(0, 0 ,0 , .8)",
-                    "borderWidth": 1,
-                    "bodyAlign": "center",
-                    "bodyColor": "#000000",
-                    "titleColor": "#000000",
-                    "titleAlign": "center",
-                    "displayColors": False,
-                    "borderRadius": 0,
-                },
-            },
-            "scales": {
-                "x": {"stacked": True},
-                "y": {
-                    "stacked": True,
-                    "grid": {
-                        "display": False,
-                    },
-                },
-            },
-        }
-
-        context.update(
-            {
-                "taaktype_aantallen_per_melding_tabs": taaktype_aantallen_per_melding_tabs,
-                "top_10_taaktype_aantallen": top_10_taaktype_aantallen,
-                "stacked_bars_options": stacked_bars_options,
-            }
-        )
-        return context
+    tijdsvak_classes = [
+        TaaktypeAantallenPerMelding,
+    ]
 
 
+@method_decorator(
+    permission_required("authorisatie.dashboard_bekijken", raise_exception=True),
+    name="dispatch",
+)
 class NieuweTaakopdrachten(Dashboard):
     template_name = "dashboard/taken/nieuwe_taakopdrachten.html"
     tijdsvak_classes = [
         NieuweTaakopdrachtenModel,
+        TaakopdrachtDoorlooptijden,
     ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        taakopdracht_doorlooptijden = []
-        mor_core_service = MORCoreService()
-        for tick in self.x_ticks:
-            dag = tick.get("start_dt")
-            days = tick.get("days")
-            taakopdracht_doorlooptijden_tijdsvak = (
-                mor_core_service.taakopdracht_doorlooptijden(
-                    datum=dag, days=days, force_cache=False
-                )
-            )
-            taakopdracht_doorlooptijden.append(taakopdracht_doorlooptijden_tijdsvak)
 
-        taken_nieuw_vs_afgehandeld_tabs = get_taken_nieuw_vs_afgehandeld_tabs(
-            NieuweTaakopdrachtenModel.tijdsvakken,
-            taakopdracht_doorlooptijden,
-            ticks=self.x_ticks,
-            onderwerp=self.onderwerp,
-            wijk=self.wijk,
+        TaakopdrachtDoorlooptijden.nieuwe_taakopdrachten = (
+            NieuweTaakopdrachtenModel.tijdsvakken
         )
 
-        context.update(
-            {
-                "taken_nieuw_vs_afgehandeld_tabs": taken_nieuw_vs_afgehandeld_tabs,
-            }
-        )
         return context
