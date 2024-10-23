@@ -50,8 +50,10 @@
         }
     }
 
-    .menu-toggle {
-        opacity: 0;
-        pointer-events: none;
+    &.error-500 {
+        .menu-toggle {
+            opacity: 0;
+            pointer-events: none;
+        }
     }
 }
