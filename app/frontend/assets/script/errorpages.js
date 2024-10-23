@@ -13,17 +13,12 @@ document.querySelector('#sendEmail').addEventListener('click', (e) => {
   document.querySelector('.btn-action-v2.hidden').classList.remove('hidden')
 })
 
-const getCurrentDate = () => {
+const setData = () => {
   const today = new Date()
-  const date = `${today.getDate()}-${
+  let errorAgent = navigator.userAgent
+  let errorTime = `${today.getDate()}-${
     today.getMonth() + 1
   }-${today.getFullYear()}, ${today.getHours()}:${today.getMinutes()} (Computertijd)`
-  return date
-}
-
-const setData = () => {
-  let errorAgent = navigator.userAgent
-  let errorTime = getCurrentDate()
   let errorURL = window.location.href
   let mailtoLink = `${document
     .querySelector('#sendEmail')
@@ -35,7 +30,7 @@ const setData = () => {
     document.querySelector('#errorTime') &&
     document.querySelector('#errorTime').textContent.trim().length === 0
   ) {
-    document.querySelector('#errorTime').textContent = getCurrentDate()
+    document.querySelector('#errorTime').textContent = errorTime
   }
   if (
     document.querySelector('#errorURL') &&

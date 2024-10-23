@@ -49,4 +49,9 @@
             }
         }
     }
+
+    .menu-toggle {
+        opacity: 0;
+        pointer-events: none;
+    }
 }
