@@ -4,7 +4,6 @@
     Fout 500 - Oeps er ging wat mis | PlanR
 {% endblock title %}
 {% block javascripts %}
-    <script src="/static/script/errorpages.js?v=1.3" defer></script>
 {% endblock javascripts %}
 {% block body_class %}
     no-js errorpage
@@ -74,3 +73,6 @@
         </div>
     </div>
 {% endblock body %}
+{% block javascripts_end %}
+    <script src="/static/script/errorpages.js?v=1.4"></script>
+{% endblock javascripts_end %}
