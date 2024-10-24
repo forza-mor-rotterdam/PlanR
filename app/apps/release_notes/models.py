@@ -149,11 +149,10 @@ class ReleaseNote(BasisModel):
     def clean(self):
         data = self.beschrijving
 
-        soup = BeautifulSoup(data)
+        soup = BeautifulSoup(data, features="html.parser")
 
-        soup.head.decompose()
-        soup.body.unwrap()
-        soup.html.unwrap()
+        for tag in [t for t in soup.find_all(True) if t.name in ("body", "html")]:
+            tag.unwrap()
 
         unwanted_tags = [
             tag
