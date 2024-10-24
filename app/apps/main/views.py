@@ -370,7 +370,7 @@ def melding_next(request, id, richting):
     frame_id = "melding_next_volgend" if richting > 0 else "melding_next_vorige"
     label = "Volgende" if richting > 0 else "Vorige"
 
-    pagina_item_aantal = 10
+    pagina_item_aantal = 25
     next_melding_url = None
     pagina = int(request.session.get("offset", "0"))
     melding_count = request.session.get("melding_count", 0)
