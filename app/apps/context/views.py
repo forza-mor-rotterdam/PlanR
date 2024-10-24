@@ -46,7 +46,7 @@ class ContextAanpassenView(ContextAanmakenAanpassenView, UpdateView):
         )
         kwargs["onderwerp_alias_list"] = (
             MORCoreService(request=self.request)
-            .onderwerp_alias_list()
+            .onderwerp_alias_list(force_cache=True)
             .get("results", [])
         )
         kwargs["onderwerpen_service"] = OnderwerpenService(request=self.request)
@@ -72,7 +72,7 @@ class ContextAanmakenView(ContextAanmakenAanpassenView, CreateView):
         )
         kwargs["onderwerp_alias_list"] = (
             MORCoreService(request=self.request)
-            .onderwerp_alias_list()
+            .onderwerp_alias_list(force_cache=True)
             .get("results", [])
         )
         kwargs["onderwerpen_service"] = OnderwerpenService(request=self.request)
