@@ -69,8 +69,10 @@
                                     <div class="container__meldingnavigatie">
                                         {% if meldingen_index %}
                                             <span class="help-text">{{ meldingen_index }} van {{ request.session.melding_count }}</span>
-                                            <turbo-frame style="display: inline;" id="melding_next_vorige" src="{% url 'melding_next_vorige' melding.uuid %}" data-spinner="hide"></turbo-frame>
-                                            <turbo-frame style="display: inline;" id="melding_next_volgend" src="{% url 'melding_next_volgend' melding.uuid %}" data-spinner="hide"></turbo-frame>
+                                            <div class="container__buttons">
+                                                <turbo-frame style="display: inline;" id="melding_next_vorige" src="{% url 'melding_next_vorige' melding.uuid %}" data-spinner="hide"></turbo-frame>
+                                                <turbo-frame style="display: inline;" id="melding_next_volgend" src="{% url 'melding_next_volgend' melding.uuid %}" data-spinner="hide"></turbo-frame>
+                                            </div>
                                         {% endif %}
                                     </div>
                                     <div class="padding--left">

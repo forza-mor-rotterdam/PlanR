@@ -158,23 +158,42 @@
         line-height: 60px;
         align-self: flex-start;
     }
-
-    .melding-navigatie {
-        display: inline-block;
-        width: 48px;
-        height: 48px;
-        border: 1px solid $gray-tint08;
-        background-color: transparent;
+    .container__buttons {
+        width: 108px;
         position: relative;
-
-        svg {
+        > turbo-frame {
+            width: auto;
             position: absolute;
-            top: calc(50% - 12px);
-            left: 12px;
-            width: 24px;
-            height: 24px;
-            path {
-                fill: $gray-tint11;
+            left: 0;
+
+            &:last-child {
+                left: auto;
+                right: 0;
+            }
+        }
+
+        span.melding-navigatie {
+            background-color: $gray-tint04;
+            border-color: $gray-tint04;
+        }
+
+        .melding-navigatie {
+            display: inline-block;
+            width: 48px;
+            height: 48px;
+            border: 1px solid $gray-tint08;
+            background-color: transparent;
+            position: relative;
+
+            svg {
+                position: absolute;
+                top: calc(50% - 12px);
+                left: 12px;
+                width: 24px;
+                height: 24px;
+                path {
+                    fill: $gray-tint11;
+                }
             }
         }
     }
@@ -183,10 +202,6 @@
         svg {
             transform: rotate(180deg);
         }
-    }
-    span.melding-navigatie {
-        background-color: $gray-tint04;
-        border-color: $gray-tint04;
     }
 }
 
