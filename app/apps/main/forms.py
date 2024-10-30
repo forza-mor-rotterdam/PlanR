@@ -40,6 +40,8 @@ class CheckboxSelectMultiple(forms.CheckboxSelectMultiple):
     def create_option(self, *args, **kwargs):
         args = list(args)
         option_data = args[2]
+        print(args)
+        print(kwargs)
         args[2] = args[2].get("label")
         option = super().create_option(*args, **kwargs)
         option["attrs"].update({"item_count": option_data.get("item_count")})

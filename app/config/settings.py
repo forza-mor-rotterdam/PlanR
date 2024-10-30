@@ -48,6 +48,7 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", DEFAULT_ALLOWED_HOSTS).split(",")
 
 INSTALLED_APPS = (
     # templates override
+    "formulieren",
     "apps.main",
     "apps.health",
     "django.contrib.humanize",
@@ -139,6 +140,17 @@ STATIC_ROOT = os.path.normpath(join(os.path.dirname(BASE_DIR), "static"))
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.normpath(join(os.path.dirname(BASE_DIR), "media"))
+
+# DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "LOCATION": "media",  # Optional, defaults to 'media'
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
 
 MOR_CORE_URL_PREFIX = "/core"
 
