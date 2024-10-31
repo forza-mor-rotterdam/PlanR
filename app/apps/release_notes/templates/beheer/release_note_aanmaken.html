@@ -35,7 +35,8 @@
                     {{ form.media }}
                     <fieldset>
                         <div class="form-control__with-helptext js-validation">{{ form.titel|render_rotterdam_formulier }}</div>
-                        <div class="form-control__with-helptext js-validation padding-bottom-2x">{{ form.beschrijving }}</div>
+                        <div class="form-control__with-helptext js-validation padding-bottom-2x"
+                             data-testid="text_editor">{{ form.beschrijving }}</div>
                         <div class="form-control__with-helptext js-validation full-width"
                              data-controller="bijlagen">{{ form.bijlagen|render_rotterdam_formulier }}</div>
                         <div class="form-control__with-helptext js-validation">{{ form.publicatie_datum|render_rotterdam_formulier }}</div>
