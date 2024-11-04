@@ -193,7 +193,7 @@ class ProfielFilterForm(forms.ModelForm):
     #     return super().is_valid()
 
     def __init__(self, *args, **kwargs):
-        filter_choices_override = kwargs.pop("filter_choices", {})
+        filter_choices_override = kwargs.pop("filter_choices_override", {})
         print("filter_choices_override")
         print(filter_choices_override)
         # gebruiker_context = get_gebruiker_context(gebruiker)
@@ -211,7 +211,11 @@ class ProfielFilterForm(forms.ModelForm):
         for k, v in filter_choices.items():
             # print("")
             print("")
-            v = v if v else [[o, o] for o in filter_choices_override.get(k, [])]
+            v = (
+                v
+                if not filter_choices_override.get(k, [])
+                else [[o, o] for o in filter_choices_override.get(k, [])]
+            )
             print(k)
             print(v)
             print(filter_choices_override.get(k))
