@@ -28,11 +28,11 @@
 @keyframes slide-in-from-top {
     0% {
         opacity: 0;
-        transform: translate(-50%, -20px);
+        transform: translateY(-20px);
     }
     100% {
         opacity: 1;
-        transform: translate(-50%, 0);
+        transform: translateY(0);
     }
 }
 @keyframes slide-in-from-bottom {
@@ -43,5 +43,21 @@
     100% {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+@keyframes fade-out {
+    0% {
+        opacity: 1;
+        transform: scale(1, 1);
+        transform-origin: center top;
+    }
+    99% {
+        opacity: 0.5;
+        transform: scale(0, 0);
+        transform-origin: center top;
+    }
+    100% {
+        display: none;
     }
 }
