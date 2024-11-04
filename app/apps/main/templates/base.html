@@ -77,14 +77,20 @@
     <body class="{% block body_class %}{% endblock body_class %}">
         <a href="#id_maincontent" class="skiplink">Ga direct naar de content</a>
         <div class="container__notification container__notification--snack"
+             {% comment %}
+             type
+             snack
+             or
+             toast
+             {% endcomment %}
              data-controller="notification_controller">
-            <div class="notification">
+            <div class="notification {% comment %} level warning or error {% endcomment %}">
                 <div class="container__icon">
-                    {% comment %} if type is warning {% endcomment %}
+                    {% comment %} if level is warning {% endcomment %}
                     {% include "icons/warning_triangle2.svg" %}
-                    {% comment %} elif type is error {% endcomment %}
+                    {% comment %} elif level is error {% endcomment %}
                     {% include "icons/error_square.svg" %}
-                    {% comment %} esle {% endcomment %}
+                    {% comment %} else {% endcomment %}
                     {% include "icons/check_circle.svg" %}
                     {% comment %} endif {% endcomment %}
                 </div>

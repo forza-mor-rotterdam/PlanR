@@ -73,7 +73,8 @@
     z-index: 1000;
     background-color: $white;
     border-radius: 8px;
-    // animation: slide-in-from-top 1s ease-in-out forwards;
+    opacity: 0;
+    animation: slide-in-from-top 2 * $transition-duration-default ease-in-out forwards 0.5s;
 
     &--snack {
         max-width: 714px;
@@ -127,6 +128,14 @@
         .btn-close--small {
             top: 0.5em;
             right: 0.5em;
+        }
+
+        &.warning {
+            background-color: $yellow-200;
+        }
+
+        &.error {
+            background-color: $red-200;
         }
     }
 
