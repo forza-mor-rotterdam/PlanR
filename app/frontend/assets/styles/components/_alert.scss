@@ -62,3 +62,84 @@
         margin-right: 240px;
     }
 }
+
+.container__notification {
+    width: 98%;
+    position: absolute;
+    top: 35px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.07);
+    z-index: 1000;
+    background-color: $white;
+    border-radius: 8px;
+    // animation: slide-in-from-top 1s ease-in-out forwards;
+
+    &--snack {
+        max-width: 714px;
+    }
+
+    .notification {
+        display: flex;
+        justify-content: flex-start;
+        gap: 10px;
+        padding: 0.75em 2em 0.75em 0.75em;
+        position: relative;
+
+        .container__icon {
+            min-width: 30px;
+            position: relative;
+
+            svg {
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                margin-right: 0.5em;
+            }
+        }
+        .container__content {
+            .container__message {
+                display: block;
+                font-size: 0.8em;
+
+                p,
+                a {
+                    flex: 1 1 auto;
+                }
+                a {
+                    text-align: right;
+                    white-space: nowrap;
+                }
+            }
+
+            h3,
+            p {
+                margin: 0;
+            }
+
+            h3 {
+                font-size: 1em;
+                margin: 0;
+            }
+        }
+
+        .btn-close--small {
+            top: 0.5em;
+            right: 0.5em;
+        }
+    }
+
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        top: 90px;
+        .notification {
+            .container__content {
+                .container__message {
+                    display: flex;
+                    flex: 1 0 90%;
+                    justify-content: space-between;
+                }
+            }
+        }
+    }
+}
