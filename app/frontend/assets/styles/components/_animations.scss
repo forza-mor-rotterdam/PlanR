@@ -28,11 +28,11 @@
 @keyframes slide-in-from-top {
     0% {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: translate(-50%, -20px);
     }
     100% {
         opacity: 1;
-        transform: translateY(0);
+        transform: translate(-50%, 0);
     }
 }
 @keyframes slide-in-from-bottom {
