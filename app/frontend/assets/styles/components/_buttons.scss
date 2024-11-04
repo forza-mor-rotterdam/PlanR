@@ -201,6 +201,35 @@ textarea {
         &:active {
             opacity: 0.75;
         }
+
+        &--small {
+            position: absolute;
+            right: 0;
+            top: 0;
+            padding: 8px;
+            margin: 0 0 0 auto;
+            box-shadow: none;
+            box-sizing: content-box;
+            min-width: 13px;
+            min-height: 13px;
+            border: 0;
+            opacity: 1;
+            background-color: transparent;
+            cursor: pointer;
+
+            svg {
+                width: 13px;
+                height: 13px;
+                path {
+                    fill: $black;
+                }
+            }
+
+            &:hover,
+            &:active {
+                opacity: 0.75;
+            }
+        }
     }
 
     &-filter {

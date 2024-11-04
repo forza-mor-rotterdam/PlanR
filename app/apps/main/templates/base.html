@@ -75,6 +75,37 @@
     </head>
     <body class="{% block body_class %}{% endblock body_class %}">
         <a href="#id_maincontent" class="skiplink">Ga direct naar de content</a>
+        <div class="container__notification container__notification--snack"
+             data-controller="notification_controller">
+            <div class="notification">
+                <div class="container__icon">
+                    {% comment %} if type is warning {% endcomment %}
+                    {% include "icons/warning_triangle2.svg" %}
+                    {% comment %} elif type is error {% endcomment %}
+                    {% include "icons/error_square.svg" %}
+                    {% comment %} esle {% endcomment %}
+                    {% include "icons/check_circle.svg" %}
+                    {% comment %} endif {% endcomment %}
+                </div>
+                <div class="container__content">
+                    {% comment %} if title {% endcomment %}
+                    <h3>Titel</h3>
+                    {% comment %} endif {% endcomment %}
+                    <div class="container__message">
+                        <p>
+                            Op zaterdag 24-12-2024 van 8:00 t/m zondag 25-12-2024 21:00 zal er onderhoud plaatsvinden aan de servers. Houdt rekening met een slechtere bereikbaarheid.
+                        </p>
+                        {% comment %} if link {% endcomment %}
+                        <a href="">Meer info</a>
+                        {% comment %} endif {% endcomment %}
+                    </div>
+                </div>
+                <button type="button"
+                        class="btn-close--small"
+                        aria-label="Sluit"
+                        data-action="notification#hideNotification">{% include "icons/close.svg" %}</button>
+            </div>
+        </div>
         <div class="container__toplevel">
             {% block aside %}
                 {% include "snippets/aside.html" %}
