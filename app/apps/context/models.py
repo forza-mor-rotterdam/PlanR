@@ -1,5 +1,10 @@
 import json
 
+from apps.context.constanten import (
+    FILTER_CLASS_BY_KEY,
+    FILTER_KEYS,
+    KOLOM_CLASS_BY_KEY_ORDERING,
+)
 from apps.main.services import (
     MORCoreService,
     OnderwerpenService,
@@ -31,6 +36,31 @@ class Context(BasisModel):
         choices=TemplateOpties.choices,
         default=TemplateOpties.STANDAARD,
     )
+
+    def ordering_choices(self):
+        all_ordering_choices = [
+            key
+            for key in self.kolommen.get("sorted", [])
+            if key in KOLOM_CLASS_BY_KEY_ORDERING
+        ]
+        return [
+            (KOLOM_CLASS_BY_KEY_ORDERING[key], KOLOM_CLASS_BY_KEY_ORDERING[key])
+            for key in all_ordering_choices
+        ] + [
+            (
+                f"-{KOLOM_CLASS_BY_KEY_ORDERING[key]}",
+                f"-{KOLOM_CLASS_BY_KEY_ORDERING[key]}",
+            )
+            for key in all_ordering_choices
+        ]
+
+    def filter_choices(self):
+        all_filter_choices = [
+            key for key in self.filters.get("fields", []) if key in FILTER_KEYS
+        ]
+        return {
+            key: FILTER_CLASS_BY_KEY.get(key)().opties() for key in all_filter_choices
+        }
 
     def onderwerpen(self):
         onderwerp_alias_list = (

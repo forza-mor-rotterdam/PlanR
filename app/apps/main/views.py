@@ -47,7 +47,6 @@ from apps.main.utils import (
     melding_naar_tijdlijn,
     publiceer_topic_met_subscriptions,
     set_actieve_filters,
-    set_ordering,
     to_base64,
     update_qd_met_standaard_meldingen_filter_qd,
 )
@@ -156,9 +155,54 @@ def sidesheet_actueel(request):
 @permission_required("authorisatie.melding_lijst_bekijken", raise_exception=True)
 def melding_lijst(request):
     mor_core_service = MORCoreService(request=request)
+
+    import json
+
+    from apps.main.forms import ProfielFilterForm
+
     mor_core_service.set_gebruiker(
         gebruiker=request.user.serialized_instance(),
     )
+    initiale_waardes = {
+        "limit": 25,
+        "foldout_states": [],
+        "q": "",
+        "offset": request.session.get("offset", 0),
+    }
+    initiale_waardes.update(request.user.profiel.initiale_waardes())
+
+    aangepaste_waardes = {}
+    aangepaste_waardes.update(initiale_waardes)
+
+    # profiel_filter_form = ProfielFilterForm(instance=request.user.profiel, initial=initiale_waardes)
+    if request.POST:
+        profiel_filter_form = ProfielFilterForm(
+            request.POST,
+            instance=request.user.profiel,
+            initial=initiale_waardes,
+            filter_choices_override={"buurt": request.POST.getlist("buurt")},
+        )
+
+        is_valid = profiel_filter_form.is_valid()
+        print(request.POST)
+        # print(profiel_filter_form.clean())
+        if is_valid:
+            print("save")
+            profiel_filter_form.save()
+            print("profiel_filter_form.cleaned_data")
+            print(profiel_filter_form.cleaned_data)
+            aangepaste_waardes.update(profiel_filter_form.cleaned_data)
+        else:
+            print("errors")
+            print(is_valid)
+            # print(profiel_filter_form.data)
+            print(profiel_filter_form.errors)
+
+    # print(request.user.profiel.ui_instellingen["ordering"])
+
+    print("aangepaste_waardes")
+    print(json.dumps(aangepaste_waardes, indent=4))
+
     gebruiker = request.user
     gebruiker_context = get_gebruiker_context(gebruiker)
 
@@ -187,9 +231,9 @@ def melding_lijst(request):
         nieuwe_actieve_filters = {
             k: qs.getlist(k, []) for k, v in actieve_filters.items()
         }
-        standaard_waardes["ordering"] = set_ordering(
-            gebruiker, qs.get("ordering", standaard_waardes["ordering"])
-        )
+        # standaard_waardes["ordering"] = set_ordering(
+        #     gebruiker, qs.get("ordering", standaard_waardes["ordering"])
+        # )
         standaard_waardes["foldout_states"] = qs.get("foldout_states")
 
         # reset pagination offset if meldingen count most likely will change by changing filters

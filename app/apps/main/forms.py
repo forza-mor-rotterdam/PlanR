@@ -3,6 +3,7 @@ import logging
 import math
 import uuid
 
+from apps.authenticatie.models import Profiel
 from apps.context.utils import get_gebruiker_context
 from apps.main.models import StandaardExterneOmschrijving, TaaktypeCategorie
 from apps.main.services import MORCoreService, TaakRService, render_onderwerp
@@ -93,6 +94,139 @@ class KolommenRadioSelect(forms.RadioSelect):
 
 class PagineringRadioSelect(forms.RadioSelect):
     template_name = "widgets/paginering_radio_select.html"
+
+
+class ProfielFilterForm(forms.ModelForm):
+    ordering = forms.ChoiceField(
+        widget=KolommenRadioSelect(
+            attrs={
+                "data-action": "filter#onChangeFilter",
+            }
+        ),
+        required=False,
+    )
+    q = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "list--form-text-input",
+                "hideLabel": True,
+                "typeOfInput": "search",
+                "data-action": "filter#onChangeFilter",
+                "placeHolder": "Zoek op straatnaam, contactgegevens of MeldR-nummer",
+            }
+        ),
+        help_text="Maak gebruik van komma's om op meerdere termen te zoeken",
+        label="Zoeken",
+        required=False,
+    )
+    foldout_states = forms.CharField(
+        widget=forms.HiddenInput(
+            attrs={
+                "data-filter-target": "foldoutStateField",
+            }
+        ),
+        required=False,
+    )
+    offset = forms.IntegerField(
+        required=False,
+    )
+
+    limit = forms.IntegerField(
+        widget=forms.HiddenInput,
+        required=False,
+    )
+
+    def _get_ordering_choices(self, kolom_classes):
+        return [
+            (
+                cls({}),
+                [
+                    (o.ordering(), o)
+                    for o in [
+                        cls({"ordering": "up"}),
+                        cls({"ordering": "down"}),
+                    ]
+                ],
+            )
+            for cls in kolom_classes
+        ]
+
+    def _get_filter_choices(self, filter_classes, filter_options, gebruiker_context):
+        return [
+            {
+                "key": cls.key(),
+                "naam": cls.label(),
+                "opties": cls(
+                    filter_options.get(cls.key(), {}), gebruiker_context
+                ).opties(),
+                "aantal_actief": len(self.data.getlist(cls.key(), [])),
+            }
+            for cls in filter_classes
+        ]
+
+    def clean_ordering(self):
+        ordering = self.cleaned_data.get("ordering")
+        self.instance.ui_instellingen["ordering"] = ordering
+        return ordering
+
+    def clean_buurt(self):
+        ordering = self.cleaned_data.get("buurt")
+        print("buurt")
+        print(ordering)
+        # self.instance.ui_instellingen["buurt"] = ordering
+        return ordering
+
+    def clean(self):
+        print("clean")
+        for key in self.instance.filter_choices().keys():
+            value = self.cleaned_data.get(key)
+            print("")
+            print(key)
+            print(value)
+            print("")
+            self.instance.filters[key] = value
+        return self.cleaned_data
+
+    # def is_valid(self):
+    #     print('is valid')
+
+    #     return super().is_valid()
+
+    def __init__(self, *args, **kwargs):
+        filter_choices_override = kwargs.pop("filter_choices", {})
+        print("filter_choices_override")
+        print(filter_choices_override)
+        # gebruiker_context = get_gebruiker_context(gebruiker)
+        # meldingen_response_data = kwargs.pop("meldingen_data", {})
+        # self.meldingen_count = meldingen_response_data.get("count", 0)
+        # print(args)
+        # print(kwargs)
+        super().__init__(*args, **kwargs)
+
+        self.fields["ordering"].choices = self.instance.context.ordering_choices()
+        # self.fields["offset"].choices = self._get_offset_choices()
+
+        filter_choices = self.instance.filter_choices(filter_choices_override)
+        print(filter_choices.keys())
+        for k, v in filter_choices.items():
+            # print("")
+            print("")
+            v = v if v else [[o, o] for o in filter_choices_override.get(k, [])]
+            print(k)
+            print(v)
+            print(filter_choices_override.get(k))
+            print("")
+
+            self.fields[k] = MultipleChoiceField(
+                choices=v,
+                required=False,
+            )
+
+    class Meta:
+        model = Profiel
+        fields = [
+            "ordering",
+        ]
 
 
 class FilterForm(forms.Form):

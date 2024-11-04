@@ -1,4 +1,5 @@
 from apps.authenticatie.managers import GebruikerManager
+from apps.context.constanten import FILTER_CLASS_BY_KEY, FILTER_KEYS
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.contrib.gis.db import models
@@ -76,6 +77,29 @@ class Profiel(BasisModel):
         blank=True,
         null=True,
     )
+
+    def filter_choices(self, filter_choices_override={}):
+        all_filter_choices = [
+            key for key in self.context.filters.get("fields", []) if key in FILTER_KEYS
+        ]
+        return {
+            key: FILTER_CLASS_BY_KEY.get(key)({}, self.context).opties()
+            for key in all_filter_choices
+        }
+
+    def initiale_waardes(self):
+        d = {
+            "pre_onderwerp": self.context.standaard_filters.get("pre_onderwerp", []),
+            "ordering": self.ui_instellingen["ordering"],
+        }
+        d.update(
+            {
+                k: v
+                for k, v in self.filters.items()
+                if k in self.context.filters.get("fields", [])
+            }
+        )
+        return d
 
     def __str__(self):
         if self.gebruiker:

@@ -29,6 +29,10 @@ class StandaardKolom:
     def key(cls):
         return cls._key
 
+    @classmethod
+    def ordering_value(cls):
+        return cls._ordering_value
+
     def has_ordering(self):
         return bool(self._ordering_value)
 
@@ -544,3 +548,6 @@ KOLOMMEN = (
 )
 KOLOM_KEYS = [f.key() for f in KOLOMMEN]
 KOLOM_CLASS_BY_KEY = {k.key(): k for k in KOLOMMEN}
+KOLOM_CLASS_BY_KEY_ORDERING = {
+    k.key(): k.ordering_value() for k in KOLOMMEN if k.ordering_value() != ""
+}
