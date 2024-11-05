@@ -1,4 +1,5 @@
-<div class="notification level {{ object.notificatie_niveau }}">
+<li class="notification {{ object.notificatie_niveau }}"
+    data-notificatielijst-target="notificatie">
     <div class="container__icon">
         {% with "public/notificaties/icons/"|add:object.notificatie_niveau|add:".html" as template %}
             {% include template %}
@@ -14,5 +15,5 @@
     <button type="button"
             class="btn-close--small"
             aria-label="Sluit"
-            data-action="notificatie#hideNotification">{% include "icons/close.svg" %}</button>
-</div>
+            data-action="notificatielijst#hideNotification">{% include "icons/close.svg" %}</button>
+</li>

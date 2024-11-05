@@ -1,21 +1,21 @@
 import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
+  static targets = ['notificatie']
+
   connect() {
-    const list = this.element.querySelectorAll('li')
+    const list = this.notificatieTargets
+    console.log('list', list)
     // eslint-disable-next-line for-direction
-    for (let i = list.length - 1; i >= 0; i--) {
-      setTimeout(
-        () => {
-          list[i].classList.add('init')
-        },
-        2000 * (-i + list.length)
-      )
+    for (let i = 0; i < list.length; i++) {
+      setTimeout(() => {
+        list[i].classList.add('init')
+      }, 2000 * i)
       setTimeout(
         () => {
           list[i].classList.replace('init', 'show')
         },
-        2000 * (-i + list.length + 1)
+        2000 * (i + 1)
       )
     }
   }
