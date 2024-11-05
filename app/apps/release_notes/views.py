@@ -75,6 +75,7 @@ class NotificatieLijstViewPublic(LoginRequiredMixin, ListView):
                     & Q(einde_publicatie_datum__gt=timezone.now())
                 )
             )
+            .order_by("-publicatie_datum")
         )
         for notificatie_type, _ in ReleaseNote.NotificatieTypeOpties.choices:
             context.update(

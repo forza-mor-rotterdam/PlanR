@@ -5,17 +5,19 @@ export default class extends Controller {
 
   connect() {
     const list = this.notificatieTargets
-    console.log('list', list)
     // eslint-disable-next-line for-direction
-    for (let i = 0; i < list.length; i++) {
-      setTimeout(() => {
-        list[i].classList.add('init')
-      }, 2000 * i)
+    for (let i = list.length - 1; i >= 0; i--) {
+      setTimeout(
+        () => {
+          list[i].classList.add('init')
+        },
+        200 * (i - list.length)
+      )
       setTimeout(
         () => {
           list[i].classList.replace('init', 'show')
         },
-        2000 * (i + 1)
+        2000 + 100 * (-i + list.length)
       )
     }
   }
