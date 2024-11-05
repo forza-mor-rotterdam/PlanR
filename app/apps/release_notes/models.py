@@ -107,14 +107,54 @@ class Bijlage(BasisModel):
 
 
 class ReleaseNote(BasisModel):
+    class BerichtTypeOpties(models.TextChoices):
+        RELEASE_NOTE = "release_note", "Release note"
+        NOTIFICATIE = "notificatie", "Notificatie"
+
+    class NotificatieTypeOpties(models.TextChoices):
+        SNACK = "snack", "Snack"
+        TOAST = "toast", "Toast"
+
+    class NotificatieNiveauOpties(models.TextChoices):
+        INFO = "info", "Informatief"
+        WARNING = "warning", "Waarschuwing"
+        ERROR = "error", "Foutmelding"
+
     titel = models.CharField(max_length=255)
-    beschrijving = models.TextField(blank=True, max_length=5000)
+    korte_beschrijving = models.TextField(blank=True, null=True, max_length=500)
+    beschrijving = models.TextField(blank=True, null=True, max_length=5000)
+    bericht_type = models.CharField(
+        max_length=50,
+        choices=BerichtTypeOpties.choices,
+        default=BerichtTypeOpties.RELEASE_NOTE,
+    )
+    notificatie_type = models.CharField(
+        max_length=50,
+        choices=NotificatieTypeOpties.choices,
+        default=NotificatieTypeOpties.SNACK,
+    )
+    notificatie_niveau = models.CharField(
+        max_length=50,
+        choices=NotificatieNiveauOpties.choices,
+        default=NotificatieNiveauOpties.INFO,
+    )
     publicatie_datum = models.DateTimeField(null=False, blank=False)
+    einde_publicatie_datum = models.DateTimeField(blank=True, null=True)
     bijlagen = GenericRelation(Bijlage)
     versie = models.CharField(max_length=20, blank=True, null=True)
     bekeken_door_gebruikers = models.ManyToManyField(
         Gebruiker, blank=True, related_name="bekeken_release_notes"
     )
+    verwijderbaar = models.BooleanField(
+        default=True,
+    )
+    toast_miliseconden_zichtbaar = models.PositiveSmallIntegerField(
+        default=6000,
+    )
+
+    def has_beschrijving(self):
+        soup = BeautifulSoup(self.beschrijving, features="html.parser")
+        return soup.text.strip()
 
     def is_published(self):
         """

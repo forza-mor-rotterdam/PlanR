@@ -1,0 +1,14 @@
+<turbo-frame id="notificatie_lijst_public">
+<div class="container__notification container__notification--snack"
+     data-controller="notificatie">
+    {% for object in snack %}
+        {% include "public/notificaties/notificatie.html" with object=object only %}
+    {% endfor %}
+</div>
+<div class="container__notification container__notification--toast"
+     data-controller="notificatie">
+    {% for object in toast %}
+        {% include "public/notificaties/notificatie.html" with object=object only %}
+    {% endfor %}
+</div>
+</turbo-frame>
