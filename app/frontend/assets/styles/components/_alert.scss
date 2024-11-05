@@ -106,13 +106,13 @@
             margin-top: 0;
         }
         & + .notification {
-            margin-top: -184px;
+            margin-top: -160px;
         }
 
         @for $i from 1 through 10 {
             &:nth-child(#{$i}n) {
-                // z-index: #{$i * -10};
-                transform: translateY(0) scale(#{0.98 + $i * 0.02});
+                z-index: #{$i * -10};
+                transform: translateY(0) scale(#{1.02 - $i * 0.02});
             }
         }
 
