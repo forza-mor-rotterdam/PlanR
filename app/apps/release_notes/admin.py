@@ -20,9 +20,15 @@ class ReleaseNoteAdmin(admin.ModelAdmin):
     # formfield_overrides = {
     #     models.TextField: {"widget": CKEditor5Widget()},
     # }
-    list_display = ("titel", "korte_tekst", "aangemaakt_op", "publicatie_datum")
+    list_display = (
+        "titel",
+        "bericht_type",
+        "korte_tekst",
+        "aangemaakt_op",
+        "publicatie_datum",
+    )
     search_fields = ("titel",)
-    list_filter = ("aangemaakt_op", "publicatie_datum")
+    list_filter = ("aangemaakt_op", "publicatie_datum", "bericht_type")
     ordering = ["-aangemaakt_op"]
     inlines = [BijlageInline]
 

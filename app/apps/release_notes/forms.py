@@ -17,9 +17,27 @@ BijlageFormSet = generic_inlineformset_factory(
 
 
 class ReleaseNoteAanpassenForm(forms.ModelForm):
+    bericht_type = forms.ChoiceField(
+        widget=forms.RadioSelect(
+            attrs={
+                "data-action": "change->berichten-beheer#berichtTypeChangeHandler",
+            }
+        ),
+        choices=ReleaseNote.BerichtTypeOpties.choices,
+        initial=ReleaseNote.BerichtTypeOpties.RELEASE_NOTE,
+    )
     titel = forms.CharField(
         label="Titel",
         widget=forms.TextInput(),
+    )
+    korte_beschrijving = forms.CharField(
+        label="Korte beschrijving",
+        required=False,
+        widget=forms.Textarea(
+            attrs={
+                "rows": 3,
+            }
+        ),
     )
     beschrijving = forms.CharField(
         widget=CKEditor5Widget(
@@ -61,10 +79,15 @@ class ReleaseNoteAanpassenForm(forms.ModelForm):
     class Meta:
         model = ReleaseNote
         fields = [
+            "bericht_type",
+            "notificatie_type",
+            "notificatie_niveau",
             "titel",
+            "korte_beschrijving",
             "beschrijving",
             # "versie",
             "publicatie_datum",
+            "einde_publicatie_datum",
         ]
 
 

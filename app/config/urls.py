@@ -68,6 +68,7 @@ from apps.main.views import (
     taak_starten,
 )
 from apps.release_notes.views import (
+    NotificatieLijstViewPublic,
     ReleaseNoteAanmakenView,
     ReleaseNoteAanpassenView,
     ReleaseNoteDetailView,
@@ -271,6 +272,12 @@ urlpatterns = [
         "beheer/taaktype-categorie/<int:pk>/verwijderen/",
         TaaktypeCategorieVerwijderenView.as_view(),
         name="taaktype_categorie_verwijderen",
+    ),
+    # Notificaties
+    path(
+        "notificaties/",
+        NotificatieLijstViewPublic.as_view(),
+        name="notificatie_lijst_public",
     ),
     # Release notes
     path(
