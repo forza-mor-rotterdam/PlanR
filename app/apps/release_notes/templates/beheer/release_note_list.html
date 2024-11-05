@@ -56,8 +56,11 @@
                 <tr>
                     <th>Titel</th>
                     <th>Beschrijving</th>
+                    <th>Bericht type</th>
+                    <th>Notificatie type</th>
                     <th>Aanmaak Datum</th>
                     <th>Publicatie Datum</th>
+                    <th>Eind publicatie Datum</th>
                     <th></th>
                     <th></th>
                 </tr>
@@ -69,8 +72,23 @@
                         {% autoescape off %}
                             <td data-row-search-target="searchable">{{ release_note.beschrijving|striptags|safe|truncate_text:200 }}</td>
                         {% endautoescape %}
+                        <td data-row-search-target="searchable">{{ release_note.bericht_type }}</td>
+                        <td data-row-search-target="searchable">
+                            {% if release_note.bericht_type == "notificatie" %}
+                                {{ release_note.notificatie_type }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
                         <td data-row-search-target="searchable">{{ release_note.aangemaakt_op }}</td>
                         <td data-row-search-target="searchable">{{ release_note.publicatie_datum }}</td>
+                        <td data-row-search-target="searchable">
+                            {% if release_note.einde_publicatie_datum %}
+                                {{ release_note.einde_publicatie_datum }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
                         <td>
                             <a href="{% url 'release_note_aanpassen' release_note.pk %}"
                                aria-label="Aanpassen"

@@ -56,7 +56,31 @@ class ReleaseNoteDetailView(LoginRequiredMixin, ReleaseNoteView, DetailView):
         context = {"release_note": release_note, "origine": origine}
         return render(request, self.template_name, context)
 
-    # form_class = ReleaseNoteSearchForm
+
+class NotificatieLijstViewPublic(LoginRequiredMixin, ListView):
+    template_name = "public/notificaties/notificatie_lijst.html"
+    queryset = ReleaseNote.objects.filter(
+        bericht_type=ReleaseNote.BerichtTypeOpties.NOTIFICATIE
+    )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        qs = (
+            self.get_queryset()
+            .filter(publicatie_datum__lt=timezone.now())
+            .filter(
+                Q(einde_publicatie_datum__isnull=True)
+                | (
+                    Q(einde_publicatie_datum__isnull=False)
+                    & Q(einde_publicatie_datum__gt=timezone.now())
+                )
+            )
+        )
+        for notificatie_type, _ in ReleaseNote.NotificatieTypeOpties.choices:
+            context.update(
+                {notificatie_type: qs.filter(notificatie_type=notificatie_type)}
+            )
+        return context
 
 
 class ReleaseNoteListViewPublic(LoginRequiredMixin, ReleaseNoteView, ListView):
