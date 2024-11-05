@@ -83,63 +83,73 @@
              or
              toast
              {% endcomment %}
-             data-controller="notificatie">
-            <div class="notification {% comment %} level warning or error {% endcomment %}">
-                <div class="container__icon">
-                    {% comment %} if level is warning {% endcomment %}
-                    {% include "icons/warning_triangle2.svg" %}
-                    {% comment %} elif level is error {% endcomment %}
-                    {% include "icons/error_square.svg" %}
-                    {% comment %} else {% endcomment %}
-                    {% include "icons/check_circle.svg" %}
-                    {% comment %} endif {% endcomment %}
-                </div>
-                <div class="container__content">
-                    {% comment %} if title {% endcomment %}
-                    <h3>Titel</h3>
-                    {% comment %} endif {% endcomment %}
-                    <div class="container__message">
-                        <p>
-                            Op zaterdag 24-12-2024 van 8:00 t/m zondag 25-12-2024 21:00 zal er onderhoud plaatsvinden aan de servers. Houdt rekening met een slechtere bereikbaarheid.
-                        </p>
-                        {% comment %} if link {% endcomment %}
-                        <a href="">Meer info</a>
+             data-controller="notificatie"
+             data-action="click->notificatie#showAll">
+            <ul class="list-notifications">
+                <li class="notification {% comment %} level warning or error {% endcomment %}">
+                    <div class="container__icon">{% include "icons/check_circle.svg" %}</div>
+                    <div class="container__content">
+                        {% comment %} if title {% endcomment %}
+                        <h3>Titel 1</h3>
                         {% comment %} endif {% endcomment %}
+                        <div class="container__message">
+                            <p>
+                                Op zaterdag 24-12-2024 van 8:00 t/m zondag 25-12-2024 21:00 zal er onderhoud plaatsvinden aan de servers. Houdt rekening met een slechtere bereikbaarheid.
+                            </p>
+                            {% comment %} if link {% endcomment %}
+                            <a href="">Meer info</a>
+                            {% comment %} endif {% endcomment %}
+                        </div>
                     </div>
-                </div>
-                <button type="button"
-                        class="btn-close--small"
-                        aria-label="Sluit"
-                        data-action="notificatie#hideNotification">{% include "icons/close.svg" %}</button>
-            </div>
-            <div class="notification {% comment %} level warning or error {% endcomment %}">
-                <div class="container__icon">
-                    {% comment %} if level is warning {% endcomment %}
-                    {% include "icons/warning_triangle2.svg" %}
-                    {% comment %} elif level is error {% endcomment %}
-                    {% include "icons/error_square.svg" %}
-                    {% comment %} else {% endcomment %}
-                    {% include "icons/check_circle.svg" %}
-                    {% comment %} endif {% endcomment %}
-                </div>
-                <div class="container__content">
-                    {% comment %} if title {% endcomment %}
-                    <h3>Titel</h3>
-                    {% comment %} endif {% endcomment %}
-                    <div class="container__message">
-                        <p>
-                            Op zaterdag 24-12-2024 van 8:00 t/m zondag 25-12-2024 21:00 zal er onderhoud plaatsvinden aan de servers. Houdt rekening met een slechtere bereikbaarheid.
-                        </p>
-                        {% comment %} if link {% endcomment %}
-                        <a href="">Meer info</a>
+                    <button type="button"
+                            class="btn-close--small"
+                            aria-label="Sluit"
+                            data-action="notificatie#hideNotification">{% include "icons/close.svg" %}</button>
+                </li>
+                <li class="notification warning">
+                    <div class="container__icon">
+                        {% comment %} if level is warning {% endcomment %}
+                        {% include "icons/warning_triangle2.svg" %}
+                    </div>
+                    <div class="container__content">
+                        {% comment %} if title {% endcomment %}
+                        <h3>Titel 2</h3>
                         {% comment %} endif {% endcomment %}
+                        <div class="container__message">
+                            <p>
+                                Op zaterdag 24-12-2024 van 8:00 t/m zondag 25-12-2024 21:00 zal er onderhoud plaatsvinden aan de servers. Houdt rekening met een slechtere bereikbaarheid.
+                            </p>
+                            {% comment %} if link {% endcomment %}
+                            <a href="">Meer info</a>
+                            {% comment %} endif {% endcomment %}
+                        </div>
                     </div>
-                </div>
-                <button type="button"
-                        class="btn-close--small"
-                        aria-label="Sluit"
-                        data-action="notificatie#hideNotification">{% include "icons/close.svg" %}</button>
-            </div>
+                    <button type="button"
+                            class="btn-close--small"
+                            aria-label="Sluit"
+                            data-action="notificatie#hideNotification">{% include "icons/close.svg" %}</button>
+                </li>
+                <li class="notification error">
+                    <div class="container__icon">{% include "icons/error_square.svg" %}</div>
+                    <div class="container__content">
+                        {% comment %} if title {% endcomment %}
+                        <h3>Titel 3</h3>
+                        {% comment %} endif {% endcomment %}
+                        <div class="container__message">
+                            <p>
+                                Op zaterdag 24-12-2024 van 8:00 t/m zondag 25-12-2024 21:00 zal er onderhoud plaatsvinden aan de servers. Houdt rekening met een slechtere bereikbaarheid.
+                            </p>
+                            {% comment %} if link {% endcomment %}
+                            <a href="">Meer info</a>
+                            {% comment %} endif {% endcomment %}
+                        </div>
+                    </div>
+                    <button type="button"
+                            class="btn-close--small"
+                            aria-label="Sluit"
+                            data-action="notificatie#hideNotification">{% include "icons/close.svg" %}</button>
+                </li>
+            </ul>
         </div>
         <div class="container__toplevel">
             {% block aside %}
