@@ -57,7 +57,7 @@ class ReleaseNoteDetailView(LoginRequiredMixin, ReleaseNoteView, DetailView):
         return render(request, self.template_name, context)
 
 
-class NotificatieLijstViewPublic(LoginRequiredMixin, ListView):
+class NotificatieLijstViewPublic(ListView):
     template_name = "public/notificaties/notificatie_lijst.html"
     queryset = ReleaseNote.objects.filter(
         bericht_type=ReleaseNote.BerichtTypeOpties.NOTIFICATIE

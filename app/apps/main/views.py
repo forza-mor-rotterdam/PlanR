@@ -120,7 +120,27 @@ def http_500(request):
     )
 
 
-@login_required
+class LoginView(View):
+    def get(self, request, *args, **kwargs):
+        if settings.OIDC_ENABLED:
+            return redirect("/oidc/authenticate/")
+        if settings.ENABLE_DJANGO_ADMIN_LOGIN:
+            return redirect(f"/admin/login/?next={request.GET.get('next', '/admin')}")
+
+        return HttpResponse("Er is geen login ingesteld")
+
+
+class LogoutView(View):
+    def get(self, request, *args, **kwargs):
+        if settings.OIDC_ENABLED:
+            return redirect("/oidc/logout/")
+        if settings.ENABLE_DJANGO_ADMIN_LOGIN:
+            return redirect(f"/admin/logout/?next={request.GET.get('next', '/')}")
+
+        return HttpResponse("Er is geen logout ingesteld")
+
+
+# @login_required
 def root(request):
     if request.user.has_perms(["authorisatie.melding_lijst_bekijken"]):
         return redirect(reverse("melding_lijst"))
@@ -156,9 +176,6 @@ def sidesheet_actueel(request):
 @permission_required("authorisatie.melding_lijst_bekijken", raise_exception=True)
 def melding_lijst(request):
     mor_core_service = MORCoreService(request=request)
-    mor_core_service.set_gebruiker(
-        gebruiker=request.user.serialized_instance(),
-    )
     gebruiker = request.user
     gebruiker_context = get_gebruiker_context(gebruiker)
 

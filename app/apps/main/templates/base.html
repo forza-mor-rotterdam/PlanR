@@ -38,6 +38,7 @@
               href="{{ base_url }}{% webpack_static 'images/favicon.ico' %}" />
         <script src="/static/rdam.geojson" type="text/javascript"></script>
         <meta name="turbo-cache-control" content="no-cache">
+        <meta name="turbo-prefetch" content="false">
         {% block stylesheets %}
             <link rel="stylesheet"
                   href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
