@@ -57,7 +57,7 @@ class ReleaseNoteDetailView(LoginRequiredMixin, ReleaseNoteView, DetailView):
         return render(request, self.template_name, context)
 
 
-class NotificatieLijstViewPublic(LoginRequiredMixin, ListView):
+class NotificatieLijstViewPublic(ListView):
     template_name = "public/notificaties/notificatie_lijst.html"
     queryset = ReleaseNote.objects.filter(
         bericht_type=ReleaseNote.BerichtTypeOpties.NOTIFICATIE
@@ -82,6 +82,18 @@ class NotificatieLijstViewPublic(LoginRequiredMixin, ListView):
                 {notificatie_type: qs.filter(notificatie_type=notificatie_type)}
             )
         return context
+
+
+class NotificatieVerwijderViewPublic(LoginRequiredMixin, DetailView):
+    template_name = "public/notificaties/notificatie_verwijderd.html"
+    queryset = ReleaseNote.objects.filter(
+        bericht_type=ReleaseNote.BerichtTypeOpties.NOTIFICATIE
+    )
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset=queryset)
+        print(obj)
+        return obj
 
 
 class ReleaseNoteListViewPublic(LoginRequiredMixin, ReleaseNoteView, ListView):
@@ -114,7 +126,7 @@ class ReleaseNoteListViewPublic(LoginRequiredMixin, ReleaseNoteView, ListView):
                 publicatie_datum__gte=five_weeks_ago,
             )
             .order_by("-publicatie_datum", "-aangemaakt_op")
-        )
+        ).filter(bericht_type=ReleaseNote.BerichtTypeOpties.RELEASE_NOTE)
 
         return queryset
 
