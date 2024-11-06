@@ -75,12 +75,6 @@
     animation: slide-in-from-top-centered $transition-duration-default $transition-ease-default
         forwards 0.5s;
 
-    .list-notifications {
-        @include list-clean;
-        position: relative;
-        margin: 0;
-    }
-
     .notification {
         // display: none;
         max-height: 0;

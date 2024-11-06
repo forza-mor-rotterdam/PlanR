@@ -1,25 +1,21 @@
 <turbo-frame id="notificatie_lijst_public">
 {% if request.user.is_authenticated %}
     <div class="container__notification container__notification--snack"
-         data-controller="notificatie">
-        <ul class="list-notifications">
-            {% for object in snack %}
-                <turbo-frame scr="{% url 'notificatie_verwijderen_public' object.id %}" id="notificatie_{{ object.id }}">
-                {% include "public/notificaties/notificatie.html" with titel=object.titel niveau=object.notificatie_niveau has_beschrijving=object.has_beschrijving korte_beschrijving=object.korte_beschrijving beschrijving=object.beschrijving only %}
-                </turbo-frame>
-            {% endfor %}
-        </ul>
+         data-controller="notificatielijst">
+        {% for object in snack %}
+            <turbo-frame scr="{% url 'notificatie_verwijderen_public' object.id %}" id="notificatie_{{ object.id }}">
+            {% include "public/notificaties/notificatie.html" with titel=object.titel niveau=object.notificatie_niveau has_beschrijving=object.has_beschrijving korte_beschrijving=object.korte_beschrijving beschrijving=object.beschrijving only %}
+            </turbo-frame>
+        {% endfor %}
     </div>
     <div class="container__notification container__notification--toast"
          data-controller="notificatielijst">
-        <ul class="list-notifications">
-            {% for object in toast %}
-                {% include "public/notificaties/notificatie.html" with titel=object.titel niveau=object.notificatie_niveau has_beschrijving=object.has_beschrijving korte_beschrijving=object.korte_beschrijving beschrijving=object.beschrijving only %}
-            {% endfor %}
-            {% for message in messages %}
-                {% include "public/notificaties/notificatie.html" with titel=message niveau=message.tags tags=message.level only %}
-            {% endfor %}
-        </ul>
+        {% for object in toast %}
+            {% include "public/notificaties/notificatie.html" with titel=object.titel niveau=object.notificatie_niveau has_beschrijving=object.has_beschrijving korte_beschrijving=object.korte_beschrijving beschrijving=object.beschrijving only %}
+        {% endfor %}
+        {% for message in messages %}
+            {% include "public/notificaties/notificatie.html" with titel=message niveau=message.tags tags=message.level only %}
+        {% endfor %}
     </div>
 {% endif %}
 </turbo-frame>
