@@ -92,6 +92,7 @@
         border: 0;
         line-height: inherit;
         text-align: left;
+        transition: background-color $transition-duration-default $transition-ease-default;
         svg {
             position: absolute;
             top: 50%;

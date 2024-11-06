@@ -1,4 +1,4 @@
-from apps.services.taakr import TaakRService
+from apps.main.services import TaakRService
 from django.db import models
 from utils.fields import ListJSONField
 from utils.models import BasisModel

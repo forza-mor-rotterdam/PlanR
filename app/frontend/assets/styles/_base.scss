@@ -208,6 +208,16 @@ p {
     max-width: map-get($container-max-widths, lg);
 }
 
+a {
+    transition: color $transition-duration-default $transition-ease-default;
+
+    svg {
+        path {
+            transition: fill $transition-duration-default $transition-ease-default;
+        }
+    }
+}
+
 @mixin has-icon {
     display: inline-block;
     margin-left: 25px;
@@ -700,12 +710,19 @@ body.no-js {
     margin-bottom: 0 !important;
 }
 
+.margin--left {
+    margin-left: 1em !important;
+}
 .padding--bottom {
     padding-bottom: 1em !important;
 }
 
 .padding--left {
     padding-left: 1em !important;
+}
+
+.padding-bottom-half {
+    padding-bottom: 0.5em;
 }
 
 .margin--bottom {

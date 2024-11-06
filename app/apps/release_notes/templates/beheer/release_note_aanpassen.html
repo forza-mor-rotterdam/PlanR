@@ -38,7 +38,8 @@
                     {{ formset.media }}
                     <fieldset>
                         <div class="form-control__with-helptext js-validation">{{ form.titel|render_rotterdam_formulier }}</div>
-                        <div class="form-control__with-helptext js-validation">{{ form.beschrijving }}</div>
+                        <div class="form-control__with-helptext js-validation"
+                             data-testid="text_editor">{{ form.beschrijving }}</div>
                         <div class="form-control__with-helptext js-validation container">
                             {% for bijlage_form in formset %}
                                 <div class="form-row">

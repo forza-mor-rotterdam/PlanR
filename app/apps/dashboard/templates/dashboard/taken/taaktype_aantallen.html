@@ -12,16 +12,14 @@
         <section class="section--seperated--l">
             <div class="grid-container grid-container--full"
                  data-controller="chart-utils">
-                {% include "charts/base_chart.html" with title="Ping pong taken" description="Toont in de rood tinten taken die meer dan 1 keer zijn aangemaakt in afgehandelde meldingen. Het getal in de popup is het percentage van het totaal aantal meldingen waarin dit gebeurde." period_title=title tabs=taaktype_aantallen_per_melding_tabs options=stacked_bars_options eenheid="%" only %}
+                {{ TaaktypeAantallenPerMelding.tabs_grafiek_balken_ping_pong_taken }}
             </div>
         </section>
         <section class="section--seperated--l">
             <div>
                 <h2>Top tien</h2>
                 <div class="grid-container grid-container--2cols">
-                    <div class="grid-item bgc-white">
-                        {% include "charts/dashboard_item.html" with title=top_10_taaktype_aantallen.title description="" period_title=title head=top_10_taaktype_aantallen.head body=top_10_taaktype_aantallen.body only %}
-                    </div>
+                    <div class="grid-item bgc-white">{{ TaaktypeAantallenPerMelding.tabel_aantal_per_melding_per_taaktype }}</div>
                 </div>
             </div>
         </section>

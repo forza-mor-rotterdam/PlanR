@@ -5,10 +5,8 @@ import uuid
 
 from apps.context.utils import get_gebruiker_context
 from apps.main.models import StandaardExterneOmschrijving, TaaktypeCategorie
+from apps.main.services import MORCoreService, TaakRService, render_onderwerp
 from apps.main.utils import get_valide_filter_classes, get_valide_kolom_classes
-from apps.services.meldingen import MeldingenService
-from apps.services.onderwerpen import render_onderwerp
-from apps.services.taakr import TaakRService
 from django import forms
 from django.core.files.storage import default_storage
 from django.utils import timezone
@@ -285,7 +283,8 @@ class InformatieToevoegenForm(forms.Form):
                 "class": "form-control",
                 "data-testid": "information",
                 "rows": "4",
-                "maxlength": "5000",
+                "data-controller": "characterCount",
+                "data-action": "characterCount#onChangeText",
             }
         ),
         required=False,
@@ -346,12 +345,15 @@ class TaakStartenForm(forms.Form):
         help_text="Deze tekst wordt niet naar de melder verstuurd.",
         widget=forms.Textarea(
             attrs={
+                "data-controller": "characterCount",
+                "data-action": "characterCount#onChangeText",
                 "class": "form-control",
                 "data-testid": "information",
                 "rows": "2",
             }
         ),
         required=False,
+        max_length=5000,
     )
 
     def __init__(self, *args, **kwargs):
@@ -413,11 +415,11 @@ class TaakAfrondenForm(forms.Form):
         help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",
         widget=forms.Textarea(
             attrs={
+                "data-controller": "characterCount",
+                "data-action": "characterCount#onChangeText",
                 "class": "form-control",
                 "data-testid": "information",
                 "rows": "4",
-                "data-meldingbehandelformulier-target": "internalText",
-                "maxlength": "5000",
             }
         ),
         required=False,
@@ -464,11 +466,12 @@ class TaakAnnulerenForm(forms.Form):
                 help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",
                 widget=forms.Textarea(
                     attrs={
+                        "data-controller": "characterCount",
+                        "data-action": "characterCount#onChangeText",
                         "class": "form-control",
                         "data-testid": "information",
                         "rows": "4",
                         "data-meldingbehandelformulier-target": "internalText",
-                        "maxlength": "5000",
                     }
                 ),
                 required=False,
@@ -535,8 +538,8 @@ class MeldingAfhandelenForm(forms.Form):
                 attrs={
                     "class": "form-control",
                     "rows": "4",
-                    "data-meldingbehandelformulier-target": "internalText",
-                    "maxlength": "5000",
+                    "data-controller": "characterCount",
+                    "data-action": "characterCount#onChangeText",
                 }
             ),
             required=False,
@@ -554,8 +557,8 @@ class MeldingAnnulerenForm(forms.Form):
                 attrs={
                     "class": "form-control",
                     "rows": "4",
-                    "data-meldingbehandelformulier-target": "internalText",
-                    "maxlength": "5000",
+                    "data-controller": "characterCount",
+                    "data-action": "characterCount#onChangeText",
                 }
             ),
             required=False,
@@ -573,8 +576,8 @@ class MeldingHeropenenForm(forms.Form):
                 attrs={
                     "class": "form-control",
                     "rows": "4",
-                    "data-meldingbehandelformulier-target": "internalText",
-                    "maxlength": "5000",
+                    "data-controller": "characterCount",
+                    "data-action": "characterCount#onChangeText",
                 }
             ),
             required=True,
@@ -603,7 +606,8 @@ class MeldingPauzerenForm(forms.Form):
             attrs={
                 "class": "form-control",
                 "rows": "4",
-                "maxlength": "5000",
+                "data-controller": "characterCount",
+                "data-action": "characterCount#onChangeText",
             }
         ),
         required=False,
@@ -619,7 +623,8 @@ class MeldingHervattenForm(forms.Form):
             attrs={
                 "class": "form-control",
                 "rows": "4",
-                "maxlength": "5000",
+                "data-controller": "characterCount",
+                "data-action": "characterCount#onChangeText",
             }
         ),
         required=False,
@@ -640,7 +645,8 @@ class MeldingSpoedForm(forms.Form):
             attrs={
                 "class": "form-control",
                 "rows": "4",
-                "maxlength": "5000",
+                "data-controller": "characterCount",
+                "data-action": "characterCount#onChangeText",
             }
         ),
         required=False,
@@ -663,8 +669,8 @@ class LocatieAanpassenForm(forms.Form):
             attrs={
                 "class": "form-control",
                 "rows": "4",
-                "data-locatieaanpassenformulier-target": "internalText",
-                "maxlength": "5000",
+                "data-controller": "characterCount",
+                "data-action": "characterCount#onChangeText",
             }
         ),
         required=False,
@@ -916,7 +922,7 @@ class MeldingAanmakenForm(forms.Form):
         kwargs.get("instance")
         super().__init__(*args, **kwargs)
         onderwerp_alias_list = (
-            MeldingenService().onderwerp_alias_list().get("results", [])
+            MORCoreService().onderwerp_alias_list().get("results", [])
         )
         choices = [
             (

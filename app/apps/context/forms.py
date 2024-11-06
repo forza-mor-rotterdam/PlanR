@@ -123,10 +123,14 @@ class ContextAanpassenForm(forms.ModelForm):
         onderwerpen_grouped = {}
         for onderwerp_alias in self.onderwerp_alias_list:
             onderwerp = self.onderwerpen_service.get_onderwerp(
-                onderwerp_alias.get("bron_url")
+                onderwerp_alias.get("bron_url"),
+                force_cache=True,
             )
             group_uuid = onderwerp.get("group_uuid")
-            group_name = self.onderwerpen_service.get_groep(group_uuid).get("name")
+            group_name = self.onderwerpen_service.get_groep(
+                group_uuid,
+                force_cache=True,
+            ).get("name")
             if group_uuid not in onderwerpen_grouped:
                 onderwerpen_grouped[group_uuid] = {"name": group_name, "items": []}
             onderwerpen_grouped[group_uuid]["items"].append(

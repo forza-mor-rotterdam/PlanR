@@ -5,20 +5,17 @@ from datetime import datetime, timedelta
 
 import isoweek
 from apps.dashboard.forms import DashboardForm
-from apps.dashboard.tables import (
-    get_aantallen_tabs,
-    get_afgehandeld_tabs,
-    get_meldingen_nieuw_vs_afgehandeld_tabs,
-    get_nieuwe_taakopdrachten_tabs,
-    get_status_veranderingen_tabs,
-    get_taaktype_aantallen_per_melding_tabs,
-    get_taken_nieuw_vs_afgehandeld_tabs,
-    top_doorlooptijden_per_onderwerp,
-    top_doorlooptijden_per_wijk,
-    top_taaktype_aantallen,
-    top_vijf_aantal_meldingen_onderwerp,
-    top_vijf_aantal_meldingen_wijk,
-    top_vijf_aantal_onderwerpen_ontdubbeld,
+from apps.dashboard.models import (
+    DoorlooptijdenAfgehandeldeMeldingen,
+    NieuweMeldingAantallen,
+    NieuweSignaalAantallen,
+)
+from apps.dashboard.models import NieuweTaakopdrachten as NieuweTaakopdrachtenModel
+from apps.dashboard.models import (
+    StatusVeranderingDuurMeldingen,
+    TaakopdrachtDoorlooptijden,
+    TaaktypeAantallenPerMelding,
+    Tijdsvak,
 )
 from apps.main.constanten import (
     DAGEN_VAN_DE_WEEK_KORT,
@@ -26,8 +23,7 @@ from apps.main.constanten import (
     MAANDEN_KORT,
     PDOK_WIJKEN,
 )
-from apps.services.meldingen import MeldingenService
-from apps.services.onderwerpen import OnderwerpenService
+from apps.main.services import OnderwerpenService
 from django.contrib.auth.decorators import permission_required
 from django.contrib.gis.db import models
 from django.shortcuts import redirect
@@ -45,6 +41,7 @@ class Dashboard(FormView):
     periode = None
     title = None
     week = maand = jaar = onderwerp = wijk = None
+    tijdsvak_classes = []
 
     def get_success_url(self):
         return self.request.path
@@ -78,7 +75,7 @@ class Dashboard(FormView):
         jaar_param = kwargs.get("jaar")
         maand_param = kwargs.get("maand")
         week_param = kwargs.get("week")
-
+        self.tijdsvak_periode = Tijdsvak.PeriodeOpties.DAG
         try:
             self.week = isoweek.Week(int(jaar_param), int(week_param))
         except Exception as e:
@@ -89,6 +86,7 @@ class Dashboard(FormView):
                 print(f"Tried maand, next try jaar: {e}")
                 try:
                     self.jaar = int(jaar_param)
+                    self.tijdsvak_periode = Tijdsvak.PeriodeOpties.MAAND
                 except Exception as e:
                     print(f"Tried jaar, next redirect to current week: {e}")
                     vandaag = datetime.now().date()
@@ -355,302 +353,107 @@ class Dashboard(FormView):
             }
         )
         context.update(self.kwargs)
+
+        onderwerpen_service = OnderwerpenService()
+
+        for cls in self.tijdsvak_classes:
+            cls.onderwerpen = [
+                c.get("name") for c in onderwerpen_service.get_onderwerpen()
+            ]
+            cls.wijken = [c.get("wijknaam") for c in PDOK_WIJKEN]
+            cls.wijken_noord = [
+                wijk.get("wijknaam")
+                for wijk in PDOK_WIJKEN
+                if wijk.get("stadsdeel") == "Noord"
+            ]
+            cls.wijken_zuid = [
+                wijk.get("wijknaam")
+                for wijk in PDOK_WIJKEN
+                if wijk.get("stadsdeel") == "Zuid"
+            ]
+            cls.wijk = self.wijk
+            cls.onderwerp = self.onderwerp
+            cls.x_ticks = self.x_ticks
+            cls.periode_titel = self.title
+            cls.type = self.kwargs.get("type")
+            cls.status = self.kwargs.get("status")
+            cls.tijdsvakken = list(
+                cls.objects.filter(
+                    periode=self.tijdsvak_periode,
+                    start_datumtijd__gte=self.x_ticks[0].get("start_dt"),
+                    start_datumtijd__lte=self.x_ticks[-1].get("start_dt"),
+                ).values_list("resultaat", flat=True)
+            )
+
+        context.update({cls.__name__: cls for cls in self.tijdsvak_classes})
+
         return context
 
 
 @method_decorator(
-    permission_required("authorisatie.dashboard_bekijken"), name="dispatch"
+    permission_required("authorisatie.dashboard_bekijken", raise_exception=True),
+    name="dispatch",
 )
 class NieuweMeldingen(Dashboard):
     template_name = "dashboard/nieuwe/dashboard.html"
 
+    tijdsvak_classes = [
+        NieuweMeldingAantallen,
+        NieuweSignaalAantallen,
+        DoorlooptijdenAfgehandeldeMeldingen,
+    ]
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        meldingen = []
-        signalen = []
-        afgehandeld = []
-        meldingen_service = MeldingenService()
-        for tick in self.x_ticks:
-            dag = tick.get("start_dt")
-            days = tick.get("days")
-            melding_aantallen = meldingen_service.melding_aantallen(
-                datum=dag, days=days
-            )
-            signaal_aantallen = meldingen_service.signaal_aantallen(
-                datum=dag, days=days
-            )
 
-            status_afgehandeld = meldingen_service.afgehandelde_meldingen(
-                datum=dag, days=days
-            )
-            afgehandeld.append(status_afgehandeld)
-            meldingen.append(melding_aantallen)
-            signalen.append(signaal_aantallen)
-
-        aantallen_tabs = get_aantallen_tabs(
-            meldingen,
-            signalen,
-            ticks=self.x_ticks,
-            onderwerp=self.onderwerp,
-            wijk=self.wijk,
-        )
-        nieuw_vs_afgehandeld_tabs = get_meldingen_nieuw_vs_afgehandeld_tabs(
-            meldingen,
-            afgehandeld,
-            ticks=self.x_ticks,
-            onderwerp=self.onderwerp,
-            wijk=self.wijk,
+        NieuweMeldingAantallen.signaal_data = NieuweSignaalAantallen.tijdsvakken
+        NieuweMeldingAantallen.afgehandeld_tijdsvakken = (
+            DoorlooptijdenAfgehandeldeMeldingen.tijdsvakken
         )
 
-        onderwerp_opties = list(
-            set([d.get("onderwerp") for kolom in meldingen for d in kolom])
-        )
-        wijk_opties = list(set([d.get("wijk") for kolom in meldingen for d in kolom]))
-
-        context.update(
-            {
-                "aantallen_tabs": aantallen_tabs,
-                "nieuw_vs_afgehandeld_tabs": nieuw_vs_afgehandeld_tabs,
-                "aantal_meldingen_onderwerp": top_vijf_aantal_meldingen_onderwerp(
-                    meldingen, onderwerp_opties, wijk=self.wijk
-                ),
-                "aantal_meldingen_wijk": top_vijf_aantal_meldingen_wijk(
-                    meldingen, wijk_opties, onderwerp=self.onderwerp
-                ),
-                "aantal_onderwerpen_ontdubbeld": top_vijf_aantal_onderwerpen_ontdubbeld(
-                    meldingen, signalen, onderwerp_opties, wijk=self.wijk
-                ),
-            }
-        )
         return context
 
 
 @method_decorator(
-    permission_required("authorisatie.dashboard_bekijken"), name="dispatch"
+    permission_required("authorisatie.dashboard_bekijken", raise_exception=True),
+    name="dispatch",
 )
 class MeldingenAfgehandeld(Dashboard):
     template_name = "dashboard/afgehandeld/dashboard.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        onderwerpen_service = OnderwerpenService()
-        onderwerpen = onderwerpen_service.get_onderwerpen()
-        valide_wijken = [c.get("wijknaam") for c in PDOK_WIJKEN]
-
-        afgehandeld = []
-        veranderingen = []
-        meldingen_service = MeldingenService()
-        for tick in self.x_ticks:
-            dag = tick.get("start_dt")
-            days = tick.get("days")
-            status_afgehandeld = meldingen_service.afgehandelde_meldingen(
-                datum=dag, days=days
-            )
-            status_veranderingen = meldingen_service.status_veranderingen(
-                datum=dag, days=days
-            )
-            afgehandeld.append(status_afgehandeld)
-            veranderingen.append(status_veranderingen)
-
-        afgehandeld_tabs = get_afgehandeld_tabs(
-            afgehandeld, ticks=self.x_ticks, onderwerp=self.onderwerp, wijk=self.wijk
-        )
-        status_veranderingen_tabs = get_status_veranderingen_tabs(
-            veranderingen, ticks=self.x_ticks, onderwerp=self.onderwerp, wijk=self.wijk
-        )
-        valide_onderwerpen = [c.get("name") for c in onderwerpen]
-        doorlooptijden_onderwerp = [
-            top_doorlooptijden_per_onderwerp(
-                afgehandeld,
-                valide_onderwerpen=valide_onderwerpen,
-                wijk=self.wijk,
-                aantal=10,
-            )
-        ]
-        doorlooptijden_wijk = [
-            top_doorlooptijden_per_wijk(
-                afgehandeld,
-                valide_wijken=valide_wijken,
-                onderwerp=self.onderwerp,
-                aantal=10,
-            )
-        ]
-        for fase in ["Midoffice", "Uitvoer", "Wachten", "Afgehandeld"]:
-            doorlooptijden_onderwerp.append(
-                top_doorlooptijden_per_onderwerp(
-                    afgehandeld,
-                    valide_onderwerpen=valide_onderwerpen,
-                    wijk=self.wijk,
-                    fase=fase,
-                    aantal=10,
-                )
-            )
-            doorlooptijden_wijk.append(
-                top_doorlooptijden_per_wijk(
-                    afgehandeld,
-                    valide_wijken=valide_wijken,
-                    onderwerp=self.onderwerp,
-                    fase=fase,
-                    aantal=10,
-                )
-            )
-
-        stacked_bars_options = {
-            "plugins": {
-                "legend": {
-                    "display": True,
-                },
-                "tooltip": {
-                    "backgroundColor": "#ffffff",
-                    "borderColor": "rgba(0, 0 ,0 , .8)",
-                    "borderWidth": 1,
-                    "bodyAlign": "center",
-                    "bodyColor": "#000000",
-                    "titleColor": "#000000",
-                    "titleAlign": "center",
-                    "displayColors": False,
-                    "borderRadius": 0,
-                },
-            },
-            "scales": {
-                "x": {"stacked": True},
-                "y": {
-                    "stacked": True,
-                    "grid": {
-                        "display": False,
-                    },
-                },
-            },
-        }
-
-        context.update(
-            {
-                "afgehandeld_tabs": afgehandeld_tabs,
-                "status_veranderingen_tabs": status_veranderingen_tabs,
-                "doorlooptijden_onderwerp": doorlooptijden_onderwerp,
-                "doorlooptijden_wijk": doorlooptijden_wijk,
-                "stacked_bars_options": stacked_bars_options,
-            }
-        )
-        return context
+    tijdsvak_classes = [
+        DoorlooptijdenAfgehandeldeMeldingen,
+        StatusVeranderingDuurMeldingen,
+    ]
 
 
 @method_decorator(
-    permission_required("authorisatie.dashboard_bekijken"), name="dispatch"
+    permission_required("authorisatie.dashboard_bekijken", raise_exception=True),
+    name="dispatch",
 )
 class TaaktypeAantallen(Dashboard):
     template_name = "dashboard/taken/taaktype_aantallen.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        taaktype_aantallen_per_melding = []
-        meldingen_service = MeldingenService()
-        for tick in self.x_ticks:
-            dag = tick.get("start_dt")
-            days = tick.get("days")
-            taaktype_aantallen_per_melding_tijdsvak = (
-                meldingen_service.taaktype_aantallen_per_melding(
-                    datum=dag, days=days, force_cache=False
-                )
-            )
-            taaktype_aantallen_per_melding.append(
-                taaktype_aantallen_per_melding_tijdsvak
-            )
-
-        taaktype_aantallen_per_melding_tabs = get_taaktype_aantallen_per_melding_tabs(
-            taaktype_aantallen_per_melding,
-            ticks=self.x_ticks,
-            onderwerp=self.onderwerp,
-            wijk=self.wijk,
-        )
-        top_10_taaktype_aantallen = top_taaktype_aantallen(
-            taaktype_aantallen_per_melding,
-            onderwerp=self.onderwerp,
-            wijk=self.wijk,
-            aantal=10,
-        )
-
-        stacked_bars_options = {
-            "plugins": {
-                "legend": {
-                    "display": True,
-                },
-                "tooltip": {
-                    "backgroundColor": "#ffffff",
-                    "borderColor": "rgba(0, 0 ,0 , .8)",
-                    "borderWidth": 1,
-                    "bodyAlign": "center",
-                    "bodyColor": "#000000",
-                    "titleColor": "#000000",
-                    "titleAlign": "center",
-                    "displayColors": False,
-                    "borderRadius": 0,
-                },
-            },
-            "scales": {
-                "x": {"stacked": True},
-                "y": {
-                    "stacked": True,
-                    "grid": {
-                        "display": False,
-                    },
-                },
-            },
-        }
-
-        context.update(
-            {
-                "taaktype_aantallen_per_melding_tabs": taaktype_aantallen_per_melding_tabs,
-                "top_10_taaktype_aantallen": top_10_taaktype_aantallen,
-                "stacked_bars_options": stacked_bars_options,
-            }
-        )
-        return context
+    tijdsvak_classes = [
+        TaaktypeAantallenPerMelding,
+    ]
 
 
+@method_decorator(
+    permission_required("authorisatie.dashboard_bekijken", raise_exception=True),
+    name="dispatch",
+)
 class NieuweTaakopdrachten(Dashboard):
     template_name = "dashboard/taken/nieuwe_taakopdrachten.html"
+    tijdsvak_classes = [
+        NieuweTaakopdrachtenModel,
+        TaakopdrachtDoorlooptijden,
+    ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        nieuwe_taakopdrachten = []
-        taakopdracht_doorlooptijden = []
-        meldingen_service = MeldingenService()
-        for tick in self.x_ticks:
-            dag = tick.get("start_dt")
-            days = tick.get("days")
-            nieuwe_taakopdrachten_tijdsvak = meldingen_service.nieuwe_taakopdrachten(
-                datum=dag, days=days, force_cache=False
-            )
-            taakopdracht_doorlooptijden_tijdsvak = (
-                meldingen_service.taakopdracht_doorlooptijden(
-                    datum=dag, days=days, force_cache=False
-                )
-            )
-            nieuwe_taakopdrachten.append(nieuwe_taakopdrachten_tijdsvak)
-            taakopdracht_doorlooptijden.append(taakopdracht_doorlooptijden_tijdsvak)
-
-        nieuwe_taakopdrachten_tabs = get_nieuwe_taakopdrachten_tabs(
-            nieuwe_taakopdrachten,
-            ticks=self.x_ticks,
-            onderwerp=self.onderwerp,
-            wijk=self.wijk,
-        )
-        taken_nieuw_vs_afgehandeld_tabs = get_taken_nieuw_vs_afgehandeld_tabs(
-            nieuwe_taakopdrachten,
-            taakopdracht_doorlooptijden,
-            ticks=self.x_ticks,
-            onderwerp=self.onderwerp,
-            wijk=self.wijk,
+        TaakopdrachtDoorlooptijden.nieuwe_taakopdrachten = (
+            NieuweTaakopdrachtenModel.tijdsvakken
         )
 
-        context.update(
-            {
-                "nieuwe_taakopdrachten_tabs": nieuwe_taakopdrachten_tabs,
-                "taken_nieuw_vs_afgehandeld_tabs": taken_nieuw_vs_afgehandeld_tabs,
-            }
-        )
         return context

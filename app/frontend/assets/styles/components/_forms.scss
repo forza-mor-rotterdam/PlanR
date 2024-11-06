@@ -150,6 +150,14 @@ fieldset {
     margin: 0.25rem 0;
     display: block;
     color: $gray-tint09;
+
+    &.warning {
+        color: $alert-warning-color;
+    }
+
+    &.error {
+        color: $red-tint02;
+    }
 }
 
 $form-search-indicator: url("data:image/svg+xml,<svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'> <path fill-rule='evenodd' clip-rule='evenodd' d='M19.5005 9.75C19.5005 6.825 17.1755 4.5 14.2505 4.5C11.3255 4.5 9.00046 6.825 9.00046 9.75C9.00046 12.675 11.3255 15 14.2505 15C17.1755 15 19.5005 12.675 19.5005 9.75ZM7.50046 9.75C7.50046 6 10.5005 3 14.2505 3C18.0005 3 21.0005 6 21.0005 9.75C21.0005 13.5 18.0005 16.5 14.2505 16.5C12.6478 16.5 11.1822 15.9521 10.0292 15.0319L4.25792 20.8031L3.19727 19.7425L8.96853 13.9712C8.04835 12.8182 7.50046 11.3526 7.50046 9.75Z' fill='#{$gray-tint09}'/> </svg>");
@@ -567,7 +575,7 @@ input.form-radio-input {
     }
 
     textarea {
-        margin-bottom: 1rem;
+        margin-bottom: 0;
     }
 
     .label--file {
@@ -581,6 +589,13 @@ input.form-radio-input {
         padding: 0;
         border: 0;
         pointer-events: none;
+    }
+
+    .help-block {
+        font-size: 0.8em;
+    }
+    .help-block + .help-block {
+        margin-bottom: 1em;
     }
 }
 

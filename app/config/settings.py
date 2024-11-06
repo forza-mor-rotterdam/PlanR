@@ -78,6 +78,7 @@ INSTALLED_APPS = (
     "django_celery_results",
     "sorl.thumbnail",
     "django_select2",
+    "mor_api_services",
     # Apps
     "apps.rotterdam_formulier_html",
     "apps.authorisatie",
@@ -85,7 +86,6 @@ INSTALLED_APPS = (
     "apps.context",
     "apps.beheer",
     "apps.release_notes",
-    "apps.services",
     "apps.instellingen",
     "apps.dashboard",
 )
@@ -172,15 +172,14 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 AUTH_USER_MODEL = "authenticatie.Gebruiker"
 
 CELERY_TASK_TRACK_STARTED = True
-CELERY_RESULTS_EXTENDED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
-CELERY_BROKER_URL = "redis://redis:6379/0"
 
+CELERY_BROKER_URL = "redis://redis:6379/0"
 BROKER_URL = CELERY_BROKER_URL
-CELERY_TASK_TRACK_STARTED = True
+
+CELERY_RESULT_EXTENDED = True
 CELERY_RESULT_BACKEND = "django-db"
-CELERY_TASK_TIME_LIMIT = 30 * 60
-CELERYBEAT_SCHEDULE = {}
+
 CELERY_WORKER_CONCURRENCY = 2
 CELERY_WORKER_MAX_TASKS_PER_CHILD = 20
 CELERY_WORKER_MAX_MEMORY_PER_CHILD = 200000

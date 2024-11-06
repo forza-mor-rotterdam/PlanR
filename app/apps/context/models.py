@@ -1,8 +1,11 @@
 import json
 
-from apps.services.meldingen import MeldingenService
-from apps.services.onderwerpen import OnderwerpenService, render_onderwerp
-from apps.services.taakr import TaakRService
+from apps.main.services import (
+    MORCoreService,
+    OnderwerpenService,
+    TaakRService,
+    render_onderwerp,
+)
 from django.contrib.gis.db import models
 from utils.fields import DictJSONField, ListJSONField
 from utils.models import BasisModel
@@ -31,10 +34,14 @@ class Context(BasisModel):
 
     def onderwerpen(self):
         onderwerp_alias_list = (
-            MeldingenService().onderwerp_alias_list().get("results", [])
+            MORCoreService().onderwerp_alias_list(force_cache=False).get("results", [])
         )
         onderwerpen = [
-            render_onderwerp(onderwerp_alias.get("bron_url"), onderwerp_alias.get("pk"))
+            render_onderwerp(
+                onderwerp_alias.get("bron_url"),
+                onderwerp_alias.get("pk"),
+                force_cache=False,
+            )
             for onderwerp_alias in onderwerp_alias_list
             if str(onderwerp_alias.get("pk"))
             in self.standaard_filters.get("pre_onderwerp", [])
@@ -43,12 +50,14 @@ class Context(BasisModel):
 
     def onderwerp_opties_gegroepeerd(self):
         onderwerp_alias_list = (
-            MeldingenService().onderwerp_alias_list().get("results", [])
+            MORCoreService().onderwerp_alias_list(force_cache=False).get("results", [])
         )
         onderwerpen_data = [
             [
                 str(onderwerp_alias.get("pk")),
-                OnderwerpenService().get_onderwerp(onderwerp_alias.get("bron_url")),
+                OnderwerpenService().get_onderwerp(
+                    onderwerp_alias.get("bron_url"), force_cache=False
+                ),
             ]
             for onderwerp_alias in onderwerp_alias_list
             if str(onderwerp_alias.get("pk"))
@@ -60,7 +69,9 @@ class Context(BasisModel):
         ]
         groepen = [
             [
-                OnderwerpenService().get_groep(group_uuid).get("name", ""),
+                OnderwerpenService()
+                .get_groep(group_uuid, force_cache=False)
+                .get("name", ""),
                 [
                     [onderwerp[1][0], {"label": onderwerp[1][1].get("name")}]
                     for onderwerp in onderwerpen_data
@@ -108,7 +119,7 @@ class Context(BasisModel):
         return Context.urgentie_choices()[0][1]
 
     def taaktype_namen(self):
-        taaktypes = TaakRService().get_taaktypes()
+        taaktypes = TaakRService().get_taaktypes(force_cache=False)
         taaktype_namen = [
             taaktype.get("omschrijving")
             for taaktype in taaktypes
@@ -119,3 +130,8 @@ class Context(BasisModel):
 
     def __str__(self):
         return self.naam
+
+    class Meta:
+        verbose_name = "Rol"
+        verbose_name_plural = "Rollen"
+        ordering = ["naam"]
