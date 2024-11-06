@@ -46,7 +46,11 @@
                         <div class="form-control__with-helptext js-validation">{{ form.titel|render_rotterdam_formulier }}</div>
                         <div class="form-control__with-helptext js-validation padding-bottom-2x"
                              data-testid="text_editor"
-                             data-berichten-beheer-target="releaseNote hideable">{{ form.beschrijving }}</div>
+                             data-berichten-beheer-target="notificatie hideable">
+                            {{ form.korte_beschrijving|render_rotterdam_formulier }}
+                        </div>
+                        <div class="form-control__with-helptext js-validation padding-bottom-2x"
+                             data-testid="text_editor">{{ form.beschrijving }}</div>
                         <div class="form-control__with-helptext js-validation full-width"
                              data-controller="bijlagen"
                              data-berichten-beheer-target="releaseNote hideable">

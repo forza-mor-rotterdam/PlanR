@@ -65,98 +65,156 @@
 
 .container__notification {
     width: 98%;
-    position: absolute;
+    position: fixed;
     top: 35px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 1000;
-    // transition-property: opacity, display;
-    // transition-duration: 1s;
+    z-index: 2000;
+    opacity: 0;
+    animation: slide-in-from-top-centered 2 * $transition-duration-default $transition-ease-default
+        forwards 0.5s;
 
     &--snack {
         max-width: 714px;
     }
 
+    .list-notifications {
+        @include list-clean;
+        position: relative;
+        pointer-events: none;
+    }
+
     .notification {
-        display: flex;
-        justify-content: flex-start;
-        gap: 10px;
+        // display: none;
+        height: 0;
         padding: 0.75em 2em 0.75em 0.75em;
         position: relative;
         background-color: $white;
         border-radius: 8px;
         box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.07);
         margin-bottom: 1em;
+        margin-top: -50px; // -134px; // TODO make dynamic
+        pointer-events: all;
+        transition-property: transform, opacity, margin-top;
+        transition-duration: $transition-duration-default;
+        transition-timing-function: $transition-ease-default;
+        transition-delay: $transition-duration-default;
+        overflow: hidden;
         opacity: 0;
-        animation: slide-in-from-top 2 * $transition-duration-default $transition-ease-default
-            forwards 0.5s;
-
-        &.hide {
-            animation: fade-out 2 * $transition-duration-default $transition-ease-default forwards;
+        &:first-child {
+            transform: none;
+            margin-top: 0;
+        }
+        & + .notification {
+            margin-top: -160px;
         }
 
-        .container__icon {
-            min-width: 30px;
-            position: relative;
-
-            svg {
-                position: absolute;
-                left: 0;
-                top: 50%;
-                transform: translateY(-50%);
-                margin-right: 0.5em;
+        @for $i from 1 through 10 {
+            &:nth-child(#{$i}n) {
+                z-index: #{$i * -10};
+                transform: translateY(0) scale(#{1.02 - $i * 0.02});
             }
         }
-        .container__content {
-            .container__message {
-                display: block;
-                font-size: 0.8em;
 
-                p,
-                a {
-                    flex: 1 1 auto;
+        &.show,
+        &.init {
+            opacity: 1;
+            height: 120px;
+            display: flex;
+            justify-content: flex-start;
+            gap: 10px;
+            transition-property: transform, opacity, margin-top;
+            transition-duration: $transition-duration-default;
+            transition-timing-function: $transition-ease-default;
+
+            &.hide {
+                opacity: 0;
+                transform: translateY(-20px) scale(1);
+                // animation: fade-out-height 2 * $transition-duration-default $transition-ease-default forwards;
+            }
+
+            .container__icon {
+                min-width: 30px;
+                position: relative;
+
+                svg {
+                    position: absolute;
+                    left: 0;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    margin-right: 0.5em;
                 }
-                a {
-                    text-align: right;
-                    white-space: nowrap;
+            }
+            .container__content {
+                .container__message {
+                    display: block;
+                    font-size: 0.8em;
+
+                    p,
+                    a {
+                        flex: 1 1 auto;
+                    }
+                    a {
+                        text-align: right;
+                        white-space: nowrap;
+                    }
+                }
+
+                h3,
+                p {
+                    margin: 0;
+                }
+
+                h3 {
+                    font-size: 1em;
+                    margin: 0;
                 }
             }
 
-            h3,
-            p {
-                margin: 0;
+            .btn-close--small {
+                top: 0.5em;
+                right: 0.5em;
             }
 
-            h3 {
-                font-size: 1em;
-                margin: 0;
+            &.warning {
+                background-color: $yellow-200;
+            }
+
+            &.error {
+                background-color: $red-200;
             }
         }
 
-        .btn-close--small {
-            top: 0.5em;
-            right: 0.5em;
-        }
-
-        &.warning {
-            background-color: $yellow-200;
-        }
-
-        &.error {
-            background-color: $red-200;
+        &.init {
+            margin-top: 0;
+            transform: translateY(0) scale(1);
+            transition-property: transform, opacity, margin-top;
+            transition-duration: $transition-duration-default;
+            transition-timing-function: $transition-ease-default;
         }
     }
 
     @media (min-width: map-get($grid-breakpoints, lg)) {
         top: 90px;
         .notification {
-            .container__content {
-                .container__message {
-                    display: flex;
-                    flex: 1 0 90%;
-                    justify-content: space-between;
+            &.show,
+            &.init {
+                .container__content {
+                    .container__message {
+                        display: flex;
+                        flex: 1 0 90%;
+                        justify-content: space-between;
+                    }
                 }
             }
+        }
+    }
+
+    &.showAll,
+    &:hover {
+        .notification {
+            margin-top: 0;
+            transform: translateY(0) scale(1);
         }
     }
 }
