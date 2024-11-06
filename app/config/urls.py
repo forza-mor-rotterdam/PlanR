@@ -26,6 +26,8 @@ from apps.dashboard.views import (
 )
 from apps.health.views import healthz
 from apps.main.views import (
+    LoginView,
+    LogoutView,
     StandaardExterneOmschrijvingAanmakenView,
     StandaardExterneOmschrijvingAanpassenView,
     StandaardExterneOmschrijvingLijstView,
@@ -92,7 +94,16 @@ urlpatterns = [
         clear_melding_token_from_cache,
         name="clear_melding_token_from_cache",
     ),
-    path("oidc/", include("mozilla_django_oidc.urls")),
+    path(
+        "login/",
+        LoginView.as_view(),
+        name="login",
+    ),
+    path(
+        "logout/",
+        LogoutView.as_view(),
+        name="logout",
+    ),
     path("melding/", melding_lijst, name="melding_lijst"),
     path("melding/<uuid:id>/", melding_detail, name="melding_detail"),
     path(
@@ -432,31 +443,28 @@ urlpatterns = [
     path("ckeditor5/", include("django_ckeditor_5.urls")),
 ]
 
-if settings.OIDC_ENABLED:
+if not settings.ENABLE_DJANGO_ADMIN_LOGIN:
     urlpatterns += [
-        path("oidc/", include("mozilla_django_oidc.urls")),
         path(
             "admin/login/",
-            RedirectView.as_view(
-                url="/oidc/authenticate/?next=/admin/",
-                permanent=False,
-            ),
+            RedirectView.as_view(url="/login/?next=/admin/"),
             name="admin_login",
         ),
         path(
             "admin/logout/",
-            RedirectView.as_view(
-                url="/oidc/logout/?next=/admin/",
-                permanent=False,
-            ),
+            RedirectView.as_view(url="/logout/?next=/"),
             name="admin_logout",
         ),
-        path("admin/", admin.site.urls),
     ]
-else:
+
+if settings.OIDC_ENABLED:
     urlpatterns += [
-        path("admin/", admin.site.urls),
+        path("oidc/", include("mozilla_django_oidc.urls")),
     ]
+
+urlpatterns += [
+    path("admin/", admin.site.urls),
+]
 
 if settings.APP_ENV != "productie":
     urlpatterns += [
