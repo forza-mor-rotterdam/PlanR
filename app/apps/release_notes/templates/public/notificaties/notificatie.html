@@ -1,14 +1,16 @@
-<div class="notification level {{ object.notificatie_niveau }}">
+<div class="notification level {{ niveau }}">
     <div class="container__icon">
-        {% with "public/notificaties/icons/"|add:object.notificatie_niveau|add:".html" as template %}
-            {% include template %}
-        {% endwith %}
+        {% if niveau %}
+            {% with "public/notificaties/icons/"|add:niveau|add:".html" as template %}
+                {% include template %}
+            {% endwith %}
+        {% endif %}
     </div>
     <div class="container__content">
-        <h3>{{ object.titel }}</h3>
+        <h3>{{ titel }}</h3>
         <div class="container__message">
-            {% if object.korte_beschrijving %}<p>{{ object.korte_beschrijving }}</p>{% endif %}
-            {% if object.has_beschrijving %}<a href="">Meer info</a>{% endif %}
+            {% if korte_beschrijving %}<p>{{ korte_beschrijving }}</p>{% endif %}
+            {% if has_beschrijving %}<a href="">Meer info</a>{% endif %}
         </div>
     </div>
     <button type="button"
