@@ -75,13 +75,25 @@ class NotificatieLijstViewPublic(ListView):
                     & Q(einde_publicatie_datum__gt=timezone.now())
                 )
             )
-            .order_by("-publicatie_datum")
+            .order_by("publicatie_datum")
         )
         for notificatie_type, _ in ReleaseNote.NotificatieTypeOpties.choices:
             context.update(
                 {notificatie_type: qs.filter(notificatie_type=notificatie_type)}
             )
         return context
+
+
+class NotificatieVerwijderViewPublic(LoginRequiredMixin, DetailView):
+    template_name = "public/notificaties/notificatie_verwijderd.html"
+    queryset = ReleaseNote.objects.filter(
+        bericht_type=ReleaseNote.BerichtTypeOpties.NOTIFICATIE
+    )
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset=queryset)
+        print(obj)
+        return obj
 
 
 class ReleaseNoteListViewPublic(LoginRequiredMixin, ReleaseNoteView, ListView):

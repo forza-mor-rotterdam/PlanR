@@ -71,6 +71,7 @@ from apps.main.views import (
 )
 from apps.release_notes.views import (
     NotificatieLijstViewPublic,
+    NotificatieVerwijderViewPublic,
     ReleaseNoteAanmakenView,
     ReleaseNoteAanpassenView,
     ReleaseNoteDetailView,
@@ -289,6 +290,11 @@ urlpatterns = [
         "notificaties/",
         NotificatieLijstViewPublic.as_view(),
         name="notificatie_lijst_public",
+    ),
+    path(
+        "notificatie/<int:pk>/verwijderen/",
+        NotificatieVerwijderViewPublic.as_view(),
+        name="notificatie_verwijderen_public",
     ),
     # Release notes
     path(
