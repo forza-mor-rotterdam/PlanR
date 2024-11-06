@@ -4,6 +4,7 @@ from apps.release_notes.forms import (
     ReleaseNoteAanpassenForm,
 )
 from apps.release_notes.tasks import task_aanmaken_afbeelding_versies
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import BooleanField, Case, Exists, OuterRef, Q, Value, When
@@ -75,6 +76,7 @@ class NotificatieLijstViewPublic(ListView):
                     & Q(einde_publicatie_datum__gt=timezone.now())
                 )
             )
+            .exclude(bekeken_door_gebruikers=self.request.user)
             .order_by("-publicatie_datum")
         )
         for notificatie_type, _ in ReleaseNote.NotificatieTypeOpties.choices:
@@ -92,7 +94,7 @@ class NotificatieVerwijderViewPublic(LoginRequiredMixin, DetailView):
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset=queryset)
-        print(obj)
+        obj.bekeken_door_gebruikers.add(self.request.user)
         return obj
 
 
@@ -157,6 +159,9 @@ class ReleaseNoteAanmakenView(PermissionRequiredMixin, ReleaseNoteView, CreateVi
             bijlage.save()
 
             task_aanmaken_afbeelding_versies.delay(bijlage.pk)
+        messages.success(
+            request=self.request, message=f"De {self.object.bericht_type} is aangemaakt"
+        )
         return response
 
 
@@ -212,8 +217,16 @@ class ReleaseNoteAanpassenView(PermissionRequiredMixin, ReleaseNoteView, UpdateV
                 bijlage.save()
 
                 task_aanmaken_afbeelding_versies.delay(bijlage.pk)
+            messages.success(
+                request=self.request,
+                message=f"De {self.object.bericht_type} is aangepast",
+            )
             return super().form_valid(form)
         else:
+            messages.error(
+                request=self.request,
+                message="Er ging iets mis met het aanpassen van het bericht",
+            )
             return self.render_to_response(
                 self.get_context_data(form=form, formset=formset)
             )
