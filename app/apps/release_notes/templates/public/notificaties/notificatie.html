@@ -1,21 +1,18 @@
-<div class="notification level {{ niveau }}"
-     data-notificatielijst-target="notificatie">
-    <div class="container__icon">
-        {% if niveau %}
-            {% with "public/notificaties/icons/"|add:niveau|add:".html" as template %}
-                {% include template %}
-            {% endwith %}
-        {% endif %}
-    </div>
-    <div class="container__content">
-        <h3>{{ titel }}</h3>
-        <div class="container__message">
-            {% if korte_beschrijving %}<p>{{ korte_beschrijving }}</p>{% endif %}
-            {% if has_beschrijving %}<a href="">Meer info</a>{% endif %}
-        </div>
-    </div>
-    <button type="button"
-            class="btn-close--small"
-            aria-label="Sluit"
-            data-action="notificatielijst#hideNotification">{% include "icons/close.svg" %}</button>
+<div class="container__icon">
+    {% if niveau %}
+        {% with "public/notificaties/icons/"|add:niveau|add:".html" as template %}
+            {% include template %}
+        {% endwith %}
+    {% endif %}
 </div>
+<div class="container__content">
+    <h3>{{ titel }}</h3>
+    <div class="container__message">
+        {% if korte_beschrijving %}<p>{{ korte_beschrijving }}</p>{% endif %}
+        {% if has_beschrijving %}<a href="">Meer info</a>{% endif %}
+    </div>
+</div>
+<button type="button"
+        class="btn-close--small"
+        aria-label="Sluit"
+        data-action="notificatielijst#hideNotification">{% include "icons/close.svg" %}</button>
