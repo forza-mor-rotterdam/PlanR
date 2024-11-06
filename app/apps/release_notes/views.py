@@ -113,7 +113,7 @@ class ReleaseNoteListViewPublic(LoginRequiredMixin, ReleaseNoteView, ListView):
                 publicatie_datum__gte=five_weeks_ago,
             )
             .order_by("-publicatie_datum", "-aangemaakt_op")
-        )
+        ).filter(bericht_type=ReleaseNote.BerichtTypeOpties.RELEASE_NOTE)
 
         return queryset
 
