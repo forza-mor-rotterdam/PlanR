@@ -69,63 +69,58 @@
     top: 35px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 2000;
     opacity: 0;
-    animation: slide-in-from-top-centered 2 * $transition-duration-default $transition-ease-default
+    overflow: hidden;
+    pointer-events: none;
+    animation: slide-in-from-top-centered $transition-duration-default $transition-ease-default
         forwards 0.5s;
-
-    &--snack {
-        max-width: 714px;
-    }
 
     .list-notifications {
         @include list-clean;
         position: relative;
-        pointer-events: none;
+        margin: 0;
     }
 
     .notification {
         // display: none;
-        height: 0;
-        padding: 0.75em 2em 0.75em 0.75em;
+        max-height: 0;
+        padding: 0 2em 0 0.75em;
         position: relative;
         background-color: $white;
         border-radius: 8px;
+        box-sizing: border-box;
         box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.07);
-        margin-bottom: 1em;
-        margin-top: -50px; // -134px; // TODO make dynamic
+        margin-bottom: 0;
         pointer-events: all;
-        transition-property: transform, opacity, margin-top;
+        transition-property: all;
         transition-duration: $transition-duration-default;
         transition-timing-function: $transition-ease-default;
         transition-delay: $transition-duration-default;
         overflow: hidden;
         opacity: 0;
-        &:first-child {
-            transform: none;
-            margin-top: 0;
-        }
-        & + .notification {
-            margin-top: -160px;
-        }
+        // &:first-child {
+        //     transform: none;
+        // }
 
         @for $i from 1 through 10 {
             &:nth-child(#{$i}n) {
                 z-index: #{$i * -10};
-                transform: translateY(0) scale(#{1.02 - $i * 0.02});
+                // transform: translateY(0) scale(#{1.02 - $i * 0.02});
             }
         }
 
         &.show,
         &.init {
             opacity: 1;
-            height: 120px;
+            max-height: 200px;
+            padding-top: 0.75em;
+            padding-bottom: 0.75em;
             display: flex;
             justify-content: flex-start;
             gap: 10px;
-            transition-property: transform, opacity, margin-top;
+            transition-property: all;
             transition-duration: $transition-duration-default;
-            transition-timing-function: $transition-ease-default;
+            transition-timing-function: ease-in-out;
 
             &.hide {
                 opacity: 0;
@@ -186,11 +181,17 @@
         }
 
         &.init {
-            margin-top: 0;
             transform: translateY(0) scale(1);
-            transition-property: transform, opacity, margin-top;
-            transition-duration: $transition-duration-default;
-            transition-timing-function: $transition-ease-default;
+            margin-bottom: 1em;
+        }
+
+        &.show {
+            margin-bottom: 0.5em;
+            // @for $i from 1 through 10 {
+            //     &:nth-child(#{$i}n) {
+            //         transform: translateY(-#{($i - 1) * 100%}) scale(#{1.02 - $i * 0.02});
+            //     }
+            // }
         }
     }
 
@@ -210,11 +211,38 @@
         }
     }
 
-    &.showAll,
     &:hover {
-        .notification {
-            margin-top: 0;
-            transform: translateY(0) scale(1);
+        .notification.show {
+            transform: translateY(0) scale(1) !important;
+            margin-bottom: 1em;
+        }
+    }
+
+    &--snack {
+        max-width: 714px;
+        z-index: 2000;
+    }
+
+    &--toast {
+        max-width: 360px;
+        z-index: 3000;
+        width: 98%;
+        position: fixed;
+        top: 35px;
+        left: 50%;
+        transform: translateX(-50%);
+        opacity: 0;
+        overflow: hidden;
+        pointer-events: none;
+        animation: slide-in-from-bottom $transition-duration-default $transition-ease-default
+            forwards 0.5s;
+
+        @media (min-width: map-get($grid-breakpoints, lg)) {
+            top: auto;
+            bottom: 1em;
+            left: auto;
+            right: 1em;
+            transform: none;
         }
     }
 }
