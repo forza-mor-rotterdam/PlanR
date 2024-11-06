@@ -49,6 +49,9 @@ export default class extends Controller {
     notification.classList.add('hide')
 
     notification.addEventListener('transitionend', () => {
+      if (notification.nodeName === 'TURBO-FRAME') {
+        notification.setAttribute('src', notification.getAttribute('data-src'))
+      }
       notification.remove()
       this.resetList()
     })

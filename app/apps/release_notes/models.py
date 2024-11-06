@@ -244,4 +244,6 @@ class ReleaseNote(BasisModel):
 
     def save(self, *args, **kwargs):
         self.full_clean()
+        if self.publicatie_datum > timezone.now():
+            self.bekeken_door_gebruikers.clear()
         return super().save(*args, **kwargs)
