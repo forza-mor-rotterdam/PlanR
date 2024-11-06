@@ -51,8 +51,11 @@ class ReleaseNoteAanpassenForm(forms.ModelForm):
         max_length=5000,
     )
 
-    # Currently not used
-    # versie = forms.CharField(label="Versie", widget=forms.TextInput(), required=False)
+    toast_miliseconden_zichtbaar = forms.IntegerField(
+        widget=forms.HiddenInput(),
+        required=False,
+        initial=6000,
+    )
 
     publicatie_datum = forms.DateTimeField(
         label="Publicatie datum",
@@ -76,6 +79,15 @@ class ReleaseNoteAanpassenForm(forms.ModelForm):
 
     formset = BijlageFormSet(queryset=Bijlage.objects.none(), prefix="bijlage")
 
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data.get("notificatie_niveau") in (
+            ReleaseNote.NotificatieNiveauOpties.ERROR,
+            ReleaseNote.NotificatieNiveauOpties.WARNING,
+        ):
+            cleaned_data["toast_miliseconden_zichtbaar"] = 10000
+        return cleaned_data
+
     class Meta:
         model = ReleaseNote
         fields = [
@@ -85,9 +97,9 @@ class ReleaseNoteAanpassenForm(forms.ModelForm):
             "titel",
             "korte_beschrijving",
             "beschrijving",
-            # "versie",
             "publicatie_datum",
             "einde_publicatie_datum",
+            "toast_miliseconden_zichtbaar",
         ]
 
 
