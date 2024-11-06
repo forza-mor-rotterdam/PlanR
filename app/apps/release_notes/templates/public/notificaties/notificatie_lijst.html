@@ -3,7 +3,7 @@
     <div class="container__notification container__notification--snack"
          data-controller="notificatielijst">
         {% for object in snack %}
-            <turbo-frame scr="{% url 'notificatie_verwijderen_public' object.id %}" id="notificatie_{{ object.id }}">
+            <turbo-frame class="notification {{ object.notificatie_niveau }}" data-notificatielijst-target="notificatie" scr="{% url 'notificatie_verwijderen_public' object.id %}" id="notificatie_{{ object.id }}">
             {% include "public/notificaties/notificatie.html" with titel=object.titel niveau=object.notificatie_niveau has_beschrijving=object.has_beschrijving korte_beschrijving=object.korte_beschrijving beschrijving=object.beschrijving only %}
             </turbo-frame>
         {% endfor %}
@@ -11,10 +11,14 @@
     <div class="container__notification container__notification--toast"
          data-controller="notificatielijst">
         {% for object in toast %}
+            <turbo-frame class="notification {{ object.notificatie_niveau }}" data-notificatielijst-target="notificatie">
             {% include "public/notificaties/notificatie.html" with titel=object.titel niveau=object.notificatie_niveau has_beschrijving=object.has_beschrijving korte_beschrijving=object.korte_beschrijving beschrijving=object.beschrijving only %}
+            </turbo-frame>
         {% endfor %}
         {% for message in messages %}
+            <turbo-frame class="notification {{ message.tags }}" data-notificatielijst-target="notificatie">
             {% include "public/notificaties/notificatie.html" with titel=message niveau=message.tags tags=message.level only %}
+            </turbo-frame>
         {% endfor %}
     </div>
 {% endif %}
