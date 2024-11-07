@@ -202,7 +202,7 @@ def sidesheet_actueel(request):
 @login_required
 @permission_required("authorisatie.melding_lijst_bekijken", raise_exception=True)
 def melding_lijst(request):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     gebruiker = request.user
     gebruiker_context = get_gebruiker_context(gebruiker)
 
@@ -311,7 +311,7 @@ def melding_lijst(request):
 @login_required
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def melding_detail(request, id):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     gebruiker_context = get_gebruiker_context(request.user)
     melding = mor_core_service.get_melding(id)
     if isinstance(melding, dict) and melding.get("error"):
@@ -414,7 +414,7 @@ def melding_detail(request, id):
 @login_required
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def melding_next(request, id, richting):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     melding_id = str(id)
     frame_id = "melding_next_volgend" if richting > 0 else "melding_next_vorige"
     label = "Volgende" if richting > 0 else "Vorige"
@@ -516,7 +516,7 @@ def publiceer_topic(request, id):
 @login_required
 @permission_required("authorisatie.melding_afhandelen", raise_exception=True)
 def melding_afhandelen(request, id):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     melding = mor_core_service.get_melding(id)
     if isinstance(melding, dict) and melding.get("error"):
         messages.error(request=request, message=MELDING_OPHALEN_ERROR)
@@ -600,7 +600,7 @@ def melding_afhandelen(request, id):
 @login_required
 @permission_required("authorisatie.melding_annuleren", raise_exception=True)
 def melding_annuleren(request, id):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     melding = mor_core_service.get_melding(id)
     if isinstance(melding, dict) and melding.get("error"):
         messages.error(request=request, message=MELDING_OPHALEN_ERROR)
@@ -663,7 +663,7 @@ def melding_annuleren(request, id):
 @login_required
 @permission_required("authorisatie.melding_heropenen", raise_exception=True)
 def melding_heropenen(request, id):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     melding = mor_core_service.get_melding(id)
     if isinstance(melding, dict) and melding.get("error"):
         messages.error(request=request, message=MELDING_OPHALEN_ERROR)
@@ -696,7 +696,7 @@ def melding_heropenen(request, id):
 @login_required
 @permission_required("authorisatie.melding_pauzeren", raise_exception=True)
 def melding_pauzeren(request, id):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     melding = mor_core_service.get_melding(id)
     if isinstance(melding, dict) and melding.get("error"):
         messages.error(request=request, message=MELDING_OPHALEN_ERROR)
@@ -737,7 +737,7 @@ def melding_pauzeren(request, id):
 @login_required
 @permission_required("authorisatie.melding_hervatten", raise_exception=True)
 def melding_hervatten(request, id):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     melding = mor_core_service.get_melding(id)
     if isinstance(melding, dict) and melding.get("error"):
         messages.error(request=request, message=MELDING_OPHALEN_ERROR)
@@ -772,7 +772,7 @@ def melding_hervatten(request, id):
 @login_required
 @permission_required("authorisatie.melding_spoed_veranderen", raise_exception=True)
 def melding_spoed_veranderen(request, id):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     melding = mor_core_service.get_melding(id)
     if isinstance(melding, dict) and melding.get("error"):
         messages.error(request=request, message=MELDING_OPHALEN_ERROR)
@@ -813,7 +813,7 @@ def melding_spoed_veranderen(request, id):
 @login_required
 @permission_required("authorisatie.taak_aanmaken", raise_exception=True)
 def taak_starten(request, id):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     gebruiker_context = get_gebruiker_context(request.user)
     melding = mor_core_service.get_melding(id)
     if isinstance(melding, dict) and melding.get("error"):
@@ -927,7 +927,7 @@ def taak_starten(request, id):
 @login_required
 @permission_required("authorisatie.taak_afronden", raise_exception=True)
 def taak_afronden(request, melding_uuid):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     melding = mor_core_service.get_melding(melding_uuid)
     if isinstance(melding, dict) and melding.get("error"):
         messages.error(request=request, message=MELDING_OPHALEN_ERROR)
@@ -980,7 +980,7 @@ def taak_afronden(request, melding_uuid):
 @login_required
 @permission_required("authorisatie.taak_annuleren", raise_exception=True)
 def taak_annuleren(request, melding_uuid):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     melding = mor_core_service.get_melding(melding_uuid)
     if isinstance(melding, dict) and melding.get("error"):
         messages.error(request=request, message=MELDING_OPHALEN_ERROR)
@@ -1026,7 +1026,7 @@ def taak_annuleren(request, melding_uuid):
 @login_required
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def informatie_toevoegen(request, id):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     form = InformatieToevoegenForm()
     if request.method == "POST":
         form = InformatieToevoegenForm(request.POST, request.FILES)
@@ -1078,7 +1078,7 @@ def gebruiker_info(request, gebruiker_email):
 @login_required
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def melding_pdf_download(request, id):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     melding = mor_core_service.get_melding(id)
     if isinstance(melding, dict) and melding.get("error"):
         messages.error(request=request, message=MELDING_OPHALEN_ERROR)
@@ -1126,7 +1126,7 @@ def melding_pdf_download(request, id):
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def meldingen_bestand(request):
     Instelling.actieve_instelling()
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     modified_path = request.path.replace(settings.MOR_CORE_URL_PREFIX, "")
     response = mor_core_service.bestand_halen(modified_path)
     return StreamingHttpResponse(
@@ -1437,7 +1437,7 @@ class StandaardExterneOmschrijvingVerwijderenView(
 @permission_required("authorisatie.locatie_aanpassen", raise_exception=True)
 def locatie_aanpassen(request, id):
     try:
-        mor_core_service = MORCoreService(request=request)
+        mor_core_service = MORCoreService()
         melding = mor_core_service.get_melding(id)
         if isinstance(melding, dict) and melding.get("error"):
             messages.error(request=request, message=MELDING_OPHALEN_ERROR)
