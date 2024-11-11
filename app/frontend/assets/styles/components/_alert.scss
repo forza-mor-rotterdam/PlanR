@@ -74,9 +74,9 @@
     pointer-events: none;
     animation: slide-in-from-top-centered $transition-duration-default $transition-ease-default
         forwards 0.5s;
+    padding: 0 1em;
 
     .notification {
-        // display: none;
         max-height: 0;
         padding: 0 2em 0 0.75em;
         position: relative;
@@ -92,14 +92,11 @@
         transition-delay: $transition-duration-default;
         overflow: hidden;
         opacity: 0;
-        // &:first-child {
-        //     transform: none;
-        // }
+        font-size: 1em;
 
         @for $i from 1 through 10 {
             &:nth-child(#{$i}n) {
                 z-index: #{$i * -10};
-                // transform: translateY(0) scale(#{1.02 - $i * 0.02});
             }
         }
 
@@ -115,11 +112,11 @@
             transition-property: all;
             transition-duration: $transition-duration-default;
             transition-timing-function: ease-in-out;
+            margin-bottom: 0.5em;
 
             &.hide {
                 opacity: 0;
                 transform: translateY(-20px) scale(1);
-                // animation: fade-out-height 2 * $transition-duration-default $transition-ease-default forwards;
             }
 
             .container__icon {
@@ -137,7 +134,6 @@
             .container__content {
                 .container__message {
                     display: block;
-                    font-size: 0.8em;
 
                     p,
                     a {
@@ -151,11 +147,7 @@
 
                 h3,
                 p {
-                    margin: 0;
-                }
-
-                h3 {
-                    font-size: 1em;
+                    font-size: inherit;
                     margin: 0;
                 }
             }
@@ -176,22 +168,13 @@
 
         &.init {
             transform: translateY(0) scale(1);
-            margin-bottom: 1em;
-        }
-
-        &.show {
-            margin-bottom: 0.5em;
-            // @for $i from 1 through 10 {
-            //     &:nth-child(#{$i}n) {
-            //         transform: translateY(-#{($i - 1) * 100%}) scale(#{1.02 - $i * 0.02});
-            //     }
-            // }
         }
     }
 
     @media (min-width: map-get($grid-breakpoints, lg)) {
         top: 90px;
         .notification {
+            font-size: 0.8em;
             &.show,
             &.init {
                 .container__content {
@@ -206,9 +189,10 @@
     }
 
     &:hover {
-        .notification.show {
-            transform: translateY(0) scale(1) !important;
-            margin-bottom: 1em;
+        .notification {
+            &.show {
+                transform: translateY(0) scale(1) !important;
+            }
         }
     }
 
@@ -228,8 +212,29 @@
         opacity: 0;
         overflow: hidden;
         pointer-events: none;
-        animation: slide-in-from-bottom $transition-duration-default $transition-ease-default
-            forwards 0.5s;
+
+        .notification {
+            &.show,
+            &.init {
+                padding-top: 1em;
+                padding-bottom: 1em;
+            }
+
+            .btn-close--small {
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity $transition-duration-default $transition-ease-default;
+            }
+        }
+
+        &:hover {
+            .notification {
+                .btn-close--small {
+                    opacity: 1;
+                    pointer-events: all;
+                }
+            }
+        }
 
         @media (min-width: map-get($grid-breakpoints, lg)) {
             top: auto;
@@ -237,6 +242,17 @@
             left: auto;
             right: 1em;
             transform: none;
+            animation: slide-in-from-bottom $transition-duration-default $transition-ease-default
+                forwards 0.5s;
+
+            .notification {
+                font-size: 0.75em;
+
+                &.init.hide {
+                    opacity: 0;
+                    transform: translateY(20px) scale(1);
+                }
+            }
         }
     }
 }
