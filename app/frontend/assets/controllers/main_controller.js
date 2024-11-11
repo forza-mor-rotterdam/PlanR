@@ -5,28 +5,17 @@ export default class extends Controller {
       document.body.classList.add('css--safari')
     }
 
-    const observerOptions = {
-      childList: true,
-      subtree: true,
-    }
-
     this.notificationsTurboFrame = document.getElementById('notificatie_lijst_public')
     this.notificationsTurboFrameReloadTimeout = null
 
     setTimeout(() => {
-      const observer = new MutationObserver((records) => {
-        const turboFrames = records
-          .filter(
-            (record) => record?.target?.nodeName == 'TURBO-FRAME' && record?.addedNodes.length > 0
-          )
-          .map((record) => record)
-        if (turboFrames.length > 0) {
+      document.addEventListener('turbo:frame-load', (event) => {
+        event.preventDefault()
+        if (event.target != this.notificationsTurboFrame) {
           this.reloadNotificationsTurboFrame()
         }
       })
-      observer.observe(this.element, observerOptions)
     }, 1000)
-
     document.addEventListener('turbo:frame-missing', (event) => {
       const {
         detail: { response, visit },

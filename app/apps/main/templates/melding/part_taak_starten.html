@@ -23,7 +23,6 @@
                     data-action="detail#closeModal"></button>
         </div>
         <div class="modal-body">
-            {% include "snippets/messages.html" %}
             <form action="{% url 'taak_starten' melding.uuid %}"
                   method="post"
                   class="taak--start"
