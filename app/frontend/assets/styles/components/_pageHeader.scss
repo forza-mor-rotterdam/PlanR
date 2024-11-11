@@ -48,8 +48,9 @@
                     left: auto;
                     padding: 0;
                     box-shadow: 0 4px 10px 1px rgba(0, 0, 0, 0.25);
-                    transition: all 0.01s ease;
-                    transition-delay: 0.5s;
+                    opacity: 0;
+                    transition: opacity $transition-duration-default $transition-ease-default;
+                    transition-delay: 0.15s;
 
                     &:before {
                         content: "";
@@ -78,6 +79,7 @@
                     .legenda {
                         top: 35px;
                         transform: translateY(0);
+                        opacity: 1;
                     }
                 }
             }
