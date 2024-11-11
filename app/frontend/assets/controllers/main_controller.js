@@ -33,6 +33,7 @@ export default class extends Controller {
       } = event
       event.preventDefault()
       console.error('Content missing', response.url, visit)
+      this.reloadNotificationsTurboFrame()
     })
   }
   reloadNotificationsTurboFrame() {
