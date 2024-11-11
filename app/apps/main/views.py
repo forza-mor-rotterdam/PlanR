@@ -520,6 +520,10 @@ def melding_afhandelen(request, id):
     melding = mor_core_service.get_melding(id)
     if isinstance(melding, dict) and melding.get("error"):
         messages.error(request=request, message=MELDING_OPHALEN_ERROR)
+        return render(
+            request,
+            "melding/melding_actie_form.html",
+        )
 
     melding_bijlagen = [
         [
@@ -604,6 +608,10 @@ def melding_annuleren(request, id):
     melding = mor_core_service.get_melding(id)
     if isinstance(melding, dict) and melding.get("error"):
         messages.error(request=request, message=MELDING_OPHALEN_ERROR)
+        return render(
+            request,
+            "melding/melding_actie_form.html",
+        )
 
     melding_bijlagen = [
         [
@@ -667,6 +675,10 @@ def melding_heropenen(request, id):
     melding = mor_core_service.get_melding(id)
     if isinstance(melding, dict) and melding.get("error"):
         messages.error(request=request, message=MELDING_OPHALEN_ERROR)
+        return render(
+            request,
+            "melding/melding_actie_form.html",
+        )
 
     form = MeldingHeropenenForm()
     if request.POST:
@@ -700,6 +712,10 @@ def melding_pauzeren(request, id):
     melding = mor_core_service.get_melding(id)
     if isinstance(melding, dict) and melding.get("error"):
         messages.error(request=request, message=MELDING_OPHALEN_ERROR)
+        return render(
+            request,
+            "melding/melding_actie_form.html",
+        )
 
     form = MeldingPauzerenForm()
     actieve_taken = [
@@ -741,6 +757,10 @@ def melding_hervatten(request, id):
     melding = mor_core_service.get_melding(id)
     if isinstance(melding, dict) and melding.get("error"):
         messages.error(request=request, message=MELDING_OPHALEN_ERROR)
+        return render(
+            request,
+            "melding/melding_actie_form.html",
+        )
 
     form = MeldingHervattenForm()
 
@@ -776,7 +796,10 @@ def melding_spoed_veranderen(request, id):
     melding = mor_core_service.get_melding(id)
     if isinstance(melding, dict) and melding.get("error"):
         messages.error(request=request, message=MELDING_OPHALEN_ERROR)
-
+        return render(
+            request,
+            "melding/melding_actie_form.html",
+        )
     form = MeldingSpoedForm(
         initial={"urgentie": 0.5 if melding.get("urgentie", 0.2) == 0.2 else 0.2}
     )
@@ -818,6 +841,10 @@ def taak_starten(request, id):
     melding = mor_core_service.get_melding(id)
     if isinstance(melding, dict) and melding.get("error"):
         messages.error(request=request, message=MELDING_OPHALEN_ERROR)
+        return render(
+            request,
+            "melding/melding_actie_form.html",
+        )
 
     taakr_service = TaakRService(request=request)
     taaktypes_with_afdelingen = taakr_service.get_taaktypes_with_afdelingen(
@@ -931,6 +958,10 @@ def taak_afronden(request, melding_uuid):
     melding = mor_core_service.get_melding(melding_uuid)
     if isinstance(melding, dict) and melding.get("error"):
         messages.error(request=request, message=MELDING_OPHALEN_ERROR)
+        return render(
+            request,
+            "melding/melding_actie_form.html",
+        )
 
     open_taakopdrachten = get_open_taakopdrachten(melding)
     taakopdracht_urls = {
@@ -984,6 +1015,10 @@ def taak_annuleren(request, melding_uuid):
     melding = mor_core_service.get_melding(melding_uuid)
     if isinstance(melding, dict) and melding.get("error"):
         messages.error(request=request, message=MELDING_OPHALEN_ERROR)
+        return render(
+            request,
+            "melding/melding_actie_form.html",
+        )
 
     open_taakopdrachten = get_open_taakopdrachten(melding)
     taakopdracht_urls = {
@@ -1441,7 +1476,10 @@ def locatie_aanpassen(request, id):
         melding = mor_core_service.get_melding(id)
         if isinstance(melding, dict) and melding.get("error"):
             messages.error(request=request, message=MELDING_OPHALEN_ERROR)
-
+            return render(
+                request,
+                "melding/melding_actie_form.html",
+            )
         locaties_voor_melding = melding.get("locaties_voor_melding", [])
 
         highest_gewicht_locatie = max(
