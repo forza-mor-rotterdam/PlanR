@@ -1,3 +1,18 @@
+from django.contrib.messages.storage.fallback import FallbackStorage
+
+
+class FallbackDeduplicatedStorage(FallbackStorage):
+    def _store(self, messages, response, *args, **kwargs):
+        seen = set()
+        deduplicated_messages = []
+        for m in messages:
+            m_hasable = (m.message, m.level)
+            if m_hasable not in seen:
+                seen.add(m_hasable)
+                deduplicated_messages.append(m)
+        return super()._store(deduplicated_messages, response, *args, **kwargs)
+
+
 MELDING_LIJST_OPHALEN_ERROR = "Er ging iets mis met het ophalen van meldingen"
 MELDING_OPHALEN_ERROR = "Er ging iets mis met het ophalen van melding"
 MELDING_ANNULEREN_ERROR = "Er ging iets mis met het annuleren van de melding"

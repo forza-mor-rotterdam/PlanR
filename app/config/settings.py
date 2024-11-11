@@ -328,6 +328,8 @@ TEMPLATES = [
     }
 ]
 
+MESSAGE_STORAGE = "apps.main.messages.FallbackDeduplicatedStorage"
+
 REDIS_URL = "redis://redis:6379"
 CACHES = {
     "default": {
