@@ -423,7 +423,7 @@ def melding_next(request, id, richting):
             form_qs, gebruiker_context
         )
         meldingen_data = mor_core_service.get_melding_lijst(
-            query_string=meldingen_filter_query_dict.urlencode()
+            query_string=FilterManager().get_query_string(meldingen_filter_query_dict)
         )
 
         pagina_melding_ids = [r.get("uuid") for r in meldingen_data.get("results")]
