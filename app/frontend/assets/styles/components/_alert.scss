@@ -63,18 +63,27 @@
     }
 }
 
+#notificatie_lijst_public {
+    position: absolute;
+    top: 35px;
+    height: 100%;
+    overflow: hidden;
+
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        top: 90px;
+    }
+}
 .container__notification {
     width: 98%;
-    position: fixed;
-    top: 35px;
+    position: absolute;
+    top: 0;
     left: 50%;
     transform: translateX(-50%);
     opacity: 0;
-    overflow: hidden;
-    pointer-events: none;
     animation: slide-in-from-top-centered $transition-duration-default $transition-ease-default
         forwards 0.5s;
     padding: 0 1em;
+    touch-action: manipulation; /* Laat standaard click en hover gedrag toe */
 
     .notification {
         max-height: 0;
@@ -89,7 +98,6 @@
         transition-property: all;
         transition-duration: $transition-duration-default;
         transition-timing-function: $transition-ease-default;
-        transition-delay: $transition-duration-default;
         overflow: hidden;
         opacity: 0;
         font-size: 1em;
@@ -98,6 +106,10 @@
             &:nth-child(#{$i}n) {
                 z-index: #{$i * -10};
             }
+        }
+
+        .message--truncated {
+            display: none;
         }
 
         &.show,
@@ -116,7 +128,7 @@
 
             &.hide {
                 opacity: 0;
-                transform: translateY(-20px) scale(1);
+                // transform: translateY(-20px) scale(1);
             }
 
             .container__icon {
@@ -142,6 +154,11 @@
                     a {
                         text-align: right;
                         white-space: nowrap;
+                        color: inherit;
+                    }
+
+                    p {
+                        transition: height $transition-duration-default $transition-ease-default;
                     }
                 }
 
@@ -155,6 +172,9 @@
             .btn-close--small {
                 top: 0.5em;
                 right: 0.5em;
+                > * {
+                    pointer-events: none;
+                }
             }
 
             &.warning {
@@ -166,13 +186,21 @@
             }
         }
 
+        &.show-truncated {
+            .message--truncated {
+                display: block;
+            }
+            .message--initial {
+                display: none;
+            }
+        }
+
         &.init {
             transform: translateY(0) scale(1);
         }
     }
 
     @media (min-width: map-get($grid-breakpoints, lg)) {
-        top: 90px;
         .notification {
             font-size: 0.8em;
             &.show,
@@ -188,7 +216,8 @@
         }
     }
 
-    &:hover {
+    &:hover,
+    &.showAll {
         .notification {
             &.show {
                 transform: translateY(0) scale(1) !important;
@@ -210,7 +239,7 @@
         left: 50%;
         transform: translateX(-50%);
         opacity: 0;
-        overflow: hidden;
+        overflow: visible;
         pointer-events: none;
 
         .notification {
@@ -250,7 +279,7 @@
 
                 &.init.hide {
                     opacity: 0;
-                    transform: translateY(20px) scale(1);
+                    // transform: translateY(20px) scale(1);
                 }
             }
         }
