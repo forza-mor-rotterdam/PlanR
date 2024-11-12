@@ -4,7 +4,7 @@ let initialTouchX,
   finalTouchX,
   deltaX = null
 const SWIPE_TRESHOLD = 100
-const MAX_CHARACTERS = 50
+const MAX_CHARACTERS = 200
 export default class extends Controller {
   static targets = ['content']
 
