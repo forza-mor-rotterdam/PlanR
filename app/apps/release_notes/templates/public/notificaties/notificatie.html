@@ -8,7 +8,7 @@
 <div class="container__content">
     <h3>{{ titel }}</h3>
     <div class="container__message">
-        {% if korte_beschrijving %}<p>{{ korte_beschrijving }}</p>{% endif %}
+        {% if korte_beschrijving %}<p data-notificatie-target="content">{{ korte_beschrijving }}</p>{% endif %}
         {% if has_beschrijving %}<a href="">Meer info</a>{% endif %}
     </div>
 </div>
