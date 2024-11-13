@@ -32,8 +32,8 @@ export default class extends Controller {
           () => {
             list[i].classList.replace('init', 'show')
             list[i].style.transform = `translateY(-${
-              list[i].offsetTop - i * 8 + (list[i].offsetHeight - list[0].offsetHeight)
-            }px) scale(${1 - i * 0.02}, 1)`
+              list[i].offsetTop - list[0].offsetHeight
+            }px) translateY(-100%) translateY(${i * 8}px) scale(${1 - i * 0.02}, 1)`
           },
           5000 + 100 * i
         )

@@ -88,7 +88,6 @@ export default class extends Controller {
 
   readMore(e = null) {
     e?.preventDefault()
-    console.log('read more')
     this.element.classList.remove('show-truncated')
     this.contentTarget.style.height = `${this.contentTarget.scrollHeight}px`
     setTimeout(() => {
