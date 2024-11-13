@@ -36,8 +36,11 @@ class ReleaseNoteAanpassenForm(forms.ModelForm):
         widget=forms.Textarea(
             attrs={
                 "rows": 3,
+                "data-controller": "characterCount",
+                "data-action": "characterCount#onChangeText",
             }
         ),
+        max_length=600,
     )
     beschrijving = forms.CharField(
         widget=CKEditor5Widget(
@@ -47,8 +50,20 @@ class ReleaseNoteAanpassenForm(forms.ModelForm):
         ),
         label="Beschrijving",
         required=False,
-        help_text="Max 5000 tekens.",  # @TODO @Remco Add validation and counter.
+        help_text="Max 5000 tekens.",
         max_length=5000,
+    )
+
+    link_titel = forms.CharField(
+        label="Link titel",
+        widget=forms.TextInput(
+            attrs={
+                "data-controller": "characterCount",
+                "data-action": "characterCount#onChangeText",
+            }
+        ),
+        required=False,
+        max_length=20,
     )
 
     toast_miliseconden_zichtbaar = forms.IntegerField(
