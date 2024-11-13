@@ -165,6 +165,7 @@ main {
         box-sizing: content-box;
         min-width: 0; // when min-widh is not set, nested charts are not animating..
         &.bottom-left {
+            position: relative;
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
