@@ -142,6 +142,8 @@ class ReleaseNote(BasisModel):
     einde_publicatie_datum = models.DateTimeField(blank=True, null=True)
     bijlagen = GenericRelation(Bijlage)
     versie = models.CharField(max_length=20, blank=True, null=True)
+    link_titel = models.CharField(max_length=50, blank=True, null=True)
+    link_url = models.URLField(blank=True, null=True)
     bekeken_door_gebruikers = models.ManyToManyField(
         Gebruiker, blank=True, related_name="bekeken_release_notes"
     )

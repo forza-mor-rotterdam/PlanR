@@ -11,6 +11,7 @@
         {% if korte_beschrijving %}<p data-notificatie-target="content">{{ korte_beschrijving }}</p>{% endif %}
         {% if has_beschrijving %}<a href="">Meer info</a>{% endif %}
     </div>
+    {% if link_titel and link_url %}<a href="{{ link_url }}">{{ link_titel }}</a>{% endif %}
 </div>
 <button type="button"
         class="btn-close--small"
