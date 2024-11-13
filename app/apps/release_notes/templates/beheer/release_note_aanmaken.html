@@ -33,12 +33,9 @@
                     {% csrf_token %}
                     {{ form.management_form }}
                     {{ form.media }}
+                    {{ form.errors }}
                     <fieldset>
                         <div class="form-control__with-helptext js-validation">{{ form.bericht_type|render_rotterdam_formulier }}</div>
-                        <div class="form-control__with-helptext js-validation"
-                             data-berichten-beheer-target="notificatie hideable">
-                            {{ form.notificatie_type|render_rotterdam_formulier }}
-                        </div>
                         <div class="form-control__with-helptext js-validation"
                              data-berichten-beheer-target="notificatie hideable">
                             {{ form.notificatie_niveau|render_rotterdam_formulier }}
@@ -48,6 +45,14 @@
                              data-testid="text_editor"
                              data-berichten-beheer-target="notificatie hideable">
                             {{ form.korte_beschrijving|render_rotterdam_formulier }}
+                        </div>
+                        <div class="form-control__with-helptext js-validation"
+                             data-berichten-beheer-target="notificatie hideable">
+                            {{ form.link_titel|render_rotterdam_formulier }}
+                        </div>
+                        <div class="form-control__with-helptext js-validation"
+                             data-berichten-beheer-target="notificatie hideable">
+                            {{ form.link_url|render_rotterdam_formulier }}
                         </div>
                         <div class="form-control__with-helptext js-validation padding-bottom-2x"
                              data-testid="text_editor">{{ form.beschrijving }}</div>

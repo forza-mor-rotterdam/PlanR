@@ -92,10 +92,11 @@ class ReleaseNoteAanpassenForm(forms.ModelForm):
         model = ReleaseNote
         fields = [
             "bericht_type",
-            "notificatie_type",
             "notificatie_niveau",
             "titel",
             "korte_beschrijving",
+            "link_titel",
+            "link_url",
             "beschrijving",
             "publicatie_datum",
             "einde_publicatie_datum",

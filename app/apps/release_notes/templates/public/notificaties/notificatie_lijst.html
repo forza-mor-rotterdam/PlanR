@@ -4,7 +4,7 @@
          data-controller="notificatielijst">
         {% for object in snack %}
             <turbo-frame class="notification {{ object.notificatie_niveau }}" data-controller="notificatie" data-notificatielijst-target="notificatie" data-src="{% url 'notificatie_verwijderen_public' object.id %}" id="notificatie_{{ object.id }}">
-            {% include "public/notificaties/notificatie.html" with titel=object.titel niveau=object.notificatie_niveau has_beschrijving=object.has_beschrijving korte_beschrijving=object.korte_beschrijving beschrijving=object.beschrijving only %}
+            {% include "public/notificaties/notificatie.html" with titel=object.titel niveau=object.notificatie_niveau has_beschrijving=object.has_beschrijving korte_beschrijving=object.korte_beschrijving beschrijving=object.beschrijving link_titel=object.link_titel link_url=object.link_url only %}
             </turbo-frame>
         {% endfor %}
     </div>
