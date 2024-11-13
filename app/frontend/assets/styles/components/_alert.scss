@@ -101,7 +101,7 @@
         transition-timing-function: $transition-ease-default;
         overflow: hidden;
         opacity: 0;
-        font-size: 1em;
+        font-size: 0.8em;
 
         @for $i from 1 through 10 {
             &:nth-child(#{$i}n) {
@@ -116,7 +116,8 @@
         &.show,
         &.init {
             opacity: 1;
-            max-height: 200px;
+            max-height: 100vh;
+            overflow: auto;
             padding-top: 0.75em;
             padding-bottom: 0.75em;
             display: flex;
@@ -149,17 +150,26 @@
                     display: block;
 
                     p,
-                    a {
-                        flex: 1 1 auto;
+                    .container__link {
+                        flex: 1 1 85%;
                     }
-                    a {
+                    .container__link {
                         text-align: right;
-                        white-space: nowrap;
-                        color: inherit;
+                        order: 2;
+                        flex-basis: 15%;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        a {
+                            margin-right: 0.5em;
+                        }
                     }
 
                     p {
                         transition: height $transition-duration-default $transition-ease-default;
+                    }
+                    a {
+                        color: inherit;
                     }
                 }
 
@@ -203,14 +213,21 @@
 
     @media (min-width: map-get($grid-breakpoints, lg)) {
         .notification {
-            font-size: 0.8em;
             &.show,
             &.init {
                 .container__content {
                     .container__message {
                         display: flex;
+                        gap: 1em;
                         flex: 1 0 90%;
                         justify-content: space-between;
+
+                        .container__link {
+                            a {
+                                transform: translateY(-0.6em);
+                                margin-right: 0;
+                            }
+                        }
                     }
                 }
             }

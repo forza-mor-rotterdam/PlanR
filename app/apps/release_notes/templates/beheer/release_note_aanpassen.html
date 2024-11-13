@@ -57,6 +57,7 @@
                             {{ form.link_url|render_rotterdam_formulier }}
                         </div>
                         <div class="form-control__with-helptext js-validation"
+                             data-berichten-beheer-target="releaseNote hideable"
                              data-testid="text_editor">{{ form.beschrijving }}</div>
                         <div class="form-control__with-helptext js-validation container">
                             {% for bijlage_form in formset %}
