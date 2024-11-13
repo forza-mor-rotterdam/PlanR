@@ -21,6 +21,7 @@ class ReleaseNoteAanpassenForm(forms.ModelForm):
         widget=forms.RadioSelect(
             attrs={
                 "data-action": "change->berichten-beheer#berichtTypeChangeHandler",
+                "class": "list--form-radio-input",
             }
         ),
         choices=ReleaseNote.BerichtTypeOpties.choices,

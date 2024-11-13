@@ -108,7 +108,7 @@ class Bijlage(BasisModel):
 
 class ReleaseNote(BasisModel):
     class BerichtTypeOpties(models.TextChoices):
-        RELEASE_NOTE = "release_note", "Release note"
+        RELEASE_NOTE = "release_note", "Bericht"
         NOTIFICATIE = "notificatie", "Notificatie"
 
     class NotificatieTypeOpties(models.TextChoices):

@@ -1,10 +1,10 @@
 {% extends "base_beheer.html" %}
 {% load rotterdam_formulier_html %}
 {% block title %}
-    Release notes | PlanR
+    Berichten | PlanR
 {% endblock title %}
 {% block header %}
-    {% with pageTitle="Release notes" %}
+    {% with pageTitle="Berichten" %}
         {% include "snippets/pageheader.html" %}
     {% endwith %}
 {% endblock header %}
@@ -96,7 +96,7 @@
                         <td>
                             <a href="{% url 'release_note_verwijderen' release_note.pk %}"
                                data-turbo-frame="_top"
-                               onclick="return confirm('Weet je zeker dat je deze release note wil verwijderen?')"
+                               onclick="return confirm('Weet je zeker dat je dit bericht wil verwijderen?')"
                                aria-label="Verwijderen">{% include "icons/bin.svg" %}</a>
                         </td>
                     </tr>
