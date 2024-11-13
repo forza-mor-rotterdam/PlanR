@@ -107,9 +107,9 @@ export default class extends Controller {
     notificatie.classList.add('hide')
 
     notificatie.addEventListener('transitionend', () => {
-      // if (notificatie.nodeName === 'TURBO-FRAME') {
-      //   notificatie.setAttribute('src', notificatie.getAttribute('data-src'))
-      // }
+      if (notificatie.nodeName === 'TURBO-FRAME') {
+        notificatie.setAttribute('src', notificatie.getAttribute('data-src'))
+      }
       this.dispatchRedraw()
       notificatie.remove()
     })
