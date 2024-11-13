@@ -83,6 +83,7 @@
     animation: slide-in-from-top-centered $transition-duration-default $transition-ease-default
         forwards 0.5s;
     padding: 0 1em;
+    pointer-events: none;
     touch-action: manipulation; /* Laat standaard click en hover gedrag toe */
 
     .notification {
@@ -218,6 +219,7 @@
 
     &:hover,
     &.showAll {
+        pointer-events: all;
         .notification {
             &.show {
                 transform: translateY(0) scale(1) !important;
