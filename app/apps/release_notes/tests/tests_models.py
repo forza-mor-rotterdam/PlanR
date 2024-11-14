@@ -1,7 +1,6 @@
-import datetime
-
 from apps.release_notes.models import ReleaseNote
 from django.test import TestCase
+from django.utils import timezone
 
 
 class ReleaseNoteTest(TestCase):
@@ -10,7 +9,7 @@ class ReleaseNoteTest(TestCase):
         beschrijving_dirty = "<p onMock=\"alert('hi');\">mock</p>"
         release_note = ReleaseNote(
             titel="mock",
-            publicatie_datum=datetime.datetime.now(),
+            publicatie_datum=timezone.now(),
             beschrijving=beschrijving_dirty,
         )
         release_note.save()
@@ -21,7 +20,7 @@ class ReleaseNoteTest(TestCase):
         beschrijving_dirty = '<p>mock<script>alert("hi");</script></p>'
         release_note = ReleaseNote(
             titel="mock",
-            publicatie_datum=datetime.datetime.now(),
+            publicatie_datum=timezone.now(),
             beschrijving=beschrijving_dirty,
         )
         release_note.save()
@@ -32,7 +31,7 @@ class ReleaseNoteTest(TestCase):
         beschrijving_dirty = "<p href=\"javascript:alert('hi');\">mock</p>"
         release_note = ReleaseNote(
             titel="mock",
-            publicatie_datum=datetime.datetime.now(),
+            publicatie_datum=timezone.now(),
             beschrijving=beschrijving_dirty,
         )
         release_note.save()
