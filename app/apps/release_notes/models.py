@@ -185,8 +185,10 @@ class ReleaseNote(BasisModel):
         )
 
     def __str__(self):
-        formatted_date = self.aangemaakt_op.strftime("%d-%m-%Y %H:%M:%S")
-        return f"{self.titel} - {formatted_date}"
+        if self.titel and self.aangemaakt_op:
+            formatted_date = self.aangemaakt_op.strftime("%d-%m-%Y %H:%M:%S")
+            return f"{self.titel} - {formatted_date}"
+        return self.id
 
     def clean(self):
         data = self.beschrijving
