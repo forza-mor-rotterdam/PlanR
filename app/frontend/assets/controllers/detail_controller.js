@@ -289,13 +289,19 @@ export default class extends Controller {
   }
   openModal(event) {
     event.preventDefault()
-    lastFocussedItem = event.target.closest('button')
     const modal = this.modalAfhandelenTarget
     const modalBackdrop = document.querySelector('.modal-backdrop')
+
     this.turboActionModalTarget.setAttribute('src', event.params.action)
-    modal.classList.add('show')
-    modalBackdrop.classList.add('show')
-    document.body.classList.add('show-modal')
+    this.turboActionModalTarget.addEventListener('turbo:frame-load', (event) => {
+      if (event.target.children.length) {
+        modal.classList.add('show')
+        modalBackdrop.classList.add('show')
+        document.body.classList.add('show-modal')
+      }
+    })
+
+    // lastFocussedItem = event.target.closest('button')
     // setTimeout(function () {
     //   const closeButton = modal.querySelectorAll('.btn-close')[0]
     //   if (closeButton) {

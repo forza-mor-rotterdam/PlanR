@@ -46,6 +46,11 @@ LANGUAGES = [("nl", "Dutch")]
 DEFAULT_ALLOWED_HOSTS = ".forzamor.nl,localhost,127.0.0.1,.mor.local"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", DEFAULT_ALLOWED_HOSTS).split(",")
 
+ENABLE_DJANGO_ADMIN_LOGIN = os.getenv("ENABLE_DJANGO_ADMIN_LOGIN", False) in TRUE_VALUES
+
+LOGIN_URL = "login"
+LOGOUT_URL = "logout"
+
 INSTALLED_APPS = (
     # templates override
     "apps.main",
@@ -322,6 +327,8 @@ TEMPLATES = [
         },
     }
 ]
+
+MESSAGE_STORAGE = "apps.main.messages.FallbackDeduplicatedStorage"
 
 REDIS_URL = "redis://redis:6379"
 CACHES = {

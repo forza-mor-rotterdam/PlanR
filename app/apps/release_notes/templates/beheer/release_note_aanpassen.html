@@ -3,7 +3,7 @@
 {% load json_encode from main_tags %}
 {% load static %}
 {% block title %}
-    Release note wijzigen | PlanR
+    Bericht wijzigen | PlanR
 {% endblock title %}
 {% block body %}
     <turbo-frame id="beheer" data-turbo-action="advance">
@@ -19,16 +19,17 @@
                      xmlns="http://www.w3.org/2000/svg">
                     <path d="M9.15173 1.73256L7.73753 0.318359L1.44704 6.60885L1.4142 6.576L0 7.9902L1.4115 9.4017L1.37867 9.43453L7.67186 15.7277L9.08606 14.3135L3.7726 9.00006H24.0098V7.00006H3.88423L9.15173 1.73256Z" fill="#404B4F" />
                 </svg>
-                Release Notes
+                Berichten
             </a>
         </div>
-        <h1>Wijzig release note</h1>
+        <h1>Wijzig bericht</h1>
         <div class="grid-container">
             <div class="grid-item">
                 <form action="."
                       method="post"
                       id="releaseNoteForm"
                       enctype="multipart/form-data"
+                      data-controller="berichten-beheer"
                       class="form--aanpassen"
                       data-turbo-frame="_top">
                     {% csrf_token %}
@@ -37,8 +38,26 @@
                     {{ formset.management_form }}
                     {{ formset.media }}
                     <fieldset>
+                        <div class="form-control__with-helptext js-validation">{{ form.bericht_type|render_rotterdam_formulier }}</div>
+                        <div class="form-control__with-helptext js-validation"
+                             data-berichten-beheer-target="notificatie hideable">
+                            {{ form.notificatie_niveau|render_rotterdam_formulier }}
+                        </div>
                         <div class="form-control__with-helptext js-validation">{{ form.titel|render_rotterdam_formulier }}</div>
                         <div class="form-control__with-helptext js-validation"
+                             data-berichten-beheer-target="notificatie hideable">
+                            {{ form.korte_beschrijving|render_rotterdam_formulier }}
+                        </div>
+                        <div class="form-control__with-helptext js-validation"
+                             data-berichten-beheer-target="notificatie hideable">
+                            {{ form.link_titel|render_rotterdam_formulier }}
+                        </div>
+                        <div class="form-control__with-helptext js-validation"
+                             data-berichten-beheer-target="notificatie hideable">
+                            {{ form.link_url|render_rotterdam_formulier }}
+                        </div>
+                        <div class="form-control__with-helptext js-validation"
+                             data-berichten-beheer-target="releaseNote hideable"
                              data-testid="text_editor">{{ form.beschrijving }}</div>
                         <div class="form-control__with-helptext js-validation container">
                             {% for bijlage_form in formset %}
@@ -61,8 +80,15 @@
                             {% endfor %}
                         </div>
                         <div class="form-control__with-helptext js-validation full-width"
-                             data-controller="bijlagen">{{ form.bijlagen|render_rotterdam_formulier }}</div>
+                             data-controller="bijlagen"
+                             data-berichten-beheer-target="releaseNote hideable">
+                            {{ form.bijlagen|render_rotterdam_formulier }}
+                        </div>
                         <div class="form-control__with-helptext js-validation">{{ form.publicatie_datum|render_rotterdam_formulier }}</div>
+                        <div class="form-control__with-helptext js-validation"
+                             data-berichten-beheer-target="notificatie hideable">
+                            {{ form.einde_publicatie_datum|render_rotterdam_formulier }}
+                        </div>
                         {% if form.versie %}
                             <div class="form-control__with-helptext js-validation">{{ form.versie|render_rotterdam_formulier }}</div>
                         {% endif %}

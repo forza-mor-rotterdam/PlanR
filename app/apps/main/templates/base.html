@@ -76,6 +76,8 @@
     </head>
     <body class="{% block body_class %}{% endblock body_class %}">
         <a href="#id_maincontent" class="skiplink">Ga direct naar de content</a>
+        <turbo-frame src="{% url 'notificatie_lijst_public' %}" id="notificatie_lijst_public">
+        </turbo-frame>
         <div class="container__toplevel">
             {% block aside %}
                 {% include "snippets/aside.html" %}

@@ -127,6 +127,9 @@ class GebruikerProfielView(GebruikerView, UpdateView):
         return context
 
     def get_object(self, queryset=None):
+        MORCoreService().set_gebruiker(
+            gebruiker=self.request.user.serialized_instance(),
+        )
         return self.request.user
 
     def get_initial(self):
@@ -138,8 +141,5 @@ class GebruikerProfielView(GebruikerView, UpdateView):
         return initial
 
     def form_valid(self, form):
-        MORCoreService().set_gebruiker(
-            gebruiker=self.request.user.serialized_instance(),
-        )
         messages.success(self.request, "Gebruikersgegevens succesvol opgeslagen.")
         return super().form_valid(form)
