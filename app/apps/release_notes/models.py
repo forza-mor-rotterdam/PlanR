@@ -164,7 +164,7 @@ class ReleaseNote(BasisModel):
         """
         five_weeks_ago = timezone.now() - timezone.timedelta(weeks=5)
         return not (
-            timezone.make_aware(self.publicatie_datum) > timezone.now()
+            self.publicatie_datum > timezone.now()
             or self.publicatie_datum < five_weeks_ago
         )
 
@@ -246,6 +246,6 @@ class ReleaseNote(BasisModel):
 
     def save(self, *args, **kwargs):
         self.full_clean()
-        if timezone.make_aware(self.publicatie_datum) > timezone.now():
+        if self.publicatie_datum > timezone.now():
             self.bekeken_door_gebruikers.clear()
         return super().save(*args, **kwargs)
