@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from django import template
 from utils.datetime import stringdatetime_naar_datetime
 
@@ -9,6 +11,13 @@ def to_datetime(value):
     if not value:
         return
     return stringdatetime_naar_datetime(value)
+
+
+@register.simple_tag
+def add_seconds_to_datetime(value, seconds):
+    if not value or not isinstance(value, datetime):
+        return
+    return value + timedelta(seconds=seconds)
 
 
 @register.simple_tag
