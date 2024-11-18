@@ -2,6 +2,7 @@ import logging
 
 from django import forms
 from django.contrib.contenttypes.forms import generic_inlineformset_factory
+from django.core.exceptions import ValidationError
 from django_ckeditor_5.widgets import CKEditor5Widget
 
 from .models import Bijlage, ReleaseNote
@@ -76,7 +77,6 @@ class ReleaseNoteAanpassenForm(forms.ModelForm):
     publicatie_datum = forms.DateTimeField(
         label="Publicatie datum",
         required=True,
-        help_text="Release notes worden vanaf de publicatie datum 5 weken lang getoond.",
     )
 
     bijlagen = forms.FileField(
@@ -95,14 +95,16 @@ class ReleaseNoteAanpassenForm(forms.ModelForm):
 
     formset = BijlageFormSet(queryset=Bijlage.objects.none(), prefix="bijlage")
 
-    def clean(self):
+    def clean_einde_publicatie_datum(self):
         cleaned_data = super().clean()
-        if cleaned_data.get("notificatie_niveau") in (
-            ReleaseNote.NotificatieNiveauOpties.ERROR,
-            ReleaseNote.NotificatieNiveauOpties.WARNING,
-        ):
-            cleaned_data["toast_miliseconden_zichtbaar"] = 10000
-        return cleaned_data
+        publicatie_datum = cleaned_data.get("publicatie_datum")
+        einde_publicatie_datum = cleaned_data.get("einde_publicatie_datum")
+        if einde_publicatie_datum and einde_publicatie_datum <= publicatie_datum:
+            raise ValidationError(
+                "De einde publicatie datum kan niet eerder zijn dan de publicatie datum",
+                code="invalid",
+            )
+        return einde_publicatie_datum
 
     class Meta:
         model = ReleaseNote

@@ -181,7 +181,9 @@ class ReleaseNote(BasisModel):
         """
         return sum(
             release_note.is_published() and release_note.is_unwatched_by_user(user)
-            for release_note in ReleaseNote.objects.all()
+            for release_note in ReleaseNote.objects.filter(
+                bericht_type=ReleaseNote.BerichtTypeOpties.RELEASE_NOTE
+            )
         )
 
     def __str__(self):
