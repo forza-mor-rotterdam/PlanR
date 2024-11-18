@@ -69,6 +69,7 @@
     height: 100%;
     overflow: hidden;
     z-index: 20000;
+    pointer-events: none;
 
     @media (min-width: map-get($grid-breakpoints, lg)) {
         top: 90px;
