@@ -64,10 +64,11 @@
 }
 
 #notificatie_lijst_public {
-    position: absolute;
+    position: fixed;
     top: 35px;
     height: 100%;
     overflow: hidden;
+    z-index: 20000;
 
     @media (min-width: map-get($grid-breakpoints, lg)) {
         top: 90px;
