@@ -8,7 +8,7 @@ export default class extends Controller {
     this.element.addEventListener('notificatieVerwijderd', () => {
       // wacht tot notificatie echt is verwijderd
       setTimeout(() => {
-        this.resetList()
+        this.resetList(this.element.classList.value.includes('toast'))
       }, 100)
     })
   }
@@ -31,9 +31,13 @@ export default class extends Controller {
         setTimeout(
           () => {
             list[i].classList.replace('init', 'show')
-            list[i].style.transform = `translateY(-${
-              list[i].offsetTop - list[0].offsetHeight
-            }px) translateY(-100%) translateY(${i * 8}px) scale(${1 - i * 0.02}, 1)`
+            if (i === 0) {
+              list[i].style.transform = `translateY(0) scale(1, 1)`
+            } else {
+              list[i].style.transform = `translateY(-${
+                list[i].offsetTop - list[0].offsetHeight
+              }px) translateY(-100%) translateY(${i * 8}px) scale(${1 - i * 0.02}, 1)`
+            }
           },
           5000 + 100 * i
         )
@@ -41,12 +45,20 @@ export default class extends Controller {
     }
   }
 
-  resetList() {
-    const list = this.notificatieTargets
-    for (let i = 0; i < list.length; i++) {
-      list[i].style.transform = `translateY(-${
-        list[i].offsetTop - i * 8 + (list[i].offsetHeight - list[0].offsetHeight)
-      }px) scale(${1 - i * 0.02}, 1)`
+  resetList(isToast) {
+    if (!isToast) {
+      // Alleen als het geen toast is achter elkaar tonen
+      const list = this.notificatieTargets
+      console.log('list', list)
+      for (let i = 0; i < list.length; i++) {
+        if (i === 0) {
+          list[i].style.transform = `translateY(0) scale(1, 1)`
+        } else {
+          list[i].style.transform = `translateY(-${
+            list[i].offsetTop - list[0].offsetHeight
+          }px) translateY(-100%) translateY(${i * 8}px) scale(${1 - i * 0.02}, 1)`
+        }
+      }
     }
   }
 }

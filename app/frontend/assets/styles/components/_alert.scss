@@ -112,6 +112,9 @@
                 z-index: #{$i * -10};
             }
         }
+        &:not(:nth-child(-n + 10)) {
+            display: none !important;
+        }
 
         .message--truncated {
             display: none;
@@ -133,7 +136,6 @@
 
             &.hide {
                 opacity: 0;
-                // transform: translateY(-20px) scale(1);
             }
 
             .container__icon {
