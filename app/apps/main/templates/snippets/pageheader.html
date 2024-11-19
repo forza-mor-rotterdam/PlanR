@@ -15,7 +15,10 @@
             <span>
                 <span class="initials">{{ request.user|gebruikersinitialen }}</span>
             </span>
-            <div class="content">
+            {% if request.user.is_authenticated %}
+                <turbo-frame id="tf_profiel_notificatie_lijst" src="{% url 'profiel_notificatie_lijst' %}"></turbo-frame>
+            {% endif %}
+            <div class="legenda">
                 <div class="container__nav--tertiary">
                     <ul class="list-nav--tertiary">
                         {% if request.user.is_authenticated %}
