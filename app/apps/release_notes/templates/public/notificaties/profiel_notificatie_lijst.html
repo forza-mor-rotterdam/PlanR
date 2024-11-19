@@ -1,0 +1,10 @@
+<turbo-frame id="tf_profiel_notificatie_lijst">
+<div style="position: fixed; z-index: 9999; right: 0; top: 0;">
+    <span>Aantal notifcaties: {{ object_list|length }}</span>
+    <ul id="profiel_notificatie_lijst">
+        {% for object in object_list %}
+            {% include "public/notificaties/profiel_notificatie.html" with notificatie=object only %}
+        {% endfor %}
+    </ul>
+</div>
+</turbo-frame>
