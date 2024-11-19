@@ -6,12 +6,15 @@ export default class extends Controller {
     }
 
     this.notificationsTurboFrame = document.getElementById('notificatie_lijst_public')
+    this.profielNotificatiesTurboFrame = document.getElementById('tf_profiel_notificatie_lijst')
     this.notificationsTurboFrameReloadTimeout = null
 
     setTimeout(() => {
       document.addEventListener('turbo:frame-load', (event) => {
         event.preventDefault()
-        if (event.target != this.notificationsTurboFrame) {
+        if (
+          ![this.notificationsTurboFrame, this.profielNotificatiesTurboFrame].includes(event.target)
+        ) {
           this.reloadNotificationsTurboFrame()
         }
       })
@@ -29,6 +32,7 @@ export default class extends Controller {
     if (!this.notificationsTurboFrameReloadTimeout && this.notificationsTurboFrame) {
       this.notificationsTurboFrameReloadTimeout = setTimeout(() => {
         this.notificationsTurboFrame.reload()
+        this.profielNotificatiesTurboFrame.reload()
         this.notificationsTurboFrameReloadTimeout = null
       }, 200)
     }

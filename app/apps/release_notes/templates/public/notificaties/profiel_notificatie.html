@@ -1,0 +1,16 @@
+{% load is_unwatched_by_user from berichten_tags %}
+<turbo-stream action="append" target="profiel_notificatie_lijst">
+<template>
+    <li id="notificatie_{{ notificatie.id }}">
+        {% is_unwatched_by_user notificatie as notificatie_is_watched %}
+        <b>{{ notificatie.titel }}</b>
+        {% if notificatie.korte_beschrijving %}
+            {% if notificatie_is_watched %}
+                {% include "icons/info.html" %}
+            {% endif %}
+            <br>
+            {{ notificatie.korte_beschrijving }}
+        {% endif %}
+    </li>
+</template>
+</turbo-stream>

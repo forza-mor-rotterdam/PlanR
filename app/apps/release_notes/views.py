@@ -86,6 +86,20 @@ class NotificatieLijstViewPublic(ListView):
         return context
 
 
+class ProfielNotificatieLijstViewPublic(ListView):
+    template_name = "public/notificaties/profiel_notificatie_lijst.html"
+    queryset = ReleaseNote.objects.filter(
+        bericht_type=ReleaseNote.BerichtTypeOpties.NOTIFICATIE
+    ).order_by("-publicatie_datum")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        self.get_queryset().order_by("-publicatie_datum")
+
+        context.update({})
+        return context
+
+
 class NotificatieVerwijderViewPublic(LoginRequiredMixin, DetailView):
     template_name = "public/notificaties/notificatie_verwijderd.html"
     queryset = ReleaseNote.objects.filter(
