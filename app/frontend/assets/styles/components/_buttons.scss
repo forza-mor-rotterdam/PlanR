@@ -131,15 +131,15 @@ textarea {
         }
 
         &-v2 {
-            background-color: $blue-900;
+            background-color: $neutral-900;
             color: $white;
-            border-color: $blue-900;
+            border-color: $neutral-900;
             transition: background-color 0.15s ease-in-out;
 
             &:hover,
             &:focus {
-                background-color: darken($blue-900, 10%);
-                border-color: darken($blue-900, 10%);
+                background-color: darken($neutral-900, 10%);
+                border-color: darken($neutral-900, 10%);
             }
         }
     }
