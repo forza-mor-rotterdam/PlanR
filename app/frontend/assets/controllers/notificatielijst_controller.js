@@ -20,6 +20,9 @@ export default class extends Controller {
       setTimeout(
         () => {
           list[i].classList.add('init')
+          if (i === 0) {
+            this.element.classList.remove('busy')
+          }
         },
         600 * (-i + list.length)
       )
@@ -39,9 +42,6 @@ export default class extends Controller {
               list[i].style.transform = `translateY(-${
                 list[i].offsetTop - list[0].offsetHeight
               }px) translateY(-100%) translateY(${i * 8}px) scale(${1 - i * 0.02}, 1)`
-              if (i === list.length - 1) {
-                this.element.classList.remove('busy')
-              }
             }
           },
           timeToLeave + 100 * i
