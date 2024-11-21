@@ -4,7 +4,7 @@
     <li id="notificatie_{{ notificatie.id }}">
         {% is_unwatched_by_user notificatie as notificatie_is_watched %}
         <div class="container__icon">
-            <span class="initials">xx</span>
+            <span class="initials">{% include "icons/notification.svg" %}</span>
         </div>
         <div class="container__content">
             <h2>{{ notificatie.titel }}</h2>
