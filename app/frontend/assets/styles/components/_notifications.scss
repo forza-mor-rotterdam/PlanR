@@ -190,6 +190,13 @@
     &--snack {
         max-width: 714px;
         z-index: 2000;
+
+        &.busy {
+            pointer-events: none !important;
+            * {
+                pointer-events: none !important;
+            }
+        }
     }
 
     &--toast {
