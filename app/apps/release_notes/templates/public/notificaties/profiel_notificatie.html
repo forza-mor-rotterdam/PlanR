@@ -3,14 +3,16 @@
 <template>
     <li id="notificatie_{{ notificatie.id }}">
         {% is_unwatched_by_user notificatie as notificatie_is_watched %}
-        <b>{{ notificatie.titel }}</b>
-        {% if notificatie.korte_beschrijving %}
+        <div class="container__icon">
+            <span class="initials">xx</span>
+        </div>
+        <div class="container__content">
+            <h2>{{ notificatie.titel }}</h2>
+            {% if notificatie.korte_beschrijving %}<p>{{ notificatie.korte_beschrijving }}</p>{% endif %}
             {% if notificatie_is_watched %}
-                {% include "icons/info.html" %}
+                <span>{% include "icons/info.html" %}</span>
             {% endif %}
-            <br>
-            {{ notificatie.korte_beschrijving }}
-        {% endif %}
+        </div>
     </li>
 </template>
 </turbo-stream>

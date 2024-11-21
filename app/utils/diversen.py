@@ -25,6 +25,18 @@ def gebruikersnaam(gebruiker, no_fallback=False):
     return ""
 
 
+def gebruikersinitialen(gebruiker):
+    if isinstance(gebruiker, dict):
+        first_name_initial = gebruiker.get("first_name", "*")[0]
+        last_name_initial = gebruiker.get("last_name", "*")[0]
+        full_initials = f"{first_name_initial} {last_name_initial}".strip()
+    elif hasattr(gebruiker, "first_name") or hasattr(gebruiker, "last_name"):
+        first_name_initial = gebruiker.first_name[0] if gebruiker.first_name else "*"
+        last_name_initial = gebruiker.last_name[0] if gebruiker.last_name else "*"
+        full_initials = f"{first_name_initial}{last_name_initial}".strip()
+    return full_initials
+
+
 def string_based_lookup(local_vars, lookup_str, separator=".", not_found_value="-"):
     lookup_list = lookup_str.split(separator)
 
