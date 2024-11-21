@@ -26,7 +26,9 @@ export default class extends Controller {
     }
 
     if (!isToast) {
+      this.element.classList.add('busy')
       // Alleen als het geen toast is achter elkaar tonen
+      const timeToLeave = list.length > 5 ? list.length * 1000 : 5000
       for (let i = 0; i < list.length; i++) {
         setTimeout(
           () => {
@@ -37,9 +39,12 @@ export default class extends Controller {
               list[i].style.transform = `translateY(-${
                 list[i].offsetTop - list[0].offsetHeight
               }px) translateY(-100%) translateY(${i * 8}px) scale(${1 - i * 0.02}, 1)`
+              if (i === list.length - 1) {
+                this.element.classList.remove('busy')
+              }
             }
           },
-          5000 + 100 * i
+          timeToLeave + 100 * i
         )
       }
     }
