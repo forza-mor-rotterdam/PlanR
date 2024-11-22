@@ -12,24 +12,26 @@ export default class extends Controller {
     duration: String,
   }
 
-  connect() {
+  initialize() {
     let contentString = null
     let truncatedString = null
     if (this.hasContentTarget) {
-      contentString = this.contentTarget.innerText
-      if (contentString.length > MAX_CHARACTERS) {
-        truncatedString = `${contentString.slice(
-          0,
-          MAX_CHARACTERS - 13
-        )}... <a href="" data-action="notificatie#readMore">Lees meer</a>`
+      if (!this.contentTarget.parentNode.querySelector('.message--truncated')) {
+        contentString = this.contentTarget.innerText
+        if (contentString.length > MAX_CHARACTERS) {
+          truncatedString = `${contentString.slice(
+            0,
+            MAX_CHARACTERS - 13
+          )}... <a href="" data-action="notificatie#readMore">Lees meer</a>`
 
-        this.element.classList.add('show-truncated')
-        const paragraph = document.createElement('p')
-        paragraph.innerHTML = truncatedString
-        paragraph.classList.add('message--truncated')
-        this.contentTarget.classList.add('message--initial')
-        this.contentTarget.parentNode.appendChild(paragraph)
-        this.contentTarget.style.height = `${paragraph.clientHeight}px`
+          this.element.classList.add('show-truncated')
+          const paragraph = document.createElement('p')
+          paragraph.innerHTML = truncatedString
+          paragraph.classList.add('message--truncated')
+          this.contentTarget.classList.add('message--initial')
+          this.contentTarget.parentNode.appendChild(paragraph)
+          this.contentTarget.style.height = `${paragraph.clientHeight}px`
+        }
       }
     }
 
