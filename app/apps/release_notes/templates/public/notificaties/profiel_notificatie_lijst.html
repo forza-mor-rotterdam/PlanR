@@ -1,6 +1,16 @@
 <turbo-frame id="tf_profiel_notificatie_lijst">
-<div>
-    <span>Aantal notificaties: {{ object_list|length }}</span>
+<div class="container__profiel_notificatie_lijst">
+    <header>
+        <h2 class="h3">
+            Notificaties <small>({{ object_list|length }})</small>
+        </h2>
+        <button type="button"
+                class="btn-close--small"
+                aria-label="Sluit"
+                data-controller="utils"
+                data-action="utils#noHover"
+                data-utils-targetcontainer-param="container__uitklapper">{% include "icons/close.svg" %}</button>
+    </header>
     <div class="container__lijst">
         <ul id="profiel_notificatie_lijst" class="list-notificaties">
             {% for object in object_list %}

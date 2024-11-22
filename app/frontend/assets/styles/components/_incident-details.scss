@@ -266,11 +266,13 @@
     display: inline;
     vertical-align: middle;
 
-    > span {
-        margin-left: $input-padding-y;
-        svg {
-            path {
-                fill: $green-tint01;
+    .locatie-container & {
+        > span {
+            margin-left: $input-padding-y;
+            svg {
+                path {
+                    fill: $green-tint01;
+                }
             }
         }
     }

@@ -32,12 +32,6 @@
                     font-size: 0.8em;
                     padding: 0.7em 0.5em 2em 0.5em;
                     cursor: pointer;
-
-                    svg {
-                        vertical-align: sub;
-                        margin-left: 1em;
-                        transform: scale(1.5);
-                    }
                 }
 
                 .content {
@@ -46,7 +40,6 @@
                     top: 2.2em;
                     transform: translateY(0);
                     right: 1vw;
-                    // right: -5px;
                     padding: 0;
                     box-shadow: 0 4px 10px 1px rgba(0, 0, 0, 0.25);
                     opacity: 0;
@@ -58,6 +51,7 @@
                     &--large {
                         width: 98vw;
                         max-width: 400px;
+                        // opacity: 1;
                     }
 
                     &:before {
@@ -85,8 +79,8 @@
                     }
                 }
 
-                &:hover,
-                &:focus-within {
+                &:not(.no-hover):hover,
+                &:not(.no-hover):focus-within {
                     .content {
                         opacity: 1;
                         pointer-events: all;
@@ -126,4 +120,16 @@
     line-height: 2.62em;
     font-size: 0.85em;
     text-transform: uppercase;
+}
+
+.trigger--notificationslist {
+    svg {
+        vertical-align: text-top;
+        path {
+            fill: $black;
+        }
+        @media (min-width: map-get($grid-breakpoints, md)) {
+            padding-left: 2em;
+        }
+    }
 }
