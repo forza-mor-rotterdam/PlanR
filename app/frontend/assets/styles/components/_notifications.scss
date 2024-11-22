@@ -256,25 +256,55 @@
 }
 
 // lijst
+.container__lijst {
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        max-height: 550px;
+        overflow-y: auto;
+    }
+}
+
 .list-notificaties {
     @include list-clean();
     li {
         display: flex;
         gap: 0.666em;
         justify-content: space-between;
+        padding: 1em;
+
+        &.unread {
+            background-color: $green-100;
+        }
         > div {
             flex: 1;
         }
 
         .container__icon {
             max-width: 36px;
+
+            .initials {
+                width: 36px;
+                height: 36px;
+                line-height: 40px;
+            }
+        }
+        .container__status {
+            max-width: 8px;
         }
     }
 
     .container__content {
         * {
             font-size: 0.7em;
-            margin: 1em;
         }
+        h2 {
+            margin: 0.7em 0;
+        }
+    }
+    .dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background-color: $primary;
+        border-radius: 100%;
     }
 }

@@ -24,6 +24,7 @@
             padding: 1em 0.5em 1em 1.2em;
 
             .container__uitklapper {
+                position: unset;
                 > span {
                     font-weight: 700;
                     text-decoration: none;
@@ -44,7 +45,8 @@
                     display: block;
                     top: 2.2em;
                     transform: translateY(0);
-                    right: -5px;
+                    right: 1vw;
+                    // right: -5px;
                     padding: 0;
                     box-shadow: 0 4px 10px 1px rgba(0, 0, 0, 0.25);
                     opacity: 0;
@@ -54,7 +56,6 @@
                     background-color: $white;
 
                     &--large {
-                        padding: 1em;
                         width: 98vw;
                         max-width: 400px;
                     }
@@ -90,6 +91,16 @@
                         opacity: 1;
                         pointer-events: all;
                         transition: opacity $transition-duration-default $transition-ease-default;
+                    }
+                }
+            }
+
+            @media (min-width: map-get($grid-breakpoints, md)) {
+                .container__uitklapper {
+                    position: relative;
+
+                    .content {
+                        right: -5px;
                     }
                 }
             }
