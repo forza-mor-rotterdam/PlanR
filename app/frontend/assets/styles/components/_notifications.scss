@@ -59,7 +59,7 @@
 
         &.show,
         &.init {
-            opacity: 1;
+            opacity: 0.2;
             max-height: 100vh;
             padding-top: 0.75em;
             padding-bottom: 0.75em;
@@ -256,55 +256,71 @@
 }
 
 // lijst
-.container__lijst {
-    @media (min-width: map-get($grid-breakpoints, lg)) {
-        max-height: 550px;
-        overflow-y: auto;
-    }
-}
-
-.list-notificaties {
-    @include list-clean();
-    li {
+.container__profiel_notificatie_lijst {
+    header {
         display: flex;
-        gap: 0.666em;
         justify-content: space-between;
-        padding: 1em;
-
-        &.unread {
-            background-color: $green-100;
-        }
-        > div {
+        h2 {
             flex: 1;
         }
+        .btn-close--small {
+            flex: 0 1 auto;
+            position: relative;
+            max-width: 1em;
+            margin-top: calc(0.83em - 8px);
+            margin-right: -8px;
+        }
+    }
+    .container__lijst {
+        @media (min-width: map-get($grid-breakpoints, lg)) {
+            max-height: 550px;
+            overflow-y: auto;
+        }
+    }
 
-        .container__icon {
-            max-width: 36px;
+    .list-notificaties {
+        @include list-clean();
+        li {
+            display: flex;
+            gap: 0.666em;
+            justify-content: space-between;
+            padding: 1em;
 
-            .initials {
-                width: 36px;
-                height: 36px;
-                line-height: 40px;
+            &.unread {
+                background-color: $green-100;
+            }
+            > div {
+                flex: 1;
+            }
+
+            .container__icon {
+                max-width: 36px;
+
+                .initials {
+                    width: 36px;
+                    height: 36px;
+                    line-height: 40px;
+                }
+            }
+            .container__status {
+                max-width: 8px;
             }
         }
-        .container__status {
-            max-width: 8px;
-        }
-    }
 
-    .container__content {
-        * {
-            font-size: 0.7em;
+        .container__content {
+            * {
+                font-size: 0.7em;
+            }
+            h2 {
+                margin: 0.7em 0;
+            }
         }
-        h2 {
-            margin: 0.7em 0;
+        .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: $primary;
+            border-radius: 100%;
         }
-    }
-    .dot {
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        background-color: $primary;
-        border-radius: 100%;
     }
 }

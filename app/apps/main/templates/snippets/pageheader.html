@@ -6,13 +6,14 @@
     </div>
     <div class="container__user">
         <div class="container__uitklapper">
-            <span>...</span>
+            {% comment %} TODO use different icons based on number of notifications {% endcomment %}
+            <span class="trigger--notificationslist">{% include "icons/notification-alert.svg" %}</span>
             {% if request.user.is_authenticated %}
                 <turbo-frame id="tf_profiel_notificatie_lijst" src="{% url 'profiel_notificatie_lijst' %}" class="content content--large"></turbo-frame>
             {% endif %}
         </div>
         <div class="container__uitklapper">
-            <span>
+            <span class="trigger--profile">
                 <span class="initials">{{ request.user|gebruikersinitialen }}</span>
             </span>
             <div class="content">
