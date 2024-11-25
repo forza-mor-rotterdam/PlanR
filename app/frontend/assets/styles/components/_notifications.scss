@@ -14,6 +14,7 @@
         opacity: 0;
     }
 }
+
 .container__notification {
     width: 98%;
     position: absolute;
@@ -51,10 +52,6 @@
         }
         &:not(:nth-child(-n + 10)) {
             display: none !important;
-        }
-
-        .message--truncated {
-            display: none;
         }
 
         &.show,
@@ -137,15 +134,6 @@
 
             &.error {
                 background-color: $red-200;
-            }
-        }
-
-        &.show-truncated {
-            .message--truncated {
-                display: block;
-            }
-            .message--initial {
-                display: none;
             }
         }
 
@@ -255,11 +243,25 @@
     }
 }
 
-// lijst
+.message--truncated {
+    display: none;
+}
+
+.show-truncated {
+    .message--truncated {
+        display: block;
+    }
+    .message--initial {
+        display: none;
+    }
+}
+
+// lijst profiel
 .container__profiel_notificatie_lijst {
     header {
         display: flex;
         justify-content: space-between;
+        border-bottom: 1px solid $blue-200;
         h2 {
             flex: 1;
         }
@@ -284,7 +286,7 @@
             display: flex;
             gap: 0.666em;
             justify-content: space-between;
-            padding: 1em;
+            padding: 0.7em;
 
             &.unread {
                 background-color: $green-100;
@@ -308,11 +310,14 @@
         }
 
         .container__content {
-            * {
+            > * {
                 font-size: 0.7em;
             }
-            h2 {
-                margin: 0.7em 0;
+            h3 {
+                margin: 0.7em 0 0;
+            }
+            p {
+                margin: 0;
             }
         }
         .dot {

@@ -7,7 +7,19 @@
     <div class="container__user">
         <div class="container__uitklapper">
             {% comment %} TODO use different icons based on number of notifications {% endcomment %}
-            <span class="trigger--notificationslist">{% include "icons/notification-alert.svg" %}</span>
+            <span class="trigger--notificationslist">
+                {% include "icons/notification-alert.svg" %}
+                <span class="badge--unread-count">
+                    <span>
+                        12
+                        {% comment %} {% if UNWATCHED_COUNT < 101 %}
+                            {{ UNWATCHED_COUNT }}
+                        {% else %}
+                            +99
+                        {% endif %} {% endcomment %}
+                    </span>
+                </span>
+            </span>
             {% if request.user.is_authenticated %}
                 <turbo-frame id="tf_profiel_notificatie_lijst" src="{% url 'profiel_notificatie_lijst' %}" class="content content--large"></turbo-frame>
             {% endif %}

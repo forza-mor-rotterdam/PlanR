@@ -3,13 +3,16 @@
 <template>
     {% is_unwatched_by_user notificatie as notificatie_is_watched %}
     <li id="notificatie_{{ notificatie.id }}"
-        class="{% if notificatie_is_watched %}unread{% endif %}">
+        class="{% if notificatie_is_watched %}unread{% endif %}"
+        data-controller="notificatie">
         <div class="container__icon">
             <span class="initials">{% include "icons/notification.svg" %}</span>
         </div>
         <div class="container__content">
             <h3>{{ notificatie.titel }}</h3>
-            {% if notificatie.korte_beschrijving %}<p>{{ notificatie.korte_beschrijving }}</p>{% endif %}
+            {% if notificatie.korte_beschrijving %}
+                <p data-notificatie-target="content">{{ notificatie.korte_beschrijving }}</p>
+            {% endif %}
         </div>
         <div class="container__status">
             {% if notificatie_is_watched %}<span class="dot"></span>{% endif %}
