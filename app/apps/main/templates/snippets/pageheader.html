@@ -5,23 +5,15 @@
         {% if pageTitle %}<h1 class="pagetitle h2">{{ pageTitle }}</h1>{% endif %}
     </div>
     <div class="container__user">
-        <div class="container__uitklapper">
+        <div class="container__uitklapper"
+             data-controller="profiel-notificatie-lijst"
+             data-profiel-notificatie-lijst-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
+             data-profiel-notificatie-lijst-topic-value="/notificaties/snack/"
+             data-profiel-notificatie-lijst-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}">
             {% comment %} TODO use different icons based on number of notifications {% endcomment %}
-            <span class="trigger--notificationslist">
-                {% include "icons/notification-alert.svg" %}
-                <span class="badge--unread-count">
-                    <span>
-                        12
-                        {% comment %} {% if UNWATCHED_COUNT < 101 %}
-                            {{ UNWATCHED_COUNT }}
-                        {% else %}
-                            +99
-                        {% endif %} {% endcomment %}
-                    </span>
-                </span>
-            </span>
             {% if request.user.is_authenticated %}
-                <turbo-frame id="tf_profiel_notificatie_lijst" src="{% url 'profiel_notificatie_lijst' %}" class="content content--large"></turbo-frame>
+                <turbo-frame id="tf_profiel_notificatie_lijst" src="{% url 'profiel_notificatie_lijst' %}?p=0" class="content content--large">
+                </turbo-frame>
             {% endif %}
         </div>
         <div class="container__uitklapper">

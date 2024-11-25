@@ -4,24 +4,6 @@ export default class extends Controller {
   static targets = ['notificatie', 'releaseNote', 'hideable']
 
   connect() {
-    console.log(this.identifier)
-    console.log(this.element.querySelector("[name='bericht_type']"))
-    console.log(this.element.querySelector("[name='bericht_type']").value)
-    console.log(
-      this.snakeToCamel(
-        `${this.element.querySelector("[name='bericht_type']:checked").value}_targets`
-      )
-    )
-    console.log(
-      this[
-        this.snakeToCamel(
-          `${this.element.querySelector("[name='bericht_type']:checked").value}_targets`
-        )
-      ]
-    )
-    console.log(this.hideableTargets)
-
-    // this.hideableTargets.map((elem) => elem.style.display = "none")
     this.hideableTargets.map((elem) => this.hide(elem))
 
     this[
@@ -40,8 +22,7 @@ export default class extends Controller {
     str
       .toLowerCase()
       .replace(/([-_][a-z])/g, (group) => group.toUpperCase().replace('-', '').replace('_', ''))
-  berichtTypeChangeHandler(e) {
-    console.log(e)
+  berichtTypeChangeHandler() {
     this.hideableTargets.map((elem) => this.hide(elem))
     this[
       this.snakeToCamel(

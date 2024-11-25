@@ -1,22 +1,24 @@
 {% load is_unwatched_by_user from berichten_tags %}
-<turbo-stream action="append" target="profiel_notificatie_lijst">
-<template>
-    {% is_unwatched_by_user notificatie as notificatie_is_watched %}
-    <li id="notificatie_{{ notificatie.id }}"
-        class="{% if notificatie_is_watched %}unread{% endif %}"
-        data-controller="notificatie">
-        <div class="container__icon">
-            <span class="initials">xx</span>
-        </div>
-        <div class="container__content">
-            <h3>{{ notificatie.titel }}</h3>
-            {% if notificatie.korte_beschrijving %}
-                <p data-notificatie-target="content">{{ notificatie.korte_beschrijving }}</p>
-            {% endif %}
-        </div>
-        <div class="container__status">
-            {% if notificatie_is_watched %}<span class="dot"></span>{% endif %}
-        </div>
-    </li>
-</template>
+<turbo-stream action="{{ action }}" target="{{ target }}">
+{% if action != "remove" %}
+    <template>
+        {% is_unwatched_by_user notificatie as notificatie_is_unwatched %}
+        <li id="profiel_notificatie_{{ notificatie.id }}"
+            data-controller="notificatie"
+            class="{% if not notificatie_is_unwatched %} is-watched{% endif %}{% if notificatie_is_watched %} unread{% endif %}"
+            {% if notificatie_is_unwatched %}data-verwijder-url="{% url 'notificatie_verwijderen_public' notificatie.id %}"{% endif %}
+            data-profiel-notificatie-lijst-target="profielNotificatie">
+            <div class="container__icon">
+                <span class="initials">{% include "icons/notification.svg" %}</span>
+            </div>
+            <div class="container__content">
+                <h2>{{ notificatie.titel }}</h2>
+                {% if notificatie.korte_beschrijving %}<p>{{ notificatie.korte_beschrijving }}</p>{% endif %}
+            </div>
+            <div class="container__status">
+                <span class="dot"></span>
+            </div>
+        </li>
+    </template>
+{% endif %}
 </turbo-stream>

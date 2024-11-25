@@ -2,15 +2,30 @@ import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
   connect() {
-    if (!this.element.classList.value.includes('toast')) {
-      this.element.addEventListener('mouseover', () => {
-        this.element.classList.remove('collapsed')
-        this.element.classList.add('expanded')
-      })
-      this.element.addEventListener('mouseleave', () => {
-        this.element.classList.remove('expanded')
-        this.element.classList.add('collapsed')
-      })
+    this.setList(this.element.classList.value.includes('toast'))
+    this.element.addEventListener('notificatieVerwijderd', () => {
+      // wacht tot notificatie echt is verwijderd
+      setTimeout(() => {
+        this.resetList(this.element.classList.value.includes('toast'))
+      }, 100)
+    })
+  }
+  notificatieTargetConnected() {
+    this.setList(this.element.classList.value.includes('toast'))
+  }
+  setList(isToast) {
+    const list = this.notificatieTargets
+    // eslint-disable-next-line for-direction
+    for (let i = list.length - 1; i >= 0; i--) {
+      setTimeout(
+        () => {
+          list[i].classList.add('init')
+          if (i === 0) {
+            this.element.classList.remove('busy')
+          }
+        },
+        600 * (-i + list.length)
+      )
     }
 
     setTimeout(() => {

@@ -1,11 +1,13 @@
+{% load is_unwatched_by_user from berichten_tags %}
 <turbo-frame id="notificatie_lijst_public">
 {% if request.user.is_authenticated %}
     <div class="container__notification container__notification--snack"
-         data-controller="notificatielijst">
+         data-controller="notificatielijst"
+         data-notificatielijst-mercure-public-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
+         data-notificatielijst-mercure-subscriber-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}"
+         id="notificatie_lijst">
         {% for object in snack %}
-            <turbo-frame class="notification {{ object.notificatie_niveau }}" data-controller="notificatie" data-notificatielijst-target="notificatie" data-src="{% url 'notificatie_verwijderen_public' object.id %}" id="notificatie_{{ object.id }}">
-            {% include "public/notificaties/notificatie.html" with titel=object.titel niveau=object.notificatie_niveau has_beschrijving=object.has_beschrijving korte_beschrijving=object.korte_beschrijving beschrijving=object.beschrijving link_titel=object.link_titel link_url=object.link_url only %}
-            </turbo-frame>
+            {% include "public/notificaties/notificatie.html" with action="append" target="notificatie_lijst" titel=object.titel id=object.id niveau=object.notificatie_niveau has_beschrijving=object.has_beschrijving korte_beschrijving=object.korte_beschrijving beschrijving=object.beschrijving link_titel=object.link_titel link_url=object.link_url only %}
         {% endfor %}
     </div>
     <div class="container__notification container__notification--toast"
@@ -26,7 +28,7 @@
                  data-controller="notificatie"
                  data-notificatielijst-target="notificatie"
                  data-notificatie-duration-value="{% if object.notificatie_niveau is 'error' %} {{ TOAST_ZICHTBAARHEID_VERLENGD }}{% else %}{{ TOAST_ZICHTBAARHEID_STANDAARD }}{% endif %}">
-                {% include "public/notificaties/notificatie.html" with titel=message niveau=message.tags tags=message.level only %}
+                {% include "public/notificaties/notificatie.html" with titel=message niveau=message.tags only %}
             </div>
         {% endfor %}
     </div>

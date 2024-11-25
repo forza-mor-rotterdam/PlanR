@@ -1,22 +1,46 @@
-<div class="container__icon">
-    {% if niveau %}
-        {% with "public/notificaties/icons/"|add:niveau|add:".html" as template %}
-            {% include template %}
-        {% endwith %}
-    {% endif %}
-</div>
-<div class="container__content">
-    <h3>{{ titel }}</h3>
-    <div class="container__message">
-        {% if link_titel and link_url %}
-            <div class="container__link">
-                <a href="{{ link_url }}">{{ link_titel }}</a>
+<turbo-stream action="
+{% if action %}
+    {{ action }}
+{% else %}
+    update
+{% endif %}
+" target="
+{% if target %}
+    {{ target }}
+{% else %}
+    notificatie_{{ id }}
+{% endif %}
+">
+<template>
+    <div class="notification {{ niveau }}"
+         data-notificatie-is-watched-value="true"
+         id="notificatie_{{ id }}"
+         data-controller="notificatie"
+         data-notificatielijst-target="notificatie"
+         {% if id %}data-verwijder-url="{% url 'notificatie_verwijderen_public' id %}{% endif %}
+         ">
+        <div class="container__icon">
+            {% if niveau %}
+                {% with "public/notificaties/icons/"|add:niveau|add:".html" as template %}
+                    {% include template %}
+                {% endwith %}
+            {% endif %}
+        </div>
+        <div class="container__content">
+            <h3>{{ titel }}</h3>
+            <div class="container__message">
+                {% if link_titel and link_url %}
+                    <div class="container__link">
+                        <a href="{{ link_url }}">{{ link_titel }}</a>
+                    </div>
+                {% endif %}
+                {% if korte_beschrijving %}<p data-notificatie-target="content">{{ korte_beschrijving }}</p>{% endif %}
             </div>
-        {% endif %}
-        {% if korte_beschrijving %}<p data-notificatie-target="content">{{ korte_beschrijving }}</p>{% endif %}
+        </div>
+        <button type="button"
+                class="btn-close--small"
+                aria-label="Sluit"
+                data-action="notificatie#hideNotification">{% include "icons/close.svg" %}</button>
     </div>
-</div>
-<button type="button"
-        class="btn-close--small"
-        aria-label="Sluit"
-        data-action="notificatie#hideNotification">{% include "icons/close.svg" %}</button>
+</template>
+</turbo-stream>

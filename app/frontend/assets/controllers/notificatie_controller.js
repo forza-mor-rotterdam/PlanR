@@ -100,17 +100,45 @@ export default class extends Controller {
     })
   }
 
-  hideNotification() {
-    const notificatie = this.element
-    if (notificatie.classList.contains('notification')) {
-      notificatie.classList.add('hide')
-      if (notificatie.nodeName === 'TURBO-FRAME') {
-        notificatie.setAttribute('src', notificatie.getAttribute('data-src'))
+  dispatchRedraw() {
+    this.element.dispatchEvent(
+      new CustomEvent('notificatieVerwijderd', {
+        bubbles: true,
+      })
+    )
+  }
+  async notificatieSeen(notificatieUrl) {
+    const url = notificatieUrl
+    try {
+      const response = await fetch(`${url}`)
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`)
       }
-      setTimeout(() => {
-        notificatie.remove()
-      }, 500)
+      return response
+    } catch (error) {
+      console.error('Error fetching address details:', error.message)
     }
+  }
+  hideNotification() {
+    if (this.element.dataset.verwijderUrl) {
+      const profiel_notificatie_lijst = document.querySelector(
+        "[data-controller='profiel-notificatie-lijst']"
+      )
+      if (profiel_notificatie_lijst) {
+        profiel_notificatie_lijst.controller.markNotificatieAsWatched(`profiel_${this.element.id}`)
+      }
+      this.notificatieSeen(this.element.dataset.verwijderUrl)
+      this.removeNotification()
+    }
+  }
+  removeNotification() {
+    const notificatie = this.element
+    notificatie.classList.add('hide')
+
+    notificatie.addEventListener('transitionend', () => {
+      this.dispatchRedraw()
+      notificatie.remove()
+    })
   }
 
   handleSwipe() {

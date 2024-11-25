@@ -126,7 +126,7 @@ def tijdsvakitem_data_vernieuwen(self, tijdsvak_id):
         tijdsvak.databron.eind_datumtijd_param: tijdsvak.eind_datumtijd.astimezone().isoformat(),
     }
     try:
-        resultaat = MORCoreService().tijdsvak_data_halen(
+        resultaat = MORCoreService(timeout=(20, 40)).tijdsvak_data_halen(
             url=tijdsvak.databron.url,
             params=params,
         )
