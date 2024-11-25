@@ -102,14 +102,35 @@ export default class extends Controller {
       })
     )
   }
+  async notificatieSeen(notificatieUrl) {
+    const url = notificatieUrl
+    try {
+      const response = await fetch(`${url}`)
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`)
+      }
+      return response
+    } catch (error) {
+      console.error('Error fetching address details:', error.message)
+    }
+  }
   hideNotification() {
+    if (this.element.dataset.verwijderUrl) {
+      const profiel_notificatie_lijst = document.querySelector(
+        "[data-controller='profiel-notificatie-lijst']"
+      )
+      if (profiel_notificatie_lijst) {
+        profiel_notificatie_lijst.controller.markNotificatieAsWatched(`profiel_${this.element.id}`)
+      }
+      this.notificatieSeen(this.element.dataset.verwijderUrl)
+      this.removeNotification()
+    }
+  }
+  removeNotification() {
     const notificatie = this.element
     notificatie.classList.add('hide')
 
     notificatie.addEventListener('transitionend', () => {
-      if (notificatie.nodeName === 'TURBO-FRAME') {
-        notificatie.setAttribute('src', notificatie.getAttribute('data-src'))
-      }
       this.dispatchRedraw()
       notificatie.remove()
     })

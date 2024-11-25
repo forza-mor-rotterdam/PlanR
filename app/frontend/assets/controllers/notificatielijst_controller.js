@@ -12,7 +12,9 @@ export default class extends Controller {
       }, 100)
     })
   }
-
+  notificatieTargetConnected() {
+    this.setList(this.element.classList.value.includes('toast'))
+  }
   setList(isToast) {
     const list = this.notificatieTargets
     // eslint-disable-next-line for-direction

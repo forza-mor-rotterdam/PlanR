@@ -499,6 +499,9 @@ MERCURE_SUBSCRIBER_JWT_ALG = os.getenv("MERCURE_SUBSCRIBER_JWT_ALG", "HS256")
 
 MERCURE_PUBLISH_TARGETS = [
     "/melding/{id}/",
+    "/notificaties/snack/",
+    "/notificaties/snack/{id}/",
+    "/notificaties/toast/{id}/",
 ]
 
 USER_ACTIVITY_CACHE_KEY = "user_activity_cache_key"

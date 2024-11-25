@@ -39,6 +39,7 @@
         <script src="/static/rdam.geojson" type="text/javascript"></script>
         <meta name="turbo-cache-control" content="no-cache">
         <meta name="turbo-prefetch" content="false">
+        <meta name="turbo-refresh-method" content="morph">
         {% block stylesheets %}
             <link rel="stylesheet"
                   href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
@@ -48,7 +49,7 @@
                   rel="stylesheet">
             {% render_bundle 'app' 'css' %}
         {% endblock stylesheets %}
-        {% if DEBUG %}
+        {% if DEBUG and LIVE_UPDATE %}
             <script>
             const chatSocket = new WebSocket(
                 "ws://localhost:"
@@ -76,6 +77,12 @@
     </head>
     <body class="{% block body_class %}{% endblock body_class %}">
         <a href="#id_maincontent" class="skiplink">Ga direct naar de content</a>
+        {% comment %} <div data-controller="turbo-stream" data-turbo-stream-url-value="{{ APP_MERCURE_PUBLIC_URL }}?topic=/notificaties/snack/" data-turbo-stream-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}">
+            <turbo-frame>
+            <div id="notification-messages">
+
+            </div>
+        </div> {% endcomment %}
         <turbo-frame src="{% url 'notificatie_lijst_public' %}" id="notificatie_lijst_public">
         </turbo-frame>
         <div class="container__toplevel">

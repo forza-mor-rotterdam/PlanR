@@ -25,3 +25,32 @@ def task_aanmaken_afbeelding_versies(self, bijlage_id):
     bijlage_instance.save()
 
     return f"Bijlage id: {bijlage_instance.id}"
+
+
+@shared_task(bind=True, base=BaseTaskWithRetry)
+def task_activeer_notificatie(self, notificatie_id):
+    from apps.main.services import MercureService
+    from apps.release_notes.models import ReleaseNote
+    from django.template.loader import render_to_string
+
+    notificatie = ReleaseNote.objects.get(id=notificatie_id)
+
+    rendered = render_to_string(
+        "public/notificaties/notificatie.html",
+        {
+            "niveau": notificatie.notificatie_niveau,
+            "titel": notificatie.titel,
+            "id": notificatie.id,
+            "has_beschrijving": notificatie.has_beschrijving(),
+            "korte_beschrijving": notificatie.korte_beschrijving,
+            "beschrijving": notificatie.beschrijving,
+            "link_titel": notificatie.link_titel,
+            "link_url": notificatie.link_url,
+            "target": "notificatie_lijst",
+            "action": "append",
+        },
+    )
+
+    MercureService().publish("/notificaties/snack/", rendered)
+
+    return f"Activeren notificatie met id: {notificatie.id}"

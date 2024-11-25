@@ -158,6 +158,8 @@ class ReleaseNote(BasisModel):
         soup = BeautifulSoup(self.beschrijving, features="html.parser")
         return soup.text.strip()
 
+    # def publicatie_datum_timestamp
+
     def is_published(self):
         """
         Check if the release note is valid, i.e., not in the future and not older than five weeks.
@@ -172,12 +174,7 @@ class ReleaseNote(BasisModel):
         """
         Check if the release note is unwatched by the user and meets the specified conditions.
         """
-        print("")
-        print(self.titel)
-        print(user)
-        print(self.bekeken_door_gebruikers.all())
-        print(self.bekeken_door_gebruikers.filter(pk=user.pk))
-        print(not self.bekeken_door_gebruikers.filter(pk=user.pk))
+
         return not self.bekeken_door_gebruikers.filter(pk=user.pk).exists()
 
     @staticmethod

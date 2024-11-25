@@ -25,14 +25,18 @@ export default class extends Controller {
       } = event
       event.preventDefault()
       console.error('Content missing', response.url, visit)
-      this.reloadNotificationsTurboFrame()
+      if (
+        ![this.notificationsTurboFrame, this.profielNotificatiesTurboFrame].includes(event.target)
+      ) {
+        this.reloadNotificationsTurboFrame()
+      }
     })
   }
   reloadNotificationsTurboFrame() {
     if (!this.notificationsTurboFrameReloadTimeout && this.notificationsTurboFrame) {
       this.notificationsTurboFrameReloadTimeout = setTimeout(() => {
-        this.notificationsTurboFrame.reload()
-        this.profielNotificatiesTurboFrame.reload()
+        // this.notificationsTurboFrame.reload()
+        // this.profielNotificatiesTurboFrame.reload()
         this.notificationsTurboFrameReloadTimeout = null
       }, 200)
     }

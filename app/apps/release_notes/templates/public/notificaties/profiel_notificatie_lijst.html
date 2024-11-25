@@ -1,8 +1,12 @@
 <turbo-frame id="tf_profiel_notificatie_lijst">
+<span id="profiel_notificatie_lijst_aantal_ongezien"
+      class="trigger--notificationslist">
+    {% include "public/notificaties/profiel_notificatie_lijst_aantal_ongezien.html" with aantal=ongezien_aantal|length only %}
+</span>
 <div class="container__profiel_notificatie_lijst">
     <header>
-        <h2 class="h3">
-            Notificaties <small>({{ object_list|length }})</small>
+        <h2 class="h3" id="profiel_notificatie_lijst_aantal">
+            {% include "public/notificaties/profiel_notificatie_lijst_aantal.html" with aantal=object_list|length only %}
         </h2>
         <button type="button"
                 class="btn-close--small"
@@ -13,9 +17,23 @@
     </header>
     <div class="container__lijst">
         <ul id="profiel_notificatie_lijst" class="list-notificaties">
-            {% for object in object_list %}
-                {% include "public/notificaties/profiel_notificatie.html" with notificatie=object only %}
+            {% for object in paginering.object_list %}
+                {% include "public/notificaties/profiel_notificatie.html" with notificatie=object action="append" target="profiel_notificatie_lijst" only %}
             {% endfor %}
+        </ul>
+        <ul>
+            {% if paginering.vorige is not None %}
+                <li>
+                    <a data-action="profiel-notificatie-lijst#onClickVorige"
+                       href="{% url 'profiel_notificatie_lijst' %}?p={{ paginering.vorige }}">vorige</a>
+                </li>
+            {% endif %}
+            {% if paginering.volgende is not None %}
+                <li>
+                    <a data-action="profiel-notificatie-lijst#onClickVolgende"
+                       href="{% url 'profiel_notificatie_lijst' %}?p={{ paginering.volgende }}">volgende</a>
+                </li>
+            {% endif %}
         </ul>
     </div>
 </div>

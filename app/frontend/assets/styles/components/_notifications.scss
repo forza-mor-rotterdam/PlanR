@@ -327,5 +327,8 @@
             background-color: $primary;
             border-radius: 100%;
         }
+        .is-watched .dot {
+            display: none;
+        }
     }
 }

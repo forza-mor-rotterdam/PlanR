@@ -33,6 +33,7 @@ export default class extends Controller {
   }
   initMessages() {
     let self = this
+    console.log(self.mercurePublicUrlValue)
     if (self.hasMercurePublicUrlValue && self.isValidHttpUrl(self.mercurePublicUrlValue)) {
       const url = new URL(self.mercurePublicUrlValue)
       url.searchParams.append('topic', window.location.pathname)

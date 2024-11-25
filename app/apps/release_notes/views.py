@@ -19,6 +19,7 @@ from django.views.generic import (
     UpdateView,
     View,
 )
+from django_celery_beat.models import ClockedSchedule, PeriodicTask
 
 from .models import Bijlage, ReleaseNote
 
@@ -42,6 +43,24 @@ class ReleaseNoteListView(PermissionRequiredMixin, ReleaseNoteView, ListView):
                 Q(titel__icontains=search) | Q(tekst__icontains=search)
             )
         queryset = queryset.order_by("-publicatie_datum", "-aangemaakt_op")
+
+        return queryset
+
+    def profiel_notificatie_queryset(self):
+        queryset = super().get_queryset()
+
+        queryset = (
+            queryset.filter(publicatie_datum__lt=timezone.now())
+            .filter(
+                Q(einde_publicatie_datum__isnull=True)
+                | (
+                    Q(einde_publicatie_datum__isnull=False)
+                    & Q(einde_publicatie_datum__gt=timezone.now())
+                )
+            )
+            .filter(bericht_type=ReleaseNote.BerichtTypeOpties.NOTIFICATIE)
+            .order_by("-publicatie_datum")
+        )
 
         return queryset
 
@@ -86,17 +105,54 @@ class NotificatieLijstViewPublic(ListView):
         return context
 
 
-class ProfielNotificatieLijstViewPublic(ListView):
+class ProfielNotificatieLijstViewPublic(ReleaseNoteListView):
     template_name = "public/notificaties/profiel_notificatie_lijst.html"
-    queryset = ReleaseNote.objects.filter(
-        bericht_type=ReleaseNote.BerichtTypeOpties.NOTIFICATIE
-    ).order_by("-publicatie_datum")
+    queryset = ReleaseNote.objects.all()
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        queryset = (
+            queryset.filter(publicatie_datum__lt=timezone.now())
+            .filter(
+                Q(einde_publicatie_datum__isnull=True)
+                | (
+                    Q(einde_publicatie_datum__isnull=False)
+                    & Q(einde_publicatie_datum__gt=timezone.now())
+                )
+            )
+            .filter(bericht_type=ReleaseNote.BerichtTypeOpties.NOTIFICATIE)
+            .order_by("-publicatie_datum")
+        )
+
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        self.get_queryset().order_by("-publicatie_datum")
+        queryset = self.profiel_notificatie_queryset()
+        page_size = 5
+        page = 0
+        try:
+            page = int(self.request.GET.get("p"))
+        except Exception:
+            ...
+        queryset[page * page_size : (page + 1) * page_size]
 
-        context.update({})
+        context.update(
+            {
+                "paginering": {
+                    "object_list": queryset[page * page_size : (page + 1) * page_size],
+                    "p": page,
+                    "volgende": page + 1
+                    if queryset[(page + 1) * page_size : (page + 2) * page_size]
+                    else None,
+                    "vorige": page - 1 if page != 0 else None,
+                },
+                "ongezien_aantal": queryset.exclude(
+                    bekeken_door_gebruikers=self.request.user
+                ),
+            }
+        )
         return context
 
 
@@ -176,6 +232,19 @@ class ReleaseNoteAanmakenView(PermissionRequiredMixin, ReleaseNoteView, CreateVi
         messages.success(
             request=self.request, message=f"De {self.object.bericht_type} is aangemaakt"
         )
+
+        if self.object.bericht_type == ReleaseNote.BerichtTypeOpties.NOTIFICATIE:
+            clocked_schedule = ClockedSchedule.objects.create(
+                clocked_time=self.object.publicatie_datum
+            )
+            PeriodicTask.objects.create(
+                clocked=clocked_schedule,
+                name=f"clocked_periodic_task_notificatie_{self.object.id}",
+                task="apps.release_notes.tasks.task_activeer_notificatie",
+                one_off=True,
+                args=[self.object.id],
+            )
+
         return response
 
 
@@ -235,6 +304,22 @@ class ReleaseNoteAanpassenView(PermissionRequiredMixin, ReleaseNoteView, UpdateV
                 request=self.request,
                 message=f"De {self.object.bericht_type} is aangepast",
             )
+
+            if self.object.bericht_type == ReleaseNote.BerichtTypeOpties.NOTIFICATIE:
+                PeriodicTask.objects.filter(
+                    name=f"clocked_periodic_task_notificatie_{self.object.id}"
+                ).delete()
+                clocked_schedule = ClockedSchedule.objects.create(
+                    clocked_time=self.object.publicatie_datum
+                )
+                PeriodicTask.objects.create(
+                    clocked=clocked_schedule,
+                    name=f"clocked_periodic_task_notificatie_{self.object.id}",
+                    task="apps.release_notes.tasks.task_activeer_notificatie",
+                    one_off=True,
+                    args=[self.object.id],
+                )
+
             return super().form_valid(form)
         else:
             messages.error(
