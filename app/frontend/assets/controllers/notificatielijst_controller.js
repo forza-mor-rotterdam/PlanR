@@ -17,6 +17,7 @@ export default class extends Controller {
     const list = this.notificatieTargets
     // eslint-disable-next-line for-direction
     for (let i = list.length - 1; i >= 0; i--) {
+      console.log('600 * (-i + list.length)', 100 * (-i + list.length))
       setTimeout(
         () => {
           list[i].classList.add('init')
@@ -24,14 +25,23 @@ export default class extends Controller {
             this.element.classList.remove('busy')
           }
         },
-        600 * (-i + list.length)
+        200 * (-i + list.length)
       )
     }
+    // for (let i = 0; i < list.length; i++) {
+    //   setTimeout(() => {
+    //     list[i].classList.add('init')
+    //     if (i === 0) {
+    //       this.element.classList.remove('busy')
+    //     }
+    //   }, 600 * i)
+    // }
 
     if (!isToast) {
       this.element.classList.add('busy')
       // Alleen als het geen toast is achter elkaar tonen
-      const timeToLeave = list.length > 5 ? list.length * 1000 : 5000
+      const timeToLeave = list.length > 5 ? list.length * 400 : 5000
+      console.log('timeToLeave', timeToLeave)
       for (let i = 0; i < list.length; i++) {
         setTimeout(
           () => {
