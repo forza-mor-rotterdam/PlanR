@@ -1,21 +1,10 @@
-<turbo-stream action="
-{% if action %}
-    {{ action }}
-{% else %}
-    update
-{% endif %}
-" target="
-{% if target %}
-    {{ target }}
-{% else %}
-    notificatie_{{ id }}
-{% endif %}
-">
+<!-- djlint:off -->
+<turbo-stream action="{% if action %}{{ action }}{% else %}update{% endif %}" target="{% if target %}{{ target }}{% else %}notificatie_{{ id }}{% endif %}"><!-- djlint:on -->
 <template>
     <div class="notification {{ niveau }}"
          data-notificatie-is-watched-value="true"
          id="notificatie_{{ id }}"
-         data-controller="notificatie"
+         data-controller="notificaties--notificatie"
          data-notificatielijst-target="notificatie"
          {% if id %}data-verwijder-url="{% url 'notificatie_verwijderen_public' id %}{% endif %}
          ">
@@ -34,13 +23,13 @@
                         <a href="{{ link_url }}">{{ link_titel }}</a>
                     </div>
                 {% endif %}
-                {% if korte_beschrijving %}<p data-notificatie-target="content">{{ korte_beschrijving }}</p>{% endif %}
+                {% if korte_beschrijving %}<p data-notificaties--notificatie-target="content">{{ korte_beschrijving }}</p>{% endif %}
             </div>
         </div>
         <button type="button"
                 class="btn-close--small"
                 aria-label="Sluit"
-                data-action="notificatie#hideNotification">{% include "icons/close.svg" %}</button>
+                data-action="notificaties--notificatie#hideNotification">{% include "icons/close.svg" %}</button>
     </div>
 </template>
 </turbo-stream>

@@ -8,9 +8,11 @@ export default class extends Controller {
       setTimeout(() => {
         this.resetList(this.element.classList.value.includes('toast'))
       }, 100)
+      console.log(this.notificatieTargets.length)
     })
   }
   notificatieTargetConnected() {
+    console.log(`item index: ${this.notificatieTargets.length}`)
     this.setList(this.element.classList.value.includes('toast'))
   }
   setList(isToast) {
