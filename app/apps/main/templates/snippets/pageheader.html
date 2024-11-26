@@ -10,9 +10,9 @@
              data-profiel-notificatie-lijst-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
              data-profiel-notificatie-lijst-topic-value="/notificaties/snack/"
              data-profiel-notificatie-lijst-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}">
-            {% comment %} TODO use different icons based on number of notifications {% endcomment %}
+            <span class="trigger--block"></span>
             {% if request.user.is_authenticated %}
-                <turbo-frame id="tf_profiel_notificatie_lijst" src="{% url 'profiel_notificatie_lijst' %}?p=0" class="content content--large">
+                <turbo-frame id="tf_profiel_notificatie_lijst" src="{% url 'profiel_notificatie_lijst' %}?p=0">
                 </turbo-frame>
             {% endif %}
         </div>
