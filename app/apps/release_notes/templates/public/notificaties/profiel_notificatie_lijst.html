@@ -1,7 +1,7 @@
 <turbo-frame id="tf_profiel_notificatie_lijst">
-<span id="profiel_notificatie_lijst_aantal_ongezien"
+<span id="profiel_notificatie_lijst_aantal_ongelezen"
       class="trigger--notificationslist">
-    {% include "public/notificaties/profiel_notificatie_lijst_aantal_ongezien.html" with aantal=ongezien_aantal|length only %}
+    {% include "public/notificaties/profiel_notificatie_lijst_aantal_ongelezen.html" with aantal=ongelezen_aantal only %}
 </span>
 <div class="container__profiel_notificatie_lijst content content--large">
     <header>
@@ -15,26 +15,29 @@
                 data-action="utils#noHover"
                 data-utils-targetcontainer-param="container__uitklapper">{% include "icons/close.svg" %}</button>
     </header>
+    <ul class="list-horizontal">
+        <li class="active">
+            <a data-notificaties--manager-overzicht-filter-param="alle"
+               data-action="notificaties--manager#overzichtTab">Alle</a>
+        </li>
+        <li>
+            <a data-notificaties--manager-overzicht-filter-param="ongelezen"
+               data-action="notificaties--manager#overzichtTab">Ongelezen</a>
+        </li>
+        <li>
+            <a data-notificaties--manager-overzicht-filter-param="gelezen"
+               data-action="notificaties--manager#overzichtTab">Gelezen</a>
+        </li>
+    </ul>
     <div class="container__lijst">
         <ul id="profiel_notificatie_lijst" class="list-notificaties">
             {% for object in paginering.object_list %}
-                {% include "public/notificaties/profiel_notificatie.html" with notificatie=object action="append" target="profiel_notificatie_lijst" only %}
+                {% include "public/notificaties/snack_overzicht_item.html" with notificatie=object action="append" target="profiel_notificatie_lijst" only %}
             {% endfor %}
         </ul>
-        <ul>
-            {% if paginering.vorige is not None %}
-                <li>
-                    <a data-action="profiel-notificatie-lijst#onClickVorige"
-                       href="{% url 'profiel_notificatie_lijst' %}?p={{ paginering.vorige }}">vorige</a>
-                </li>
-            {% endif %}
-            {% if paginering.volgende is not None %}
-                <li>
-                    <a data-action="profiel-notificatie-lijst#onClickVolgende"
-                       href="{% url 'profiel_notificatie_lijst' %}?p={{ paginering.volgende }}">volgende</a>
-                </li>
-            {% endif %}
-        </ul>
+        <div id="snack_overzicht_laad_meer">
+            {% include "public/notificaties/snack_overzicht_laad_meer.html" with paginering=paginering only %}
+        </div>
     </div>
 </div>
 </turbo-frame>

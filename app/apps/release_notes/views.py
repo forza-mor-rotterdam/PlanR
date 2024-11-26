@@ -105,7 +105,7 @@ class NotificatieLijstViewPublic(ListView):
         return context
 
 
-class ProfielNotificatieLijstViewPublic(ReleaseNoteListView):
+class ProfielNotificatieLijstViewPublic(ListView):
     template_name = "public/notificaties/profiel_notificatie_lijst.html"
     queryset = ReleaseNote.objects.all()
 
@@ -129,28 +129,32 @@ class ProfielNotificatieLijstViewPublic(ReleaseNoteListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        queryset = self.profiel_notificatie_queryset()
-        page_size = 5
-        page = 0
+        queryset = self.get_queryset()
+        queryset_ongelezen = queryset.exclude(bekeken_door_gebruikers=self.request.user)
+        queryset_gelezen = queryset.filter(bekeken_door_gebruikers=self.request.user)
+
+        if self.request.GET.get("filter") in ("ongelezen", "gelezen") and locals().get(
+            f'queryset_{self.request.GET.get("filter")}'
+        ):
+            queryset = locals().get(f'queryset_{self.request.GET.get("filter")}')
+
+        page_size = 8
         try:
             page = int(self.request.GET.get("p"))
         except Exception:
-            ...
-        queryset[page * page_size : (page + 1) * page_size]
+            page = 0
 
         context.update(
             {
                 "paginering": {
                     "object_list": queryset[page * page_size : (page + 1) * page_size],
                     "p": page,
-                    "volgende": page + 1
-                    if queryset[(page + 1) * page_size : (page + 2) * page_size]
-                    else None,
-                    "vorige": page - 1 if page != 0 else None,
+                    "is_er_meer": queryset[
+                        (page + 1) * page_size : (page + 2) * page_size
+                    ],
                 },
-                "ongezien_aantal": queryset.exclude(
-                    bekeken_door_gebruikers=self.request.user
-                ),
+                "ongelezen_aantal": queryset_ongelezen.count(),
+                "gelezen_aantal": queryset_gelezen.count(),
             }
         )
         return context

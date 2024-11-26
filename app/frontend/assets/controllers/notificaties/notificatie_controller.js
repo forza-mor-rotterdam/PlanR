@@ -13,6 +13,7 @@ export default class extends Controller {
   }
 
   connect() {
+    console.log(`Connect: ${this.identifier}`)
     let contentString = null
     let truncatedString = null
     if (this.hasContentTarget) {
@@ -32,7 +33,6 @@ export default class extends Controller {
         this.contentTarget.style.height = `${paragraph.clientHeight}px`
       }
     }
-
     if (this.hasDurationValue) {
       setTimeout(() => {
         this.hideNotification()
@@ -77,6 +77,11 @@ export default class extends Controller {
       })
     }
   }
+  initByManager(managerController, index, referenceOffsetHeight) {
+    this.managerController = managerController
+    this.index = index
+    this.referenceOffsetHeight = referenceOffsetHeight
+  }
 
   disconnect() {
     if ('ontouchstart' in window) {
@@ -115,6 +120,7 @@ export default class extends Controller {
     }
   }
   hideNotification() {
+    console.log(this.identifier)
     if (this.element.dataset.verwijderUrl) {
       const profiel_notificatie_lijst = document.querySelector(
         "[data-controller='profiel-notificatie-lijst']"

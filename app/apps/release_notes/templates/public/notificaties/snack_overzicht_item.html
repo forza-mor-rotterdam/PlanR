@@ -4,10 +4,11 @@
     <template>
         {% is_unwatched_by_user notificatie as notificatie_is_unwatched %}
         <li id="profiel_notificatie_{{ notificatie.id }}"
-            data-controller="notificatie"
+            data-id="{{ notificatie.id }}"
+            data-controller="notificaties--snack-overzicht-item"
             class="{% if not notificatie_is_unwatched %} is-watched{% endif %}{% if notificatie_is_watched %} unread{% endif %}"
             {% if notificatie_is_unwatched %}data-verwijder-url="{% url 'notificatie_verwijderen_public' notificatie.id %}"{% endif %}
-            data-profiel-notificatie-lijst-target="profielNotificatie">
+            data-notificaties--manager-target="snackOverzichtItem">
             <div class="container__icon">
                 <span class="initials">{% include "icons/notification.svg" %}</span>
             </div>

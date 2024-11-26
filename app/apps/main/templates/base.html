@@ -75,7 +75,12 @@
         <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin="">
         </script>
     </head>
-    <body class="{% block body_class %}{% endblock body_class %}">
+    <body class="{% block body_class %}{% endblock body_class %}"
+          data-controller="notificaties--manager"
+          data-notificaties--manager-snack-overzicht-url-value="{% url 'profiel_notificatie_lijst' %}"
+          data-notificaties--manager-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
+          data-notificaties--manager-topic-value="/notificaties/snack/"
+          data-notificaties--manager-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}">
         <a href="#id_maincontent" class="skiplink">Ga direct naar de content</a>
         {% comment %} <div data-controller="turbo-stream" data-turbo-stream-url-value="{{ APP_MERCURE_PUBLIC_URL }}?topic=/notificaties/snack/" data-turbo-stream-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}">
             <turbo-frame>
