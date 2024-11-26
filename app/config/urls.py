@@ -37,6 +37,7 @@ from apps.release_notes.views import (
     NotificatieLijstViewPublic,
     NotificatieVerwijderViewPublic,
     ProfielNotificatieLijstViewPublic,
+    ProfielNotificatieLijstViewPublicStream,
     ReleaseNoteDetailView,
     ReleaseNoteListViewPublic,
 )
@@ -158,6 +159,11 @@ urlpatterns = [
         "notificaties/profiel/",
         ProfielNotificatieLijstViewPublic.as_view(),
         name="profiel_notificatie_lijst",
+    ),
+    path(
+        "notificaties/profiel/stream/",
+        ProfielNotificatieLijstViewPublicStream.as_view(),
+        name="profiel_notificatie_lijst_stream",
     ),
     path(
         "notificatie/<int:pk>/verwijderen/",

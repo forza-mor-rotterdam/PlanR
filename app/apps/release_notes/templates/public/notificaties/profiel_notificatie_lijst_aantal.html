@@ -1,7 +1,5 @@
-{% load random_int from berichten_tags %}
 <turbo-stream action="update" target="profiel_notificatie_lijst_aantal">
 <template>
-    Notificaties <small data-notificaties--manager-snack-overzicht-aantal-value="{{ aantal }}"
-        data-rand="{% random_int 1 10 %}">({{ aantal }})</small>
+    Notificaties <small data-notificaties--manager-snack-overzicht-aantal-value="{{ aantal }}">({{ aantal }})</small>
 </template>
 </turbo-stream>

@@ -15,19 +15,8 @@
                 data-action="utils#noHover"
                 data-utils-targetcontainer-param="container__uitklapper">{% include "icons/close.svg" %}</button>
     </header>
-    <ul class="list-horizontal">
-        <li class="active">
-            <a data-notificaties--manager-overzicht-filter-param="alle"
-               data-action="notificaties--manager#overzichtTab">Alle</a>
-        </li>
-        <li>
-            <a data-notificaties--manager-overzicht-filter-param="ongelezen"
-               data-action="notificaties--manager#overzichtTab">Ongelezen</a>
-        </li>
-        <li>
-            <a data-notificaties--manager-overzicht-filter-param="gelezen"
-               data-action="notificaties--manager#overzichtTab">Gelezen</a>
-        </li>
+    <ul id="snack_overzicht_tabs" class="list-horizontal">
+        {% include "public/notificaties/snack_overzicht_tabs.html" with filter=filter ongelezen_aantal=ongelezen_aantal only %}
     </ul>
     <div class="container__lijst">
         <ul id="profiel_notificatie_lijst" class="list-notificaties">

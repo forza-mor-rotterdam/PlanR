@@ -1,10 +1,14 @@
 import { Controller } from '@hotwired/stimulus'
 import { renderStreamMessage } from '@hotwired/turbo'
 
-const snackOverzichtLijstTurboFrameID = 'tf_profiel_notificatie_lijst'
-
 export default class extends Controller {
-  static targets = ['snackLijst', 'snackOverzichtItem', 'snackItem', 'toastItem']
+  static targets = [
+    'snackLijst',
+    'snackOverzichtItem',
+    'snackItem',
+    'toastItem',
+    'snackOverzichtLaadMeer',
+  ]
   static values = {
     url: String,
     token: String,
@@ -17,6 +21,7 @@ export default class extends Controller {
     this.element.controller = this
     this.snackOverzichtPagina = 0
     this.snackOverzichtFilter = 'alle'
+    this.snackOverzichtPaginaItemsGeladen = []
     console.log(`${this.identifier} connected`)
 
     // this.setList(this.element.classList.value.includes('toast'))
@@ -36,16 +41,29 @@ export default class extends Controller {
       this.markNotificatiesAsWatched()
     })
   }
+  snackOverzichtLaadMeerTargetConnected() {
+    if (this.snackOverzichtPaginaItemsGeladen.length) {
+      this.snackOverzichtPaginaItemsGeladen[0].parentElement.parentElement.scrollTop =
+        this.snackOverzichtPaginaItemsGeladen[0].offsetTop
+    }
+    this.snackOverzichtPaginaItemsGeladen = []
+  }
   snackOverzichtItemTargetConnected(snackOverzichtItem) {
     console.log(snackOverzichtItem)
+    this.snackOverzichtPaginaItemsGeladen.push(snackOverzichtItem)
   }
-
   overzichtTab(e) {
     e.preventDefault()
     this.snackOverzichtFilter = e.params.overzichtFilter
     this.snackOverzichtPagina = 0
     this.verwijderAlleSnackOverzichtItems()
     this.laadSnackOverzicht()
+  }
+  markeerAlleAlsGelezen(e) {
+    e.preventDefault()
+    this.snackOverzichtFilter = 'alle'
+    this.verwijderAlleSnackOverzichtItems()
+    this.laadSnackOverzicht('markeer-alle-als-gelezen=true')
   }
   verwijderAlleSnackOverzichtItems() {
     this.snackOverzichtItemTargets.map((elem) => elem.remove())
@@ -55,8 +73,10 @@ export default class extends Controller {
     this.snackOverzichtPagina++
     this.laadSnackOverzicht()
   }
-  async laadSnackOverzicht() {
-    const url = `${this.snackOverzichtUrlValue}?p=${this.snackOverzichtPagina}&filter=${this.snackOverzichtFilter}`
+  async laadSnackOverzicht(paramStr = '') {
+    const url = `${this.snackOverzichtUrlValue}?p=${this.snackOverzichtPagina}&filter=${
+      this.snackOverzichtFilter
+    }${paramStr ? '&' + paramStr : ''}`
     console.log(url)
     try {
       const response = await fetch(`${url}`)
@@ -64,6 +84,7 @@ export default class extends Controller {
         throw new Error(`HTTP error! Status: ${response.status}`)
       }
       const text = await response.text()
+      console.log(text)
       renderStreamMessage(text)
     } catch (error) {
       console.error('Error fetching address details:', error.message)
@@ -84,12 +105,6 @@ export default class extends Controller {
         this.watchedNotificaties.push(elem.dataset.verwijderUrl)
       }
     })
-  }
-  onClickVorige() {
-    this.addNotificatieUrls()
-  }
-  onClickVolgende() {
-    this.addNotificatieUrls()
   }
   markNotificatiesAsWatched() {
     this.watchedNotificaties.map((url) => {
@@ -163,10 +178,10 @@ export default class extends Controller {
     console.log('onGenericMessage', data)
 
     renderStreamMessage(data)
-    const turboFrame = document.getElementById(snackOverzichtLijstTurboFrameID)
-    if (turboFrame) {
-      turboFrame.reload()
-    }
+    // const turboFrame = document.getElementById(snackOverzichtLijstTurboFrameID)
+    // if (turboFrame) {
+    //   turboFrame.reload()
+    // }
   }
   onMessageOpen(e) {
     console.info('Open mercure connection event', e)

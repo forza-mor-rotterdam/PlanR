@@ -77,7 +77,7 @@
     </head>
     <body class="{% block body_class %}{% endblock body_class %}"
           data-controller="notificaties--manager"
-          data-notificaties--manager-snack-overzicht-url-value="{% url 'profiel_notificatie_lijst' %}"
+          data-notificaties--manager-snack-overzicht-url-value="{% url 'profiel_notificatie_lijst_stream' %}"
           data-notificaties--manager-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
           data-notificaties--manager-topic-value="/notificaties/snack/"
           data-notificaties--manager-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}">

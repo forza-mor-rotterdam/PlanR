@@ -12,7 +12,7 @@
              data-profiel-notificatie-lijst-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}">
             <span class="trigger--block"></span>
             {% if request.user.is_authenticated %}
-                <turbo-frame id="tf_profiel_notificatie_lijst" src="{% url 'profiel_notificatie_lijst' %}?p=0">
+                <turbo-frame id="tf_profiel_notificatie_lijst" src="{% url 'profiel_notificatie_lijst' %}">
                 </turbo-frame>
             {% endif %}
         </div>

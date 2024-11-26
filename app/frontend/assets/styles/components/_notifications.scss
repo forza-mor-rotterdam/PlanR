@@ -267,6 +267,7 @@
         }
     }
     .container__lijst {
+        scroll-behavior: smooth;
         @media (min-width: map-get($grid-breakpoints, lg)) {
             max-height: 550px;
             overflow-y: auto;
