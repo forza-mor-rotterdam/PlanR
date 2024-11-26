@@ -1,0 +1,362 @@
+#notificatie_lijst_public {
+    position: fixed;
+    top: 35px;
+    height: 100%;
+    overflow: hidden;
+    z-index: 20000;
+    pointer-events: none;
+
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        top: 90px;
+    }
+
+    .show-modal & {
+        opacity: 0;
+    }
+}
+
+.container__notification {
+    width: 98%;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    // opacity: 0;
+    // animation: slide-in-from-top-centered $transition-duration-default $transition-ease-default
+    // forwards 0.5s;
+    padding: 0 1em;
+    pointer-events: none;
+    touch-action: manipulation; /* Laat standaard click en hover gedrag toe */
+
+    .notification {
+        padding: 0 2em 0 0.75em;
+        position: relative;
+        background-color: $white;
+        border-radius: 8px;
+        box-sizing: border-box;
+        box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.07);
+        margin-bottom: 5px;
+        pointer-events: all;
+        transition-property: all;
+        transition-duration: $transition-duration-default;
+        transition-timing-function: $transition-ease-default;
+        overflow: hidden;
+        font-size: 0.8em;
+        padding-top: 0.75em;
+        padding-bottom: 0.75em;
+        display: flex;
+        justify-content: flex-start;
+        gap: 10px;
+        opacity: 0;
+
+        &:not(:nth-child(-n + 10)) {
+            display: none !important;
+        }
+
+        &.hide {
+            opacity: 0 !important;
+            // transition-property: opacity;
+            // transition-duration: $transition-duration-default;
+            // transition-timing-function: ease-in-out;
+        }
+    }
+
+    &.expanded,
+    &.collapsed {
+        .notification {
+            opacity: 1;
+        }
+    }
+
+    &:not(.expanded):not(.collapsed) {
+        .notification {
+            @for $i from 1 through 10 {
+                &:nth-child(#{$i}n) {
+                    z-index: #{$i * -10};
+                    // transform: scale(calc(1 - #{$i * 0.02}))
+                    animation: fade-in
+                        2 *
+                        $transition-duration-default
+                        $transition-ease-default
+                        #{$i *
+                        0.25}s
+                        forwards;
+                }
+            }
+        }
+    }
+
+    &.collapsed {
+        .notification {
+            @for $i from 2 through 10 {
+                &:nth-child(#{$i}n) {
+                    z-index: #{$i * -10};
+                    transform: scale(calc(1 - #{$i * 0.02}));
+                    height: 5px;
+                    padding: 0;
+                    margin-top: -6px;
+                    > div,
+                    > button {
+                        opacity: 0;
+                    }
+                }
+            }
+        }
+    }
+
+    .notification {
+        .container__icon {
+            min-width: 30px;
+            position: relative;
+
+            svg {
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                margin-right: 0.5em;
+            }
+        }
+        .container__content {
+            flex: 1;
+            .container__message {
+                display: block;
+
+                p,
+                .container__link {
+                    flex: 1 1 85%;
+                }
+                .container__link {
+                    text-align: right;
+                    order: 2;
+                    flex-basis: 15%;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    a {
+                        margin-right: 0.5em;
+                    }
+                }
+
+                p {
+                    transition: height $transition-duration-default $transition-ease-default;
+                }
+                a {
+                    color: inherit;
+                }
+            }
+
+            h3,
+            p {
+                font-size: inherit;
+                margin: 0;
+            }
+        }
+
+        .btn-close--small {
+            top: 0.5em;
+            right: 0.5em;
+            > * {
+                pointer-events: none;
+            }
+        }
+
+        &.warning {
+            background-color: $yellow-200;
+        }
+
+        &.error {
+            background-color: $red-200;
+        }
+    }
+
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        .notification {
+            &.show,
+            &.init {
+                .container__content {
+                    .container__message {
+                        display: flex;
+                        gap: 1em;
+                        flex: 1 0 90%;
+                        justify-content: space-between;
+
+                        .container__link {
+                            a {
+                                transform: translateY(-0.6em);
+                                margin-right: 0;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    &:hover,
+    &.showAll {
+        pointer-events: all;
+        .notification {
+            &.show {
+                transform: translateY(0) scale(1) !important;
+            }
+        }
+    }
+
+    &--snack {
+        max-width: 714px;
+        z-index: 2000;
+
+        &.busy {
+            pointer-events: none !important;
+            * {
+                pointer-events: none !important;
+            }
+        }
+    }
+
+    &--toast {
+        max-width: 360px;
+        z-index: 3000;
+        width: 98%;
+        position: fixed;
+        top: 35px;
+        left: 50%;
+        transform: translateX(-50%);
+        // opacity: 0;
+        overflow: visible;
+        pointer-events: none;
+
+        .notification {
+            &.show,
+            &.init {
+                padding-top: 1em;
+                padding-bottom: 1em;
+            }
+
+            .btn-close--small {
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity $transition-duration-default $transition-ease-default;
+            }
+        }
+
+        &:hover {
+            .notification {
+                .btn-close--small {
+                    opacity: 1;
+                    pointer-events: all;
+                }
+            }
+        }
+
+        @media (min-width: map-get($grid-breakpoints, lg)) {
+            top: auto;
+            bottom: 1em;
+            left: auto;
+            right: 1em;
+            transform: none;
+            animation: slide-in-from-bottom $transition-duration-default $transition-ease-default
+                forwards 0.5s;
+
+            .notification {
+                font-size: 0.75em;
+
+                &.hide {
+                    opacity: 0;
+                    transform: translateY(20px) scale(1);
+                }
+            }
+        }
+    }
+}
+
+.message--truncated {
+    display: none;
+}
+
+.show-truncated {
+    .message--truncated {
+        display: block;
+    }
+    .message--initial {
+        display: none;
+    }
+}
+
+// lijst profiel
+.container__profiel_notificatie_lijst {
+    header {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid $blue-200;
+        h2 {
+            flex: 1;
+        }
+        .btn-close--small {
+            flex: 0 1 auto;
+            position: relative;
+            max-width: 1em;
+            margin-top: calc(0.83em - 8px);
+            margin-right: -8px;
+        }
+    }
+    .container__lijst {
+        @media (min-width: map-get($grid-breakpoints, lg)) {
+            max-height: 550px;
+            overflow-y: auto;
+        }
+    }
+
+    .list-notificaties {
+        @include list-clean();
+        li {
+            display: flex;
+            gap: 0.666em;
+            justify-content: space-between;
+            padding: 0.7em;
+
+            &.unread {
+                background-color: $green-100;
+            }
+            > div {
+                flex: 1;
+            }
+
+            .container__icon {
+                max-width: 36px;
+
+                .initials {
+                    width: 36px;
+                    height: 36px;
+                    line-height: 40px;
+                }
+            }
+            .container__status {
+                max-width: 8px;
+            }
+        }
+
+        .container__content {
+            > * {
+                font-size: 0.7em;
+            }
+            h3 {
+                margin: 0.7em 0 0;
+            }
+            p {
+                margin: 0;
+            }
+        }
+        .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: $primary;
+            border-radius: 100%;
+        }
+        .is-watched .dot {
+            display: none;
+        }
+    }
+}
