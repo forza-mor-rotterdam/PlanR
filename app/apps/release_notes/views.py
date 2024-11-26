@@ -7,7 +7,16 @@ from apps.release_notes.tasks import task_aanmaken_afbeelding_versies
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import BooleanField, Case, Exists, OuterRef, Q, Value, When
+from django.db.models import (
+    BooleanField,
+    Case,
+    Exists,
+    OuterRef,
+    Q,
+    QuerySet,
+    Value,
+    When,
+)
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -130,11 +139,19 @@ class ProfielNotificatieLijstViewPublic(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         queryset = self.get_queryset()
-        queryset_ongelezen = queryset.exclude(bekeken_door_gebruikers=self.request.user)
-        queryset_gelezen = queryset.filter(bekeken_door_gebruikers=self.request.user)
 
-        if self.request.GET.get("filter") in ("ongelezen", "gelezen") and locals().get(
-            f'queryset_{self.request.GET.get("filter")}'
+        queryset_ongelezen = queryset.exclude(bekeken_door_gebruikers=self.request.user)
+        if self.request.GET.get("markeer-alle-als-gelezen"):
+            for bericht in queryset_ongelezen:
+                bericht.bekeken_door_gebruikers.add(self.request.user)
+            queryset_ongelezen = queryset.exclude(
+                bekeken_door_gebruikers=self.request.user
+            )
+
+        queryset_gelezen = queryset.filter(bekeken_door_gebruikers=self.request.user)
+        filter = self.request.GET.get("filter", "alle")
+        if filter in ("ongelezen", "gelezen") and isinstance(
+            locals().get(f"queryset_{filter}"), QuerySet
         ):
             queryset = locals().get(f'queryset_{self.request.GET.get("filter")}')
 
@@ -155,9 +172,19 @@ class ProfielNotificatieLijstViewPublic(ListView):
                 },
                 "ongelezen_aantal": queryset_ongelezen.count(),
                 "gelezen_aantal": queryset_gelezen.count(),
+                "filter": filter,
             }
         )
         return context
+
+
+class ProfielNotificatieLijstViewPublicStream(ProfielNotificatieLijstViewPublic):
+    template_name = "public/notificaties/profiel_notificatie_lijst_stream.html"
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        response.headers["Content-Type"] = "text/vnd.turbo-stream.html"
+        return response
 
 
 class NotificatieVerwijderViewPublic(LoginRequiredMixin, DetailView):
