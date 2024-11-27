@@ -313,7 +313,7 @@
                 }
             }
 
-            &:last-child {
+            &:nth-child(n + 4) {
                 flex: 1 0 auto;
                 text-align: right;
             }
@@ -335,10 +335,8 @@
             gap: 0.666em;
             justify-content: space-between;
             padding: 0.7em;
+            background-color: $green-100;
 
-            &.unread {
-                background-color: $green-100;
-            }
             > div {
                 flex: 1;
             }
@@ -375,8 +373,11 @@
             background-color: $primary;
             border-radius: 100%;
         }
-        .is-watched .dot {
-            display: none;
+        .is-watched {
+            background-color: transparent;
+            .dot {
+                display: none;
+            }
         }
     }
 }
