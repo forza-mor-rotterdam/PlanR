@@ -177,20 +177,17 @@
                 top: 0.5em;
             }
 
-            &.show,
-            &.init {
-                .container__content {
-                    .container__message {
-                        display: flex;
-                        gap: 1em;
-                        flex: 1 0 90%;
-                        justify-content: space-between;
+            .container__content {
+                .container__message {
+                    display: flex;
+                    gap: 1em;
+                    flex: 1 0 90%;
+                    justify-content: space-between;
 
-                        .container__link {
-                            a {
-                                transform: translateY(-0.6em);
-                                margin-right: 0;
-                            }
+                    .container__link {
+                        a {
+                            transform: translateY(-0.6em);
+                            margin-right: 0;
                         }
                     }
                 }
