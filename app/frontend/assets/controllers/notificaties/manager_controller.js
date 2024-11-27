@@ -24,17 +24,23 @@ export default class extends Controller {
     this.snackOverzichtPaginaItemsGeladen = []
     console.log(`${this.identifier} connected`)
 
-    // this.setList(this.element.classList.value.includes('toast'))
-    this.element.addEventListener('notificatieVerwijderd', () => {
-      // wacht tot notificatie echt is verwijderd
+    if (this.hasSnackLijstTarget) {
+      this.snackLijstTarget.addEventListener('mouseover', () => {
+        this.snackLijstTarget.classList.remove('collapsed')
+        this.snackLijstTarget.classList.add('expanded')
+      })
+      this.snackLijstTarget.addEventListener('mouseleave', () => {
+        this.snackLijstTarget.classList.remove('expanded')
+        this.snackLijstTarget.classList.add('collapsed')
+      })
       setTimeout(() => {
-        this.resetSnackLijst(this.element.classList.value.includes('toast'))
-      }, 100)
-      console.log(this.notificatieTargets.length)
-    })
+        if (!this.snackLijstTarget.classList.contains('expanded')) {
+          this.snackLijstTarget.classList.add('collapsed')
+        }
+      }, 5000)
+    }
 
     this.initMessages()
-
     this.watchedNotificaties = []
     window.addEventListener('beforeunload', () => {
       console.log(`Connected: ${this.identifier}, beforeunload`)
@@ -48,9 +54,33 @@ export default class extends Controller {
     }
     this.snackOverzichtPaginaItemsGeladen = []
   }
+  snackItemTargetConnected(snackItem) {
+    console.log('Snack item connected to manager', snackItem)
+    snackItem.controller.initializeManager(this)
+  }
+  toastItemTargetConnected(toastItem) {
+    console.log('Toast item connected to manager', toastItem)
+    toastItem.controller.initializeManager(this)
+  }
   snackOverzichtItemTargetConnected(snackOverzichtItem) {
-    console.log(snackOverzichtItem)
+    console.log('Snack overzicht item connected to manager', snackOverzichtItem)
+    snackOverzichtItem.controller.initializeManager(this)
     this.snackOverzichtPaginaItemsGeladen.push(snackOverzichtItem)
+  }
+  snackItemController(notificatieId) {
+    return this.snackItemTargets.find((elem) => elem.dataset.id === String(notificatieId))
+      ?.controller
+  }
+  snackOverzichtItemController(notificatieId) {
+    return this.snackOverzichtItemTargets.find((elem) => elem.dataset.id === String(notificatieId))
+      ?.controller
+  }
+  async markeerSnackAlsGelezen(notificatieId) {
+    const snackItemController = this.snackItemController(notificatieId)
+    const snackOverzichtItemController = this.snackOverzichtItemController(notificatieId)
+    this.laadSnackOverzicht(`markeer-snack-als-gelezen=${notificatieId}`)
+    snackItemController.markeerAlsGelezen()
+    snackOverzichtItemController?.markeerAlsGelezen()
   }
   overzichtTab(e) {
     e.preventDefault()
@@ -62,11 +92,15 @@ export default class extends Controller {
   markeerAlleAlsGelezen(e) {
     e.preventDefault()
     this.snackOverzichtFilter = 'alle'
+    this.verwijderAlleSnackItems()
     this.verwijderAlleSnackOverzichtItems()
-    this.laadSnackOverzicht('markeer-alle-als-gelezen=true')
+    this.laadSnackOverzicht('markeer-alle-snacks-als-gelezen=true')
   }
   verwijderAlleSnackOverzichtItems() {
     this.snackOverzichtItemTargets.map((elem) => elem.remove())
+  }
+  verwijderAlleSnackItems() {
+    this.snackItemTargets.map((elem) => elem.remove())
   }
   async laadMeerSnacks(e) {
     e.preventDefault()
@@ -112,56 +146,6 @@ export default class extends Controller {
     })
     this.watchedNotificaties = []
   }
-  notificatieTargetConnected() {
-    this.setList(this.element.classList.value.includes('toast'))
-  }
-  setList(isToast) {
-    const list = this.notificatieItemTargets
-    // eslint-disable-next-line for-direction
-    for (let i = list.length - 1; i >= 0; i--) {
-      setTimeout(
-        () => {
-          list[i].classList.add('init')
-          if (i === 0) {
-            this.element.classList.remove('busy')
-          }
-        },
-        600 * (-i + list.length)
-      )
-    }
-
-    if (!isToast) {
-      this.element.classList.add('busy')
-      // Alleen als het geen toast is achter elkaar tonen
-      const timeToLeave = list.length > 5 ? list.length * 1000 : 5000
-      for (let i = 0; i < list.length; i++) {
-        setTimeout(
-          () => {
-            list[i].classList.replace('init', 'show')
-            if (i === 0) {
-              list[i].style.transform = `translateY(0) scale(1, 1)`
-            } else {
-              list[i].style.transform = `translateY(-${
-                list[i].offsetTop - list[0].offsetHeight
-              }px) translateY(-100%) translateY(${i * 8}px) scale(${1 - i * 0.02}, 1)`
-            }
-          },
-          timeToLeave + 100 * i
-        )
-      }
-    }
-  }
-
-  resetSnackLijst() {
-    this.snackLijstItem.map((elem, i) => {
-      elem.style.transform =
-        i === 0
-          ? 'translateY(0) scale(1, 1)'
-          : `translateY(-${
-              elem.offsetTop - this.snackLijstItem[0].offsetHeight
-            }px) translateY(-100%) translateY(${i * 8}px) scale(${1 - i * 0.02}, 1)`
-    })
-  }
   initMessages() {
     const url = new URL(this.urlValue)
     url.searchParams.append('topic', this.topicValue)
@@ -178,10 +162,6 @@ export default class extends Controller {
     console.log('onGenericMessage', data)
 
     renderStreamMessage(data)
-    // const turboFrame = document.getElementById(snackOverzichtLijstTurboFrameID)
-    // if (turboFrame) {
-    //   turboFrame.reload()
-    // }
   }
   onMessageOpen(e) {
     console.info('Open mercure connection event', e)
@@ -193,8 +173,7 @@ export default class extends Controller {
     setTimeout(() => this.initMessages(), 5000)
   }
   disconnect() {
-    // this.markNotificatiesAsWatched()
-    // this.es.close()
-    // this.esGebruiker.close()
+    this.es.close()
+    this.esGebruiker.close()
   }
 }

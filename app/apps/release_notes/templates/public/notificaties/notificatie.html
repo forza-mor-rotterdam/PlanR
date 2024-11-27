@@ -5,9 +5,7 @@
          data-notificatie-is-watched-value="true"
          id="notificatie_{{ id }}"
          data-controller="notificaties--notificatie"
-         data-notificatielijst-target="notificatie"
-         {% if id %}data-verwijder-url="{% url 'notificatie_verwijderen_public' id %}{% endif %}
-         ">
+         data-notificatielijst-target="notificatie">
         <div class="container__icon">
             {% if niveau %}
                 {% with "public/notificaties/icons/"|add:niveau|add:".html" as template %}

@@ -25,6 +25,7 @@ from django.views.generic import (
     DeleteView,
     DetailView,
     ListView,
+    TemplateView,
     UpdateView,
     View,
 )
@@ -86,8 +87,8 @@ class ReleaseNoteDetailView(LoginRequiredMixin, ReleaseNoteView, DetailView):
         return render(request, self.template_name, context)
 
 
-class NotificatieLijstViewPublic(ListView):
-    template_name = "public/notificaties/notificatie_lijst.html"
+class SnackView(ListView):
+    template_name = "public/notificaties/snack_lijst.html"
     queryset = ReleaseNote.objects.filter(
         bericht_type=ReleaseNote.BerichtTypeOpties.NOTIFICATIE
     )
@@ -114,8 +115,12 @@ class NotificatieLijstViewPublic(ListView):
         return context
 
 
-class ProfielNotificatieLijstViewPublic(ListView):
-    template_name = "public/notificaties/profiel_notificatie_lijst.html"
+class ToastView(TemplateView):
+    template_name = "public/notificaties/toast_lijst.html"
+
+
+class SnackOverzichtView(ListView):
+    template_name = "public/notificaties/snack_overzicht.html"
     queryset = ReleaseNote.objects.all()
 
     def get_queryset(self):
@@ -141,8 +146,17 @@ class ProfielNotificatieLijstViewPublic(ListView):
         queryset = self.get_queryset()
 
         queryset_ongelezen = queryset.exclude(bekeken_door_gebruikers=self.request.user)
-        if self.request.GET.get("markeer-alle-als-gelezen"):
+        if self.request.GET.get("markeer-alle-snacks-als-gelezen"):
             for bericht in queryset_ongelezen:
+                bericht.bekeken_door_gebruikers.add(self.request.user)
+            queryset_ongelezen = queryset.exclude(
+                bekeken_door_gebruikers=self.request.user
+            )
+        if self.request.GET.get("markeer-snack-als-gelezen"):
+            bericht = queryset.filter(
+                id=self.request.GET.get("markeer-snack-als-gelezen", 0)
+            ).first()
+            if bericht:
                 bericht.bekeken_door_gebruikers.add(self.request.user)
             queryset_ongelezen = queryset.exclude(
                 bekeken_door_gebruikers=self.request.user
@@ -178,25 +192,13 @@ class ProfielNotificatieLijstViewPublic(ListView):
         return context
 
 
-class ProfielNotificatieLijstViewPublicStream(ProfielNotificatieLijstViewPublic):
-    template_name = "public/notificaties/profiel_notificatie_lijst_stream.html"
+class SnackOverzichtStreamView(SnackOverzichtView):
+    template_name = "public/notificaties/snack_overzicht_stream.html"
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
         response.headers["Content-Type"] = "text/vnd.turbo-stream.html"
         return response
-
-
-class NotificatieVerwijderViewPublic(LoginRequiredMixin, DetailView):
-    template_name = "public/notificaties/notificatie_verwijderd.html"
-    queryset = ReleaseNote.objects.filter(
-        bericht_type=ReleaseNote.BerichtTypeOpties.NOTIFICATIE
-    )
-
-    def get_object(self, queryset=None):
-        obj = super().get_object(queryset=queryset)
-        obj.bekeken_door_gebruikers.add(self.request.user)
-        return obj
 
 
 class ReleaseNoteListViewPublic(LoginRequiredMixin, ReleaseNoteView, ListView):

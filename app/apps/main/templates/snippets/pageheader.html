@@ -5,14 +5,10 @@
         {% if pageTitle %}<h1 class="pagetitle h2">{{ pageTitle }}</h1>{% endif %}
     </div>
     <div class="container__user">
-        <div class="container__uitklapper"
-             data-controller="profiel-notificatie-lijst"
-             data-profiel-notificatie-lijst-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
-             data-profiel-notificatie-lijst-topic-value="/notificaties/snack/"
-             data-profiel-notificatie-lijst-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}">
+        <div class="container__uitklapper">
             <span class="trigger--block"></span>
             {% if request.user.is_authenticated %}
-                <turbo-frame id="tf_profiel_notificatie_lijst" src="{% url 'profiel_notificatie_lijst' %}">
+                <turbo-frame id="tf_snack_overzicht" src="{% url 'snack_overzicht' %}">
                 </turbo-frame>
             {% endif %}
         </div>

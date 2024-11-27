@@ -36,7 +36,7 @@ export default class extends Controller {
     console.log('onGenericMessage', data)
 
     renderStreamMessage(data)
-    const turboFrame = document.getElementById('tf_profiel_notificatie_lijst')
+    const turboFrame = document.getElementById('tf_snack_overzicht')
     if (turboFrame) {
       turboFrame.reload()
     }

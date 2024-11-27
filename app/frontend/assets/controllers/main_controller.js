@@ -5,8 +5,8 @@ export default class extends Controller {
       document.body.classList.add('css--safari')
     }
 
-    this.notificationsTurboFrame = document.getElementById('notificatie_lijst_public')
-    this.profielNotificatiesTurboFrame = document.getElementById('tf_profiel_notificatie_lijst')
+    this.notificationsTurboFrame = document.getElementById('tf_snack_lijst')
+    this.profielNotificatiesTurboFrame = document.getElementById('tf_snack_overzicht')
     this.notificationsTurboFrameReloadTimeout = null
 
     setTimeout(() => {

@@ -6,26 +6,26 @@
                 <a role="button"
                    data-notificaties--manager-overzicht-filter-param="alle"
                    data-action="notificaties--manager#overzichtTab"
-                   href="{% url 'profiel_notificatie_lijst' %}?filter=alle">Alle</a>
+                   href="{% url 'snack_overzicht' %}?filter=alle">Alle</a>
             </li>
             <li class="{% if filter == 'ongelezen' %}active{% endif %}">
                 <a role="button"
                    data-notificaties--manager-overzicht-filter-param="ongelezen"
                    data-action="notificaties--manager#overzichtTab"
-                   href="{% url 'profiel_notificatie_lijst' %}?filter=ongelezen">Ongelezen</a>
+                   href="{% url 'snack_overzicht' %}?filter=ongelezen">Ongelezen</a>
             </li>
             <li class="{% if filter == 'gelezen' %}active{% endif %}">
                 <a role="button"
                    data-notificaties--manager-overzicht-filter-param="gelezen"
                    data-action="notificaties--manager#overzichtTab"
-                   href="{% url 'profiel_notificatie_lijst' %}?filter=gelezen">Gelezen</a>
+                   href="{% url 'snack_overzicht' %}?filter=gelezen">Gelezen</a>
             </li>
             {% if filter != 'gelezen' and ongelezen_aantal > 0 %}
                 <li>
                     <a role="button"
                        data-action="notificaties--manager#markeerAlleAlsGelezen"
-                       href="{% url 'profiel_notificatie_lijst' %}"
-                       class="small">Markeer alle gelezen</a>
+                       href="{% url 'snack_overzicht' %}"
+                       class="small">Markeer alle als gelezen</a>
                 </li>
             {% endif %}
         {% endif %}
