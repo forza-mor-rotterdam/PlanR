@@ -13,6 +13,10 @@
         <div class="container__content">
             <h3>{{ message }}</h3>
         </div>
+        <button type="button"
+                class="btn-close--small"
+                aria-label="Sluit"
+                data-action="notificaties--toast-item#hideNotification">{% include "icons/close.svg" %}</button>
     </div>
 </template>
 </turbo-stream>

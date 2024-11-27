@@ -10,7 +10,7 @@ export default class extends Controller {
     this.element.controller = this
     this.manager = null
     if (this.hasNiveauValue) {
-      const duration = this.niveauValue == 'error' ? 5000 : 3000
+      const duration = this.niveauValue == 'error' ? 50000 : 30000
       setTimeout(() => {
         this.hideNotification()
       }, Number(duration))
@@ -28,11 +28,11 @@ export default class extends Controller {
   }
   hideNotification() {
     const notificatie = this.element
-    notificatie.classList.add('hide')
-
-    notificatie.addEventListener('transitionend', () => {
-      this.dispatchRedraw()
-      notificatie.remove()
-    })
+    if (notificatie.classList.contains('notification')) {
+      notificatie.classList.add('hide')
+      setTimeout(() => {
+        notificatie.remove()
+      }, 500)
+    }
   }
 }
