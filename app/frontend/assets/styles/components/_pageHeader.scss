@@ -39,7 +39,7 @@
                 .content {
                     position: absolute;
                     display: block;
-                    top: 0;
+                    top: -5px;
                     transform: scale(0.98, 0.98);
                     right: 1vw;
                     padding: 0;
@@ -60,20 +60,6 @@
 
                     &:not(.container__profiel_notificatie_lijst) {
                         top: 2.2em;
-                    }
-
-                    &:before {
-                        content: "";
-                        width: 0px;
-                        height: 0px;
-                        border-style: solid;
-                        border-width: 0 15px 15px 15px;
-                        border-color: transparent transparent #fff transparent;
-                        transform: rotate(0deg);
-                        position: absolute;
-                        top: -10px;
-                        left: 85%;
-                        transform: translateX(-50%);
                     }
 
                     ul {

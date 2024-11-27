@@ -24,7 +24,7 @@
                 {% include "public/notificaties/snack_overzicht_item.html" with notificatie=object action="append" target="snack_overzicht" only %}
             {% endfor %}
         </ul>
-        <div id="snack_overzicht_laad_meer">
+        <div id="snack_overzicht_laad_meer" class="container__laadmeer">
             {% include "public/notificaties/snack_overzicht_laad_meer.html" with paginering=paginering only %}
         </div>
     </div>
