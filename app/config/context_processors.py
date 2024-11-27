@@ -71,6 +71,4 @@ def general_settings(context):
         "APP_ENV": settings.APP_ENV,
         "MOR_CORE_URL_PREFIX": settings.MOR_CORE_URL_PREFIX,
         "DEPLOY_DATE": deploy_date_formatted,
-        "TOAST_ZICHTBAARHEID_STANDAARD": 3000,
-        "TOAST_ZICHTBAARHEID_VERLENGD": 5000,
     }

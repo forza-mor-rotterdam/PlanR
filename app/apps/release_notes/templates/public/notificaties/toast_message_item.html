@@ -1,0 +1,18 @@
+<turbo-stream action="append" target="toast_lijst">
+<template>
+    <div class="notification {{ message.tags }}"
+         id="notificatie_{{ id }}"
+         data-controller="notificaties--toast-item"
+         data-notificaties--toast-item-niveau-value="{{ message.tags }}"
+         data-notificaties--manager-target="toastItem">
+        <div class="container__icon">
+            {% with "public/notificaties/icons/"|add:message.tags|add:".html" as template %}
+                {% include template %}
+            {% endwith %}
+        </div>
+        <div class="container__content">
+            <h3>{{ message }}</h3>
+        </div>
+    </div>
+</template>
+</turbo-stream>

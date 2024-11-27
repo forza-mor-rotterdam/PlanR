@@ -77,19 +77,14 @@
     </head>
     <body class="{% block body_class %}{% endblock body_class %}"
           data-controller="notificaties--manager"
-          data-notificaties--manager-snack-overzicht-url-value="{% url 'profiel_notificatie_lijst_stream' %}"
+          data-notificaties--manager-snack-overzicht-url-value="{% url 'snack_overzicht_stream' %}"
           data-notificaties--manager-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
           data-notificaties--manager-topic-value="/notificaties/snack/"
           data-notificaties--manager-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}">
         <a href="#id_maincontent" class="skiplink">Ga direct naar de content</a>
-        {% comment %} <div data-controller="turbo-stream" data-turbo-stream-url-value="{{ APP_MERCURE_PUBLIC_URL }}?topic=/notificaties/snack/" data-turbo-stream-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}">
-            <turbo-frame>
-            <div id="notification-messages">
-
-            </div>
-        </div> {% endcomment %}
-        <turbo-frame src="{% url 'notificatie_lijst_public' %}" id="notificatie_lijst_public">
+        <turbo-frame src="{% url 'snack_lijst' %}" id="tf_snack_lijst">
         </turbo-frame>
+        <turbo-frame src="{% url 'toast_lijst' %}" id="tf_toast_lijst"></turbo-frame>
         <div class="container__toplevel">
             {% block aside %}
                 {% include "snippets/aside.html" %}

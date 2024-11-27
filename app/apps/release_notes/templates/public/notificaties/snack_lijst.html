@@ -1,0 +1,12 @@
+{% load is_unwatched_by_user from berichten_tags %}
+<turbo-frame id="tf_snack_lijst">
+{% if request.user.is_authenticated %}
+    <div class="container__notification container__notification--snack"
+         data-notificaties--manager-target="snackLijst"
+         id="snack_lijst">
+        {% for object in snack %}
+            {% include "public/notificaties/snack_item.html" with action="append" target="snack_lijst" notificatie=object only %}
+        {% endfor %}
+    </div>
+{% endif %}
+</turbo-frame>

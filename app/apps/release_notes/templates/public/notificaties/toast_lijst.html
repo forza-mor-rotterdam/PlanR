@@ -1,0 +1,10 @@
+<turbo-frame id="tf_toast_lijst">
+{% if request.user.is_authenticated %}
+    <div id="toast_lijst"
+         class="container__notification container__notification--toast">
+        {% for message in messages %}
+            {% include "public/notificaties/toast_message_item.html" with message=message only %}
+        {% endfor %}
+    </div>
+{% endif %}
+</turbo-frame>
