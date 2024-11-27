@@ -24,28 +24,27 @@ export default class extends Controller {
     this.snackOverzichtPaginaItemsGeladen = []
     console.log(`${this.identifier} connected`)
 
-    if (this.hasSnackLijstTarget) {
-      this.snackLijstTarget.addEventListener('mouseover', () => {
-        this.snackLijstTarget.classList.remove('collapsed')
-        this.snackLijstTarget.classList.add('expanded')
-      })
-      this.snackLijstTarget.addEventListener('mouseleave', () => {
-        this.snackLijstTarget.classList.remove('expanded')
-        this.snackLijstTarget.classList.add('collapsed')
-      })
-      setTimeout(() => {
-        if (!this.snackLijstTarget.classList.contains('expanded')) {
-          this.snackLijstTarget.classList.add('collapsed')
-        }
-      }, 5000)
-    }
-
     this.initMessages()
     this.watchedNotificaties = []
     window.addEventListener('beforeunload', () => {
       console.log(`Connected: ${this.identifier}, beforeunload`)
       this.markNotificatiesAsWatched()
     })
+  }
+  snackLijstTargetConnected() {
+    this.snackLijstTarget.addEventListener('mouseover', () => {
+      this.snackLijstTarget.classList.remove('collapsed')
+      this.snackLijstTarget.classList.add('expanded')
+    })
+    this.snackLijstTarget.addEventListener('mouseleave', () => {
+      this.snackLijstTarget.classList.remove('expanded')
+      this.snackLijstTarget.classList.add('collapsed')
+    })
+    setTimeout(() => {
+      if (!this.snackLijstTarget.classList.contains('expanded')) {
+        this.snackLijstTarget.classList.add('collapsed')
+      }
+    }, 5000)
   }
   snackOverzichtLaadMeerTargetConnected() {
     if (this.snackOverzichtPaginaItemsGeladen.length) {
