@@ -27,6 +27,10 @@
     padding: 0 1em;
     pointer-events: none;
     touch-action: manipulation; /* Laat standaard click en hover gedrag toe */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 5px;
 
     .notification {
         padding: 0 2em 0 0.75em;
@@ -35,7 +39,6 @@
         border-radius: 8px;
         box-sizing: border-box;
         box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.07);
-        margin-bottom: 5px;
         pointer-events: all;
         transition-property: all;
         transition-duration: $transition-duration-default;
@@ -52,13 +55,6 @@
         &:not(:nth-child(-n + 10)) {
             display: none !important;
         }
-
-        &.hide {
-            opacity: 0 !important;
-            // transition-property: opacity;
-            // transition-duration: $transition-duration-default;
-            // transition-timing-function: ease-in-out;
-        }
     }
 
     &.expanded,
@@ -73,7 +69,6 @@
             @for $i from 1 through 10 {
                 &:nth-child(#{$i}n) {
                     z-index: #{$i * -10};
-                    // transform: scale(calc(1 - #{$i * 0.02}))
                     animation: fade-in
                         2 *
                         $transition-duration-default
@@ -87,6 +82,7 @@
     }
 
     &.collapsed {
+        gap: 0;
         .notification {
             @for $i from 2 through 10 {
                 &:nth-child(#{$i}n) {
@@ -94,7 +90,7 @@
                     transform: scale(calc(1 - #{$i * 0.02}));
                     height: 5px;
                     padding: 0;
-                    margin-top: -6px;
+                    margin-top: -1px;
                     > div,
                     > button {
                         opacity: 0;
@@ -154,7 +150,7 @@
         }
 
         .btn-close--small {
-            top: 0.5em;
+            top: 0.2em;
             right: 0.5em;
             > * {
                 pointer-events: none;
@@ -168,10 +164,17 @@
         &.error {
             background-color: $red-200;
         }
+        &:hover {
+            transform: scale(1.01, 1.02);
+        }
     }
 
     @media (min-width: map-get($grid-breakpoints, lg)) {
         .notification {
+            .btn-close--small {
+                top: 0.5em;
+            }
+
             &.show,
             &.init {
                 .container__content {
