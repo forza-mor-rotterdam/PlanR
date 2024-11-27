@@ -20,7 +20,7 @@ export default class extends Controller {
           truncatedString = `${contentString.slice(
             0,
             MAX_CHARACTERS - 13
-          )}... <a href="" data-action="notificatie#readMore">Lees meer</a>`
+          )}... <a href="" data-action="notificaties--snack-item#readMore">Lees meer</a>`
 
           this.element.classList.add('show-truncated')
           const paragraph = document.createElement('p')
