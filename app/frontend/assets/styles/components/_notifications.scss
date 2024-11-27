@@ -3,7 +3,7 @@
     top: 35px;
     height: 100%;
     overflow: hidden;
-    z-index: 20000;
+    // z-index: 20000;
     pointer-events: none;
 
     @media (min-width: map-get($grid-breakpoints, lg)) {
@@ -273,6 +273,53 @@
             margin-right: -8px;
         }
     }
+
+    .container__snack-tabs {
+        padding: 0.5em $input-padding-x;
+        border-bottom: 1px solid $blue-200;
+
+        li {
+            a {
+                text-decoration: none;
+                color: inherit;
+                font-size: 0.8em;
+                transition: all $transition-duration-default $transition-ease-default;
+                border-bottom: 1px solid transparent;
+
+                &:hover {
+                    color: $primary;
+                    border-color: $primary;
+                }
+
+                &.small {
+                    font-size: 0.7em;
+                    color: $gray-800;
+                    text-decoration: underline;
+                    &:hover {
+                        color: $primary;
+                        text-decoration: none;
+                        border-color: transparent;
+                    }
+                }
+            }
+
+            &.active {
+                a {
+                    font-weight: 700;
+                    &:hover {
+                        color: inherit;
+                        border-color: transparent;
+                    }
+                }
+            }
+
+            &:last-child {
+                flex: 1 0 auto;
+                text-align: right;
+            }
+        }
+    }
+
     .container__lijst {
         scroll-behavior: smooth;
         @media (min-width: map-get($grid-breakpoints, lg)) {

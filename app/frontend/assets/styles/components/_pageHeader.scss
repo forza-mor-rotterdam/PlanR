@@ -54,8 +54,8 @@
                     &--large {
                         width: 98vw;
                         max-width: 400px;
-                        // opacity: 1;
-                        // pointer-events: all;
+                        opacity: 1;
+                        pointer-events: all;
                     }
 
                     &:not(.container__profiel_notificatie_lijst) {
@@ -154,7 +154,13 @@
     }
 
     .badge--unread-count {
-        transform: translate(-50%, -50%);
+        transform: translate(-70%, -70%);
         background-color: $primary;
+        span {
+            display: inline-block;
+        }
+        width: 1.5em;
+        height: 1.5em;
+        line-height: 1.5em;
     }
 }
