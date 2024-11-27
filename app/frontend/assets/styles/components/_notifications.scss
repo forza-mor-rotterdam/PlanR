@@ -33,9 +33,10 @@
     flex-direction: column;
     justify-content: flex-start;
     gap: 5px;
+    transition: gap $transition-duration-default $transition-ease-default;
 
     .notification {
-        padding: 0 2em 0 0.75em;
+        padding: 0.75em 2em 0.75em 0.75em;
         position: relative;
         background-color: $white;
         border-radius: 8px;
@@ -47,8 +48,6 @@
         transition-timing-function: $transition-ease-default;
         overflow: hidden;
         font-size: 0.8em;
-        padding-top: 0.75em;
-        padding-bottom: 0.75em;
         display: flex;
         justify-content: flex-start;
         gap: 10px;
@@ -59,27 +58,25 @@
         }
     }
 
+    &.expanded {
+        .notification {
+            @for $i from 2 through 10 {
+                &:nth-child(#{$i}n) {
+                    max-height: 600px;
+                    > div,
+                    > button {
+                        opacity: 1;
+                        transition: opacity $transition-duration-default $transition-ease-default;
+                    }
+                }
+            }
+        }
+    }
+
     &.expanded,
     &.collapsed {
         .notification {
             opacity: 1;
-        }
-    }
-
-    &:not(.expanded):not(.collapsed) {
-        .notification {
-            @for $i from 1 through 10 {
-                &:nth-child(#{$i}n) {
-                    z-index: #{$i * -10};
-                    animation: fade-in
-                        2 *
-                        $transition-duration-default
-                        $transition-ease-default
-                        #{$i *
-                        0.25}s
-                        forwards;
-                }
-            }
         }
     }
 
@@ -90,12 +87,13 @@
                 &:nth-child(#{$i}n) {
                     z-index: #{$i * -10};
                     transform: scale(calc(1 - #{$i * 0.02}));
-                    height: 5px;
+                    max-height: 5px;
                     padding: 0;
                     margin-top: -1px;
                     > div,
                     > button {
                         opacity: 0;
+                        transition: opacity $transition-duration-default $transition-ease-default;
                     }
                 }
             }
@@ -209,10 +207,29 @@
         max-width: 714px;
         z-index: 2000;
 
-        &.busy {
-            pointer-events: none !important;
-            * {
-                pointer-events: none !important;
+        &:not(.expanded):not(.collapsed) {
+            .notification {
+                @for $i from 1 through 10 {
+                    &:nth-child(#{$i}n) {
+                        z-index: #{$i * -10};
+                        opacity: 0;
+                        animation: fade-in
+                            2 *
+                            $transition-duration-default
+                            $transition-ease-default
+                            #{$i *
+                            0.25}s
+                            forwards;
+                    }
+                }
+            }
+        }
+
+        .notification {
+            &.hide {
+                transform: scale(0.98, 0);
+                height: 0;
+                transition: all $transition-duration-default $transition-ease-default;
             }
         }
     }
@@ -230,11 +247,8 @@
         pointer-events: none;
 
         .notification {
-            &.show,
-            &.init {
-                padding-top: 1em;
-                padding-bottom: 1em;
-            }
+            animation: slide-in-from-bottom $transition-duration-default $transition-ease-default
+                forwards 0.5s;
 
             .btn-close--small {
                 opacity: 0;
@@ -265,8 +279,8 @@
                 font-size: 0.75em;
 
                 &.hide {
-                    opacity: 0;
-                    transform: translateY(20px) scale(1);
+                    animation: slide-out-to-bottom $transition-duration-default
+                        $transition-ease-default;
                 }
             }
         }

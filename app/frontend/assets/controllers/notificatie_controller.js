@@ -102,9 +102,14 @@ export default class extends Controller {
 
   hideNotification() {
     const notificatie = this.element
-    if (notificatie.nodeName === 'TURBO-FRAME') {
-      notificatie.setAttribute('src', notificatie.getAttribute('data-src'))
-      notificatie.remove()
+    if (notificatie.classList.contains('notification')) {
+      notificatie.classList.add('hide')
+      if (notificatie.nodeName === 'TURBO-FRAME') {
+        notificatie.setAttribute('src', notificatie.getAttribute('data-src'))
+      }
+      setTimeout(() => {
+        notificatie.remove()
+      }, 500)
     }
   }
 
