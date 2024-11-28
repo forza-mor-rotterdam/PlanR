@@ -1,0 +1,15 @@
+<turbo-stream action="update" target="snack_overzicht_geen_resultaat">
+<template>
+    {% if aantal is 0 %}
+        <div class="no-content">
+            <p>{% include "icons/check_message.svg" %}</p>
+            <h3>Geen ongelezen notificaties</h3>
+            <p>Je hebt op dit moment geen ongelezen notificaties.</p>
+            <a role="button"
+               data-notificaties--manager-overzicht-filter-param="alle"
+               data-action="notificaties--manager#overzichtTab"
+               href="{% url 'snack_overzicht' %}?filter=alle">Toon alle notificaties</a>
+        </div>
+    {% endif %}
+</template>
+</turbo-stream>
