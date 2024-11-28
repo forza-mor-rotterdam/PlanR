@@ -355,6 +355,7 @@
         flex-direction: column;
         justify-content: space-between;
         scroll-behavior: smooth;
+
         &::-webkit-scrollbar {
             width: 5px;
         }
@@ -385,6 +386,30 @@
                 text-decoration: none;
             }
         }
+        li {
+            opacity: 0;
+            animation: fade-in $transition-duration-default $transition-ease-default forwards;
+        }
+
+        .no-content {
+            padding: $input-padding-x;
+            text-align: center;
+            opacity: 0;
+            animation: fade-in 2 * $transition-duration-default $transition-ease-default forwards;
+
+            h3 {
+                font-size: 0.8em;
+                margin-bottom: 0;
+                color: $primary;
+            }
+            p,
+            a {
+                font-size: 0.7em;
+            }
+            p {
+                margin-top: 0;
+            }
+        }
     }
 
     .container__laadmeer {
@@ -393,6 +418,10 @@
         text-align: center;
         a {
             font-size: 0.7em;
+
+            &.disabled {
+                display: none;
+            }
         }
     }
 
