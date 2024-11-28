@@ -11,25 +11,17 @@ export default class extends Controller {
     this.initialTouchX = null
     this.finalTouchX = null
     this.deltaX = null
-    let contentString = null
+    this.contentString = null
     let truncatedString = null
     if (this.hasContentTarget) {
-      if (!this.contentTarget.parentNode.querySelector('.message--truncated')) {
-        contentString = this.contentTarget.innerText
-        if (contentString.length > MAX_CHARACTERS) {
-          truncatedString = `${contentString.slice(
-            0,
-            MAX_CHARACTERS - 13
-          )}... <a href="" data-action="notificaties--snack-item#readMore">Lees meer</a>`
-
-          this.element.classList.add('show-truncated')
-          const paragraph = document.createElement('p')
-          paragraph.innerHTML = truncatedString
-          paragraph.classList.add('message--truncated')
-          this.contentTarget.classList.add('message--initial')
-          this.contentTarget.parentNode.appendChild(paragraph)
-          this.contentTarget.style.height = `${paragraph.clientHeight}px`
-        }
+      this.contentString = this.contentTarget.innerText
+      if (this.contentString.length > MAX_CHARACTERS) {
+        truncatedString = `${this.contentString.slice(
+          0,
+          MAX_CHARACTERS - 13
+        )}... <a href="" data-action="notificaties--snack-item#readMore">Lees meer</a>`
+        this.contentTarget.innerHTML = truncatedString
+        this.contentTarget.style.height = `${this.contentTarget.clientHeight}px`
       }
     }
 
@@ -85,11 +77,8 @@ export default class extends Controller {
   }
   readMore(e = null) {
     e?.preventDefault()
-    this.element.classList.remove('show-truncated')
+    this.contentTarget.innerText = this.contentString
     this.contentTarget.style.height = `${this.contentTarget.scrollHeight}px`
-    setTimeout(() => {
-      this.dispatchRedraw, 500
-    })
   }
   markeerAlsGelezen() {
     this.element.classList.add('hide')

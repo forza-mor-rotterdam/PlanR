@@ -13,7 +13,9 @@
             </div>
             <div class="container__content">
                 <h3>{{ notificatie.titel }}</h3>
-                {% if notificatie.korte_beschrijving %}<p>{{ notificatie.korte_beschrijving }}</p>{% endif %}
+                {% if notificatie.korte_beschrijving %}
+                    <p data-notificaties--snack-overzicht-item-target="content">{{ notificatie.korte_beschrijving }}</p>
+                {% endif %}
                 <small>{{ notificatie.publicatie_datum }}</small>
             </div>
             <div class="container__status">
