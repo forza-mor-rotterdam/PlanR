@@ -28,11 +28,11 @@ def gebruikersnaam(gebruiker, no_fallback=False):
 def gebruikersinitialen(gebruiker):
     full_initials = "@"
     if isinstance(gebruiker, dict):
-        first_name_initial = gebruiker.get("first_name", "*")[0]
+        first_name_initial = gebruiker.get("first_name", "@")[0]
         # last_name_initial = gebruiker.get("last_name", "*")[0]
         full_initials = f"{first_name_initial}".strip()
     elif hasattr(gebruiker, "first_name") or hasattr(gebruiker, "last_name"):
-        first_name_initial = gebruiker.first_name[0] if gebruiker.first_name else "*"
+        first_name_initial = gebruiker.first_name[0] if gebruiker.first_name else "@"
         # last_name_initial = gebruiker.last_name[0] if gebruiker.last_name else "*"
         full_initials = f"{first_name_initial}".strip()
     return full_initials
