@@ -351,19 +351,20 @@
     }
 
     .container__lijst {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        scroll-behavior: smooth;
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
         @media (min-width: map-get($grid-breakpoints, lg)) {
-            max-height: 550px;
+            height: 550px;
             overflow-y: auto;
         }
-    }
 
-    .container__laadmeer {
-        padding: 0.5em $input-padding-x 0.8em;
-        border-top: 1px solid $blue-200;
-        text-align: center;
         a {
             color: inherit;
-            font-size: 0.7em;
             transition: all $transition-duration-default $transition-ease-default;
 
             &:hover {
@@ -373,8 +374,18 @@
         }
     }
 
+    .container__laadmeer {
+        padding: 0.5em $input-padding-x 0.8em;
+        border-top: 1px solid $blue-200;
+        text-align: center;
+        a {
+            font-size: 0.7em;
+        }
+    }
+
     .list-notificaties {
         @include list-clean();
+        position: relative;
         li {
             display: flex;
             gap: 0.666em;

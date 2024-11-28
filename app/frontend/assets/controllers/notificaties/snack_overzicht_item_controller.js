@@ -6,19 +6,19 @@ export default class extends Controller {
 
   connect() {
     this.element.controller = this
-    this.contentString = null
     this.manager = null
-    let truncatedString = null
-    console.log(`${this.identifier} connected`)
+    this.contentString = null
+    this.truncatedString = null
     if (this.hasContentTarget) {
       this.contentString = this.contentTarget.innerText
       if (this.contentString.length > MAX_CHARACTERS) {
-        truncatedString = `${this.contentString.slice(
+        this.truncatedString = `${this.contentString.slice(
           0,
           MAX_CHARACTERS - 13
         )}... <a href="" data-action="notificaties--snack-overzicht-item#readMore">Lees meer</a>`
-        this.contentTarget.innerHTML = truncatedString
+        this.contentTarget.innerHTML = this.truncatedString
         this.contentTarget.style.height = `${this.contentTarget.clientHeight}px`
+        this.initialHeight = this.contentTarget.clientHeight
       }
     }
   }
@@ -30,7 +30,12 @@ export default class extends Controller {
   }
   readMore(e = null) {
     e?.preventDefault()
-    this.contentTarget.innerText = this.contentString
+    this.contentTarget.innerHTML = `${this.contentString} <a href="" data-action="notificaties--snack-overzicht-item#readLess">Lees minder</a>`
     this.contentTarget.style.height = `${this.contentTarget.scrollHeight}px`
+  }
+  readLess(e = null) {
+    e?.preventDefault()
+    this.contentTarget.innerHTML = this.truncatedString
+    this.contentTarget.style.height = `${this.initialHeight}px`
   }
 }

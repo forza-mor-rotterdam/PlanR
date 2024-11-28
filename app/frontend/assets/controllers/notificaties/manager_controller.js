@@ -55,15 +55,12 @@ export default class extends Controller {
     this.snackOverzichtPaginaItemsGeladen = []
   }
   snackItemTargetConnected(snackItem) {
-    console.log('Snack item connected to manager', snackItem)
     snackItem.controller.initializeManager(this)
   }
   toastItemTargetConnected(toastItem) {
-    console.log('Toast item connected to manager', toastItem)
     toastItem.controller.initializeManager(this)
   }
   snackOverzichtItemTargetConnected(snackOverzichtItem) {
-    console.log('Snack overzicht item connected to manager', snackOverzichtItem)
     snackOverzichtItem.controller.initializeManager(this)
     this.snackOverzichtPaginaItemsGeladen.push(snackOverzichtItem)
   }
