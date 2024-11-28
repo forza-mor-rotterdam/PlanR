@@ -49,8 +49,9 @@ export default class extends Controller {
   }
   snackOverzichtLaadMeerTargetConnected() {
     if (this.snackOverzichtPaginaItemsGeladen.length) {
-      this.snackOverzichtPaginaItemsGeladen[0].parentElement.parentElement.scrollTop =
-        this.snackOverzichtPaginaItemsGeladen[0].offsetTop
+      const firstSnackFromBatch = this.snackOverzichtPaginaItemsGeladen.slice(0)[0]
+      const scrollContainer = firstSnackFromBatch.parentElement.parentElement
+      scrollContainer.scrollTop = firstSnackFromBatch.offsetTop
     }
     this.snackOverzichtPaginaItemsGeladen = []
   }
