@@ -26,6 +26,7 @@ def gebruikersnaam(gebruiker, no_fallback=False):
 
 
 def gebruikersinitialen(gebruiker):
+    full_initials = "@"
     if isinstance(gebruiker, dict):
         first_name_initial = gebruiker.get("first_name", "*")[0]
         # last_name_initial = gebruiker.get("last_name", "*")[0]
