@@ -12,7 +12,8 @@ export default class extends Controller {
   static values = {
     url: String,
     token: String,
-    topic: String,
+    topicSnack: String,
+    topicToast: String,
     snackOverzichtAantal: Number,
     snackOverzichtUrl: String,
   }
@@ -147,7 +148,7 @@ export default class extends Controller {
   }
   initMessages() {
     const url = new URL(this.urlValue)
-    url.searchParams.append('topic', this.topicValue)
+    url.searchParams.append('topic', this.topicSnackValue)
     url.searchParams.append('authorization', this.tokenValue)
 
     this.es = new EventSource(url)
@@ -158,9 +159,10 @@ export default class extends Controller {
   }
   onMessage(e) {
     let data = JSON.parse(e.data)
-    console.log('onGenericMessage', data)
-
+    console.log(e)
+    console.log('onMessage', data)
     renderStreamMessage(data)
+    this.laadSnackOverzicht()
   }
   onMessageOpen(e) {
     console.info('Open mercure connection event', e)
@@ -168,11 +170,9 @@ export default class extends Controller {
   onMessageError(e) {
     console.error(e, 'An error occurred while attempting to connect.')
     this.es.close()
-    this.esGebruiker.close()
     setTimeout(() => this.initMessages(), 5000)
   }
   disconnect() {
     this.es.close()
-    this.esGebruiker.close()
   }
 }
