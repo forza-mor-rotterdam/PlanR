@@ -10,7 +10,7 @@ export default class extends Controller {
     this.element.controller = this
     this.manager = null
     if (this.hasNiveauValue) {
-      const duration = this.niveauValue == 'error' ? 50000 : 30000
+      const duration = this.niveauValue == 'error' ? 5000 : 3000
       setTimeout(() => {
         this.hideNotification()
       }, Number(duration))

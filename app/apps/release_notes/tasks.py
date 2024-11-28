@@ -43,7 +43,7 @@ def task_activeer_notificatie(self, notificatie_id):
             "action": "append",
         },
     )
-
-    MercureService().publish("/notificaties/snack/", rendered)
+    topic = "/notificaties/snack/"
+    MercureService().publish(topic, data=rendered)
 
     return f"Activeren notificatie met id: {notificatie.id}"

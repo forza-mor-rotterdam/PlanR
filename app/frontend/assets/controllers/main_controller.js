@@ -5,16 +5,13 @@ export default class extends Controller {
       document.body.classList.add('css--safari')
     }
 
-    this.notificationsTurboFrame = document.getElementById('tf_snack_lijst')
-    this.profielNotificatiesTurboFrame = document.getElementById('tf_snack_overzicht')
+    this.toastTurboFrame = document.getElementById('tf_toast_lijst')
     this.notificationsTurboFrameReloadTimeout = null
 
     setTimeout(() => {
       document.addEventListener('turbo:frame-load', (event) => {
         event.preventDefault()
-        if (
-          ![this.notificationsTurboFrame, this.profielNotificatiesTurboFrame].includes(event.target)
-        ) {
+        if (![this.toastTurboFrame].includes(event.target)) {
           this.reloadNotificationsTurboFrame()
         }
       })
@@ -23,20 +20,21 @@ export default class extends Controller {
       const {
         detail: { response, visit },
       } = event
+      console.log(response)
+      console.log(event)
       event.preventDefault()
+      // visit(document.location.href)
+
       console.error('Content missing', response.url, visit)
-      if (
-        ![this.notificationsTurboFrame, this.profielNotificatiesTurboFrame].includes(event.target)
-      ) {
+      if (![this.toastTurboFrame].includes(event.target)) {
         this.reloadNotificationsTurboFrame()
       }
     })
   }
   reloadNotificationsTurboFrame() {
-    if (!this.notificationsTurboFrameReloadTimeout && this.notificationsTurboFrame) {
+    if (!this.notificationsTurboFrameReloadTimeout && this.toastTurboFrame) {
       this.notificationsTurboFrameReloadTimeout = setTimeout(() => {
-        // this.notificationsTurboFrame.reload()
-        // this.profielNotificatiesTurboFrame.reload()
+        this.toastTurboFrame.reload()
         this.notificationsTurboFrameReloadTimeout = null
       }, 200)
     }

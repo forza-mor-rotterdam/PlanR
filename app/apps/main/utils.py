@@ -225,17 +225,11 @@ def set_ordering(gebruiker, nieuwe_ordering):
 
 
 def subscriptions_voor_topic(topic, alle_subscriptions):
-    import json
-
-    print(topic)
-    print(json.dumps(alle_subscriptions, indent=4))
     subscriptions = [
         subscription
         for subscription in alle_subscriptions
         if subscription.get("topic") == topic
     ]
-    print(topic)
-    print(json.dumps(subscriptions, indent=4))
     out = [
         v
         for k, v in {
@@ -245,9 +239,7 @@ def subscriptions_voor_topic(topic, alle_subscriptions):
             for subscription in subscriptions
         }.items()
     ]
-    print("out")
-    print(out)
-    return
+    return out
 
 
 def publiceer_topic_met_subscriptions(topic, alle_subscriptions=None):
