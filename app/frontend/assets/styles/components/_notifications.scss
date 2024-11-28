@@ -286,19 +286,6 @@
     }
 }
 
-.message--truncated {
-    display: none;
-}
-
-.show-truncated {
-    .message--truncated {
-        display: block;
-    }
-    .message--initial {
-        display: none;
-    }
-}
-
 // lijst profiel
 .container__profiel_notificatie_lijst {
     header {
@@ -422,6 +409,8 @@
             }
             p {
                 margin: 0;
+                overflow: hidden;
+                transition: height $transition-duration-default $transition-ease-default;
             }
             small {
                 font-size: 0.6em;
