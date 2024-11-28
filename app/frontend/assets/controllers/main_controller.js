@@ -5,8 +5,8 @@ export default class extends Controller {
       document.body.classList.add('css--safari')
     }
 
-    this.notificationsTurboFrame = document.getElementById('notificatie_lijst_public')
     this.sessionTimerTurboFrame = document.getElementById('tf_session_timer')
+    this.toastTurboFrame = document.getElementById('tf_toast_lijst')
     this.notificationsTurboFrameReloadTimeout = null
 
     setTimeout(() => {
@@ -16,7 +16,7 @@ export default class extends Controller {
       })
       document.addEventListener('turbo:frame-load', (event) => {
         event.preventDefault()
-        if (![this.notificationsTurboFrame, this.sessionTimerTurboFrame].includes(event.target)) {
+        if (![this.toastTurboFrame].includes(event.target)) {
           this.reloadNotificationsTurboFrame()
         }
       })
@@ -25,9 +25,13 @@ export default class extends Controller {
       const {
         detail: { response, visit },
       } = event
+      console.log(response)
+      console.log(event)
       event.preventDefault()
+      // visit(document.location.href)
+
       console.error('Content missing', response.url, visit)
-      if (![this.notificationsTurboFrame, this.sessionTimerTurboFrame].includes(event.target)) {
+      if (![this.toastTurboFrame].includes(event.target)) {
         this.reloadNotificationsTurboFrame()
       }
     })
@@ -36,7 +40,6 @@ export default class extends Controller {
     if (!this.notificationsTurboFrameReloadTimeout) {
       this.notificationsTurboFrameReloadTimeout = setTimeout(() => {
         try {
-          this.notificationsTurboFrame?.reload()
           this.sessionTimerTurboFrame?.reload()
           this.notificationsTurboFrameReloadTimeout = null
         } catch (e) {

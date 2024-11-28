@@ -79,7 +79,7 @@
           data-controller="notificaties--manager"
           data-notificaties--manager-snack-overzicht-url-value="{% url 'snack_overzicht_stream' %}"
           data-notificaties--manager-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
-          data-notificaties--manager-topic-value="/notificaties/snack/"
+          data-notificaties--manager-topic-snack-value="/notificaties/snack/"
           data-notificaties--manager-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}">
         <a href="#id_maincontent" class="skiplink">Ga direct naar de content</a>
         <turbo-frame src="{% url 'snack_lijst' %}" id="tf_snack_lijst">
