@@ -33,7 +33,6 @@
                     {% csrf_token %}
                     {{ form.management_form }}
                     {{ form.media }}
-                    {{ form.errors }}
                     <fieldset>
                         <div class="form-control__with-helptext js-validation">{{ form.bericht_type|render_rotterdam_formulier }}</div>
                         <div data-berichten-beheer-target="releaseNote hideable">
