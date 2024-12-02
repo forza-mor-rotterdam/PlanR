@@ -87,7 +87,7 @@ class ReleaseNoteDetailView(LoginRequiredMixin, ReleaseNoteView, DetailView):
         return render(request, self.template_name, context)
 
 
-class SnackView(ListView):
+class SnackView(LoginRequiredMixin, ListView):
     template_name = "public/notificaties/snack_lijst.html"
     queryset = ReleaseNote.objects.filter(
         bericht_type=ReleaseNote.BerichtTypeOpties.NOTIFICATIE
@@ -115,11 +115,11 @@ class SnackView(ListView):
         return context
 
 
-class ToastView(TemplateView):
+class ToastView(LoginRequiredMixin, TemplateView):
     template_name = "public/notificaties/toast_lijst.html"
 
 
-class SnackOverzichtView(ListView):
+class SnackOverzichtView(LoginRequiredMixin, ListView):
     template_name = "public/notificaties/snack_overzicht.html"
     queryset = ReleaseNote.objects.all()
 

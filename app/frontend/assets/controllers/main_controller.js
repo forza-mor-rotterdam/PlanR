@@ -15,8 +15,7 @@ export default class extends Controller {
         window.location.replace(`/login/?next=${document.location.pathname}`)
       })
       document.addEventListener('turbo:frame-load', (event) => {
-        event.preventDefault()
-        if (![this.toastTurboFrame].includes(event.target)) {
+        if (![this.toastTurboFrame, this.sessionTimerTurboFrame].includes(event.target)) {
           this.reloadNotificationsTurboFrame()
         }
       })
@@ -31,7 +30,7 @@ export default class extends Controller {
       // visit(document.location.href)
 
       console.error('Content missing', response.url, visit)
-      if (![this.toastTurboFrame].includes(event.target)) {
+      if (![this.toastTurboFrame, this.sessionTimerTurboFrame].includes(event.target)) {
         this.reloadNotificationsTurboFrame()
       }
     })
@@ -40,6 +39,7 @@ export default class extends Controller {
     if (!this.notificationsTurboFrameReloadTimeout) {
       this.notificationsTurboFrameReloadTimeout = setTimeout(() => {
         try {
+          this.toastTurboFrame?.reload()
           this.sessionTimerTurboFrame?.reload()
           this.notificationsTurboFrameReloadTimeout = null
         } catch (e) {

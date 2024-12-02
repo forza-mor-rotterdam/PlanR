@@ -27,10 +27,6 @@ export default class extends Controller {
 
     this.initMessages()
     this.watchedNotificaties = []
-    window.addEventListener('beforeunload', () => {
-      console.log(`Connected: ${this.identifier}, beforeunload`)
-      this.markNotificatiesAsWatched()
-    })
   }
   snackLijstTargetConnected() {
     this.snackLijstTarget.addEventListener('mouseover', () => {
@@ -137,12 +133,6 @@ export default class extends Controller {
         this.watchedNotificaties.push(elem.dataset.verwijderUrl)
       }
     })
-  }
-  markNotificatiesAsWatched() {
-    this.watchedNotificaties.map((url) => {
-      this.notificatieSeen(url)
-    })
-    this.watchedNotificaties = []
   }
   initMessages() {
     const url = new URL(this.urlValue)
