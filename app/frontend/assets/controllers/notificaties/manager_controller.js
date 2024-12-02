@@ -37,11 +37,11 @@ export default class extends Controller {
       this.snackLijstTarget.classList.remove('expanded')
       this.snackLijstTarget.classList.add('collapsed')
     })
-    setTimeout(() => {
-      if (!this.snackLijstTarget.classList.contains('expanded')) {
-        this.snackLijstTarget.classList.add('collapsed')
-      }
-    }, 5000)
+    // setTimeout(() => {
+    //   if (!this.snackLijstTarget.classList.contains('expanded')) {
+    //     this.snackLijstTarget.classList.add('collapsed')
+    //   }
+    // }, 5000)
   }
   snackOverzichtLaadMeerTargetConnected() {
     if (this.snackOverzichtPaginaItemsGeladen.length) {

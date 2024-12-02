@@ -66,6 +66,12 @@ export default class extends Controller {
   }
   initializeManager(manager) {
     this.manager = manager
+
+    setTimeout(() => {
+      // if (!this.snackLijstTarget.classList.contains('expanded')) {
+      this.element.classList.add('collapsed')
+      // }
+    }, 5000)
   }
   disconnect() {
     if ('ontouchstart' in window) {
