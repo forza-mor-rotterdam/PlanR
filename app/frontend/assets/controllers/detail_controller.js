@@ -291,7 +291,6 @@ export default class extends Controller {
     event.preventDefault()
     const modal = this.modalAfhandelenTarget
     const modalBackdrop = document.querySelector('.modal-backdrop')
-
     this.turboActionModalTarget.setAttribute('src', event.params.action)
     this.turboActionModalTarget.addEventListener('turbo:frame-load', (event) => {
       if (event.target.children.length) {

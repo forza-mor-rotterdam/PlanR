@@ -6,12 +6,16 @@ export default class extends Controller {
     }
 
     this.toastTurboFrame = document.getElementById('tf_toast_lijst')
+    this.sessionTimerTurboFrame = document.getElementById('tf_session_timer')
     this.notificationsTurboFrameReloadTimeout = null
 
     setTimeout(() => {
-      document.addEventListener('turbo:frame-load', (event) => {
+      document.addEventListener('turbo:fetch-request-error', (event) => {
         event.preventDefault()
-        if (![this.toastTurboFrame].includes(event.target)) {
+        window.location.replace(`/login/?next=${document.location.pathname}`)
+      })
+      document.addEventListener('turbo:frame-load', (event) => {
+        if (![this.toastTurboFrame, this.sessionTimerTurboFrame].includes(event.target)) {
           this.reloadNotificationsTurboFrame()
         }
       })
@@ -26,16 +30,21 @@ export default class extends Controller {
       // visit(document.location.href)
 
       console.error('Content missing', response.url, visit)
-      if (![this.toastTurboFrame].includes(event.target)) {
+      if (![this.toastTurboFrame, this.sessionTimerTurboFrame].includes(event.target)) {
         this.reloadNotificationsTurboFrame()
       }
     })
   }
   reloadNotificationsTurboFrame() {
-    if (!this.notificationsTurboFrameReloadTimeout && this.toastTurboFrame) {
+    if (!this.notificationsTurboFrameReloadTimeout) {
       this.notificationsTurboFrameReloadTimeout = setTimeout(() => {
-        this.toastTurboFrame.reload()
-        this.notificationsTurboFrameReloadTimeout = null
+        try {
+          this.toastTurboFrame?.reload()
+          this.sessionTimerTurboFrame?.reload()
+          this.notificationsTurboFrameReloadTimeout = null
+        } catch (e) {
+          console.error('reloadNotificationsTurboFrame error: ', e)
+        }
       }, 200)
     }
   }
