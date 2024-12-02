@@ -40,7 +40,7 @@ def task_activeer_notificatie(self, notificatie_id):
         {
             "notificatie": notificatie,
             "target": "snack_lijst",
-            "action": "append",
+            "action": "prepend",
         },
     )
     topic = "/notificaties/snack/"
