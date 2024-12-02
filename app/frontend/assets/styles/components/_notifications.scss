@@ -206,6 +206,7 @@
     &--snack {
         max-width: 714px;
         z-index: 2000;
+        // gap: 0;
 
         &:not(.expanded):not(.collapsed) {
             .notification {
@@ -229,6 +230,46 @@
                 transform: scale(0.98, 0);
                 height: 0;
                 transition: all $transition-duration-default $transition-ease-default;
+            }
+        }
+        .notification.expanded {
+            @for $i from 2 through 10 {
+                &:nth-child(#{$i}n) {
+                    max-height: 600px;
+                    > div,
+                    > button {
+                        opacity: 1;
+                        transition: opacity $transition-duration-default $transition-ease-default;
+                    }
+                }
+            }
+        }
+        &:not(.expanded) .notification.collapsed {
+            @for $i from 2 through 10 {
+                &:nth-child(#{$i}n) {
+                    z-index: #{$i * -10};
+                    transform: scale(calc(1 - #{$i * 0.02}));
+                    max-height: 5px;
+                    padding: 0;
+                    margin-top: -1px;
+                    > div,
+                    > button {
+                        opacity: 0;
+                        transition: opacity $transition-duration-default $transition-ease-default;
+                    }
+                }
+            }
+        }
+        &.expanded .notification.collapsed {
+            @for $i from 2 through 10 {
+                &:nth-child(#{$i}n) {
+                    max-height: 600px;
+                    > div,
+                    > button {
+                        opacity: 1;
+                        transition: opacity $transition-duration-default $transition-ease-default;
+                    }
+                }
             }
         }
     }
