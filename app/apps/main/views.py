@@ -149,8 +149,12 @@ def http_500(request):
 
 class LoginView(View):
     def get(self, request, *args, **kwargs):
+        if request.user.has_perms(["authorisatie.melding_lijst_bekijken"]):
+            return redirect(reverse("melding_lijst"))
+        if request.user.has_perms(["authorisatie.beheer_bekijken"]):
+            return redirect(reverse("beheer"))
         if settings.OIDC_ENABLED:
-            return redirect("/oidc/authenticate/")
+            return redirect(f"/oidc/authenticate/?next={request.GET.get('next', '/')}")
         if settings.ENABLE_DJANGO_ADMIN_LOGIN:
             return redirect(f"/admin/login/?next={request.GET.get('next', '/admin')}")
 
