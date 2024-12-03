@@ -101,13 +101,13 @@ MIDDLEWARE = (
     "django_permissions_policy.PermissionsPolicyMiddleware",
     "csp.middleware.CSPMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "django_session_timeout.middleware.SessionTimeoutMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "apps.main.middleware.SessionTimeoutMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 )
 
@@ -297,6 +297,9 @@ CSP_CONNECT_SRC = (
     (
         "'self'",
         "api.pdok.nl",
+        "iam.forzamor.nl",
+        "sts.rotterdam.nl",
+        "sts-acc.rotterdam.nl",
         "mercure.planr-test.forzamor.nl",
         "mercure.planr-acc.forzamor.nl",
         "mercure.planr.forzamor.nl",
@@ -305,6 +308,7 @@ CSP_CONNECT_SRC = (
     else (
         "'self'",
         "ws:",
+        "iam.forzamor.nl",
         "api.pdok.nl",
         "localhost:7002",
     )
@@ -352,10 +356,19 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_EXPIRE_MAXIMUM_SECONDS = int(
     os.getenv("SESSION_EXPIRE_MAXIMUM_SECONDS", "28800")
 )
-SESSION_EXPIRE_SECONDS = int(os.getenv("SESSION_EXPIRE_SECONDS", "3600"))
-SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD = int(
-    os.getenv("SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD", "1800")
+SESSION_EXPIRE_SECONDS = int(
+    os.getenv("SESSION_EXPIRE_SECONDS", "3600" if APP_ENV != "test" else "600")
 )
+SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD = int(
+    os.getenv(
+        "SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD",
+        "1800" if APP_ENV != "test" else "60",
+    )
+)
+SESSION_CHECK_INTERVAL_SECONDS = int(
+    os.getenv("SESSION_CHECK_INTERVAL_SECONDS", "60" if APP_ENV != "test" else "1")
+)
+SESSION_SHOW_TIMER_SECONDS = int(os.getenv("SESSION_SHOW_TIMER_SECONDS", "300"))
 
 THUMBNAIL_BACKEND = "utils.images.ThumbnailBackend"
 THUMBNAIL_PREFIX = "afbeeldingen"

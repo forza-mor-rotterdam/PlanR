@@ -21,6 +21,9 @@
                     <ul class="list-nav--tertiary">
                         {% if request.user.is_authenticated %}
                             <li>
+                                <turbo-frame id="tf_session_timer" src="{% url 'session_timer' %}"></turbo-frame>
+                            </li>
+                            <li>
                                 <a href="{% url 'gebruiker_profiel' %}">
                                     <svg width="20"
                                          height="20"

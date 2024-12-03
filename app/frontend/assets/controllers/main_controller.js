@@ -5,8 +5,8 @@ export default class extends Controller {
       document.body.classList.add('css--safari')
     }
 
-    this.toastTurboFrame = document.getElementById('tf_toast_lijst')
     this.sessionTimerTurboFrame = document.getElementById('tf_session_timer')
+    this.toastTurboFrame = document.getElementById('tf_toast_lijst')
     this.notificationsTurboFrameReloadTimeout = null
 
     setTimeout(() => {

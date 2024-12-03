@@ -10,6 +10,7 @@ export default class extends Controller {
       maxCharacterElement.innerHTML = `${maxCharacterPrefix}${this.element.value.length}/${this.element.maxLength}`
 
       this.element.parentNode.insertBefore(maxCharacterElement, this.element.nextSibling)
+      this.updateCharacterCount()
     }
   }
 

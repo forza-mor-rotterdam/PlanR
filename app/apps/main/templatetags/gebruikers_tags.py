@@ -1,6 +1,7 @@
 from apps.main.services import MORCoreService
 from django import template
 from django.contrib.auth import get_user_model
+from django.core.validators import validate_email
 from utils.diversen import gebruikersinitialen as gebruikersinitialen_basis
 from utils.diversen import gebruikersnaam as gebruikersnaam_basis
 
@@ -32,8 +33,11 @@ def get_field_from_gebruiker_middels_email(value, field_name=None):
 
 @register.filter
 def get_gebruiker_object_middels_email(value):
-    if not value:
-        return None
+    try:
+        validate_email(value.strip())
+    except Exception:
+        return {}
+
     gebruiker_response = MORCoreService().get_gebruiker(
         gebruiker_email=value,
     )

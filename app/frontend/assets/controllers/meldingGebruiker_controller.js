@@ -65,14 +65,14 @@ export default class extends Controller {
   async publiceerTopic(topic) {
     const url = `/publiceer-topic/${topic}/`
     try {
-      const response = await fetch(`${url}`)
+      const response = await fetch(`${url}`, { redirect: 'manual' })
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`)
       }
-      const json_resp = response.json()
-      return await json_resp
+      const json_resp = await response.json()
+      return json_resp
     } catch (error) {
-      console.error('Error fetching address details:', error.message)
+      console.error('Error fetching address details:', await error)
     }
   }
 
