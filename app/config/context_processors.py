@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime, timedelta
 
 from apps.main.services import MercureService
 from apps.release_notes.models import ReleaseNote
@@ -49,8 +50,19 @@ def general_settings(context):
     return {
         "DEBUG": settings.DEBUG,
         "DEV_SOCKET_PORT": settings.DEV_SOCKET_PORT,
+        "SESSION_SHOW_TIMER_SECONDS": settings.SESSION_SHOW_TIMER_SECONDS,
+        "SESSION_CHECK_INTERVAL_SECONDS": settings.SESSION_CHECK_INTERVAL_SECONDS,
         "SESSION_EXPIRY_MAX_TIMESTAMP": session_expiry_max_timestamp,
+        "SESSION_EXPIRY_MAX_DATETIME": datetime.fromtimestamp(
+            session_expiry_max_timestamp
+        ),
         "SESSION_EXPIRY_TIMESTAMP": session_expiry_timestamp,
+        "SESSION_EXPIRY_DATETIME": datetime.fromtimestamp(session_expiry_timestamp),
+        "SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD": settings.SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD,
+        "SESSION_EXPIRY_DATETIME_PLUS_GRACE_PERIOD": datetime.fromtimestamp(
+            session_expiry_timestamp
+        )
+        + timedelta(seconds=settings.SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD),
         "APP_MERCURE_PUBLIC_URL": settings.APP_MERCURE_PUBLIC_URL,
         "MERCURE_SUBSCRIBER_TOKEN": subscriber_token,
         "GEBRUIKER": gebruiker,

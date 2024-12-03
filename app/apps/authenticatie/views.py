@@ -11,16 +11,22 @@ from apps.main.services import MORCoreService
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 
 Gebruiker = get_user_model()
 
 logger = logging.getLogger(__name__)
+
+
+class SessionTimerView(LoginRequiredMixin, TemplateView):
+    template_name = "auth/session_timer.html"
 
 
 @method_decorator(
