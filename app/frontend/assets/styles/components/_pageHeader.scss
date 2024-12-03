@@ -91,11 +91,11 @@
                 .container__uitklapper {
                     position: relative;
                     &:first-child {
-                        // margin-right: 5em;
+                        padding-right: 1em;
                     }
 
                     .content {
-                        right: -5px;
+                        right: -1.2em;
                     }
                 }
             }
@@ -132,19 +132,17 @@
 .trigger--notificationslist {
     position: absolute;
     right: 0;
-    top: -1.9em;
+    top: -1.8em;
     svg {
         vertical-align: text-top;
         path {
             fill: $black;
         }
-        @media (min-width: map-get($grid-breakpoints, md)) {
-            // padding-left: 2em;
-        }
     }
 
     .badge--unread-count {
-        transform: translate(-70%, -70%);
+        position: absolute;
+        transform: translate(-60%, -40%);
         background-color: $primary;
         span {
             display: inline-block;
