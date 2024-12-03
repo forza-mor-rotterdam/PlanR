@@ -110,7 +110,7 @@ textarea {
         max-width: none;
     }
 
-    span:not(.badge--unread-count) {
+    span:not(.badge-count) {
         padding: 0 16px;
     }
 
@@ -395,7 +395,7 @@ textarea {
         padding-top: 16px;
         position: relative;
 
-        .badge--unread-count {
+        .badge-count {
             width: 18px;
             height: 18px;
             line-height: 18px;
