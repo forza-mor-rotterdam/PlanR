@@ -7,7 +7,16 @@ from apps.release_notes.tasks import task_aanmaken_afbeelding_versies
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import BooleanField, Case, Exists, OuterRef, Q, Value, When
+from django.db.models import (
+    BooleanField,
+    Case,
+    Exists,
+    OuterRef,
+    Q,
+    QuerySet,
+    Value,
+    When,
+)
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -16,9 +25,11 @@ from django.views.generic import (
     DeleteView,
     DetailView,
     ListView,
+    TemplateView,
     UpdateView,
     View,
 )
+from django_celery_beat.models import ClockedSchedule, PeriodicTask
 
 from .models import Bijlage, ReleaseNote
 
@@ -45,6 +56,24 @@ class ReleaseNoteListView(PermissionRequiredMixin, ReleaseNoteView, ListView):
 
         return queryset
 
+    def profiel_notificatie_queryset(self):
+        queryset = super().get_queryset()
+
+        queryset = (
+            queryset.filter(publicatie_datum__lt=timezone.now())
+            .filter(
+                Q(einde_publicatie_datum__isnull=True)
+                | (
+                    Q(einde_publicatie_datum__isnull=False)
+                    & Q(einde_publicatie_datum__gt=timezone.now())
+                )
+            )
+            .filter(bericht_type=ReleaseNote.BerichtTypeOpties.NOTIFICATIE)
+            .order_by("-publicatie_datum")
+        )
+
+        return queryset
+
 
 class ReleaseNoteDetailView(LoginRequiredMixin, ReleaseNoteView, DetailView):
     template_name = "public/release_note_detail.html"
@@ -58,8 +87,8 @@ class ReleaseNoteDetailView(LoginRequiredMixin, ReleaseNoteView, DetailView):
         return render(request, self.template_name, context)
 
 
-class NotificatieLijstViewPublic(ListView):
-    template_name = "public/notificaties/notificatie_lijst.html"
+class SnackView(LoginRequiredMixin, ListView):
+    template_name = "public/notificaties/snack_lijst.html"
     queryset = ReleaseNote.objects.filter(
         bericht_type=ReleaseNote.BerichtTypeOpties.NOTIFICATIE
     )
@@ -86,16 +115,90 @@ class NotificatieLijstViewPublic(ListView):
         return context
 
 
-class NotificatieVerwijderViewPublic(LoginRequiredMixin, DetailView):
-    template_name = "public/notificaties/notificatie_verwijderd.html"
-    queryset = ReleaseNote.objects.filter(
-        bericht_type=ReleaseNote.BerichtTypeOpties.NOTIFICATIE
-    )
+class ToastView(LoginRequiredMixin, TemplateView):
+    template_name = "public/notificaties/toast_lijst.html"
 
-    def get_object(self, queryset=None):
-        obj = super().get_object(queryset=queryset)
-        obj.bekeken_door_gebruikers.add(self.request.user)
-        return obj
+
+class SnackOverzichtView(LoginRequiredMixin, ListView):
+    template_name = "public/notificaties/snack_overzicht.html"
+    queryset = ReleaseNote.objects.all()
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        queryset = (
+            queryset.filter(publicatie_datum__lt=timezone.now())
+            .filter(
+                Q(einde_publicatie_datum__isnull=True)
+                | (
+                    Q(einde_publicatie_datum__isnull=False)
+                    & Q(einde_publicatie_datum__gt=timezone.now())
+                )
+            )
+            .filter(bericht_type=ReleaseNote.BerichtTypeOpties.NOTIFICATIE)
+            .order_by("-publicatie_datum")
+        )
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        queryset = self.get_queryset()
+
+        queryset_ongelezen = queryset.exclude(bekeken_door_gebruikers=self.request.user)
+        if self.request.GET.get("markeer-alle-snacks-als-gelezen"):
+            for bericht in queryset_ongelezen:
+                bericht.bekeken_door_gebruikers.add(self.request.user)
+            queryset_ongelezen = queryset.exclude(
+                bekeken_door_gebruikers=self.request.user
+            )
+        if self.request.GET.get("markeer-snack-als-gelezen"):
+            bericht = queryset.filter(
+                id=self.request.GET.get("markeer-snack-als-gelezen", 0)
+            ).first()
+            if bericht:
+                bericht.bekeken_door_gebruikers.add(self.request.user)
+            queryset_ongelezen = queryset.exclude(
+                bekeken_door_gebruikers=self.request.user
+            )
+
+        queryset_gelezen = queryset.filter(bekeken_door_gebruikers=self.request.user)
+        filter = self.request.GET.get("filter", "alle")
+        if filter in ("ongelezen", "gelezen") and isinstance(
+            locals().get(f"queryset_{filter}"), QuerySet
+        ):
+            queryset = locals().get(f'queryset_{self.request.GET.get("filter")}')
+
+        page_size = 8
+        try:
+            page = int(self.request.GET.get("p"))
+        except Exception:
+            page = 0
+
+        context.update(
+            {
+                "paginering": {
+                    "object_list": queryset[page * page_size : (page + 1) * page_size],
+                    "p": page,
+                    "is_er_meer": queryset[
+                        (page + 1) * page_size : (page + 2) * page_size
+                    ],
+                },
+                "ongelezen_aantal": queryset_ongelezen.count(),
+                "gelezen_aantal": queryset_gelezen.count(),
+                "filter": filter,
+            }
+        )
+        return context
+
+
+class SnackOverzichtStreamView(SnackOverzichtView):
+    template_name = "public/notificaties/snack_overzicht_stream.html"
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        response.headers["Content-Type"] = "text/vnd.turbo-stream.html"
+        return response
 
 
 class ReleaseNoteListViewPublic(LoginRequiredMixin, ReleaseNoteView, ListView):
@@ -162,6 +265,19 @@ class ReleaseNoteAanmakenView(PermissionRequiredMixin, ReleaseNoteView, CreateVi
         messages.success(
             request=self.request, message=f"De {self.object.bericht_type} is aangemaakt"
         )
+
+        if self.object.bericht_type == ReleaseNote.BerichtTypeOpties.NOTIFICATIE:
+            clocked_schedule = ClockedSchedule.objects.create(
+                clocked_time=self.object.publicatie_datum
+            )
+            PeriodicTask.objects.create(
+                clocked=clocked_schedule,
+                name=f"clocked_periodic_task_notificatie_{self.object.id}",
+                task="apps.release_notes.tasks.task_activeer_notificatie",
+                one_off=True,
+                args=[self.object.id],
+            )
+
         return response
 
 
@@ -221,6 +337,22 @@ class ReleaseNoteAanpassenView(PermissionRequiredMixin, ReleaseNoteView, UpdateV
                 request=self.request,
                 message=f"De {self.object.bericht_type} is aangepast",
             )
+
+            if self.object.bericht_type == ReleaseNote.BerichtTypeOpties.NOTIFICATIE:
+                PeriodicTask.objects.filter(
+                    name=f"clocked_periodic_task_notificatie_{self.object.id}"
+                ).delete()
+                clocked_schedule = ClockedSchedule.objects.create(
+                    clocked_time=self.object.publicatie_datum
+                )
+                PeriodicTask.objects.create(
+                    clocked=clocked_schedule,
+                    name=f"clocked_periodic_task_notificatie_{self.object.id}",
+                    task="apps.release_notes.tasks.task_activeer_notificatie",
+                    one_off=True,
+                    args=[self.object.id],
+                )
+
             return super().form_valid(form)
         else:
             messages.error(

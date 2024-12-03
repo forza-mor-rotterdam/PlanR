@@ -9,11 +9,8 @@ export default class extends Controller {
     duration: String,
   }
 
-  initialize() {
-    let self = this
-    self.initialTouchX = null
-    self.finalTouchX = null
-    self.deltaX = null
+  connect() {
+    console.log(`Connect: ${this.identifier}`)
     let contentString = null
     let truncatedString = null
     if (this.hasContentTarget) {
@@ -35,7 +32,6 @@ export default class extends Controller {
         }
       }
     }
-
     if (this.hasDurationValue) {
       setTimeout(() => {
         this.hideNotification()
@@ -81,6 +77,11 @@ export default class extends Controller {
       })
     }
   }
+  initByManager(managerController, index, referenceOffsetHeight) {
+    this.managerController = managerController
+    this.index = index
+    this.referenceOffsetHeight = referenceOffsetHeight
+  }
 
   disconnect() {
     if ('ontouchstart' in window) {
@@ -100,17 +101,46 @@ export default class extends Controller {
     })
   }
 
-  hideNotification() {
-    const notificatie = this.element
-    if (notificatie.classList.contains('notification')) {
-      notificatie.classList.add('hide')
-      if (notificatie.nodeName === 'TURBO-FRAME') {
-        notificatie.setAttribute('src', notificatie.getAttribute('data-src'))
+  dispatchRedraw() {
+    this.element.dispatchEvent(
+      new CustomEvent('notificatieVerwijderd', {
+        bubbles: true,
+      })
+    )
+  }
+  async notificatieSeen(notificatieUrl) {
+    const url = notificatieUrl
+    try {
+      const response = await fetch(`${url}`)
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`)
       }
-      setTimeout(() => {
-        notificatie.remove()
-      }, 500)
+      return response
+    } catch (error) {
+      console.error('Error fetching address details:', error.message)
     }
+  }
+  hideNotification() {
+    console.log(this.identifier)
+    if (this.element.dataset.verwijderUrl) {
+      const profiel_notificatie_lijst = document.querySelector(
+        "[data-controller='profiel-notificatie-lijst']"
+      )
+      if (profiel_notificatie_lijst) {
+        profiel_notificatie_lijst.controller.markNotificatieAsWatched(`profiel_${this.element.id}`)
+      }
+      this.notificatieSeen(this.element.dataset.verwijderUrl)
+      this.removeNotification()
+    }
+  }
+  removeNotification() {
+    const notificatie = this.element
+    notificatie.classList.add('hide')
+
+    notificatie.addEventListener('transitionend', () => {
+      this.dispatchRedraw()
+      notificatie.remove()
+    })
   }
 
   handleSwipe() {

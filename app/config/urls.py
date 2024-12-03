@@ -34,10 +34,12 @@ from apps.main.views import (
     taak_starten,
 )
 from apps.release_notes.views import (
-    NotificatieLijstViewPublic,
-    NotificatieVerwijderViewPublic,
     ReleaseNoteDetailView,
     ReleaseNoteListViewPublic,
+    SnackOverzichtStreamView,
+    SnackOverzichtView,
+    SnackView,
+    ToastView,
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -149,14 +151,24 @@ urlpatterns = [
     ),
     # Notificaties
     path(
-        "notificaties/",
-        NotificatieLijstViewPublic.as_view(),
-        name="notificatie_lijst_public",
+        "notificaties/snack/",
+        SnackView.as_view(),
+        name="snack_lijst",
     ),
     path(
-        "notificatie/<int:pk>/verwijderen/",
-        NotificatieVerwijderViewPublic.as_view(),
-        name="notificatie_verwijderen_public",
+        "notificaties/toast/",
+        ToastView.as_view(),
+        name="toast_lijst",
+    ),
+    path(
+        "notificaties/snack/overzicht/",
+        SnackOverzichtView.as_view(),
+        name="snack_overzicht",
+    ),
+    path(
+        "notificaties/snack/overzicht/stream/",
+        SnackOverzichtStreamView.as_view(),
+        name="snack_overzicht_stream",
     ),
     # Release notes
     path(

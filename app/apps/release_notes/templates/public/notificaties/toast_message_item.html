@@ -1,0 +1,21 @@
+<turbo-stream action="append" target="toast_lijst">
+<template>
+    <div class="notification {{ message.tags }}"
+         data-controller="notificaties--toast-item"
+         data-notificaties--toast-item-niveau-value="{{ message.tags }}"
+         data-notificaties--manager-target="toastItem">
+        <div class="container__icon">
+            {% with "public/notificaties/icons/"|add:message.tags|add:".html" as template %}
+                {% include template %}
+            {% endwith %}
+        </div>
+        <div class="container__content">
+            <h3>{{ message.message }}</h3>
+        </div>
+        <button type="button"
+                class="btn-close--small"
+                aria-label="Sluit"
+                data-action="notificaties--toast-item#hideNotification">{% include "icons/close.svg" %}</button>
+    </div>
+</template>
+</turbo-stream>

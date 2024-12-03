@@ -1,0 +1,34 @@
+<turbo-stream action="update" target="snack_overzicht_tabs">
+<template>
+    <ul class="list-horizontal">
+        {% comment %} {% if ongelezen_aantal > 0 %} {% endcomment %}
+        <li class="{% if filter == 'alle' %}active{% endif %}">
+            <a role="button"
+               data-notificaties--manager-overzicht-filter-param="alle"
+               data-action="notificaties--manager#overzichtTab"
+               href="{% url 'snack_overzicht' %}?filter=alle">Alle</a>
+        </li>
+        <li class="{% if filter == 'ongelezen' %}active{% endif %}">
+            <a role="button"
+               data-notificaties--manager-overzicht-filter-param="ongelezen"
+               data-action="notificaties--manager#overzichtTab"
+               href="{% url 'snack_overzicht' %}?filter=ongelezen">Ongelezen</a>
+        </li>
+        <li class="{% if filter == 'gelezen' %}active{% endif %}">
+            <a role="button"
+               data-notificaties--manager-overzicht-filter-param="gelezen"
+               data-action="notificaties--manager#overzichtTab"
+               href="{% url 'snack_overzicht' %}?filter=gelezen">Gelezen</a>
+        </li>
+        {% if filter != 'gelezen' and ongelezen_aantal > 0 %}
+            <li>
+                <a role="button"
+                   data-action="notificaties--manager#markeerAlleAlsGelezen"
+                   href="{% url 'snack_overzicht' %}"
+                   class="small">Markeer alle als gelezen</a>
+            </li>
+        {% endif %}
+        {% comment %} {% endif %} {% endcomment %}
+    </ul>
+</template>
+</turbo-stream>

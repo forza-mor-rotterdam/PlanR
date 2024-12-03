@@ -1,5 +1,6 @@
 import calendar
 import copy
+import inspect
 import statistics
 from datetime import datetime, timedelta
 
@@ -7,7 +8,9 @@ from apps.dashboard.querysets import TijdsvakQuerySet
 from apps.main.services import TaakRService
 from apps.main.templatetags.date_tags import seconds_to_human
 from django.contrib.gis.db import models
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
+from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
 from utils.models import BasisModel
 
@@ -72,6 +75,7 @@ class Databron(BasisModel):
 
 
 class Tijdsvak(BasisModel):
+    cache_timeout = 60 * 60
     periode_titel = None
     onderwerp = None
     onderwerpen = []
@@ -142,6 +146,12 @@ class Tijdsvak(BasisModel):
             "eind_datumtijd",
         )
         ordering = ["start_datumtijd"]
+
+    @classmethod
+    def get_cache_key(cls, caller, *args):
+        key = f"chart_{cls.__name__}_{caller}_{cls.type}_{cls.status}_{cls.periode_titel}_{cls.onderwerp}_{cls.wijk}_args-{'-'.join([str(a) for a in args])}"
+        key = slugify(key)
+        return key
 
     @classmethod
     def tabs_stad_stadsdelen(cls):
@@ -248,6 +258,11 @@ class DoorlooptijdenAfgehandeldeMeldingen(Tijdsvak):
 
     @classmethod
     def stacked_chart_tabs(cls):
+        cache_key = cls.get_cache_key(inspect.stack()[0][3])
+        rendered_cache = cache.get(cache_key)
+        print(bool(rendered_cache))
+        if rendered_cache:
+            return rendered_cache
         labels = [t.get("label") for t in cls.x_ticks]
         wijk = cls.wijk
         onderwerp = cls.onderwerp
@@ -255,8 +270,12 @@ class DoorlooptijdenAfgehandeldeMeldingen(Tijdsvak):
         cls.onderwerpen
         wijken_noord = cls.wijken_noord
         wijken_zuid = cls.wijken_zuid
+        import datetime
 
+        now = datetime.datetime.now()
         data = copy.deepcopy(cls.tijdsvakken if hasattr(cls, "tijdsvakken") else [])
+        print(f"TIJDSVAKKEN COPY: {datetime.datetime.now() - now}")
+        now = datetime.datetime.now()
 
         def tijdsvak_status_gemiddelden(tijdsvak, statussen, tab, dag_index):
             status_gemiddelden_totaal = []
@@ -405,7 +424,11 @@ class DoorlooptijdenAfgehandeldeMeldingen(Tijdsvak):
                     for dataset in tab.get("datasets", [])
                 ]
             )
-        return render_to_string(
+
+        print(f"TIJDSVAKKEN PROCCESS: {datetime.datetime.now() - now}")
+
+        now = datetime.datetime.now()
+        rendered = render_to_string(
             "charts/base_chart.html",
             {
                 "tabs": tabs,
@@ -416,6 +439,9 @@ class DoorlooptijdenAfgehandeldeMeldingen(Tijdsvak):
                 "options": cls.stacked_bars_options,
             },
         )
+        print(f"TIJDSVAKKEN RENDER: {datetime.datetime.now() - now}")
+        cache.set(cache_key, rendered, cls.cache_timeout)
+        return rendered
 
     @classmethod
     def tabel_wijken_midoffice(cls):
@@ -467,6 +493,11 @@ class DoorlooptijdenAfgehandeldeMeldingen(Tijdsvak):
 
     @classmethod
     def tabel(cls, data_type="onderwerp", fase=None):
+        cache_key = cls.get_cache_key(inspect.stack()[0][3], fase)
+        rendered_cache = cache.get(cache_key)
+        print(bool(rendered_cache))
+        if rendered_cache:
+            return rendered_cache
         data_types = {
             "onderwerp": {
                 "plural": "onderwerpen",
@@ -575,7 +606,8 @@ class DoorlooptijdenAfgehandeldeMeldingen(Tijdsvak):
         title_unique = (
             f"{cls.type}-{cls.status} {title_unique}: {cls.periode_titel}{filters}"
         )
-        return render_to_string(
+
+        rendered = render_to_string(
             "charts/dashboard_item.html",
             {
                 "title": title,
@@ -584,6 +616,8 @@ class DoorlooptijdenAfgehandeldeMeldingen(Tijdsvak):
                 "body": table,
             },
         )
+        cache.set(cache_key, rendered, cls.cache_timeout)
+        return rendered
 
 
 class StatusVeranderingDuurMeldingen(Tijdsvak):
@@ -605,6 +639,11 @@ class StatusVeranderingDuurMeldingen(Tijdsvak):
 
     @classmethod
     def chart_tabs(cls):
+        cache_key = cls.get_cache_key(inspect.stack()[0][3])
+        rendered_cache = cache.get(cache_key)
+        if rendered_cache:
+            return rendered_cache
+        print(bool(rendered_cache))
         labels = [t.get("label") for t in cls.x_ticks]
         wijk = cls.wijk
         onderwerp = cls.onderwerp
@@ -695,7 +734,8 @@ class StatusVeranderingDuurMeldingen(Tijdsvak):
             }
             for tab in tabs
         ]
-        return render_to_string(
+
+        rendered = render_to_string(
             "charts/base_chart.html",
             {
                 "tabs": tabs,
@@ -705,6 +745,8 @@ class StatusVeranderingDuurMeldingen(Tijdsvak):
                 "data_type": "duration",
             },
         )
+        cache.set(cache_key, rendered, cls.cache_timeout)
+        return rendered
 
 
 class NieuweMeldingAantallen(Tijdsvak):

@@ -1,0 +1,12 @@
+<turbo-stream action="update" target="snack_overzicht_aantal_ongelezen">
+<template>
+    {% if aantal > 0 %}
+        {% include "icons/notification-alert.svg" %}
+        <span class="badge-count">
+            <span>{{ aantal }}</span>
+        </span>
+    {% else %}
+        <span class="padding--right">{% include "icons/notification-alert-open.svg" %}</span>
+    {% endif %}
+</template>
+</turbo-stream>

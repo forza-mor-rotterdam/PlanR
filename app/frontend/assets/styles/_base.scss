@@ -54,7 +54,7 @@ html {
             width: 100%;
             background-color: transparent;
             position: relative;
-            z-index: 15;
+            z-index: 30;
         }
         main {
             padding: 1em 0.75em 0;
@@ -622,6 +622,7 @@ body.no-js {
 .align-right {
     text--align: right;
 }
+
 .foldout {
     height: auto;
     overflow: hidden;
@@ -720,6 +721,10 @@ body.no-js {
 
 .padding--left {
     padding-left: 1em !important;
+}
+
+.padding--right {
+    padding-right: 1em !important;
 }
 
 .padding-bottom-half {

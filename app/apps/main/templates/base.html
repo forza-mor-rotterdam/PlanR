@@ -39,6 +39,7 @@
         <script src="/static/rdam.geojson" type="text/javascript"></script>
         <meta name="turbo-cache-control" content="no-cache">
         <meta name="turbo-prefetch" content="false">
+        <meta name="turbo-refresh-method" content="morph">
         {% block stylesheets %}
             <link rel="stylesheet"
                   href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
@@ -48,7 +49,7 @@
                   rel="stylesheet">
             {% render_bundle 'app' 'css' %}
         {% endblock stylesheets %}
-        {% if DEBUG %}
+        {% if DEBUG and LIVE_UPDATE %}
             <script>
             const chatSocket = new WebSocket(
                 "ws://localhost:"
@@ -74,10 +75,16 @@
         <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin="">
         </script>
     </head>
-    <body class="{% block body_class %}{% endblock body_class %}">
+    <body class="{% block body_class %}{% endblock body_class %}"
+          data-controller="notificaties--manager"
+          data-notificaties--manager-snack-overzicht-url-value="{% url 'snack_overzicht_stream' %}"
+          data-notificaties--manager-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
+          data-notificaties--manager-topic-snack-value="/notificaties/snack/"
+          data-notificaties--manager-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}">
         <a href="#id_maincontent" class="skiplink">Ga direct naar de content</a>
-        <turbo-frame src="{% url 'notificatie_lijst_public' %}" id="notificatie_lijst_public">
+        <turbo-frame src="{% url 'snack_lijst' %}" id="tf_snack_lijst">
         </turbo-frame>
+        <turbo-frame src="{% url 'toast_lijst' %}" id="tf_toast_lijst"></turbo-frame>
         <div class="container__toplevel">
             {% block aside %}
                 {% include "snippets/aside.html" %}

@@ -21,52 +21,53 @@
         }
 
         .container__user {
-            padding: 1em 1.2em;
+            padding: 1em 0.5em 1em 0;
+            display: flex;
 
             .container__uitklapper {
-                white-space: nowrap;
+                position: unset;
+                flex: 1;
                 > span {
                     font-weight: 700;
                     text-decoration: none;
                     color: $black;
                     font-size: 0.8em;
-                    padding: 0.7em 0 1em 1em;
+                    padding: 0.7em 0.5em 2em 0.5em;
                     cursor: pointer;
-
-                    svg {
-                        vertical-align: sub;
-                        margin-left: 1em;
-                        transform: scale(1.5);
-                    }
                 }
 
-                .legenda {
+                .content {
+                    position: absolute;
                     display: block;
-                    top: 35px;
-                    transform: translateY(0);
-                    right: -5px;
-                    left: auto;
+                    top: -5px;
+                    transform: scale(0.98, 0.98);
+                    right: 1vw;
                     padding: 0;
                     box-shadow: 0 4px 10px 1px rgba(0, 0, 0, 0.25);
                     opacity: 0;
                     pointer-events: none;
-                    transition: opacity $transition-duration-default $transition-ease-default;
+                    transition: all $transition-duration-default $transition-ease-default;
+                    transform-origin: right top;
                     transition-delay: 0.15s;
+                    background-color: $white;
 
-                    &:before {
-                        content: "";
-                        width: 0px;
-                        height: 0px;
-                        border-style: solid;
-                        border-width: 0 15px 15px 15px;
-                        border-color: transparent transparent #fff transparent;
-                        transform: rotate(0deg);
-                        position: absolute;
-                        top: -10px;
-                        left: 50%;
-                        transform: translateX(-50%);
+                    &--large {
+                        width: 98vw;
+                        max-width: 400px;
+                        right: -12vw;
+
+                        @media (min-width: map-get($grid-breakpoints, md)) {
+                            right: 1vw;
+                        }
                     }
 
+                    &:not(.container__profiel_notificatie_lijst) {
+                        top: 2.2em;
+                    }
+
+                    ul {
+                        margin: 0;
+                    }
                     li {
                         margin-bottom: 1px;
                     }
@@ -75,12 +76,26 @@
                     }
                 }
 
-                &:hover,
-                &:focus-within {
-                    .legenda {
+                &:not(.no-hover):hover,
+                &:not(.no-hover):focus-within {
+                    .content {
                         opacity: 1;
+                        transform: scale(1, 1);
                         pointer-events: all;
-                        transition: opacity $transition-duration-default $transition-ease-default;
+                        transition: all $transition-duration-default $transition-ease-default;
+                    }
+                }
+            }
+
+            @media (min-width: map-get($grid-breakpoints, md)) {
+                .container__uitklapper {
+                    position: relative;
+                    &:first-child {
+                        padding-right: 1em;
+                    }
+
+                    .content {
+                        right: -1.2em;
                     }
                 }
             }
@@ -92,5 +107,48 @@
                 @extend .visually-hidden;
             }
         }
+
+        .trigger--block {
+            display: inline-block;
+            width: 5em;
+            margin-left: -5em;
+        }
+    }
+}
+
+.initials {
+    display: inline-block;
+    width: 2.62em;
+    height: 2.62em;
+    background-color: $blue-200;
+    color: $blue-900;
+    text-align: center;
+    border-radius: 100%;
+    line-height: 2.62em;
+    font-size: 0.85em;
+    text-transform: uppercase;
+}
+
+.trigger--notificationslist {
+    position: absolute;
+    right: 0;
+    top: -1.8em;
+    svg {
+        vertical-align: text-top;
+        path {
+            fill: $black;
+        }
+    }
+
+    .badge-count {
+        position: absolute;
+        transform: translate(-60%, -40%);
+        background-color: $primary;
+        span {
+            display: inline-block;
+        }
+        width: 1.5em;
+        height: 1.5em;
+        line-height: 1.5em;
     }
 }

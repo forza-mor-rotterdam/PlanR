@@ -1,4 +1,4 @@
-#notificatie_lijst_public {
+#tf_snack_lijst {
     position: fixed;
     top: 35px;
     height: 100%;
@@ -23,16 +23,12 @@
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    // opacity: 0;
-    // animation: slide-in-from-top-centered $transition-duration-default $transition-ease-default
-    // forwards 0.5s;
     padding: 0 1em;
     pointer-events: none;
     touch-action: manipulation; /* Laat standaard click en hover gedrag toe */
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    gap: 5px;
     transition: gap $transition-duration-default $transition-ease-default;
 
     .notification {
@@ -52,9 +48,17 @@
         justify-content: flex-start;
         gap: 10px;
         opacity: 0;
+        margin-top: 5px;
 
         &:not(:nth-child(-n + 10)) {
             display: none !important;
+        }
+    }
+
+    &.expanded,
+    &.collapsed {
+        .notification {
+            opacity: 1;
         }
     }
 
@@ -70,13 +74,6 @@
                     }
                 }
             }
-        }
-    }
-
-    &.expanded,
-    &.collapsed {
-        .notification {
-            opacity: 1;
         }
     }
 
@@ -212,7 +209,6 @@
                 @for $i from 1 through 10 {
                     &:nth-child(#{$i}n) {
                         z-index: #{$i * -10};
-                        opacity: 0;
                         animation: fade-in
                             2 *
                             $transition-duration-default
@@ -229,16 +225,54 @@
             &.hide {
                 transform: scale(0.98, 0);
                 height: 0;
-                padding: 0;
-                opacity: 0;
                 transition: all $transition-duration-default $transition-ease-default;
+            }
+        }
+        .notification.expanded {
+            @for $i from 2 through 10 {
+                &:nth-child(#{$i}n) {
+                    max-height: 600px;
+                    > div,
+                    > button {
+                        opacity: 1;
+                        transition: opacity $transition-duration-default $transition-ease-default;
+                    }
+                }
+            }
+        }
+        &:not(.expanded) .notification.collapsed {
+            @for $i from 2 through 10 {
+                &:nth-child(#{$i}n) {
+                    z-index: #{$i * -10};
+                    transform: scale(calc(1 - #{$i * 0.02}));
+                    max-height: 5px;
+                    padding: 0;
+                    margin-top: -1px;
+                    > div,
+                    > button {
+                        opacity: 0;
+                        transition: opacity $transition-duration-default $transition-ease-default;
+                    }
+                }
+            }
+        }
+        &.expanded .notification.collapsed {
+            @for $i from 2 through 10 {
+                &:nth-child(#{$i}n) {
+                    max-height: 600px;
+                    > div,
+                    > button {
+                        opacity: 1;
+                        transition: opacity $transition-duration-default $transition-ease-default;
+                    }
+                }
             }
         }
     }
 
     &--toast {
         max-width: 360px;
-        z-index: 3000;
+        z-index: 30000;
         width: 98%;
         position: fixed;
         top: 35px;
@@ -289,19 +323,6 @@
     }
 }
 
-.message--truncated {
-    display: none;
-}
-
-.show-truncated {
-    .message--truncated {
-        display: block;
-    }
-    .message--initial {
-        display: none;
-    }
-}
-
 // lijst profiel
 .container__profiel_notificatie_lijst {
     header {
@@ -319,24 +340,138 @@
             margin-right: -8px;
         }
     }
+
+    .container__snack-tabs {
+        padding: 0.5em $input-padding-x;
+        border-bottom: 1px solid $blue-200;
+
+        li {
+            a {
+                text-decoration: none;
+                color: inherit;
+                font-size: 0.8em;
+                transition: all $transition-duration-default $transition-ease-default;
+                border-bottom: 1px solid transparent;
+
+                &:hover {
+                    color: $primary;
+                    border-color: $primary;
+                }
+
+                &.small {
+                    font-size: 0.7em;
+                    color: $gray-800;
+                    text-decoration: underline;
+                    &:hover {
+                        color: $primary;
+                        text-decoration: none;
+                        border-color: transparent;
+                    }
+                }
+            }
+
+            &.active {
+                a {
+                    font-weight: 700;
+                    &:hover {
+                        color: inherit;
+                        border-color: transparent;
+                    }
+                }
+            }
+
+            &:nth-child(n + 4) {
+                flex: 1 0 auto;
+                text-align: right;
+            }
+        }
+    }
+
     .container__lijst {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        scroll-behavior: smooth;
+
+        &::-webkit-scrollbar {
+            width: 5px;
+        }
+        &::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 5px grey;
+            border-radius: 10px;
+        }
+        &::-webkit-scrollbar-thumb {
+            background: $gray-400;
+            border-radius: 10px;
+        }
+
+        /* Handle on hover */
+        &::-webkit-scrollbar-thumb:hover {
+            background: $gray-600;
+        }
         @media (min-width: map-get($grid-breakpoints, lg)) {
-            max-height: 550px;
+            height: 550px;
             overflow-y: auto;
+        }
+
+        a {
+            color: inherit;
+            transition: all $transition-duration-default $transition-ease-default;
+
+            &:hover {
+                color: $primary;
+                text-decoration: none;
+            }
+        }
+        li {
+            opacity: 0;
+            animation: fade-in $transition-duration-default $transition-ease-default forwards;
+        }
+
+        .no-content {
+            padding: $input-padding-x;
+            text-align: center;
+            opacity: 0;
+            animation: fade-in 2 * $transition-duration-default $transition-ease-default forwards;
+
+            h3 {
+                font-size: 0.8em;
+                margin-bottom: 0;
+                color: $primary;
+            }
+            p,
+            a {
+                font-size: 0.7em;
+            }
+            p {
+                margin-top: 0;
+            }
+        }
+    }
+
+    .container__laadmeer {
+        padding: 0.5em $input-padding-x 0.8em;
+        border-top: 1px solid $blue-200;
+        text-align: center;
+        a {
+            font-size: 0.7em;
+
+            &.disabled {
+                display: none;
+            }
         }
     }
 
     .list-notificaties {
         @include list-clean();
+        position: relative;
         li {
             display: flex;
             gap: 0.666em;
             justify-content: space-between;
             padding: 0.7em;
+            background-color: $green-100;
 
-            &.unread {
-                background-color: $green-100;
-            }
             > div {
                 flex: 1;
             }
@@ -364,6 +499,12 @@
             }
             p {
                 margin: 0;
+                overflow: hidden;
+                transition: height $transition-duration-default $transition-ease-default;
+            }
+            small {
+                font-size: 0.6em;
+                color: $gray-800;
             }
         }
         .dot {
@@ -373,8 +514,11 @@
             background-color: $primary;
             border-radius: 100%;
         }
-        .is-watched .dot {
-            display: none;
+        .is-watched {
+            background-color: transparent;
+            .dot {
+                display: none;
+            }
         }
     }
 }
