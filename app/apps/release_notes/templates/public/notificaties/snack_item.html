@@ -13,7 +13,7 @@
             {% endif %}
         </div>
         <div class="container__content">
-            <h3>{{ notificatie.titel }}</h3>
+            <h3 data-notificaties--snack-item-target="titel">{{ notificatie.titel }}</h3>
             <div class="container__message">
                 {% if notificatie.link_titel and notificatie.link_url %}
                     <div class="container__link">

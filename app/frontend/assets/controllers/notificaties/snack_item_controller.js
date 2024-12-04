@@ -3,7 +3,7 @@ import { Controller } from '@hotwired/stimulus'
 const SWIPE_TRESHOLD = 100
 const MAX_CHARACTERS = 200
 export default class extends Controller {
-  static targets = ['content']
+  static targets = ['content', 'titel']
 
   initialize() {
     this.element.controller = this

@@ -28,6 +28,22 @@ logger = logging.getLogger(__name__)
 class SessionTimerView(LoginRequiredMixin, TemplateView):
     template_name = "auth/session_timer.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(
+            {
+                "notificatie": {
+                    "id": "session_timer",
+                    "notificatie_niveau": "warning",
+                    "titel": "Je sessie verloop binnenkort",
+                    "korte_beschrijving": "&nbsp;",
+                    "link_titel": "Sessie&nbsp;verlengen",
+                    "link_url": ".",
+                }
+            }
+        )
+        return context
+
 
 @method_decorator(
     permission_required("authorisatie.gebruiker_bekijken"), name="dispatch"
