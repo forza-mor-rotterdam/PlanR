@@ -16,6 +16,11 @@
                 {% if notificatie.korte_beschrijving %}
                     <p data-notificaties--snack-overzicht-item-target="content">{{ notificatie.korte_beschrijving }}</p>
                 {% endif %}
+                {% if notificatie.link_titel and notificatie.link_url %}
+                    <p>
+                        <a href="{{ notificatie.link_url }}">{{ notificatie.link_titel }}</a>
+                    </p>
+                {% endif %}
                 <small>{{ notificatie.publicatie_datum }}</small>
             </div>
             <div class="container__status">
