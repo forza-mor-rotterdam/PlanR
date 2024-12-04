@@ -76,13 +76,11 @@
                     }
                 }
 
-                &:not(.no-hover):hover,
-                &:not(.no-hover):focus-within {
+                &.show {
                     .content {
                         opacity: 1;
                         transform: scale(1, 1);
                         pointer-events: all;
-                        transition: all $transition-duration-default $transition-ease-default;
                     }
                 }
             }
@@ -92,10 +90,13 @@
                     position: relative;
                     &:first-child {
                         padding-right: 1em;
+                        .content {
+                            right: -1em;
+                        }
                     }
 
                     .content {
-                        right: -1.2em;
+                        right: -0.25em;
                     }
                 }
             }
@@ -112,6 +113,23 @@
             display: inline-block;
             width: 5em;
             margin-left: -5em;
+        }
+    }
+}
+
+body:not(.hasTouch) {
+    .bar--top {
+        .container__user {
+            .container__uitklapper {
+                &:not(.no-hover):hover,
+                &:not(.no-hover):focus-within {
+                    .content {
+                        opacity: 1;
+                        transform: scale(1, 1);
+                        pointer-events: all;
+                    }
+                }
+            }
         }
     }
 }
