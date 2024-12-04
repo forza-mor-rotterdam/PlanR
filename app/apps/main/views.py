@@ -31,9 +31,6 @@ from apps.main.forms import (
     TaakAfrondenForm,
     TaakAnnulerenForm,
     TaakStartenForm,
-    TaaktypeCategorieAanmakenForm,
-    TaaktypeCategorieAanpassenForm,
-    TaaktypeCategorieSearchForm,
 )
 from apps.main.messages import (
     MELDING_AFHANDELEN_ERROR,
@@ -61,7 +58,7 @@ from apps.main.messages import (
     TAAK_ANNULEREN_ERROR,
     TAAK_ANNULEREN_SUCCESS,
 )
-from apps.main.models import StandaardExterneOmschrijving, TaaktypeCategorie
+from apps.main.models import StandaardExterneOmschrijving
 from apps.main.services import MORCoreService, TaakRService
 from apps.main.templatetags.gebruikers_tags import get_gebruiker_object_middels_email
 from apps.main.utils import (
@@ -81,22 +78,12 @@ from config.context_processors import general_settings
 from deepdiff import DeepDiff
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.decorators import (
-    login_required,
-    permission_required,
-    user_passes_test,
-)
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.core.cache import cache
+from django.contrib.messages.views import SuccessMessageMixin
 from django.core.files.storage import default_storage
 from django.db.models import Q
-from django.http import (
-    HttpResponse,
-    HttpResponseRedirect,
-    JsonResponse,
-    QueryDict,
-    StreamingHttpResponse,
-)
+from django.http import HttpResponse, JsonResponse, QueryDict, StreamingHttpResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
@@ -1438,40 +1425,50 @@ class StandaardExterneOmschrijvingLijstView(
 
 
 class StandaardExterneOmschrijvingAanmakenView(
-    StandaardExterneOmschrijvingView, PermissionRequiredMixin, CreateView
+    SuccessMessageMixin,
+    StandaardExterneOmschrijvingView,
+    PermissionRequiredMixin,
+    CreateView,
 ):
     form_class = StandaardExterneOmschrijvingAanmakenForm
     template_name = (
         "standaard_externe_omschrijving/standaard_externe_omschrijving_aanmaken.html"
     )
     permission_required = "authorisatie.standaard_externe_omschrijving_aanmaken"
+    success_message = "De standaard tekst '%(titel)s' is aangemaakt"
 
 
 class StandaardExterneOmschrijvingAanpassenView(
-    StandaardExterneOmschrijvingView, PermissionRequiredMixin, UpdateView
+    SuccessMessageMixin,
+    StandaardExterneOmschrijvingView,
+    PermissionRequiredMixin,
+    UpdateView,
 ):
     form_class = StandaardExterneOmschrijvingAanpassenForm
     template_name = (
         "standaard_externe_omschrijving/standaard_externe_omschrijving_aanpassen.html"
     )
     permission_required = "authorisatie.standaard_externe_omschrijving_aanpassen"
+    success_message = "De standaard tekst '%(titel)s' is aangepast"
 
 
 class StandaardExterneOmschrijvingVerwijderenView(
     StandaardExterneOmschrijvingView, PermissionRequiredMixin, DeleteView
 ):
     permission_required = "authorisatie.standaard_externe_omschrijving_verwijderen"
+    success_message = "De standaard tekst '%(titel)s is verwijderd"
 
     def get(self, request, *args, **kwargs):
-        return self.post(request, *args, **kwargs)
+        object = self.get_object()
+        response = self.delete(request, *args, **kwargs)
+        messages.success(request, f"De standaard tekst '{object.titel}' is verwijderd")
+        return response
 
-    def render_to_response(self, context, **response_kwargs):
-        return HttpResponseRedirect(self.get_success_url())
+    # def render_to_response(self, context, **response_kwargs):
+    #     return HttpResponseRedirect(self.get_success_url())
 
 
 # Locatie views
-
-
 @login_required
 @permission_required("authorisatie.locatie_aanpassen", raise_exception=True)
 def locatie_aanpassen(request, id):
@@ -1553,57 +1550,3 @@ def locatie_aanpassen(request, id):
             {"error": str(e)},
             status=getattr(e, "status_code", 500),
         )
-
-
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
-def clear_melding_token_from_cache(request):
-    cache.delete("meldingen_token")
-    return HttpResponse("melding_token removed from cache")
-
-
-# Taaktype categorie view
-class TaaktypeCategorieView(View):
-    model = TaaktypeCategorie
-    success_url = reverse_lazy("taaktype_categorie_lijst")
-
-
-class TaaktypeCategorieLijstView(
-    TaaktypeCategorieView, PermissionRequiredMixin, ListView
-):
-    context_object_name = "Taaktype categorieën"
-    permission_required = "authorisatie.taaktype_categorie_lijst_bekijken"
-    form_class = TaaktypeCategorieSearchForm
-    template_name = "taaktype_categorie/taaktype_categorie_lijst.html"
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        search = self.request.GET.get("search", "")
-        if search:
-            queryset = queryset.filter(Q(naam__icontains=search))
-        return queryset
-
-
-class TaaktypeCategorieAanmakenView(
-    TaaktypeCategorieView, PermissionRequiredMixin, CreateView
-):
-    form_class = TaaktypeCategorieAanmakenForm
-    template_name = "taaktype_categorie/taaktype_categorie_aanmaken.html"
-    permission_required = "authorisatie.taaktype_categorie_aanmaken"
-
-
-class TaaktypeCategorieAanpassenView(
-    TaaktypeCategorieView, PermissionRequiredMixin, UpdateView
-):
-    form_class = TaaktypeCategorieAanpassenForm
-    template_name = "taaktype_categorie/taaktype_categorie_aanpassen.html"
-    permission_required = "authorisatie.taaktype_categorie_aanpassen"
-
-
-class TaaktypeCategorieVerwijderenView(
-    TaaktypeCategorieView, PermissionRequiredMixin, DeleteView
-):
-    permission_required = "authorisatie.taaktype_categorie_verwijderen"
-
-    def get(self, request, *args, **kwargs):
-        return self.post(request, *args, **kwargs)

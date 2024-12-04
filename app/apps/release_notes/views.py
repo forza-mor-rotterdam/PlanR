@@ -7,6 +7,7 @@ from apps.release_notes.tasks import task_aanmaken_afbeelding_versies
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import (
     BooleanField,
     Case,
@@ -241,10 +242,13 @@ class ReleaseNoteListViewPublic(LoginRequiredMixin, ReleaseNoteView, ListView):
         return response
 
 
-class ReleaseNoteAanmakenView(PermissionRequiredMixin, ReleaseNoteView, CreateView):
+class ReleaseNoteAanmakenView(
+    SuccessMessageMixin, PermissionRequiredMixin, ReleaseNoteView, CreateView
+):
     form_class = ReleaseNoteAanmakenForm
     template_name = "beheer/release_note_aanmaken.html"
     permission_required = "authorisatie.release_note_aanmaken"
+    success_message = "Het bericht '%(titel)s' is aangemaakt"
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -262,9 +266,6 @@ class ReleaseNoteAanmakenView(PermissionRequiredMixin, ReleaseNoteView, CreateVi
             bijlage.save()
 
             task_aanmaken_afbeelding_versies.delay(bijlage.pk)
-        messages.success(
-            request=self.request, message=f"De {self.object.bericht_type} is aangemaakt"
-        )
 
         if self.object.bericht_type == ReleaseNote.BerichtTypeOpties.NOTIFICATIE:
             clocked_schedule = ClockedSchedule.objects.create(
@@ -281,11 +282,14 @@ class ReleaseNoteAanmakenView(PermissionRequiredMixin, ReleaseNoteView, CreateVi
         return response
 
 
-class ReleaseNoteAanpassenView(PermissionRequiredMixin, ReleaseNoteView, UpdateView):
+class ReleaseNoteAanpassenView(
+    SuccessMessageMixin, PermissionRequiredMixin, ReleaseNoteView, UpdateView
+):
     form_class = ReleaseNoteAanpassenForm
 
     template_name = "beheer/release_note_aanpassen.html"
     permission_required = "authorisatie.release_note_aanpassen"
+    success_message = "Het bericht '%(titel)s' is aangepast"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -333,10 +337,6 @@ class ReleaseNoteAanpassenView(PermissionRequiredMixin, ReleaseNoteView, UpdateV
                 bijlage.save()
 
                 task_aanmaken_afbeelding_versies.delay(bijlage.pk)
-            messages.success(
-                request=self.request,
-                message=f"De {self.object.bericht_type} is aangepast",
-            )
 
             if self.object.bericht_type == ReleaseNote.BerichtTypeOpties.NOTIFICATIE:
                 PeriodicTask.objects.filter(
@@ -368,4 +368,7 @@ class ReleaseNoteVerwijderenView(PermissionRequiredMixin, ReleaseNoteView, Delet
     permission_required = "authorisatie.release_note_verwijderen"
 
     def get(self, request, *args, **kwargs):
-        return self.post(request, *args, **kwargs)
+        object = self.get_object()
+        response = self.delete(request, *args, **kwargs)
+        messages.success(request, f"Het bericht '{object.titel}' is verwijderd")
+        return response

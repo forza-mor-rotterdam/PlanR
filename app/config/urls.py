@@ -3,7 +3,6 @@ from apps.health.views import healthz
 from apps.main.views import (
     LoginView,
     LogoutView,
-    clear_melding_token_from_cache,
     gebruiker_info,
     http_403,
     http_404,
@@ -53,11 +52,6 @@ urlpatterns = [
     path("", root, name="root"),
     path("api-token-auth/", views.obtain_auth_token),
     path("session-timer/", SessionTimerView.as_view(), name="session_timer"),
-    path(
-        "admin/clear-melding-token-from-cache/",
-        clear_melding_token_from_cache,
-        name="clear_melding_token_from_cache",
-    ),
     path(
         "login/",
         LoginView.as_view(),

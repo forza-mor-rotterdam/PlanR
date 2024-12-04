@@ -22,10 +22,6 @@ from apps.main.views import (
     StandaardExterneOmschrijvingAanpassenView,
     StandaardExterneOmschrijvingLijstView,
     StandaardExterneOmschrijvingVerwijderenView,
-    TaaktypeCategorieAanmakenView,
-    TaaktypeCategorieAanpassenView,
-    TaaktypeCategorieLijstView,
-    TaaktypeCategorieVerwijderenView,
 )
 from apps.release_notes.views import (
     ReleaseNoteAanmakenView,
@@ -113,27 +109,6 @@ urlpatterns = [
         "standaardtekst/<int:pk>/verwijderen/",
         StandaardExterneOmschrijvingVerwijderenView.as_view(),
         name="standaard_externe_omschrijving_verwijderen",
-    ),
-    # Taaktype categorie
-    path(
-        "taaktype-categorie/",
-        TaaktypeCategorieLijstView.as_view(),
-        name="taaktype_categorie_lijst",
-    ),
-    path(
-        "taaktype-categorie/aanmaken/",
-        TaaktypeCategorieAanmakenView.as_view(),
-        name="taaktype_categorie_aanmaken",
-    ),
-    path(
-        "taaktype-categorie/<int:pk>/aanpassen/",
-        TaaktypeCategorieAanpassenView.as_view(),
-        name="taaktype_categorie_aanpassen",
-    ),
-    path(
-        "taaktype-categorie/<int:pk>/verwijderen/",
-        TaaktypeCategorieVerwijderenView.as_view(),
-        name="taaktype_categorie_verwijderen",
     ),
     path(
         "release-notes/",

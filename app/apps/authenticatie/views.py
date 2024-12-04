@@ -12,6 +12,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -86,9 +87,12 @@ class GebruikerAanmakenAanpassenView(GebruikerView):
 @method_decorator(
     permission_required("authorisatie.gebruiker_aanpassen"), name="dispatch"
 )
-class GebruikerAanpassenView(GebruikerAanmakenAanpassenView, UpdateView):
+class GebruikerAanpassenView(
+    SuccessMessageMixin, GebruikerAanmakenAanpassenView, UpdateView
+):
     form_class = GebruikerAanpassenForm
     template_name = "authenticatie/gebruiker_aanpassen.html"
+    success_message = "De gebruiker '%(email)s' is aangepast"
 
     def get_initial(self):
         initial = self.initial.copy()
@@ -98,13 +102,22 @@ class GebruikerAanpassenView(GebruikerAanmakenAanpassenView, UpdateView):
         initial["group"] = obj.groups.all().first()
         return initial
 
+    def get_success_message(self, cleaned_data):
+        return self.success_message % dict(
+            cleaned_data,
+            email=self.object.email,
+        )
+
 
 @method_decorator(
     permission_required("authorisatie.gebruiker_aanmaken"), name="dispatch"
 )
-class GebruikerAanmakenView(GebruikerAanmakenAanpassenView, CreateView):
+class GebruikerAanmakenView(
+    SuccessMessageMixin, GebruikerAanmakenAanpassenView, CreateView
+):
     template_name = "authenticatie/gebruiker_aanmaken.html"
     form_class = GebruikerAanmakenForm
+    success_message = "De gebruiker '%(email)s' is aangemaakt"
 
 
 @login_required
@@ -120,6 +133,10 @@ def gebruiker_bulk_import(request):
             )
         if request.session.get("valid_rows") and request.POST.get("aanmaken"):
             aangemaakte_gebruikers = form.submit(request.session.get("valid_rows"))
+            messages.success(
+                request,
+                f"Er zijn {len(aangemaakte_gebruikers)} gebruikers met success aangepast of geïmporteerd",
+            )
             del request.session["valid_rows"]
             form = None
     return render(

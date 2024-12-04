@@ -1,4 +1,5 @@
 import csv
+import logging
 from io import StringIO
 
 import chardet
@@ -9,6 +10,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
+
+logger = logging.getLogger(__name__)
 
 Gebruiker = get_user_model()
 
@@ -83,38 +86,56 @@ class GebruikerBulkImportForm(forms.Form):
     )
 
     def clean_csv_file(self):
-        csv_file = self.cleaned_data["csv_file"]
-        file_read = csv_file.read()
+        try:
+            csv_file = self.cleaned_data["csv_file"]
+            file_read = csv_file.read()
 
-        encoding = "utf-8"
-        auto_detect_encoding = chardet.detect(file_read)
-        if auto_detect_encoding.get("confidence") > 0.5:
-            encoding = auto_detect_encoding.get("encoding")
-
+            encoding = "utf-8"
+            auto_detect_encoding = chardet.detect(file_read)
+            if auto_detect_encoding.get("confidence") > 0.5:
+                encoding = auto_detect_encoding.get("encoding")
+        except Exception:
+            return {}
         return self._get_rows(file_read.decode(encoding, "ignore"))
 
     def _get_rows(self, str_data):
         all_rows = []
         valid_rows = []
-        csv_fo = StringIO(str_data)
 
-        csvreader = csv.reader(csv_fo, delimiter=";", quotechar="|")
-        valid_checked_rows_email = []
-        for row in csvreader:
-            if len(row) and not row[0]:
-                continue
-            default_row = [row[r] if r < len(row) else None for r in range(0, 4)]
-            errors = []
-            if default_row[0] in valid_checked_rows_email:
-                errors.append(
-                    "Er is al een gebruiker met dit e-mailadres in deze lijst aanwezig"
-                )
-            row_is_not_valid = self.validate_row(default_row, errors)
-            if not row_is_not_valid:
-                valid_rows.append(default_row)
-                valid_checked_rows_email.append(default_row[0])
-            default_row.append(row_is_not_valid)
-            all_rows.append(default_row)
+        try:
+            csv_fo = StringIO(str_data)
+            csvreader = csv.reader(csv_fo, delimiter=";", quotechar="|")
+            valid_checked_rows_email = []
+            for row in csvreader:
+                if len(row) and not row[0] or len(row) == 0:
+                    continue
+                default_row = [row[r] if r < len(row) else None for r in range(0, 4)]
+                try:
+                    validate_email(default_row[0])
+                except ValidationError:
+                    continue
+                default_row[0] = default_row[0].lower()
+                errors = []
+                if default_row[0] in valid_checked_rows_email:
+                    errors.append(
+                        "Er is al een gebruiker met dit e-mailadres in deze lijst aanwezig"
+                    )
+                row_is_not_valid = self.validate_row(default_row, errors)
+                default_row.append(row_is_not_valid)
+                default_row.append("")
+                if not row_is_not_valid:
+                    if Gebruiker.objects.all().filter(
+                        email__iexact=default_row[0].lower()
+                    ):
+                        default_row[5] = "aanpassen"
+                    valid_rows.append(default_row)
+
+                    valid_checked_rows_email.append(default_row[0])
+                all_rows.append(default_row)
+        except Exception as e:
+            logger.warning(f"csv validatie fout {e}")
+            return {}
+
         return {
             "all_rows": all_rows,
             "valid_rows": valid_rows,
@@ -129,8 +150,6 @@ class GebruikerBulkImportForm(forms.Form):
             validate_email(email.strip())
         except ValidationError:
             errors.append(f"{email} is geen e-mailadres")
-        if Gebruiker.objects.all().filter(email=email):
-            errors.append("Een gebruiker met dit e-mailadres bestaat reeds")
         if first_name and len(first_name) > 150:
             errors.append("voornaam mag niet langer zijn dan 150 karakters")
         if last_name and len(last_name) > 150:
@@ -150,16 +169,29 @@ class GebruikerBulkImportForm(forms.Form):
             [
                 Gebruiker(**{f: row[i] for i, f in enumerate(gebruiker_fieldnames)})
                 for row in valid_rows
-            ]
+            ],
+            ignore_conflicts=False,
+            update_conflicts=True,
+            unique_fields=["email"],
+            update_fields=["first_name", "last_name", "telefoonnummer"],
         )
+
+        aangemaakte_aangepaste_gebruikers = []
         for gebruiker in aangemaakte_gebruikers:
+            if not gebruiker.id:
+                gebruiker = Gebruiker.objects.get(email=gebruiker.email)
+            gebruiker.groups.clear()
             gebruiker.groups.add(self.cleaned_data.get("group"))
-            Profiel.objects.create(
-                gebruiker=gebruiker,
-                context=self.cleaned_data.get("context"),
-            )
-            gebruiker.save()
-        return aangemaakte_gebruikers
+            if not hasattr(gebruiker, "profiel"):
+                Profiel.objects.create(
+                    gebruiker=gebruiker,
+                    context=self.cleaned_data.get("context"),
+                )
+            else:
+                gebruiker.profiel.context = self.cleaned_data.get("context")
+                gebruiker.profiel.save()
+            aangemaakte_aangepaste_gebruikers.append(gebruiker)
+        return aangemaakte_aangepaste_gebruikers
 
 
 class GebruikerProfielForm(forms.ModelForm):
