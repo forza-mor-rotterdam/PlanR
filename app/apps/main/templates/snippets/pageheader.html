@@ -1,21 +1,21 @@
 {% load webpack_static from webpack_loader %}
 {% load gebruikersnaam gebruikersinitialen from gebruikers_tags %}
-<div class="bar bar--top">
+<div class="bar bar--top" data-controller="topbar">
     <div class="container__heading">
         {% if pageTitle %}<h1 class="pagetitle h2">{{ pageTitle }}</h1>{% endif %}
     </div>
     <div class="container__user">
         <div class="container__uitklapper"
-             data-controller="utils"
-             data-action="click->utils#show"
+             data-action="click->topbar#show"
              tabindex="0">
-            <span class="trigger--block"></span>
             {% if request.user.is_authenticated %}
                 <turbo-frame id="tf_snack_overzicht" src="{% url 'snack_overzicht' %}">
                 </turbo-frame>
             {% endif %}
         </div>
-        <div class="container__uitklapper" tabindex="0">
+        <div class="container__uitklapper"
+             data-action="click->topbar#show"
+             tabindex="0">
             <span class="trigger--profile">
                 <span class="initials">{{ request.user|gebruikersinitialen }}</span>
             </span>
@@ -24,6 +24,17 @@
                     <ul class="list-nav--tertiary">
                         {% if request.user.is_authenticated %}
                             <li>
+                                <header>
+                                    <span>{{ request.user|gebruikersnaam }}</span>
+                                    <button type="button"
+                                            class="btn-close--small"
+                                            aria-label="Sluit"
+                                            data-controller="utils"
+                                            data-action="utils#noHover"
+                                            data-utils-targetcontainer-param="container__uitklapper">
+                                        {% include "icons/close.svg" %}
+                                    </button>
+                                </header>
                                 <turbo-frame id="tf_session_timer" src="{% url 'session_timer' %}"></turbo-frame>
                             </li>
                             <li>

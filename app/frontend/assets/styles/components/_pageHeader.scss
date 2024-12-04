@@ -27,6 +27,13 @@
             .container__uitklapper {
                 position: unset;
                 flex: 1;
+                &:focus,
+                &:hover {
+                    .trigger--notificationslist {
+                        cursor: pointer;
+                        background-color: $white;
+                    }
+                }
                 > span {
                     font-weight: 700;
                     text-decoration: none;
@@ -39,7 +46,7 @@
                 .content {
                     position: absolute;
                     display: block;
-                    top: -5px;
+                    top: 2em;
                     transform: scale(0.98, 0.98);
                     right: 1vw;
                     padding: 0;
@@ -89,7 +96,6 @@
                 .container__uitklapper {
                     position: relative;
                     &:first-child {
-                        padding-right: 1em;
                         .content {
                             right: -1em;
                         }
@@ -104,6 +110,14 @@
 
         .list-nav--tertiary {
             display: block;
+            header {
+                padding: 0;
+
+                .btn-close--small {
+                    top: 0.6em;
+                    right: 0.6em;
+                }
+            }
             small {
                 @extend .visually-hidden;
             }
@@ -113,23 +127,6 @@
             display: inline-block;
             width: 5em;
             margin-left: -5em;
-        }
-    }
-}
-
-body:not(.hasTouch) {
-    .bar--top {
-        .container__user {
-            .container__uitklapper {
-                &:not(.no-hover):hover,
-                &:not(.no-hover):focus-within {
-                    .content {
-                        opacity: 1;
-                        transform: scale(1, 1);
-                        pointer-events: all;
-                    }
-                }
-            }
         }
     }
 }
@@ -148,11 +145,19 @@ body:not(.hasTouch) {
 }
 
 .trigger--notificationslist {
-    position: absolute;
-    right: 0;
-    top: -1.8em;
+    width: 1.8em;
+    height: 1.8em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    background-color: transparent;
+    transition: background-color $transition-duration-default $transition-ease-default;
+    border-radius: 50%;
+
     svg {
-        vertical-align: text-top;
+        flex: 1;
+        vertical-align: middle;
         path {
             fill: $black;
         }
@@ -160,7 +165,9 @@ body:not(.hasTouch) {
 
     .badge-count {
         position: absolute;
-        transform: translate(-60%, -40%);
+        top: 50%;
+        left: 50%;
+        transform: translate(-10%, -70%);
         background-color: $primary;
         span {
             display: inline-block;
