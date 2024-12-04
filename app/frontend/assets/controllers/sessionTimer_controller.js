@@ -1,8 +1,11 @@
 import { Controller } from '@hotwired/stimulus'
+import { renderStreamMessage } from '@hotwired/turbo'
 
 export default class extends Controller {
-  static targets = ['modal', 'modalBackdrop', 'uitleg', 'datumtijd']
+  static targets = []
   static values = {
+    snackItem: String,
+    snackItemId: String,
     sessionShowTimerSeconds: String,
     sessionExpiryTimestamp: String,
     sessionExpiryMaxTimestamp: String,
@@ -18,19 +21,6 @@ export default class extends Controller {
     this.sessionExpireAfterLastActivityGracePeriod =
       parseInt(this.sessionExpireAfterLastActivityGracePeriodValue) * 1000
     this.sessionTimer()
-  }
-
-  openModal() {
-    this.modalTarget.classList.add('show')
-    this.modalBackdropTarget.classList.add('show')
-    document.body.classList.add('show-modal')
-  }
-
-  closeModal() {
-    window.location.reload(true)
-    this.modalTarget.classList.remove('show')
-    this.modalBackdropTarget.classList.remove('show')
-    document.body.classList.remove('show-modal')
   }
 
   sessionTimer() {
@@ -66,7 +56,6 @@ export default class extends Controller {
     const timeIsUp =
       this.sessionExpiryTimestamp + this.sessionExpireAfterLastActivityGracePeriod <=
       currentDate.getTime()
-    const expiryTimestampTimeIsUp = this.sessionExpiryTimestamp <= currentDate.getTime()
     const timeIsUpMax = this.sessionExpiryMaxTimestamp <= currentDate.getTime()
     const timeLeft = parseInt(
       Math.abs(
@@ -74,6 +63,11 @@ export default class extends Controller {
           new Date(this.sessionExpiryTimestamp + this.sessionExpireAfterLastActivityGracePeriod)
       ) / 1000
     )
+    const expiryTimestampTimeIsUp =
+      this.sessionExpiryTimestamp + this.sessionExpireAfterLastActivityGracePeriod - 60000 <=
+      currentDate.getTime()
+    const expiryTimestampTimeIsUpMax =
+      this.sessionExpiryMaxTimestamp - 60000 <= currentDate.getTime()
     const timeLeftMax = parseInt(
       Math.abs(currentDate.getTime() - new Date(this.sessionExpiryMaxTimestamp)) / 1000
     )
@@ -83,17 +77,31 @@ export default class extends Controller {
 
     console.log('timeLeft: ', this.humanDuration(timeLeft))
     console.log('timeLeftMax: ', this.humanDuration(timeLeftMax))
-    if (expiryTimestampTimeIsUp) {
+    let snackItem = document.getElementById(this.snackItemIdValue)
+    if (expiryTimestampTimeIsUp || expiryTimestampTimeIsUpMax) {
       const uitleg =
         timeLeft < timeLeftMax
           ? `Vernieuw de pagina binnen ${timeLeftHuman}`
           : `Je wordt uitgelogd over ${timeLeftHuman}`
-      this.uitlegTarget.textContent = uitleg
+
+      if (!snackItem) {
+        renderStreamMessage(this.snackItemValue)
+      }
+      snackItem = document.getElementById(this.snackItemIdValue)
+      if (snackItem) {
+        snackItem.controller.contentTarget.textContent = uitleg
+      }
 
       if (timeIsUp || timeIsUpMax) {
+        if (snackItem) {
+          snackItem.controller.contentTarget.remove()
+          snackItem.controller.titelTarget.textContent = 'Je bent uitgelogd.'
+        }
         clearInterval(this.timer)
-        this.uitlegTarget.textContent = 'Je bent uitgelogd.'
-        //window.location.replace(`/login/?next=${document.location.pathname}`)
+      }
+    } else {
+      if (snackItem) {
+        snackItem.remove()
       }
     }
   }
