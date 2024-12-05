@@ -18,7 +18,12 @@ export default class extends Controller {
       self.eventSource.close()
       self.publiceerTopic(self.meldingIdValue)
     })
+
+    this.mercureSubscriptions = []
+  }
+  connect() {
     this.element.style.display = 'none'
+    this.updateGebruikerActiviteit()
   }
   isValidHttpUrl(string) {
     let url
@@ -33,7 +38,6 @@ export default class extends Controller {
   }
   initMessages() {
     let self = this
-    console.log(self.mercurePublicUrlValue)
     if (self.hasMercurePublicUrlValue && self.isValidHttpUrl(self.mercurePublicUrlValue)) {
       const url = new URL(self.mercurePublicUrlValue)
       url.searchParams.append('topic', window.location.pathname)
@@ -51,14 +55,13 @@ export default class extends Controller {
   onMessage(e) {
     this.lastEventId = e.lastEventId
     let data = JSON.parse(e.data)
-    console.log('mercure message', data, new Date().toString())
+    console.error('onMessage', this.identifier, data, new Date().toString())
     this.mercureSubscriptions = data
     this.updateGebruikerActiviteit()
   }
   onMessageError(e) {
     let self = this
-    console.error(e)
-    console.error('An error occurred while attempting to connect.')
+    console.error('onMessageError', this.identifier, e)
     self.eventSource.close()
     setTimeout(() => self.initMessages(), 5000)
   }

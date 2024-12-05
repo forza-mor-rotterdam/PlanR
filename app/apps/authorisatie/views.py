@@ -1,6 +1,6 @@
 from apps.authorisatie.forms import RechtengroepAanmakenForm, RechtengroepAanpassenForm
 from django.contrib import messages
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import Group
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponse
@@ -11,6 +11,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
     permission_required("authorisatie.rechtengroep_bekijken"), name="dispatch"
 )
@@ -19,6 +20,7 @@ class RechtengroepView(View):
     success_url = reverse_lazy("rechtengroep_lijst")
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
     permission_required("authorisatie.rechtengroep_lijst_bekijken"), name="dispatch"
 )
@@ -30,6 +32,7 @@ class RechtengroepAanmakenAanpassenView(RechtengroepView):
     ...
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
     permission_required("authorisatie.rechtengroep_aanpassen"), name="dispatch"
 )
@@ -40,6 +43,7 @@ class RechtengroepAanpassenView(
     success_message = "De rechtengroep '%(name)s' is aangepast"
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
     permission_required("authorisatie.rechtengroep_aanmaken"), name="dispatch"
 )
@@ -50,6 +54,7 @@ class RechtengroepAanmakenView(
     success_message = "De rechtengroep '%(name)s' is aangemaakt"
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
     permission_required("authorisatie.rechtengroep_verwijderen"), name="dispatch"
 )
