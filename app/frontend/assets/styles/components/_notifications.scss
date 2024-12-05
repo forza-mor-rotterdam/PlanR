@@ -352,10 +352,12 @@
                 font-size: 0.8em;
                 transition: all $transition-duration-default $transition-ease-default;
                 border-bottom: 1px solid transparent;
+                display: inline-block;
+                padding: 0.2em 0.3em 0.1em;
+                border-radius: 4px;
 
                 &:hover {
-                    color: $primary;
-                    border-color: $primary;
+                    background-color: $gray-100;
                 }
 
                 &.small {
@@ -405,12 +407,16 @@
             border-radius: 10px;
         }
 
+        &::-webkit-scrollbar-track-piece {
+            background-color: $white;
+        }
+
         /* Handle on hover */
         &::-webkit-scrollbar-thumb:hover {
             background: $gray-600;
         }
         @media (min-width: map-get($grid-breakpoints, md)) {
-            height: 550px;
+            height: 500px;
             overflow-y: auto;
         }
 
@@ -453,6 +459,10 @@
         padding: 0.5em $input-padding-x 0.8em;
         border-top: 1px solid $blue-200;
         text-align: center;
+
+        &:has(a.disabled) {
+            border-top: 0;
+        }
         a {
             font-size: 0.7em;
 
@@ -483,6 +493,7 @@
                     width: 36px;
                     height: 36px;
                     line-height: 40px;
+                    background-color: $green-200;
                 }
             }
             .container__status {
@@ -495,7 +506,7 @@
                 font-size: 0.7em;
             }
             h3 {
-                margin: 0.7em 0 0;
+                margin: 0.1em 0 0;
             }
             p {
                 margin-top: 0;

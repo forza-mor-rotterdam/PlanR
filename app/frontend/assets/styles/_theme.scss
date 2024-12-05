@@ -128,7 +128,7 @@ $focus-border-color: $gray-tint11;
 $disabled-border-color: $gray-tint08;
 
 $font-weight-normal: 400;
-$line-height-base: 1.5 !default;
+$line-height-base: 1.35 !default;
 
 // voor footer links, <small> en input field error messages
 $small-font-size: 0.75rem;
@@ -281,5 +281,5 @@ $card-height: 100%;
 $dt-font-weight: 700;
 
 //transition
-$transition-duration-default: 0.25s;
+$transition-duration-default: 0.35s;
 $transition-ease-default: ease-in-out;
