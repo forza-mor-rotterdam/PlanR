@@ -11,6 +11,12 @@ export default class extends Controller {
         })
       }
     })
+
+    document.addEventListener('keydown', function (e) {
+      if (e.code == 'Space' || e.code == 'Enter') {
+        document.activeElement.click()
+      }
+    })
   }
 
   show(e) {
