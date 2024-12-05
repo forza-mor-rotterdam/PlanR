@@ -14,7 +14,7 @@
     {% endwith %}
 {% endblock header %}
 {% block body %}
-    <turbo-frame id="beheer">
+    <turbo-frame id="beheer" data-turbo-action="advance">
     <div class="page__beheer" data-turbo-action="advance">
         <div>
             <a href="{% url 'rechtengroep_lijst' %}"

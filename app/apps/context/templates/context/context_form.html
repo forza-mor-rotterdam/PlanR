@@ -30,7 +30,7 @@
         {% else %}
             <h1>Rol aanmaken</h1>
         {% endif %}
-        <div class="grid-container">
+        <div class="grid-container grid-container--4-1">
             <div class="grid-item">
                 {% if object.profielen_voor_context.all %}
                     <div class="alert alert--warning">
@@ -56,16 +56,36 @@
                         {% csrf_token %}
                         <fieldset>
                             <div class="form-control__with-helptext js-validation">{{ form.naam|render_rotterdam_formulier }}</div>
-                            {{ form.filters|render_rotterdam_formulier }}
-                            {{ form.kolommen|render_rotterdam_formulier }}
-                            <div class="form-row">
-                                <h3 class="label">Onderwerpen</h3>
-                                <div class="list--grouped">{{ form.standaard_filters }}</div>
-                            </div>
-                            <div class="form-row">
-                                <h3 class="label">{{ form.taaktypes.label_tag }}</h3>
-                                {{ form.taaktypes }}
-                            </div>
+                            <details>
+                                <summary>
+                                    <h4>Filter mogelijkheden</h4>
+                                </summary>
+                                {{ form.filters|render_rotterdam_formulier }}
+                            </details>
+                            <details>
+                                <summary>
+                                    <h4>Kolom instellingen</h4>
+                                </summary>
+                                {{ form.kolommen|render_rotterdam_formulier }}
+                            </details>
+                            <details>
+                                <summary>
+                                    <h4>Onderwerp instellingen</h4>
+                                </summary>
+                                <div class="form-row">
+                                    <h3 class="label">Onderwerpen</h3>
+                                    <div class="list--grouped">{{ form.standaard_filters }}</div>
+                                </div>
+                            </details>
+                            <details>
+                                <summary>
+                                    <h4>Taaktype opties</h4>
+                                </summary>
+                                <div class="form-row">
+                                    <h3 class="label">{{ form.taaktypes.label_tag }}</h3>
+                                    {{ form.taaktypes }}
+                                </div>
+                            </details>
                             {{ form.template|render_rotterdam_formulier }}
                         </fieldset>
                         <div class="form-row container__button">

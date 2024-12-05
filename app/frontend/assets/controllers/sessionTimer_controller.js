@@ -24,11 +24,6 @@ export default class extends Controller {
   }
 
   sessionTimer() {
-    console.log(this.sessionCheckItervalSeconds)
-    console.log(this.sessionShowTimerSeconds)
-    console.log(this.sessionExpiryTimestamp)
-    console.log(this.sessionExpiryMaxTimestamp)
-    console.log(this.sessionExpireAfterLastActivityGracePeriod)
     this.timer = setInterval(() => this.onInterval(), this.sessionCheckItervalSeconds)
     this.onInterval()
     window.addEventListener('beforeunload', () => {

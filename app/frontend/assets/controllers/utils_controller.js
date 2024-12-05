@@ -8,11 +8,11 @@ export default class extends Controller {
   noHover(e) {
     // used to close popup with close-button while hovering
     const targetContainer = e?.params?.targetcontainer ?? 'container__uitklapper'
-    this.element.closest(`.${targetContainer}`).classList.remove('show')
-    this.element.closest(`.${targetContainer}`).classList.add('no-hover')
+    this.element.closest(`.${targetContainer}`)?.classList.remove('show')
+    this.element.closest(`.${targetContainer}`)?.classList.add('no-hover')
     this.element.blur()
     setTimeout(() => {
-      this.element.closest(`.${targetContainer}`).classList.remove('no-hover')
+      this.element.closest(`.${targetContainer}`)?.classList.remove('no-hover')
     }, 500)
   }
 }
