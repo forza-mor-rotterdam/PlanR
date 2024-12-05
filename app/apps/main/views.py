@@ -140,6 +140,9 @@ class LoginView(View):
             return redirect(reverse("melding_lijst"))
         if request.user.has_perms(["authorisatie.beheer_bekijken"]):
             return redirect(reverse("beheer"))
+        if request.user.is_authenticated:
+            return redirect(reverse("root"), False)
+
         if settings.OIDC_ENABLED:
             return redirect(f"/oidc/authenticate/?next={request.GET.get('next', '/')}")
         if settings.ENABLE_DJANGO_ADMIN_LOGIN:
@@ -150,6 +153,9 @@ class LoginView(View):
 
 class LogoutView(View):
     def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse("login"), False)
+
         if settings.OIDC_ENABLED:
             return redirect("/oidc/logout/")
         if settings.ENABLE_DJANGO_ADMIN_LOGIN:
