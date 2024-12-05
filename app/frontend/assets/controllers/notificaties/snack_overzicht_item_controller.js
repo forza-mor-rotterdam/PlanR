@@ -10,7 +10,7 @@ export default class extends Controller {
     this.contentString = null
     this.truncatedString = null
     if (this.hasContentTarget) {
-      this.contentString = this.contentTarget.innerText
+      this.contentString = this.contentTarget.innerHTML
       if (this.contentString.length > MAX_CHARACTERS) {
         this.truncatedString = `${this.contentString.slice(
           0,
