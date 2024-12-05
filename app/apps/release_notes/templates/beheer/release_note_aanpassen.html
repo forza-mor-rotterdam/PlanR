@@ -54,9 +54,8 @@
                         </div>
                         <div class="form-control__with-helptext js-validation">{{ form.titel|render_rotterdam_formulier }}</div>
                         <div class="form-control__with-helptext js-validation"
-                             data-berichten-beheer-target="notificatie hideable">
-                            {{ form.korte_beschrijving|render_rotterdam_formulier }}
-                        </div>
+                             data-berichten-beheer-target="notificatie hideable"
+                             data-testid="text_area">{{ form.korte_beschrijving|render_rotterdam_formulier }}</div>
                         <div class="form-control__with-helptext js-validation"
                              data-berichten-beheer-target="notificatie hideable">
                             {{ form.link_titel|render_rotterdam_formulier }}
