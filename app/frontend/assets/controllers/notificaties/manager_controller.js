@@ -69,13 +69,6 @@ export default class extends Controller {
     return this.snackOverzichtItemTargets.find((elem) => elem.dataset.id === String(notificatieId))
       ?.controller
   }
-  async markeerSnackAlsGelezen(notificatieId) {
-    const snackItemController = this.snackItemController(notificatieId)
-    const snackOverzichtItemController = this.snackOverzichtItemController(notificatieId)
-    this.laadSnackOverzicht(`markeer-snack-als-gelezen=${notificatieId}`)
-    snackItemController.markeerAlsGelezen()
-    snackOverzichtItemController?.markeerAlsGelezen()
-  }
   overzichtTab(e) {
     e.preventDefault()
     this.snackOverzichtFilter = e.params.overzichtFilter
@@ -83,11 +76,19 @@ export default class extends Controller {
     this.verwijderAlleSnackOverzichtItems()
     this.laadSnackOverzicht()
   }
+  async markeerSnackAlsGelezen(notificatieId) {
+    const snackItemController = this.snackItemController(notificatieId)
+    snackItemController.markeerAlsGelezen()
+    this.verwijderAlleSnackOverzichtItems()
+    this.snackOverzichtPagina = 0
+    this.laadSnackOverzicht(`markeer-snack-als-gelezen=${notificatieId}`)
+  }
   markeerAlleAlsGelezen(e) {
     e.preventDefault()
     this.snackOverzichtFilter = 'alle'
     this.verwijderAlleSnackItems()
     this.verwijderAlleSnackOverzichtItems()
+    this.snackOverzichtPagina = 0
     this.laadSnackOverzicht('markeer-alle-snacks-als-gelezen=true')
   }
   verwijderAlleSnackOverzichtItems() {
