@@ -159,9 +159,9 @@ class SnackOverzichtView(LoginRequiredMixin, ListView):
             ).first()
             if bericht:
                 bericht.bekeken_door_gebruikers.add(self.request.user)
-            queryset_ongelezen = queryset.exclude(
-                bekeken_door_gebruikers=self.request.user
-            )
+                queryset_ongelezen = queryset.exclude(
+                    bekeken_door_gebruikers=self.request.user
+                )
 
         queryset_gelezen = queryset.filter(bekeken_door_gebruikers=self.request.user)
         filter = self.request.GET.get("filter", "alle")
