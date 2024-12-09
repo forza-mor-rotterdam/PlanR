@@ -23,7 +23,7 @@
             {% endfor %}
         </ul>
         <div id="snack_overzicht_geen_resultaat">
-            {% include "public/notificaties/snack_overzicht_geen_resultaat.html" with aantal=paginering.object_list|length only %}
+            {% include "public/notificaties/snack_overzicht_geen_resultaat.html" with filter=filter aantal=paginering.object_list|length only %}
         </div>
         <div id="snack_overzicht_laad_meer" class="container__laadmeer">
             {% include "public/notificaties/snack_overzicht_laad_meer.html" with paginering=paginering only %}

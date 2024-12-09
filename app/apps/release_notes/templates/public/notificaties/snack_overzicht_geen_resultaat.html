@@ -3,12 +3,24 @@
     {% if aantal is 0 %}
         <div class="no-content">
             <p>{% include "icons/check_message.svg" %}</p>
-            <h3>Geen ongelezen notificaties</h3>
-            <p>Je hebt op dit moment geen ongelezen notificaties.</p>
-            <a role="button"
-               data-notificaties--manager-overzicht-filter-param="alle"
-               data-action="notificaties--manager#overzichtTab"
-               href="{% url 'snack_overzicht' %}?filter=alle">Toon alle notificaties</a>
+            {% if filter == 'alle' %}
+                <h3>Geen notificaties</h3>
+                <p>Je hebt op dit moment geen notificaties.</p>
+            {% elif filter == 'gelezen' %}
+                <h3>Geen gelezen notificaties</h3>
+                <p>Je hebt op dit moment geen gelezen notificaties.</p>
+                <a role="button"
+                   data-notificaties--manager-overzicht-filter-param="alle"
+                   data-action="notificaties--manager#overzichtTab"
+                   href="{% url 'snack_overzicht' %}?filter=alle">Toon alle notificaties</a>
+            {% else %}
+                <h3>Geen ongelezen notificaties</h3>
+                <p>Je hebt op dit moment geen ongelezen notificaties.</p>
+                <a role="button"
+                   data-notificaties--manager-overzicht-filter-param="alle"
+                   data-action="notificaties--manager#overzichtTab"
+                   href="{% url 'snack_overzicht' %}?filter=alle">Toon alle notificaties</a>
+            {% endif %}
         </div>
     {% endif %}
 </template>

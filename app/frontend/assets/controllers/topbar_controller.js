@@ -21,10 +21,16 @@ export default class extends Controller {
 
   show(e) {
     if (e.target.tagName != 'A') {
-      this.element.querySelectorAll('.show').forEach((element) => {
-        element.classList.remove('show')
-      })
-      e.target.closest('.container__uitklapper').classList.add('show')
+      if (this.element.querySelectorAll('.show').length) {
+        this.element.querySelectorAll('.show').forEach((element) => {
+          if (element != e.target.closest('.container__uitklapper')) {
+            element.classList.remove('show')
+          }
+          e.target.closest('.container__uitklapper').classList.toggle('show')
+        })
+      } else {
+        e.target.closest('.container__uitklapper').classList.add('show')
+      }
     }
   }
 }

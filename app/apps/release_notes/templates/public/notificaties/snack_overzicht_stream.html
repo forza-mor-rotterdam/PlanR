@@ -5,4 +5,4 @@
     {% include "public/notificaties/snack_overzicht_item.html" with notificatie=object action="append" target="snack_overzicht" only %}
 {% endfor %}
 {% include "public/notificaties/snack_overzicht_laad_meer.html" with paginering=paginering only %}
-{% include "public/notificaties/snack_overzicht_geen_resultaat.html" with aantal=paginering.object_list|length only %}
+{% include "public/notificaties/snack_overzicht_geen_resultaat.html" with filter=filter aantal=paginering.object_list|length only %}

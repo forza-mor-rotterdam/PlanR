@@ -222,8 +222,12 @@
         }
 
         .notification {
+            height: auto;
+            interpolate-size: allow-keywords;
             &.hide {
                 transform: scale(0.98, 0);
+                transform-origin: top;
+                opacity: 0;
                 height: 0;
                 transition: all $transition-duration-default $transition-ease-default;
             }
@@ -364,9 +368,10 @@
                     color: $gray-800;
                     text-decoration: underline;
                     &:hover {
-                        color: $primary;
+                        color: $black;
                         text-decoration: none;
                         border-color: transparent;
+                        background-color: transparent;
                     }
                 }
             }
