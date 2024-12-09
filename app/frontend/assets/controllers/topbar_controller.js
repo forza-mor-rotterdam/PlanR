@@ -10,6 +10,10 @@ export default class extends Controller {
           element.classList.remove('show')
         })
       }
+      document.body.classList.toggle(
+        'show--notificatie-lijst',
+        this.element.querySelector('.show .container__profiel_notificatie_lijst')
+      )
     })
 
     document.addEventListener('keydown', function (e) {
@@ -32,5 +36,10 @@ export default class extends Controller {
         e.target.closest('.container__uitklapper').classList.add('show')
       }
     }
+
+    document.body.classList.toggle(
+      'show--notificatie-lijst',
+      this.element.querySelector('.show .container__profiel_notificatie_lijst')
+    )
   }
 }

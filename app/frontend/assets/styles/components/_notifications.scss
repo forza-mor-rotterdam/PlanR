@@ -29,7 +29,16 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    transition: gap $transition-duration-default $transition-ease-default;
+    transition: all $transition-duration-default $transition-ease-default;
+    opacity: 1;
+
+    .show--notificatie-lijst & {
+        opacity: 0;
+
+        .notification {
+            pointer-events: none;
+        }
+    }
 
     .notification {
         padding: 0.75em 2em 0.75em 0.75em;

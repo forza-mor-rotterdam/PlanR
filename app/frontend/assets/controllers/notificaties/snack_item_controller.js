@@ -11,19 +11,6 @@ export default class extends Controller {
     this.initialTouchX = null
     this.finalTouchX = null
     this.deltaX = null
-    this.contentString = null
-    let truncatedString = null
-    if (this.hasContentTarget) {
-      this.contentString = this.contentTarget.innerText
-      if (this.contentString.length > MAX_CHARACTERS) {
-        truncatedString = `${this.contentString.slice(
-          0,
-          MAX_CHARACTERS - 13
-        )}... <a href="" data-action="notificaties--snack-item#readMore">Lees meer</a>`
-        this.contentTarget.innerHTML = truncatedString
-        this.contentTarget.style.height = `${this.contentTarget.clientHeight}px`
-      }
-    }
 
     if ('ontouchstart' in window) {
       this.element.addEventListener('touchstart', (event) => {
@@ -64,6 +51,24 @@ export default class extends Controller {
       })
     }
   }
+
+  connect() {
+    this.contentString = null
+    let truncatedString = null
+    if (this.hasContentTarget) {
+      this.contentString = this.contentTarget.innerText
+      if (this.contentString.length > MAX_CHARACTERS) {
+        truncatedString = `${this.contentString.slice(
+          0,
+          MAX_CHARACTERS - 13
+        )}... <a href="" data-action="notificaties--snack-item#readMore">Lees meer</a>`
+        this.contentTarget.innerHTML = truncatedString
+        this.contentTarget.style.height = `${this.contentTarget.clientHeight}px`
+        console.log('on connect, height: ', this.contentTarget.clientHeight)
+      }
+    }
+  }
+
   initializeManager(manager) {
     this.manager = manager
 
