@@ -164,11 +164,14 @@ class SnackOverzichtView(LoginRequiredMixin, ListView):
                 )
 
         queryset_gelezen = queryset.filter(bekeken_door_gebruikers=self.request.user)
-        filter = self.request.GET.get("filter", "alle")
+        filter = self.request.GET.get("filter", "ongelezen")
+        if not self.request.GET and not queryset_ongelezen:
+            filter = "alle"
+
         if filter in ("ongelezen", "gelezen") and isinstance(
             locals().get(f"queryset_{filter}"), QuerySet
         ):
-            queryset = locals().get(f'queryset_{self.request.GET.get("filter")}')
+            queryset = locals().get(f"queryset_{filter}")
 
         page_size = 8
         try:

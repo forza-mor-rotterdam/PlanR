@@ -17,7 +17,7 @@
             <div class="container__message">
                 {% if notificatie.link_titel and notificatie.link_url %}
                     <div class="container__link">
-                        <a href="{{ notificatie.link_url }}" data-turbo-frame="_top">{{ notificatie.link_titel }}</a>
+                        <a href="{{ notificatie.link_url }}" data-turbo="false">{{ notificatie.link_titel }}</a>
                     </div>
                 {% endif %}
                 {% if notificatie.korte_beschrijving %}
