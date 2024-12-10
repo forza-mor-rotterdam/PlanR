@@ -52,7 +52,7 @@ export default class extends Controller {
     }
   }
 
-  connect() {
+  contentTargetConnected() {
     this.contentString = null
     let truncatedString = null
     if (this.hasContentTarget) {
@@ -64,7 +64,7 @@ export default class extends Controller {
         )}... <a href="" data-action="notificaties--snack-item#readMore">Lees meer</a>`
         this.contentTarget.innerHTML = truncatedString
         this.contentTarget.style.height = `${this.contentTarget.clientHeight}px`
-        console.log('on connect, height: ', this.contentTarget.clientHeight)
+        console.log('on TargetConnected, height: ', this.contentTarget.clientHeight)
       }
     }
   }
@@ -88,8 +88,11 @@ export default class extends Controller {
   }
   readMore(e = null) {
     e?.preventDefault()
+    this.contentTarget.style.height = `${this.contentTarget.clientHeight}px`
+    console.log('before readMore, height: ', this.contentTarget.clientHeight)
     this.contentTarget.innerText = this.contentString
     this.contentTarget.style.height = `${this.contentTarget.scrollHeight}px`
+    console.log('after readMore, height: ', this.contentTarget.style.height)
   }
   markeerAlsGelezen() {
     this.element.classList.add('hide')

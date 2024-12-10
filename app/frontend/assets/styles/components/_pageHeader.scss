@@ -56,7 +56,7 @@
                     &--large {
                         width: 98vw;
                         max-width: 400px;
-                        right: -12vw;
+                        right: -9vw;
 
                         @media (min-width: map-get($grid-breakpoints, md)) {
                             right: 1vw;
@@ -97,10 +97,15 @@
                 }
                 &.show,
                 &:focus {
-                    outline: none;
+                    outline: none !important;
                     .trigger--notificationslist {
                         .active {
                             opacity: 1;
+                        }
+                    }
+                    > .trigger--profile {
+                        .initials {
+                            background-color: darken($color: $blue-200, $amount: 10);
                         }
                     }
                 }
@@ -156,6 +161,7 @@
     line-height: 2.62em;
     font-size: 0.85em;
     text-transform: uppercase;
+    transition: background-color $transition-duration-default $transition-ease-default;
 }
 
 .trigger--notificationslist {

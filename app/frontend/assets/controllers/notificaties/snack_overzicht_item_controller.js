@@ -7,6 +7,8 @@ export default class extends Controller {
   connect() {
     this.element.controller = this
     this.manager = null
+  }
+  contentTargetConnected() {
     this.contentString = null
     this.truncatedString = null
     if (this.hasContentTarget) {

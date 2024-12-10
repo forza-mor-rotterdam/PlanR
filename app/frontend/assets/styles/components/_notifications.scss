@@ -52,12 +52,12 @@
         transition-duration: $transition-duration-default;
         transition-timing-function: $transition-ease-default;
         overflow: hidden;
-        font-size: 0.8em;
         display: flex;
         justify-content: flex-start;
         gap: 10px;
         opacity: 0;
         margin-top: 5px;
+        border: 1px solid $blue-200;
 
         &:not(:nth-child(-n + 10)) {
             display: none !important;
@@ -175,6 +175,11 @@
         }
     }
 
+    @media (min-width: map-get($grid-breakpoints, sm)) {
+        .notification {
+            // font-size: 0.8em;
+        }
+    }
     @media (min-width: map-get($grid-breakpoints, lg)) {
         .notification {
             .btn-close--small {
@@ -362,7 +367,6 @@
             a {
                 text-decoration: none;
                 color: inherit;
-                font-size: 0.8em;
                 transition: all $transition-duration-default $transition-ease-default;
                 display: inline-block;
                 padding: 0.2em 0.3em 0.1em;
@@ -373,9 +377,10 @@
                 }
 
                 &.small {
-                    font-size: 0.7em;
+                    font-size: 0.85em;
                     color: $gray-800;
                     text-decoration: underline;
+                    padding: 0.4em 0 0;
                     &:hover {
                         color: $black;
                         text-decoration: none;
@@ -516,18 +521,20 @@
 
         .container__content {
             > * {
-                font-size: 0.7em;
+                // font-size: 0.7em;
             }
             h3 {
                 margin: 0.1em 0 0;
+                font-size: 0.875em;
             }
             p {
+                font-size: 0.875em;
                 margin-top: 0;
                 overflow: hidden;
                 transition: height $transition-duration-default $transition-ease-default;
             }
             small {
-                font-size: 0.6em;
+                font-size: 0.85em;
                 color: $gray-800;
             }
         }
@@ -544,5 +551,9 @@
                 display: none;
             }
         }
+    }
+
+    @media (min-width: map-get($grid-breakpoints, sm)) {
+        font-size: 0.8em;
     }
 }
