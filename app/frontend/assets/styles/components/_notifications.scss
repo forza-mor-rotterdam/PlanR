@@ -141,6 +141,8 @@
                 }
 
                 p {
+                    height: auto;
+                    interpolate-size: allow-keywords;
                     transition: height $transition-duration-default $transition-ease-default;
                 }
                 a {
@@ -175,11 +177,6 @@
         }
     }
 
-    @media (min-width: map-get($grid-breakpoints, sm)) {
-        .notification {
-            // font-size: 0.8em;
-        }
-    }
     @media (min-width: map-get($grid-breakpoints, lg)) {
         .notification {
             .btn-close--small {
@@ -360,10 +357,11 @@
     }
 
     .container__snack-tabs {
-        padding: 0.5em $input-padding-x;
+        padding: $input-padding-x;
         border-bottom: 1px solid $blue-200;
 
         li {
+            padding-right: 8px;
             a {
                 text-decoration: none;
                 color: inherit;
@@ -403,6 +401,7 @@
             &:nth-child(n + 4) {
                 flex: 1 0 auto;
                 text-align: right;
+                padding-right: 0;
             }
         }
     }
@@ -520,9 +519,6 @@
         }
 
         .container__content {
-            > * {
-                // font-size: 0.7em;
-            }
             h3 {
                 margin: 0.1em 0 0;
                 font-size: 0.875em;

@@ -19,8 +19,11 @@ export default class extends Controller {
           MAX_CHARACTERS - 13
         )}... <a href="" role="button" data-action="notificaties--snack-overzicht-item#readMore">Lees meer</a>`
         this.contentTarget.innerHTML = this.truncatedString
-        this.contentTarget.style.height = `${this.contentTarget.clientHeight}px`
-        this.initialHeight = this.contentTarget.clientHeight
+        setTimeout(() => {
+          this.contentTarget.style.height = `${this.contentTarget.clientHeight}px`
+          this.initialHeight = this.contentTarget.clientHeight
+          console.log('on TargetConnected, height: ', this.contentTarget.clientHeight)
+        }, 500)
       }
     }
   }
