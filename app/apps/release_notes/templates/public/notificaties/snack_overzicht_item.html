@@ -1,0 +1,32 @@
+{% load is_unwatched_by_user from berichten_tags %}
+<turbo-stream action="{{ action }}" target="{{ target }}">
+{% if action != "remove" %}
+    <template>
+        {% is_unwatched_by_user notificatie as notificatie_is_unwatched %}
+        <li id="profiel_notificatie_{{ notificatie.id }}"
+            data-id="{{ notificatie.id }}"
+            data-controller="notificaties--snack-overzicht-item"
+            class="{% if not notificatie_is_unwatched %} is-watched{% endif %}"
+            data-notificaties--manager-target="snackOverzichtItem">
+            <div class="container__icon">
+                <span class="initials">{% include "icons/notification.svg" %}</span>
+            </div>
+            <div class="container__content">
+                <h3>{{ notificatie.titel }}</h3>
+                {% if notificatie.korte_beschrijving %}
+                    <p data-notificaties--snack-overzicht-item-target="content">{{ notificatie.korte_beschrijving }}</p>
+                {% endif %}
+                {% if notificatie.link_titel and notificatie.link_url %}
+                    <p>
+                        <a href="{{ notificatie.link_url }}">{{ notificatie.link_titel }}</a>
+                    </p>
+                {% endif %}
+                <small>{{ notificatie.publicatie_datum }}</small>
+            </div>
+            <div class="container__status">
+                <span class="dot"></span>
+            </div>
+        </li>
+    </template>
+{% endif %}
+</turbo-stream>

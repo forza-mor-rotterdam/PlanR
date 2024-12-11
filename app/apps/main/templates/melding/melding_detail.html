@@ -29,485 +29,486 @@
     has-page-navigation
 {% endblock body_class %}
 {% block body %}
-    {% context_template "melding_detail_titel.html" as titel_template %}
-    {% context_template "melding_detail_melder.html" as melder_template %}
-    {% context_template "melding_detail_acties.html" as acties_template %}
-    {% get_bijlagen melding as bijlagen %}
-    {% with locatie=melding.locaties_voor_melding.0 %}
-        {% with signalen=melding.signalen_voor_melding %}
-            <turbo-frame id="overview">
-            <div data-controller="detail"
-                 data-detail-locatie-value="{{ locatie|json_encode }}"
-                 data-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
-                 data-detail-url-prefix-value="{{ MOR_CORE_URL_PREFIX }}"
-                 data-detail-signalen-value="{{ melding.signalen_voor_melding|json_encode }}"
-                 class="detail-content-wrapper">
-                <div class="border-green print-only"></div>
-                {% include "snippets/messages.html" %}
-                {% if melding.uuid %}
-                    <div class="page__detail">
-                        <div>
-                            <a href="{% url 'melding_lijst' %}?{{ overview_querystring }}"
-                               data-turbo-action='advance'
-                               class="link--back">
-                                <svg width="25"
-                                     height="16"
-                                     viewBox="0 0 25 16"
-                                     fill="none"
-                                     xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M9.15173 1.73256L7.73753 0.318359L1.44704 6.60885L1.4142 6.576L0 7.9902L1.4115 9.4017L1.37867 9.43453L7.67186 15.7277L9.08606 14.3135L3.7726 9.00006H24.0098V7.00006H3.88423L9.15173 1.73256Z" fill="#404B4F" />
-                                </svg>
-                                Terug
-                            </a>
-                        </div>
-                        <div id="id_maincontent">
-                            <div class="grid-container">
-                                <div class="grid-item" data-detail-target="imageSliderWidth">
-                                    <div>{% include titel_template %}</div>
-                                </div>
-                                <div class="grid-item bottom-left">
-                                    <div class="container__meldingnavigatie">
-                                        {% if meldingen_index %}
-                                            <div class="container__buttons">
-                                                <turbo-frame style="display: inline;" id="melding_next_vorige" src="{% url 'melding_next_vorige' melding.uuid %}" data-spinner="hide"></turbo-frame>
-                                                <turbo-frame style="display: inline;" id="melding_next_volgend" src="{% url 'melding_next_volgend' melding.uuid %}" data-spinner="hide"></turbo-frame>
-                                            </div>
-                                            <span class="help-text">{{ meldingen_index }} van {{ request.session.melding_count }}</span>
-                                        {% endif %}
-                                    </div>
-                                    <div class="padding--left">
-                                        {% if melding.status %}
-                                            <span class="badge badge--{% if melding.status.naam == 'afgehandeld' %}green{% elif melding.status.naam == 'controle' %}yellow{% elif melding.status.naam == 'in_behandeling' %}darkblue{% elif melding.status.naam == 'geannuleerd' %}red{% else %}lightblue{% endif %}">{{ melding.status.naam|vertaal }}
-                                                {% if melding.status.naam == 'afgehandeld' or melding.status.naam == 'geannuleerd' %}
-                                                    ({{ melding.resolutie }})
-                                                {% endif %}
-                                            </span>
-                                        {% endif %}
-                                        {% if aantal_actieve_taken %}
-                                            <span class="badge badge--darkblue" data-testid="taakActief">{{ aantal_actieve_taken }}
-                                                {% if aantal_actieve_taken > 1 %}
-                                                    taken
-                                                {% else %}
-                                                    taak
-                                                {% endif %}
-                                            actief</span>
-                                        {% else %}
-                                            <span class="badge badge--darkblue" data-testid="taakActief">0 taken actief</span>
-                                        {% endif %}
-                                        {% if aantal_opgeloste_taken %}
-                                            <span class="badge badge--darkblue" data-testid="taakOpgelost">{{ aantal_opgeloste_taken }}
-                                                {% if aantal_opgeloste_taken > 1 %}
-                                                    taken
-                                                {% else %}
-                                                    taak
-                                                {% endif %}
-                                            opgelost</span>
-                                        {% else %}
-                                            <span class="badge badge--darkblue" data-testid="taakOpgelost">0 taken opgelost</span>
-                                        {% endif %}
-                                        {% if aantal_niet_opgeloste_taken %}
-                                            <span class="badge badge--red" data-testid="taakNietOpgelost">{{ aantal_niet_opgeloste_taken }}
-                                                {% if aantal_niet_opgeloste_taken > 1 %}
-                                                    taken
-                                                {% else %}
-                                                    taak
-                                                {% endif %}
-                                            niet opgelost</span>
-                                        {% endif %}
-                                    </div>
-                                </div>
+    <turbo-frame id="overview">
+    {% if not melding.error %}
+        {% context_template "melding_detail_titel.html" as titel_template %}
+        {% context_template "melding_detail_melder.html" as melder_template %}
+        {% context_template "melding_detail_acties.html" as acties_template %}
+        {% get_bijlagen melding as bijlagen %}
+        {% with locatie=melding.locaties_voor_melding.0 %}
+            {% with signalen=melding.signalen_voor_melding %}
+                <div data-controller="detail"
+                     data-detail-locatie-value="{{ locatie|json_encode }}"
+                     data-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
+                     data-detail-url-prefix-value="{{ MOR_CORE_URL_PREFIX }}"
+                     data-detail-signalen-value="{{ melding.signalen_voor_melding|json_encode }}"
+                     class="detail-content-wrapper">
+                    <div class="border-green print-only"></div>
+                    {% if melding.uuid %}
+                        <div class="page__detail">
+                            <div>
+                                <a href="{% url 'melding_lijst' %}?{{ overview_querystring }}"
+                                   data-turbo-action='advance'
+                                   class="link--back">
+                                    <svg width="25"
+                                         height="16"
+                                         viewBox="0 0 25 16"
+                                         fill="none"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9.15173 1.73256L7.73753 0.318359L1.44704 6.60885L1.4142 6.576L0 7.9902L1.4115 9.4017L1.37867 9.43453L7.67186 15.7277L9.08606 14.3135L3.7726 9.00006H24.0098V7.00006H3.88423L9.15173 1.73256Z" fill="#404B4F" />
+                                    </svg>
+                                    Terug
+                                </a>
                             </div>
-                            <div class="grid-container">
-                                <div class="grid-item">
-                                    <section class="section--seperated section--imageslider"
-                                             {% if bijlagen|length < 2 %}style="border: 0;"{% endif %}>
-                                        <div>
-                                            {% if bijlagen|length > 0 %}
-                                                <div class="container__imageslider"
-                                                     data-detail-target="imageSliderContainer"
-                                                     data-action="scroll->detail#onScrollSlider">
-                                                    <ul class="list-clean imageslider"
-                                                        style="width: calc(100% * {{ bijlagen|length }})">
-                                                        {% for bijlage in bijlagen %}
-                                                            <li class="container__image" tabindex="0">
-                                                                <div class="image"
-                                                                     style="background-image: url('{{ bijlage.afbeelding_relative_url|mor_core_url }}')"
-                                                                     data-detail-target="selectedImage"
-                                                                     data-action="click->detail#showImageInModal"
-                                                                     data-detail-image-index-param="{{ forloop.counter|add:'-1' }}">
-                                                                    <span>{{ bijlage.label }}</span>
-                                                                </div>
-                                                            </li>
-                                                        {% endfor %}
-                                                    </ul>
+                            <div id="id_maincontent">
+                                <div class="grid-container">
+                                    <div class="grid-item" data-detail-target="imageSliderWidth">
+                                        <div>{% include titel_template %}</div>
+                                    </div>
+                                    <div class="grid-item bottom-left">
+                                        <div class="container__meldingnavigatie">
+                                            {% if meldingen_index %}
+                                                <div class="container__buttons">
+                                                    <turbo-frame style="display: inline;" id="melding_next_vorige" src="{% url 'melding_next_vorige' melding.uuid %}" data-spinner="hide"></turbo-frame>
+                                                    <turbo-frame style="display: inline;" id="melding_next_volgend" src="{% url 'melding_next_volgend' melding.uuid %}" data-spinner="hide"></turbo-frame>
                                                 </div>
-                                                {% if bijlagen|length > 1 %}
-                                                    <div class="container__thumbs"
-                                                         data-detail-target="imageSliderThumbContainer">
-                                                        <ul data-detail-target="thumbList">
-                                                            {% for bijlage in bijlagen %}
-                                                                <li>
-                                                                    <button data-action="click->detail#selectImage"
-                                                                            data-detail-image-index-param="{{ forloop.counter|add:'-1' }}"
-                                                                            aria-label="Bekijk afbeelding">
-                                                                        <div class="container__image">
-                                                                            <div class="image"
-                                                                                 style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url|mor_core_url }}')">
-                                                                            </div>
-                                                                        </div>
-                                                                    </button>
-                                                                </li>
-                                                            {% endfor %}
-                                                        </ul>
-                                                    </div>
-                                                {% endif %}
-                                            {% else %}
-                                                <div class="background-image"></div>
+                                                <span class="help-text">{{ meldingen_index }} van {{ request.session.melding_count }}</span>
                                             {% endif %}
                                         </div>
-                                        {% if bijlagen|length > 0 %}
-                                            {% include "icons/expand.svg" %}
-                                        {% endif %}
-                                    </section>
-                                    {% if bijlagen|length > 0 %}
-                                        <section class="section--seperated section--imagelist print-only">
-                                            <div class="container__details">
-                                                {% if bijlagen|length > 0 %}
-                                                    <ul class="list-clean">
-                                                        {% for bijlage in bijlagen %}
-                                                            <li class="container__image">
-                                                                <div class="image">
-                                                                    <img src="{{ bijlage.afbeelding_relative_url|mor_core_url }}" alt="" />
-                                                                    <span>Foto van melder</span>
-                                                                </div>
-                                                            </li>
-                                                        {% endfor %}
-                                                    </ul>
-                                                {% endif %}
-                                            </div>
-                                        </section>
-                                    {% endif %}
-                                    <section class="section--seperated" data-testid="detailMelding">
-                                        <div class="container__details melding">
-                                            <h2>
-                                                <svg width="20"
-                                                     height="22"
-                                                     viewBox="0 0 20 22"
-                                                     fill="none"
-                                                     xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M4 4H7V6H4V4Z" fill="#00811F" />
-                                                    <path d="M7 8H4V10H7V8Z" fill="#00811F" />
-                                                    <path d="M4 12H7V14H4V12Z" fill="#00811F" />
-                                                    <path d="M7 16H4V18H7V16Z" fill="#00811F" />
-                                                    <path d="M8 4H16V6H8V4Z" fill="#00811F" />
-                                                    <path d="M16 8H8V10H16V8Z" fill="#00811F" />
-                                                    <path d="M8 12H16V14H8V12Z" fill="#00811F" />
-                                                    <path d="M16 16H8V18H16V16Z" fill="#00811F" />
-                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0 0V22H20V0H0ZM18 2H2V20H18V2Z" fill="#00811F" />
-                                                </svg>
-                                                Melding
-                                            </h2>
+                                        <div class="padding--left">
+                                            {% if melding.status %}
+                                                <span class="badge badge--{% if melding.status.naam == 'afgehandeld' %}green{% elif melding.status.naam == 'controle' %}yellow{% elif melding.status.naam == 'in_behandeling' %}darkblue{% elif melding.status.naam == 'geannuleerd' %}red{% else %}lightblue{% endif %}">{{ melding.status.naam|vertaal }}
+                                                    {% if melding.status.naam == 'afgehandeld' or melding.status.naam == 'geannuleerd' %}
+                                                        ({{ melding.resolutie }})
+                                                    {% endif %}
+                                                </span>
+                                            {% endif %}
+                                            {% if aantal_actieve_taken %}
+                                                <span class="badge badge--darkblue" data-testid="taakActief">{{ aantal_actieve_taken }}
+                                                    {% if aantal_actieve_taken > 1 %}
+                                                        taken
+                                                    {% else %}
+                                                        taak
+                                                    {% endif %}
+                                                actief</span>
+                                            {% else %}
+                                                <span class="badge badge--darkblue" data-testid="taakActief">0 taken actief</span>
+                                            {% endif %}
+                                            {% if aantal_opgeloste_taken %}
+                                                <span class="badge badge--darkblue" data-testid="taakOpgelost">{{ aantal_opgeloste_taken }}
+                                                    {% if aantal_opgeloste_taken > 1 %}
+                                                        taken
+                                                    {% else %}
+                                                        taak
+                                                    {% endif %}
+                                                opgelost</span>
+                                            {% else %}
+                                                <span class="badge badge--darkblue" data-testid="taakOpgelost">0 taken opgelost</span>
+                                            {% endif %}
+                                            {% if aantal_niet_opgeloste_taken %}
+                                                <span class="badge badge--red" data-testid="taakNietOpgelost">{{ aantal_niet_opgeloste_taken }}
+                                                    {% if aantal_niet_opgeloste_taken > 1 %}
+                                                        taken
+                                                    {% else %}
+                                                        taak
+                                                    {% endif %}
+                                                niet opgelost</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="grid-container">
+                                    <div class="grid-item">
+                                        <section class="section--seperated section--imageslider"
+                                                 {% if bijlagen|length < 2 %}style="border: 0;"{% endif %}>
                                             <div>
-                                                {% if melding.signalen_voor_melding|length > 1 %}
-                                                    <div class="display--flex--md">
-                                                        <ul class="list-tabs" data-detail-target="tabs">
-                                                            {% for signaal in melding.signalen_voor_melding %}
-                                                                {% comment %} {{ signaal }} {% endcomment %}
-                                                                <li>
-                                                                    <button class="btn btn--tab" data-index="{{ forloop.counter }}">
-                                                                        {% if signaal.bron_signaal_id|length > 8 %}
-                                                                            ...{% slice_iterable signaal.bron_signaal_id -6 None %}
-                                                                        {% else %}
-                                                                            {{ signaal.bron_signaal_id }}
-                                                                        {% endif %}
-                                                                    </button>
+                                                {% if bijlagen|length > 0 %}
+                                                    <div class="container__imageslider"
+                                                         data-detail-target="imageSliderContainer"
+                                                         data-action="scroll->detail#onScrollSlider">
+                                                        <ul class="list-clean imageslider"
+                                                            style="width: calc(100% * {{ bijlagen|length }})">
+                                                            {% for bijlage in bijlagen %}
+                                                                <li class="container__image" tabindex="0">
+                                                                    <div class="image"
+                                                                         style="background-image: url('{{ bijlage.afbeelding_relative_url|mor_core_url }}')"
+                                                                         data-detail-target="selectedImage"
+                                                                         data-action="click->detail#showImageInModal"
+                                                                         data-detail-image-index-param="{{ forloop.counter|add:'-1' }}">
+                                                                        <span>{{ bijlage.label }}</span>
+                                                                    </div>
                                                                 </li>
                                                             {% endfor %}
                                                         </ul>
                                                     </div>
-                                                    <div class="container__tab-content" data-detail-target="tabsContent">
-                                                        {% for signaal in melding.signalen_voor_melding %}
-                                                            <div class="tab-content" data-index="{{ forloop.counter }}">
-                                                                <div class="display--flex--md">
-                                                                    <ul class="list-clean">
-                                                                        <li>
-                                                                            <h3 class="h5">Onderwerp</h3>
-                                                                            <p>
-                                                                                {% for onderwerp in signaal.onderwerpen %}
-                                                                                    {{ onderwerp.naam }}
-                                                                                    {% if not forloop.last %},{% endif %}
-                                                                                {% endfor %}
-                                                                            </p>
-                                                                        </li>
-                                                                        <li>
-                                                                            <h3 class="h5">MeldR-nummer</h3>
-                                                                            <p>
-                                                                                {% if signaal.bron_signaal_id %}
-                                                                                    {{ signaal.bron_signaal_id }}
-                                                                                {% else %}
-                                                                                    -
-                                                                                {% endif %}
-                                                                            </p>
-                                                                        </li>
-                                                                        <li>
-                                                                            <h3 class="h5">Ingediend</h3>
-                                                                            <p>
-                                                                                {% if signaal.origineel_aangemaakt %}
-                                                                                    {{ signaal.origineel_aangemaakt|to_datetime|date:"d-m-Y H:i" }}
-                                                                                {% else %}
-                                                                                    -
-                                                                                {% endif %}
-                                                                            </p>
-                                                                        </li>
-                                                                        {% if signaal.aannemer %}
-                                                                            <li>
-                                                                                <h3 class="h5">Aangenomen door</h3>
-                                                                                <p>{{ signaal.aannemer }}</p>
-                                                                            </li>
-                                                                        {% endif %}
-                                                                    </ul>
-                                                                    <ul class="list-clean">
-                                                                        {% if signaal.omschrijving_melder and signaal.omschrijving_melder != "- geen korte omschrijving beschikbaar -" %}
-                                                                            <li>
-                                                                                <h3 class="h5">Omschrijving</h3>
-                                                                                <p>{{ signaal.omschrijving_melder }}</p>
-                                                                            </li>
-                                                                        {% elif signaal.meta.omschrijvingField and signaal.meta.omschrijvingField != "- geen korte omschrijving beschikbaar -" %}
-                                                                            <li>
-                                                                                <h3 class="h5">Omschrijving</h3>
-                                                                                <p>{{ signaal.meta.omschrijvingField }}</p>
-                                                                            </li>
-                                                                        {% endif %}
-                                                                        {% with aanvullende_vragen=signaal.aanvullende_vragen %}
-                                                                            {% if aanvullende_vragen %}
-                                                                                {% for qa in aanvullende_vragen %}
-                                                                                    {% if qa.answers|python_any %}
-                                                                                        <li>
-                                                                                            <h3 class="h5">{{ qa.question }}</h3>
-                                                                                            <p>
-                                                                                                {% for answer in qa.answers %}
-                                                                                                    {{ answer }}
-                                                                                                    {% if not forloop.last %},{% endif %}
-                                                                                                {% endfor %}
-                                                                                            </p>
-                                                                                        </li>
-                                                                                    {% endif %}
-                                                                                {% endfor %}
-                                                                            {% elif signaal.aanvullende_informatie %}
-                                                                                <li>
-                                                                                    <h3 class="h5">Aanvullende informatie</h3>
-                                                                                    <p>{{ signaal.aanvullende_informatie }}</p>
-                                                                                </li>
-                                                                            {% elif signaal.meta.aanvullendeInformatieField %}
-                                                                                <li>
-                                                                                    <h3 class="h5">Aanvullende informatie</h3>
-                                                                                    <p>{{ signaal.meta.aanvullendeInformatieField }}</p>
-                                                                                </li>
-                                                                            {% endif %}
-                                                                        {% endwith %}
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
-                                                        {% endfor %}
-                                                    </div>
+                                                    {% if bijlagen|length > 1 %}
+                                                        <div class="container__thumbs"
+                                                             data-detail-target="imageSliderThumbContainer">
+                                                            <ul data-detail-target="thumbList">
+                                                                {% for bijlage in bijlagen %}
+                                                                    <li>
+                                                                        <button data-action="click->detail#selectImage"
+                                                                                data-detail-image-index-param="{{ forloop.counter|add:'-1' }}"
+                                                                                aria-label="Bekijk afbeelding">
+                                                                            <div class="container__image">
+                                                                                <div class="image"
+                                                                                     style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url|mor_core_url }}')">
+                                                                                </div>
+                                                                            </div>
+                                                                        </button>
+                                                                    </li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                        </div>
+                                                    {% endif %}
                                                 {% else %}
-                                                    <div class="display--flex--md">
+                                                    <div class="background-image"></div>
+                                                {% endif %}
+                                            </div>
+                                            {% if bijlagen|length > 0 %}
+                                                {% include "icons/expand.svg" %}
+                                            {% endif %}
+                                        </section>
+                                        {% if bijlagen|length > 0 %}
+                                            <section class="section--seperated section--imagelist print-only">
+                                                <div class="container__details">
+                                                    {% if bijlagen|length > 0 %}
                                                         <ul class="list-clean">
-                                                            <li>
-                                                                <h3 class="h5">Meldingnummer</h3>
-                                                                <p>
-                                                                    {% if melding.id %}
-                                                                        {{ melding.id }}
-                                                                    {% else %}
-                                                                        -
-                                                                    {% endif %}
-                                                                </p>
-                                                            </li>
-                                                            <li>
-                                                                <h3 class="h5">MeldR-nummer</h3>
-                                                                <p>
-                                                                    {% if melding.signalen_voor_melding.0.bron_signaal_id %}
-                                                                        {{ melding.signalen_voor_melding.0.bron_signaal_id }}
-                                                                    {% else %}
-                                                                        -
-                                                                    {% endif %}
-                                                                </p>
-                                                            </li>
-                                                            <li>
-                                                                <h3 class="h5">Ingediend</h3>
-                                                                <p>
-                                                                    {% if melding.origineel_aangemaakt %}
-                                                                        {{ melding.origineel_aangemaakt|to_datetime|date:"d-m-Y H:i" }}
-                                                                    {% else %}
-                                                                        -
-                                                                    {% endif %}
-                                                                </p>
-                                                            </li>
-                                                            {% if melding.signalen_voor_melding.0.meta.aannemer %}
-                                                                <li>
-                                                                    <h3 class="h5">Aangenomen door</h3>
-                                                                    <p>{{ melding.signalen_voor_melding.0.meta.aannemer }}</p>
+                                                            {% for bijlage in bijlagen %}
+                                                                <li class="container__image">
+                                                                    <div class="image">
+                                                                        <img src="{{ bijlage.afbeelding_relative_url|mor_core_url }}" alt="" />
+                                                                        <span>Foto van melder</span>
+                                                                    </div>
                                                                 </li>
-                                                            {% endif %}
+                                                            {% endfor %}
                                                         </ul>
-                                                        <ul class="list-clean">
-                                                            <li>
-                                                                <h3 class="h5">Onderwerp</h3>
-                                                                <p>
-                                                                    {% for onderwerp in melding.onderwerpen %}
-                                                                        {% render_onderwerp onderwerp %}
-                                                                        {% if not forloop.last %},{% endif %}
-                                                                    {% endfor %}
-                                                                </p>
-                                                            </li>
-                                                            {% if melding.signalen_voor_melding.0.omschrijving_melder and melding.signalen_voor_melding.0.omschrijving_melder != "- geen korte omschrijving beschikbaar -" %}
-                                                                <li>
-                                                                    <h3 class="h5">Omschrijving</h3>
-                                                                    <p>{{ melding.signalen_voor_melding.0.omschrijving_melder }}</p>
-                                                                </li>
-                                                            {% elif melding.meta.omschrijvingField and melding.meta.omschrijvingField != "- geen korte omschrijving beschikbaar -" %}
-                                                                <li>
-                                                                    <h3 class="h5">Omschrijving</h3>
-                                                                    <p>{{ melding.meta.omschrijvingField }}</p>
-                                                                </li>
-                                                            {% endif %}
-                                                            {% with aanvullende_vragen=melding.signalen_voor_melding.0.aanvullende_vragen %}
-                                                                {% if aanvullende_vragen %}
-                                                                    {% for qa in aanvullende_vragen %}
-                                                                        {% if qa.answers|python_any %}
+                                                    {% endif %}
+                                                </div>
+                                            </section>
+                                        {% endif %}
+                                        <section class="section--seperated" data-testid="detailMelding">
+                                            <div class="container__details melding">
+                                                <h2>
+                                                    <svg width="20"
+                                                         height="22"
+                                                         viewBox="0 0 20 22"
+                                                         fill="none"
+                                                         xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M4 4H7V6H4V4Z" fill="#00811F" />
+                                                        <path d="M7 8H4V10H7V8Z" fill="#00811F" />
+                                                        <path d="M4 12H7V14H4V12Z" fill="#00811F" />
+                                                        <path d="M7 16H4V18H7V16Z" fill="#00811F" />
+                                                        <path d="M8 4H16V6H8V4Z" fill="#00811F" />
+                                                        <path d="M16 8H8V10H16V8Z" fill="#00811F" />
+                                                        <path d="M8 12H16V14H8V12Z" fill="#00811F" />
+                                                        <path d="M16 16H8V18H16V16Z" fill="#00811F" />
+                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M0 0V22H20V0H0ZM18 2H2V20H18V2Z" fill="#00811F" />
+                                                    </svg>
+                                                    Melding
+                                                </h2>
+                                                <div>
+                                                    {% if melding.signalen_voor_melding|length > 1 %}
+                                                        <div class="display--flex--md">
+                                                            <ul class="list-tabs" data-detail-target="tabs">
+                                                                {% for signaal in melding.signalen_voor_melding %}
+                                                                    {% comment %} {{ signaal }} {% endcomment %}
+                                                                    <li>
+                                                                        <button class="btn btn--tab" data-index="{{ forloop.counter }}">
+                                                                            {% if signaal.bron_signaal_id|length > 8 %}
+                                                                                ...{% slice_iterable signaal.bron_signaal_id -6 None %}
+                                                                            {% else %}
+                                                                                {{ signaal.bron_signaal_id }}
+                                                                            {% endif %}
+                                                                        </button>
+                                                                    </li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                        </div>
+                                                        <div class="container__tab-content" data-detail-target="tabsContent">
+                                                            {% for signaal in melding.signalen_voor_melding %}
+                                                                <div class="tab-content" data-index="{{ forloop.counter }}">
+                                                                    <div class="display--flex--md">
+                                                                        <ul class="list-clean">
                                                                             <li>
-                                                                                <h3 class="h5">{{ qa.question }}</h3>
+                                                                                <h3 class="h5">Onderwerp</h3>
                                                                                 <p>
-                                                                                    {% for answer in qa.answers %}
-                                                                                        {{ answer }}
+                                                                                    {% for onderwerp in signaal.onderwerpen %}
+                                                                                        {{ onderwerp.naam }}
                                                                                         {% if not forloop.last %},{% endif %}
                                                                                     {% endfor %}
                                                                                 </p>
                                                                             </li>
+                                                                            <li>
+                                                                                <h3 class="h5">MeldR-nummer</h3>
+                                                                                <p>
+                                                                                    {% if signaal.bron_signaal_id %}
+                                                                                        {{ signaal.bron_signaal_id }}
+                                                                                    {% else %}
+                                                                                        -
+                                                                                    {% endif %}
+                                                                                </p>
+                                                                            </li>
+                                                                            <li>
+                                                                                <h3 class="h5">Ingediend</h3>
+                                                                                <p>
+                                                                                    {% if signaal.origineel_aangemaakt %}
+                                                                                        {{ signaal.origineel_aangemaakt|to_datetime|date:"d-m-Y H:i" }}
+                                                                                    {% else %}
+                                                                                        -
+                                                                                    {% endif %}
+                                                                                </p>
+                                                                            </li>
+                                                                            {% if signaal.aannemer %}
+                                                                                <li>
+                                                                                    <h3 class="h5">Aangenomen door</h3>
+                                                                                    <p>{{ signaal.aannemer }}</p>
+                                                                                </li>
+                                                                            {% endif %}
+                                                                        </ul>
+                                                                        <ul class="list-clean">
+                                                                            {% if signaal.omschrijving_melder and signaal.omschrijving_melder != "- geen korte omschrijving beschikbaar -" %}
+                                                                                <li>
+                                                                                    <h3 class="h5">Omschrijving</h3>
+                                                                                    <p>{{ signaal.omschrijving_melder }}</p>
+                                                                                </li>
+                                                                            {% elif signaal.meta.omschrijvingField and signaal.meta.omschrijvingField != "- geen korte omschrijving beschikbaar -" %}
+                                                                                <li>
+                                                                                    <h3 class="h5">Omschrijving</h3>
+                                                                                    <p>{{ signaal.meta.omschrijvingField }}</p>
+                                                                                </li>
+                                                                            {% endif %}
+                                                                            {% with aanvullende_vragen=signaal.aanvullende_vragen %}
+                                                                                {% if aanvullende_vragen %}
+                                                                                    {% for qa in aanvullende_vragen %}
+                                                                                        {% if qa.answers|python_any %}
+                                                                                            <li>
+                                                                                                <h3 class="h5">{{ qa.question }}</h3>
+                                                                                                <p>
+                                                                                                    {% for answer in qa.answers %}
+                                                                                                        {{ answer }}
+                                                                                                        {% if not forloop.last %},{% endif %}
+                                                                                                    {% endfor %}
+                                                                                                </p>
+                                                                                            </li>
+                                                                                        {% endif %}
+                                                                                    {% endfor %}
+                                                                                {% elif signaal.aanvullende_informatie %}
+                                                                                    <li>
+                                                                                        <h3 class="h5">Aanvullende informatie</h3>
+                                                                                        <p>{{ signaal.aanvullende_informatie }}</p>
+                                                                                    </li>
+                                                                                {% elif signaal.meta.aanvullendeInformatieField %}
+                                                                                    <li>
+                                                                                        <h3 class="h5">Aanvullende informatie</h3>
+                                                                                        <p>{{ signaal.meta.aanvullendeInformatieField }}</p>
+                                                                                    </li>
+                                                                                {% endif %}
+                                                                            {% endwith %}
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="display--flex--md">
+                                                            <ul class="list-clean">
+                                                                <li>
+                                                                    <h3 class="h5">Meldingnummer</h3>
+                                                                    <p>
+                                                                        {% if melding.id %}
+                                                                            {{ melding.id }}
+                                                                        {% else %}
+                                                                            -
                                                                         {% endif %}
-                                                                    {% endfor %}
-                                                                {% elif melding.signalen_voor_melding.0.aanvullende_informatie %}
+                                                                    </p>
+                                                                </li>
+                                                                <li>
+                                                                    <h3 class="h5">MeldR-nummer</h3>
+                                                                    <p>
+                                                                        {% if melding.signalen_voor_melding.0.bron_signaal_id %}
+                                                                            {{ melding.signalen_voor_melding.0.bron_signaal_id }}
+                                                                        {% else %}
+                                                                            -
+                                                                        {% endif %}
+                                                                    </p>
+                                                                </li>
+                                                                <li>
+                                                                    <h3 class="h5">Ingediend</h3>
+                                                                    <p>
+                                                                        {% if melding.origineel_aangemaakt %}
+                                                                            {{ melding.origineel_aangemaakt|to_datetime|date:"d-m-Y H:i" }}
+                                                                        {% else %}
+                                                                            -
+                                                                        {% endif %}
+                                                                    </p>
+                                                                </li>
+                                                                {% if melding.signalen_voor_melding.0.meta.aannemer %}
                                                                     <li>
-                                                                        <h3 class="h5">Aanvullende informatie</h3>
-                                                                        <p>{{ melding.signalen_voor_melding.0.aanvullende_informatie }}</p>
-                                                                    </li>
-                                                                {% elif melding.meta.aanvullendeInformatieField %}
-                                                                    <li>
-                                                                        <h3 class="h5">Aanvullende informatie</h3>
-                                                                        <p>{{ melding.meta.aanvullendeInformatieField }}</p>
+                                                                        <h3 class="h5">Aangenomen door</h3>
+                                                                        <p>{{ melding.signalen_voor_melding.0.meta.aannemer }}</p>
                                                                     </li>
                                                                 {% endif %}
-                                                            {% endwith %}
-                                                        </ul>
-                                                    </div>
+                                                            </ul>
+                                                            <ul class="list-clean">
+                                                                <li>
+                                                                    <h3 class="h5">Onderwerp</h3>
+                                                                    <p>
+                                                                        {% for onderwerp in melding.onderwerpen %}
+                                                                            {% render_onderwerp onderwerp %}
+                                                                            {% if not forloop.last %},{% endif %}
+                                                                        {% endfor %}
+                                                                    </p>
+                                                                </li>
+                                                                {% if melding.signalen_voor_melding.0.omschrijving_melder and melding.signalen_voor_melding.0.omschrijving_melder != "- geen korte omschrijving beschikbaar -" %}
+                                                                    <li>
+                                                                        <h3 class="h5">Omschrijving</h3>
+                                                                        <p>{{ melding.signalen_voor_melding.0.omschrijving_melder }}</p>
+                                                                    </li>
+                                                                {% elif melding.meta.omschrijvingField and melding.meta.omschrijvingField != "- geen korte omschrijving beschikbaar -" %}
+                                                                    <li>
+                                                                        <h3 class="h5">Omschrijving</h3>
+                                                                        <p>{{ melding.meta.omschrijvingField }}</p>
+                                                                    </li>
+                                                                {% endif %}
+                                                                {% with aanvullende_vragen=melding.signalen_voor_melding.0.aanvullende_vragen %}
+                                                                    {% if aanvullende_vragen %}
+                                                                        {% for qa in aanvullende_vragen %}
+                                                                            {% if qa.answers|python_any %}
+                                                                                <li>
+                                                                                    <h3 class="h5">{{ qa.question }}</h3>
+                                                                                    <p>
+                                                                                        {% for answer in qa.answers %}
+                                                                                            {{ answer }}
+                                                                                            {% if not forloop.last %},{% endif %}
+                                                                                        {% endfor %}
+                                                                                    </p>
+                                                                                </li>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    {% elif melding.signalen_voor_melding.0.aanvullende_informatie %}
+                                                                        <li>
+                                                                            <h3 class="h5">Aanvullende informatie</h3>
+                                                                            <p>{{ melding.signalen_voor_melding.0.aanvullende_informatie }}</p>
+                                                                        </li>
+                                                                    {% elif melding.meta.aanvullendeInformatieField %}
+                                                                        <li>
+                                                                            <h3 class="h5">Aanvullende informatie</h3>
+                                                                            <p>{{ melding.meta.aanvullendeInformatieField }}</p>
+                                                                        </li>
+                                                                    {% endif %}
+                                                                {% endwith %}
+                                                            </ul>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </section>
+                                        {% include "melding/melding_detail_locaties.html" %}
+                                        {% include melder_template %}
+                                        <div class="border-green print-only"></div>
+                                    </div>
+                                    <div class="grid-item aside">
+                                        {% include "melding/melding_gebruiker_actief.html" %}
+                                        {% include acties_template %}
+                                        {% if melding.signalen_voor_melding|length > 1 %}
+                                            <div class="alert alert--info">
+                                                <span>
+                                                    <svg width="24"
+                                                         height="24"
+                                                         viewBox="0 0 24 24"
+                                                         fill="none"
+                                                         xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M21.9 12C21.9 6.5 17.5 2.1 12 2.1C6.5 2.1 2.1 6.5 2.1 12C2.1 17.5 6.5 21.9 12 21.9C17.5 21.9 21.9 17.5 21.9 12ZM0 12C0 5.4 5.4 0 12 0C18.6 0 24 5.4 24 12C24 18.6 18.6 24 12 24C5.4 24 0 18.6 0 12ZM13 7V5H11V7H13ZM13 19V9H11V19H13Z" fill="#00689E" />
+                                                    </svg>
+                                                </span>
+                                                <span>Melding samengevoegd met:
+                                                    {% for signaal in melding.signalen_voor_melding %}
+                                                        {{ signaal.bron_signaal_id }}
+                                                        {% if not forloop.last %},{% endif %}
+                                                    {% endfor %}
+                                                </span>
+                                            </div>
+                                        {% endif %}
+                                        <section class="section--seperated">
+                                            <div class="container__details">
+                                                <h2>
+                                                    <svg width="21"
+                                                         height="22"
+                                                         viewBox="0 0 21 22"
+                                                         fill="none"
+                                                         xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M19.0009 11C19.0009 15.9706 14.9715 20 10.0009 20C6.96008 20 4.27145 18.4919 2.64218 16.1829L0.953125 17.2577C2.93876 20.1233 6.25068 22 10.0009 22C16.0761 22 21.0009 17.0751 21.0009 11C21.0009 4.92487 16.0761 0 10.0009 0C6.96339 0 4.21339 1.23121 2.22279 3.22181L1.00098 2V6H5.00098L3.637 4.63602C5.26568 3.00735 7.51567 2 10.0009 2C14.9715 2 19.0009 6.02944 19.0009 11Z" fill="#00811F" />
+                                                        <path d="M9.00098 5H11.001V11.8573L15.1973 14.28L14.1973 16.0121L9.00098 13V5Z" fill="#00811F" />
+                                                    </svg>
+                                                    Tijdlijn
+                                                </h2>
+                                                {% if melding.status.naam != "afgehandeld" and melding.status.naam != "geannuleerd" %}
+                                                    <turbo-frame id="informatie_toevoegen" src="{% url 'informatie_toevoegen' melding.uuid %}">
+                                                    </turbo-frame>
                                                 {% endif %}
                                             </div>
-                                        </div>
-                                    </section>
-                                    {% include "melding/melding_detail_locaties.html" %}
-                                    {% include melder_template %}
-                                    <div class="border-green print-only"></div>
-                                </div>
-                                <div class="grid-item aside">
-                                    {% include "melding/melding_gebruiker_actief.html" %}
-                                    {% include acties_template %}
-                                    {% if melding.signalen_voor_melding|length > 1 %}
-                                        <div class="alert alert--info">
-                                            <span>
-                                                <svg width="24"
-                                                     height="24"
-                                                     viewBox="0 0 24 24"
-                                                     fill="none"
-                                                     xmlns="http://www.w3.org/2000/svg">
-                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M21.9 12C21.9 6.5 17.5 2.1 12 2.1C6.5 2.1 2.1 6.5 2.1 12C2.1 17.5 6.5 21.9 12 21.9C17.5 21.9 21.9 17.5 21.9 12ZM0 12C0 5.4 5.4 0 12 0C18.6 0 24 5.4 24 12C24 18.6 18.6 24 12 24C5.4 24 0 18.6 0 12ZM13 7V5H11V7H13ZM13 19V9H11V19H13Z" fill="#00689E" />
-                                                </svg>
-                                            </span>
-                                            <span>Melding samengevoegd met:
-                                                {% for signaal in melding.signalen_voor_melding %}
-                                                    {{ signaal.bron_signaal_id }}
-                                                    {% if not forloop.last %},{% endif %}
-                                                {% endfor %}
-                                            </span>
-                                        </div>
-                                    {% endif %}
-                                    <section class="section--seperated">
-                                        <div class="container__details">
-                                            <h2>
-                                                <svg width="21"
-                                                     height="22"
-                                                     viewBox="0 0 21 22"
-                                                     fill="none"
-                                                     xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M19.0009 11C19.0009 15.9706 14.9715 20 10.0009 20C6.96008 20 4.27145 18.4919 2.64218 16.1829L0.953125 17.2577C2.93876 20.1233 6.25068 22 10.0009 22C16.0761 22 21.0009 17.0751 21.0009 11C21.0009 4.92487 16.0761 0 10.0009 0C6.96339 0 4.21339 1.23121 2.22279 3.22181L1.00098 2V6H5.00098L3.637 4.63602C5.26568 3.00735 7.51567 2 10.0009 2C14.9715 2 19.0009 6.02944 19.0009 11Z" fill="#00811F" />
-                                                    <path d="M9.00098 5H11.001V11.8573L15.1973 14.28L14.1973 16.0121L9.00098 13V5Z" fill="#00811F" />
-                                                </svg>
-                                                Tijdlijn
-                                            </h2>
-                                            {% if melding.status.naam != "afgehandeld" and melding.status.naam != "geannuleerd" %}
-                                                <turbo-frame id="informatie_toevoegen" src="{% url 'informatie_toevoegen' melding.uuid %}">
-                                                </turbo-frame>
-                                            {% endif %}
-                                        </div>
-                                    </section>
-                                    <section class="section--seperated {% if melding.status.naam is 'afgehandeld' or melding.status.naam is not 'geannuleerd' %}no-padding{% endif %}"
-                                             data-testid="detailTijdlijn">
-                                        {% include "melding/part_tijdlijn.html" %}
-                                    </section>
+                                        </section>
+                                        <section class="section--seperated {% if melding.status.naam is 'afgehandeld' or melding.status.naam is not 'geannuleerd' %}no-padding{% endif %}"
+                                                 data-testid="detailTijdlijn">
+                                            {% include "melding/part_tijdlijn.html" %}
+                                        </section>
+                                    </div>
                                 </div>
                             </div>
+                            <button data-detail-target="btnToTop"
+                                    data-action="detail#scrollToTop"
+                                    class="btn btn-to-top">
+                                {% include "icons/arrow-double.svg" %}
+                                Terug naar boven
+                            </button>
                         </div>
-                        <button data-detail-target="btnToTop"
-                                data-action="detail#scrollToTop"
-                                class="btn btn-to-top">
-                            {% include "icons/arrow-double.svg" %}
-                            Terug naar boven
-                        </button>
-                    </div>
-                    <div class="modal"
-                         data-detail-target="modalAfhandelen"
-                         id="meldingDetailModal">
-                        <div class="modal-backdrop modal-exit"
-                             id="modal-backdrop"
-                             data-action="click->detail#closeModal"></div>
-                        <turbo-frame id="melding_actie_form" class="turboframe-container" data-detail-target="turboActionModal">
-                        </turbo-frame>
-                    </div>
-                    <div class="modal modal--images"
-                         data-detail-target="modalImages"
-                         id="imageModal">
-                        <div class="modal-backdrop modal-exit"
-                             id="modal-backdrop"
-                             data-action="click->detail#closeModal"></div>
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button"
-                                            class="btn-close"
-                                            aria-label="Sluit"
-                                            data-action="detail#closeModal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="image" data-detail-target="selectedImageModal"></div>
-                                    <div class="image-counter" data-detail-target="imageCounter"></div>
-                                    <div class="container__navigate-images">
-                                        <div class="navigate-images--left inactive"
-                                             data-detail-target="navigateImagesLeft"
-                                             data-action="click->detail#showPreviousImageInModal">
-                                            <span aria-label="Bekijk vorige afbeelding">{% include "icons/arrow-right.svg" %}</span>
-                                        </div>
-                                        <div class="navigate-images--right inactive"
-                                             data-detail-target="navigateImagesRight"
-                                             data-action="click->detail#showNextImageInModal">
-                                            <span aria-label="Bekijk volgende afbeelding">{% include "icons/arrow-right.svg" %}</span>
+                        <div class="modal"
+                             data-detail-target="modalAfhandelen"
+                             id="meldingDetailModal">
+                            <div class="modal-backdrop modal-exit"
+                                 id="modal-backdrop"
+                                 data-action="click->detail#closeModal"></div>
+                            <turbo-frame id="melding_actie_form" class="turboframe-container" data-detail-target="turboActionModal">
+                            </turbo-frame>
+                        </div>
+                        <div class="modal modal--images"
+                             data-detail-target="modalImages"
+                             id="imageModal">
+                            <div class="modal-backdrop modal-exit"
+                                 id="modal-backdrop"
+                                 data-action="click->detail#closeModal"></div>
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button"
+                                                class="btn-close"
+                                                aria-label="Sluit"
+                                                data-action="detail#closeModal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="image" data-detail-target="selectedImageModal"></div>
+                                        <div class="image-counter" data-detail-target="imageCounter"></div>
+                                        <div class="container__navigate-images">
+                                            <div class="navigate-images--left inactive"
+                                                 data-detail-target="navigateImagesLeft"
+                                                 data-action="click->detail#showPreviousImageInModal">
+                                                <span aria-label="Bekijk vorige afbeelding">{% include "icons/arrow-right.svg" %}</span>
+                                            </div>
+                                            <div class="navigate-images--right inactive"
+                                                 data-detail-target="navigateImagesRight"
+                                                 data-action="click->detail#showNextImageInModal">
+                                                <span aria-label="Bekijk volgende afbeelding">{% include "icons/arrow-right.svg" %}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                {% endif %}
-            </div>
-            </turbo-frame>
+                    {% endif %}
+                </div>
+            {% endwith %}
         {% endwith %}
-    {% endwith %}
+    {% endif %}
+    </turbo-frame>
 {% endblock body %}

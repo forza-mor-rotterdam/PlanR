@@ -1,7 +1,10 @@
 from apps.context.forms import ContextAanmakenForm, ContextAanpassenForm
 from apps.context.models import Context
 from apps.main.services import MORCoreService, OnderwerpenService, TaakRService
-from django.contrib.auth.decorators import permission_required
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.messages.views import SuccessMessageMixin
+from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -9,12 +12,14 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(permission_required("authorisatie.context_bekijken"), name="dispatch")
 class ContextView(View):
     model = Context
     success_url = reverse_lazy("context_lijst")
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
     permission_required("authorisatie.context_lijst_bekijken"), name="dispatch"
 )
@@ -33,11 +38,15 @@ class ContextAanmakenAanpassenView(ContextView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
     permission_required("authorisatie.context_aanpassen"), name="dispatch"
 )
-class ContextAanpassenView(ContextAanmakenAanpassenView, UpdateView):
+class ContextAanpassenView(
+    SuccessMessageMixin, ContextAanmakenAanpassenView, UpdateView
+):
     form_class = ContextAanpassenForm
+    success_message = "De rol '%(naam)s' is aangepast"
 
     def get_form_kwargs(self, *args, **kwargs):
         kwargs = super().get_form_kwargs(*args, **kwargs)
@@ -61,9 +70,13 @@ class ContextAanpassenView(ContextAanmakenAanpassenView, UpdateView):
         return initial
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(permission_required("authorisatie.context_aanmaken"), name="dispatch")
-class ContextAanmakenView(ContextAanmakenAanpassenView, CreateView):
+class ContextAanmakenView(
+    SuccessMessageMixin, ContextAanmakenAanpassenView, CreateView
+):
     form_class = ContextAanmakenForm
+    success_message = "De rol '%(naam)s' is aangemaakt"
 
     def get_form_kwargs(self, *args, **kwargs):
         kwargs = super().get_form_kwargs(*args, **kwargs)
@@ -79,9 +92,15 @@ class ContextAanmakenView(ContextAanmakenAanpassenView, CreateView):
         return kwargs
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
     permission_required("authorisatie.context_verwijderen"), name="dispatch"
 )
 class ContextVerwijderenView(ContextView, DeleteView):
     def get(self, request, *args, **kwargs):
-        return self.post(request, *args, **kwargs)
+        object = self.get_object()
+        if not object.profielen_voor_context.all():
+            response = self.delete(request, *args, **kwargs)
+            messages.success(self.request, f"De rol '{object.naam}' is verwijderd")
+            return response
+        return HttpResponse("Verwijderen is niet mogelijk")

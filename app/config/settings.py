@@ -46,6 +46,11 @@ LANGUAGES = [("nl", "Dutch")]
 DEFAULT_ALLOWED_HOSTS = ".forzamor.nl,localhost,127.0.0.1,.mor.local"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", DEFAULT_ALLOWED_HOSTS).split(",")
 
+ENABLE_DJANGO_ADMIN_LOGIN = os.getenv("ENABLE_DJANGO_ADMIN_LOGIN", False) in TRUE_VALUES
+
+LOGIN_URL = "login"
+LOGOUT_URL = "logout"
+
 INSTALLED_APPS = (
     # templates override
     "apps.main",
@@ -96,13 +101,13 @@ MIDDLEWARE = (
     "django_permissions_policy.PermissionsPolicyMiddleware",
     "csp.middleware.CSPMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "django_session_timeout.middleware.SessionTimeoutMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "apps.main.middleware.SessionTimeoutMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 )
 
@@ -292,6 +297,9 @@ CSP_CONNECT_SRC = (
     (
         "'self'",
         "api.pdok.nl",
+        "iam.forzamor.nl",
+        "sts.rotterdam.nl",
+        "sts-acc.rotterdam.nl",
         "mercure.planr-test.forzamor.nl",
         "mercure.planr-acc.forzamor.nl",
         "mercure.planr.forzamor.nl",
@@ -300,6 +308,7 @@ CSP_CONNECT_SRC = (
     else (
         "'self'",
         "ws:",
+        "iam.forzamor.nl",
         "api.pdok.nl",
         "localhost:7002",
     )
@@ -323,6 +332,8 @@ TEMPLATES = [
     }
 ]
 
+MESSAGE_STORAGE = "apps.main.messages.FallbackDeduplicatedStorage"
+
 REDIS_URL = "redis://redis:6379"
 CACHES = {
     "default": {
@@ -345,10 +356,19 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_EXPIRE_MAXIMUM_SECONDS = int(
     os.getenv("SESSION_EXPIRE_MAXIMUM_SECONDS", "28800")
 )
-SESSION_EXPIRE_SECONDS = int(os.getenv("SESSION_EXPIRE_SECONDS", "3600"))
-SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD = int(
-    os.getenv("SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD", "1800")
+SESSION_EXPIRE_SECONDS = int(
+    os.getenv("SESSION_EXPIRE_SECONDS", "3600" if APP_ENV != "test" else "600")
 )
+SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD = int(
+    os.getenv(
+        "SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD",
+        "1800" if APP_ENV != "test" else "60",
+    )
+)
+SESSION_CHECK_INTERVAL_SECONDS = int(
+    os.getenv("SESSION_CHECK_INTERVAL_SECONDS", "60" if APP_ENV != "test" else "1")
+)
+SESSION_SHOW_TIMER_SECONDS = int(os.getenv("SESSION_SHOW_TIMER_SECONDS", "300"))
 
 THUMBNAIL_BACKEND = "utils.images.ThumbnailBackend"
 THUMBNAIL_PREFIX = "afbeeldingen"
@@ -412,6 +432,8 @@ LOGGING = {
     },
 }
 
+LOGIN_URL = "/login/"
+LOGOUT_URL = "/logout/"
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
@@ -481,7 +503,6 @@ if OPENID_CONFIG and OIDC_RP_CLIENT_ID:
     LOGIN_REDIRECT_URL = "/"
     LOGIN_REDIRECT_URL_FAILURE = "/"
     LOGOUT_REDIRECT_URL = OIDC_OP_LOGOUT_ENDPOINT
-    LOGIN_URL = "/oidc/authenticate/"
 
 APP_MERCURE_PUBLIC_URL = os.getenv("APP_MERCURE_PUBLIC_URL")
 APP_MERCURE_INTERNAL_URL = os.getenv("APP_MERCURE_INTERNAL_URL", APP_MERCURE_PUBLIC_URL)
@@ -492,6 +513,9 @@ MERCURE_SUBSCRIBER_JWT_ALG = os.getenv("MERCURE_SUBSCRIBER_JWT_ALG", "HS256")
 
 MERCURE_PUBLISH_TARGETS = [
     "/melding/{id}/",
+    "/notificaties/snack/",
+    "/notificaties/snack/{id}/",
+    "/notificaties/toast/{id}/",
 ]
 
 USER_ACTIVITY_CACHE_KEY = "user_activity_cache_key"

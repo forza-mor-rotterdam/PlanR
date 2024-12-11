@@ -1,10 +1,10 @@
 {% extends "base_beheer.html" %}
 {% load rotterdam_formulier_html %}
 {% block title %}
-    Release notes | PlanR
+    Berichten | PlanR
 {% endblock title %}
 {% block header %}
-    {% with pageTitle="Release notes" %}
+    {% with pageTitle="Berichten" %}
         {% include "snippets/pageheader.html" %}
     {% endwith %}
 {% endblock header %}
@@ -24,7 +24,7 @@
             </a>
         </div>
         <div class="container__flex">
-            <h1>Release notes overzicht</h1>
+            <h1>Berichten overzicht</h1>
             <a class="btn btn-action btn-240"
                href="{% url 'release_note_aanmaken' %}"
                data-turbo="false">
@@ -35,7 +35,7 @@
                      xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#ffffff"></path>
                 </svg>
-                Nieuwe release note
+                Nieuw bericht
             </a>
         </div>
         <form>
@@ -50,14 +50,16 @@
                 </div>
             </div>
         </form>
-        <h2>Release Notes</h2>
         <table>
             <thead>
                 <tr>
                     <th>Titel</th>
                     <th>Beschrijving</th>
+                    <th>Bericht type</th>
+                    <th>Notificatie type</th>
                     <th>Aanmaak Datum</th>
                     <th>Publicatie Datum</th>
+                    <th>Eind publicatie Datum</th>
                     <th></th>
                     <th></th>
                 </tr>
@@ -69,8 +71,23 @@
                         {% autoescape off %}
                             <td data-row-search-target="searchable">{{ release_note.beschrijving|striptags|safe|truncate_text:200 }}</td>
                         {% endautoescape %}
+                        <td data-row-search-target="searchable">{{ release_note.bericht_type }}</td>
+                        <td data-row-search-target="searchable">
+                            {% if release_note.bericht_type == "notificatie" %}
+                                {{ release_note.notificatie_type }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
                         <td data-row-search-target="searchable">{{ release_note.aangemaakt_op }}</td>
                         <td data-row-search-target="searchable">{{ release_note.publicatie_datum }}</td>
+                        <td data-row-search-target="searchable">
+                            {% if release_note.einde_publicatie_datum %}
+                                {{ release_note.einde_publicatie_datum }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
                         <td>
                             <a href="{% url 'release_note_aanpassen' release_note.pk %}"
                                aria-label="Aanpassen"
@@ -79,7 +96,7 @@
                         <td>
                             <a href="{% url 'release_note_verwijderen' release_note.pk %}"
                                data-turbo-frame="_top"
-                               onclick="return confirm('Weet je zeker dat je deze release note wil verwijderen?')"
+                               onclick="return confirm('Weet je zeker dat je dit bericht wil verwijderen?')"
                                aria-label="Verwijderen">{% include "icons/bin.svg" %}</a>
                         </td>
                     </tr>

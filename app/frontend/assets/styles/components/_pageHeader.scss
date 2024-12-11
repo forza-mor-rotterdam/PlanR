@@ -21,66 +21,107 @@
         }
 
         .container__user {
-            padding: 1em 1.2em;
+            padding: 1em 0.5em 1em 0;
+            display: flex;
 
             .container__uitklapper {
-                white-space: nowrap;
+                position: unset;
+                flex: 1;
+
                 > span {
                     font-weight: 700;
                     text-decoration: none;
                     color: $black;
                     font-size: 0.8em;
-                    padding: 0.7em 0 1em 1em;
+                    padding: 0.7em 0.5em 2em 0.5em;
                     cursor: pointer;
-
-                    svg {
-                        vertical-align: sub;
-                        margin-left: 1em;
-                        transform: scale(1.5);
-                    }
                 }
 
-                .legenda {
+                .content {
+                    visibility: hidden;
+                    position: absolute;
                     display: block;
-                    top: 35px;
-                    transform: translateY(0);
-                    right: -5px;
-                    left: auto;
+                    top: 2em;
+                    transform: scale(0.98, 0.98);
+                    right: 1vw;
                     padding: 0;
-                    box-shadow: 0 4px 10px 1px rgba(0, 0, 0, 0.25);
+                    box-shadow: 0 4px 14px 7px rgba(0, 0, 0, 0.07);
                     opacity: 0;
                     pointer-events: none;
-                    transition: opacity $transition-duration-default $transition-ease-default;
+                    transition: all $transition-duration-default $transition-ease-default;
+                    transform-origin: right top;
                     transition-delay: 0.15s;
+                    background-color: $white;
 
-                    &:before {
-                        content: "";
-                        width: 0px;
-                        height: 0px;
-                        border-style: solid;
-                        border-width: 0 15px 15px 15px;
-                        border-color: transparent transparent #fff transparent;
-                        transform: rotate(0deg);
-                        position: absolute;
-                        top: -10px;
-                        left: 50%;
-                        transform: translateX(-50%);
+                    &--large {
+                        width: 98vw;
+                        max-width: 450px;
+                        right: -9vw;
+
+                        @media (min-width: map-get($grid-breakpoints, md)) {
+                            right: 1vw;
+                        }
                     }
 
+                    &:not(.container__profiel_notificatie_lijst) {
+                        top: 2.2em;
+                    }
+
+                    ul {
+                        margin: 0;
+                    }
                     li {
                         margin-bottom: 1px;
+                        margin-right: 0;
                     }
                     span {
                         font-size: 0.87em;
                     }
                 }
 
-                &:hover,
-                &:focus-within {
-                    .legenda {
+                &.show {
+                    .content {
+                        visibility: visible;
                         opacity: 1;
+                        transform: scale(1, 1);
                         pointer-events: all;
-                        transition: opacity $transition-duration-default $transition-ease-default;
+                    }
+                }
+
+                &:focus,
+                &:hover {
+                    .trigger--notificationslist {
+                        cursor: pointer;
+                        background-color: $white;
+                    }
+                }
+                &.show,
+                &:focus {
+                    outline: none !important;
+                    .trigger--notificationslist {
+                        .active {
+                            opacity: 1;
+                        }
+                    }
+                    > .trigger--profile {
+                        .initials {
+                            background-color: darken($color: $blue-200, $amount: 10);
+                        }
+                    }
+                }
+            }
+
+            @media (min-width: map-get($grid-breakpoints, md)) {
+                .container__uitklapper {
+                    position: relative;
+                    &:first-child {
+                        .content {
+                            right: -1em;
+                        }
+                    }
+
+                    .content {
+                        right: -0.25em;
                     }
                 }
             }
@@ -88,9 +129,89 @@
 
         .list-nav--tertiary {
             display: block;
+            header {
+                padding: 0;
+
+                .btn-close--small {
+                    top: 0.6em;
+                    right: 0.6em;
+                }
+            }
             small {
                 @extend .visually-hidden;
             }
         }
+
+        .trigger--block {
+            display: inline-block;
+            width: 5em;
+            margin-left: -5em;
+        }
+    }
+}
+
+.initials {
+    display: inline-block;
+    width: 2.62em;
+    height: 2.62em;
+    background-color: $blue-200;
+    color: $blue-900;
+    text-align: center;
+    border-radius: 100%;
+    line-height: 2.62em;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    transition: background-color $transition-duration-default $transition-ease-default;
+}
+
+.trigger--notificationslist {
+    width: 1.8em;
+    height: 1.8em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    background-color: transparent;
+    transition: background-color $transition-duration-default $transition-ease-default;
+
+    .notification__background {
+        pointer-events: none;
+    }
+
+    .active,
+    .inactive {
+        position: absolute;
+        left: 50%;
+        right: 50%;
+        transform: translate(-50%, -50%);
+        display: block;
+        width: 16px;
+        height: 16px;
+    }
+
+    .active {
+        opacity: 0;
+        transition: opacity $transition-duration-default $transition-ease-default;
+    }
+
+    svg {
+        path {
+            fill: $black;
+        }
+    }
+
+    .badge-count {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-10%, -70%);
+        background-color: $primary;
+        span {
+            display: inline-block;
+            font-size: 0.8333em;
+        }
+        width: 1.5em;
+        height: 1.5em;
+        line-height: 1.5em;
     }
 }

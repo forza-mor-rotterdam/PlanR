@@ -13,34 +13,20 @@
     <turbo-frame id="beheer" data-turbo-action="advance">
     <ul class="list--blocks-horizontal">
         <li>
-            <a href="{% url 'gebruiker_lijst' %}" data-turbo-frame="_top">Gebruikers</a>
+            <a href="{% url 'gebruiker_lijst' %}">Gebruikers</a>
         </li>
         <li>
-            <a href="{% url 'context_lijst' %}"
-               data-turbo-frame="_top"
-               data-turbo-frame="_top">Rollen</a>
+            <a href="{% url 'context_lijst' %}">Rollen</a>
         </li>
         <li>
-            <a href="{% url 'rechtengroep_lijst' %}" data-turbo-frame="_top">Rechtengroepen</a>
+            <a href="{% url 'rechtengroep_lijst' %}">Rechtengroepen</a>
         </li>
         <li>
-            <a href="{% url 'standaard_externe_omschrijving_lijst' %}"
-               data-turbo-frame="_top">Standaard teksten</a>
+            <a href="{% url 'standaard_externe_omschrijving_lijst' %}">Standaard teksten</a>
         </li>
         <li>
-            <a href="{% url 'taaktype_categorie_lijst' %}" data-turbo-frame="_top">Taaktype categorieën</a>
+            <a href="{% url 'release_note_lijst' %}">Berichten</a>
         </li>
-        <li>
-            <a href="{% url 'release_note_lijst' %}" data-turbo-frame="_top">Release notes</a>
-        </li>
-    </ul>
-    <h2>Andere Forzamor beheer {{ APP_ENV }} omgevingen</h2>
-    <ul class="list--blocks-horizontal">
-        {% for url in env_urls %}
-            <li>
-                <a href="{{ url.0 }}">{{ url.1 }}</a>
-            </li>
-        {% endfor %}
     </ul>
     </turbo-frame>
 {% endblock body %}

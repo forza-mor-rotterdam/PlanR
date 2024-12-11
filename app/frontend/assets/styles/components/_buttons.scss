@@ -110,7 +110,7 @@ textarea {
         max-width: none;
     }
 
-    span:not(.badge--unread-count) {
+    span:not(.badge-count) {
         padding: 0 16px;
     }
 
@@ -131,15 +131,15 @@ textarea {
         }
 
         &-v2 {
-            background-color: $blue-900;
+            background-color: $neutral-900;
             color: $white;
-            border-color: $blue-900;
+            border-color: $neutral-900;
             transition: background-color 0.15s ease-in-out;
 
             &:hover,
             &:focus {
-                background-color: darken($blue-900, 10%);
-                border-color: darken($blue-900, 10%);
+                background-color: darken($neutral-900, 10%);
+                border-color: darken($neutral-900, 10%);
             }
         }
     }
@@ -200,6 +200,36 @@ textarea {
         &:hover,
         &:active {
             opacity: 0.75;
+        }
+
+        &--small {
+            position: absolute;
+            right: 0;
+            top: 0;
+            padding: 8px;
+            margin: 0 0 0 auto;
+            box-shadow: none;
+            box-sizing: content-box;
+            min-width: 13px;
+            min-height: 13px;
+            border: 0;
+            opacity: 1;
+            background-color: transparent;
+            cursor: pointer;
+
+            svg {
+                width: 13px;
+                height: 13px;
+                pointer-events: none;
+                path {
+                    fill: $black;
+                }
+            }
+
+            &:hover,
+            &:active {
+                opacity: 0.75;
+            }
         }
     }
 
@@ -366,7 +396,7 @@ textarea {
         padding-top: 16px;
         position: relative;
 
-        .badge--unread-count {
+        .badge-count {
             width: 18px;
             height: 18px;
             line-height: 18px;

@@ -1,0 +1,9 @@
+<turbo-stream action="update" target="snack_overzicht_laad_meer">
+<template>
+    <a data-action="notificaties--manager#laadMeerSnacks"
+       data-notificaties--manager-target="snackOverzichtLaadMeer"
+       href="#"
+       role="button"
+       class="{% if not paginering.is_er_meer %}disabled{% endif %}">Laad meer</a>
+</template>
+</turbo-stream>

@@ -31,11 +31,34 @@ from apps.main.forms import (
     TaakAfrondenForm,
     TaakAnnulerenForm,
     TaakStartenForm,
-    TaaktypeCategorieAanmakenForm,
-    TaaktypeCategorieAanpassenForm,
-    TaaktypeCategorieSearchForm,
 )
-from apps.main.models import StandaardExterneOmschrijving, TaaktypeCategorie
+from apps.main.messages import (
+    MELDING_AFHANDELEN_ERROR,
+    MELDING_AFHANDELEN_SUCCESS,
+    MELDING_ANNULEREN_ERROR,
+    MELDING_ANNULEREN_SUCCESS,
+    MELDING_HEROPENEN_ERROR,
+    MELDING_HEROPENEN_SUCCESS,
+    MELDING_HERVATTEN_ERROR,
+    MELDING_HERVATTEN_SUCCESS,
+    MELDING_INFORMATIE_TOEVOEGEN_ERROR,
+    MELDING_INFORMATIE_TOEVOEGEN_SUCCESS,
+    MELDING_LIJST_OPHALEN_ERROR,
+    MELDING_LOCATIE_AANPASSEN_ERROR,
+    MELDING_LOCATIE_AANPASSEN_SUCCESS,
+    MELDING_OPHALEN_ERROR,
+    MELDING_PAUZEREN_ERROR,
+    MELDING_PAUZEREN_SUCCESS,
+    MELDING_URGENTIE_AANPASSEN_ERROR,
+    MELDING_URGENTIE_AANPASSEN_SUCCESS,
+    TAAK_AANMAKEN_ERROR,
+    TAAK_AANMAKEN_SUCCESS,
+    TAAK_AFRONDEN_ERROR,
+    TAAK_AFRONDEN_SUCCESS,
+    TAAK_ANNULEREN_ERROR,
+    TAAK_ANNULEREN_SUCCESS,
+)
+from apps.main.models import StandaardExterneOmschrijving
 from apps.main.services import MORCoreService, TaakRService
 from apps.main.templatetags.gebruikers_tags import get_gebruiker_object_middels_email
 from apps.main.utils import (
@@ -54,22 +77,13 @@ from apps.main.utils import (
 from config.context_processors import general_settings
 from deepdiff import DeepDiff
 from django.conf import settings
-from django.contrib.auth.decorators import (
-    login_required,
-    permission_required,
-    user_passes_test,
-)
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.core.cache import cache
+from django.contrib.messages.views import SuccessMessageMixin
 from django.core.files.storage import default_storage
 from django.db.models import Q
-from django.http import (
-    HttpResponse,
-    HttpResponseRedirect,
-    JsonResponse,
-    QueryDict,
-    StreamingHttpResponse,
-)
+from django.http import HttpResponse, JsonResponse, QueryDict, StreamingHttpResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
@@ -120,7 +134,37 @@ def http_500(request):
     )
 
 
-@login_required
+class LoginView(View):
+    def get(self, request, *args, **kwargs):
+        if request.user.has_perms(["authorisatie.melding_lijst_bekijken"]):
+            return redirect(reverse("melding_lijst"))
+        if request.user.has_perms(["authorisatie.beheer_bekijken"]):
+            return redirect(reverse("beheer"))
+        if request.user.is_authenticated:
+            return redirect(reverse("root"), False)
+
+        if settings.OIDC_ENABLED:
+            return redirect(f"/oidc/authenticate/?next={request.GET.get('next', '/')}")
+        if settings.ENABLE_DJANGO_ADMIN_LOGIN:
+            return redirect(f"/admin/login/?next={request.GET.get('next', '/admin')}")
+
+        return HttpResponse("Er is geen login ingesteld")
+
+
+class LogoutView(View):
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse("login"), False)
+
+        if settings.OIDC_ENABLED:
+            return redirect("/oidc/logout/")
+        if settings.ENABLE_DJANGO_ADMIN_LOGIN:
+            return redirect(f"/admin/logout/?next={request.GET.get('next', '/')}")
+
+        return HttpResponse("Er is geen logout ingesteld")
+
+
+# @login_required
 def root(request):
     if request.user.has_perms(["authorisatie.melding_lijst_bekijken"]):
         return redirect(reverse("melding_lijst"))
@@ -155,10 +199,7 @@ def sidesheet_actueel(request):
 @login_required
 @permission_required("authorisatie.melding_lijst_bekijken", raise_exception=True)
 def melding_lijst(request):
-    mor_core_service = MORCoreService(request=request)
-    mor_core_service.set_gebruiker(
-        gebruiker=request.user.serialized_instance(),
-    )
+    mor_core_service = MORCoreService()
     gebruiker = request.user
     gebruiker_context = get_gebruiker_context(gebruiker)
 
@@ -235,6 +276,9 @@ def melding_lijst(request):
         meldingen_data = mor_core_service.get_melding_lijst(
             query_string=FilterManager().get_query_string(meldingen_filter_query_dict)
         )
+    if isinstance(meldingen_data, dict) and meldingen_data.get("error"):
+        messages.error(request=request, message=MELDING_LIJST_OPHALEN_ERROR)
+
     request.session["pagina_melding_ids"] = [
         r.get("uuid") for r in meldingen_data.get("results", [])
     ]
@@ -264,9 +308,11 @@ def melding_lijst(request):
 @login_required
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def melding_detail(request, id):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     gebruiker_context = get_gebruiker_context(request.user)
     melding = mor_core_service.get_melding(id)
+    if isinstance(melding, dict) and melding.get("error"):
+        messages.error(request=request, message=MELDING_OPHALEN_ERROR)
 
     if (
         request.GET.get("melding_ids")
@@ -365,7 +411,7 @@ def melding_detail(request, id):
 @login_required
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def melding_next(request, id, richting):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     melding_id = str(id)
     frame_id = "melding_next_volgend" if richting > 0 else "melding_next_vorige"
     label = "Volgende" if richting > 0 else "Vorige"
@@ -425,6 +471,8 @@ def melding_next(request, id, richting):
         meldingen_data = mor_core_service.get_melding_lijst(
             query_string=FilterManager().get_query_string(meldingen_filter_query_dict)
         )
+        if isinstance(meldingen_data, dict) and meldingen_data.get("error"):
+            messages.error(request=request, message=MELDING_LIJST_OPHALEN_ERROR)
 
         pagina_melding_ids = [r.get("uuid") for r in meldingen_data.get("results")]
         melding_count = meldingen_data.get("count")
@@ -465,8 +513,14 @@ def publiceer_topic(request, id):
 @login_required
 @permission_required("authorisatie.melding_afhandelen", raise_exception=True)
 def melding_afhandelen(request, id):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     melding = mor_core_service.get_melding(id)
+    if isinstance(melding, dict) and melding.get("error"):
+        messages.error(request=request, message=MELDING_OPHALEN_ERROR)
+        return render(
+            request,
+            "melding/melding_actie_form.html",
+        )
 
     melding_bijlagen = [
         [
@@ -509,7 +563,7 @@ def melding_afhandelen(request, id):
                 file_name = default_storage.save(f.name, f)
                 bijlagen_base64.append({"bestand": to_base64(file_name)})
 
-            mor_core_service.melding_status_aanpassen(
+            response = mor_core_service.melding_status_aanpassen(
                 id,
                 omschrijving_extern=form.cleaned_data.get("omschrijving_extern"),
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
@@ -518,6 +572,10 @@ def melding_afhandelen(request, id):
                 status="afgehandeld",
                 resolutie="opgelost",
             )
+            if isinstance(response, dict) and response.get("error"):
+                messages.error(request=request, message=MELDING_AFHANDELEN_ERROR)
+            else:
+                messages.success(request=request, message=MELDING_AFHANDELEN_SUCCESS)
             return redirect("melding_detail", id=id)
 
     actieve_taken = [
@@ -543,8 +601,14 @@ def melding_afhandelen(request, id):
 @login_required
 @permission_required("authorisatie.melding_annuleren", raise_exception=True)
 def melding_annuleren(request, id):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     melding = mor_core_service.get_melding(id)
+    if isinstance(melding, dict) and melding.get("error"):
+        messages.error(request=request, message=MELDING_OPHALEN_ERROR)
+        return render(
+            request,
+            "melding/melding_actie_form.html",
+        )
 
     melding_bijlagen = [
         [
@@ -569,12 +633,16 @@ def melding_annuleren(request, id):
                 file_name = default_storage.save(f.name, f)
                 bijlagen_base64.append({"bestand": to_base64(file_name)})
 
-            mor_core_service.melding_annuleren(
+            response = mor_core_service.melding_annuleren(
                 id,
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
                 bijlagen=bijlagen_base64,
                 gebruiker=request.user.email,
             )
+            if isinstance(response, dict) and response.get("error"):
+                messages.error(request=request, message=MELDING_ANNULEREN_ERROR)
+            else:
+                messages.success(request=request, message=MELDING_ANNULEREN_SUCCESS)
             return redirect("melding_detail", id=id)
 
     actieve_taken = [
@@ -600,17 +668,28 @@ def melding_annuleren(request, id):
 @login_required
 @permission_required("authorisatie.melding_heropenen", raise_exception=True)
 def melding_heropenen(request, id):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     melding = mor_core_service.get_melding(id)
+    if isinstance(melding, dict) and melding.get("error"):
+        messages.error(request=request, message=MELDING_OPHALEN_ERROR)
+        return render(
+            request,
+            "melding/melding_actie_form.html",
+        )
+
     form = MeldingHeropenenForm()
     if request.POST:
         form = MeldingHeropenenForm(request.POST)
         if form.is_valid():
-            mor_core_service.melding_heropenen(
+            response = mor_core_service.melding_heropenen(
                 id,
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
                 gebruiker=request.user.email,
             )
+            if isinstance(response, dict) and response.get("error"):
+                messages.error(request=request, message=MELDING_HEROPENEN_ERROR)
+            else:
+                messages.success(request=request, message=MELDING_HEROPENEN_SUCCESS)
             return redirect("melding_detail", id=id)
 
     return render(
@@ -626,8 +705,15 @@ def melding_heropenen(request, id):
 @login_required
 @permission_required("authorisatie.melding_pauzeren", raise_exception=True)
 def melding_pauzeren(request, id):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     melding = mor_core_service.get_melding(id)
+    if isinstance(melding, dict) and melding.get("error"):
+        messages.error(request=request, message=MELDING_OPHALEN_ERROR)
+        return render(
+            request,
+            "melding/melding_actie_form.html",
+        )
+
     form = MeldingPauzerenForm()
     actieve_taken = [
         taakopdracht
@@ -638,12 +724,16 @@ def melding_pauzeren(request, id):
     if request.POST:
         form = MeldingPauzerenForm(request.POST)
         if form.is_valid():
-            mor_core_service.melding_status_aanpassen(
+            response = mor_core_service.melding_status_aanpassen(
                 id,
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
                 gebruiker=request.user.email,
                 status=form.cleaned_data.get("status"),
             )
+            if isinstance(response, dict) and response.get("error"):
+                messages.error(request=request, message=MELDING_PAUZEREN_ERROR)
+            else:
+                messages.success(request=request, message=MELDING_PAUZEREN_SUCCESS)
             return redirect("melding_detail", id=id)
 
     return render(
@@ -660,19 +750,30 @@ def melding_pauzeren(request, id):
 @login_required
 @permission_required("authorisatie.melding_hervatten", raise_exception=True)
 def melding_hervatten(request, id):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     melding = mor_core_service.get_melding(id)
+    if isinstance(melding, dict) and melding.get("error"):
+        messages.error(request=request, message=MELDING_OPHALEN_ERROR)
+        return render(
+            request,
+            "melding/melding_actie_form.html",
+        )
+
     form = MeldingHervattenForm()
 
     if request.POST:
         form = MeldingHervattenForm(request.POST)
         if form.is_valid():
-            mor_core_service.melding_status_aanpassen(
+            response = mor_core_service.melding_status_aanpassen(
                 id,
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
                 gebruiker=request.user.email,
                 status="openstaand",
             )
+            if isinstance(response, dict) and response.get("error"):
+                messages.error(request=request, message=MELDING_HERVATTEN_ERROR)
+            else:
+                messages.success(request=request, message=MELDING_HERVATTEN_SUCCESS)
             return redirect("melding_detail", id=id)
 
     return render(
@@ -688,8 +789,14 @@ def melding_hervatten(request, id):
 @login_required
 @permission_required("authorisatie.melding_spoed_veranderen", raise_exception=True)
 def melding_spoed_veranderen(request, id):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     melding = mor_core_service.get_melding(id)
+    if isinstance(melding, dict) and melding.get("error"):
+        messages.error(request=request, message=MELDING_OPHALEN_ERROR)
+        return render(
+            request,
+            "melding/melding_actie_form.html",
+        )
     form = MeldingSpoedForm(
         initial={"urgentie": 0.5 if melding.get("urgentie", 0.2) == 0.2 else 0.2}
     )
@@ -697,12 +804,20 @@ def melding_spoed_veranderen(request, id):
     if request.POST:
         form = MeldingSpoedForm(request.POST)
         if form.is_valid():
-            mor_core_service.melding_spoed_aanpassen(
+            response = mor_core_service.melding_spoed_aanpassen(
                 id,
                 urgentie=form.cleaned_data.get("urgentie"),
                 omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
                 gebruiker=request.user.email,
             )
+            if isinstance(response, dict) and response.get("error"):
+                messages.error(
+                    request=request, message=MELDING_URGENTIE_AANPASSEN_ERROR
+                )
+            else:
+                messages.success(
+                    request=request, message=MELDING_URGENTIE_AANPASSEN_SUCCESS
+                )
             return redirect("melding_detail", id=id)
 
     return render(
@@ -718,9 +833,15 @@ def melding_spoed_veranderen(request, id):
 @login_required
 @permission_required("authorisatie.taak_aanmaken", raise_exception=True)
 def taak_starten(request, id):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     gebruiker_context = get_gebruiker_context(request.user)
     melding = mor_core_service.get_melding(id)
+    if isinstance(melding, dict) and melding.get("error"):
+        messages.error(request=request, message=MELDING_OPHALEN_ERROR)
+        return render(
+            request,
+            "melding/melding_actie_form.html",
+        )
 
     taakr_service = TaakRService(request=request)
     taaktypes_with_afdelingen = taakr_service.get_taaktypes_with_afdelingen(
@@ -799,13 +920,17 @@ def taak_starten(request, id):
             }
             taaktypes_dict.update(dict(onderwerp_gerelateerde_taaktypes))
 
-            mor_core_service.taak_aanmaken(
+            response = mor_core_service.taak_aanmaken(
                 melding_uuid=id,
                 taakapplicatie_taaktype_url=data.get("taaktype"),
                 titel=taaktypes_dict.get(data.get("taaktype"), data.get("taaktype")),
                 bericht=data.get("bericht"),
                 gebruiker=request.user.email,
             )
+            if isinstance(response, dict) and response.get("error"):
+                messages.error(request=request, message=TAAK_AANMAKEN_ERROR)
+            else:
+                messages.success(request=request, message=TAAK_AANMAKEN_SUCCESS)
             return redirect("melding_detail", id=id)
         else:
             logger.error(f"Form.errors: {form.errors}")
@@ -826,8 +951,14 @@ def taak_starten(request, id):
 @login_required
 @permission_required("authorisatie.taak_afronden", raise_exception=True)
 def taak_afronden(request, melding_uuid):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     melding = mor_core_service.get_melding(melding_uuid)
+    if isinstance(melding, dict) and melding.get("error"):
+        messages.error(request=request, message=MELDING_OPHALEN_ERROR)
+        return render(
+            request,
+            "melding/melding_actie_form.html",
+        )
 
     open_taakopdrachten = get_open_taakopdrachten(melding)
     taakopdracht_urls = {
@@ -848,7 +979,7 @@ def taak_afronden(request, melding_uuid):
             for f in bijlagen:
                 file_name = default_storage.save(f.name, f)
                 bijlagen_base64.append({"bestand": to_base64(file_name)})
-            mor_core_service.taak_status_aanpassen(
+            response = mor_core_service.taak_status_aanpassen(
                 taakopdracht_url=taakopdracht_urls.get(
                     form.cleaned_data.get("taakopdracht")
                 ),
@@ -858,7 +989,10 @@ def taak_afronden(request, melding_uuid):
                 status=TAAK_STATUS_VOLTOOID,
                 resolutie=form.cleaned_data.get("resolutie"),
             )
-
+            if isinstance(response, dict) and response.get("error"):
+                messages.error(request=request, message=TAAK_AFRONDEN_ERROR)
+            else:
+                messages.success(request=request, message=TAAK_AFRONDEN_SUCCESS)
             return redirect("melding_detail", id=melding_uuid)
 
     return render(
@@ -874,8 +1008,14 @@ def taak_afronden(request, melding_uuid):
 @login_required
 @permission_required("authorisatie.taak_annuleren", raise_exception=True)
 def taak_annuleren(request, melding_uuid):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     melding = mor_core_service.get_melding(melding_uuid)
+    if isinstance(melding, dict) and melding.get("error"):
+        messages.error(request=request, message=MELDING_OPHALEN_ERROR)
+        return render(
+            request,
+            "melding/melding_actie_form.html",
+        )
 
     open_taakopdrachten = get_open_taakopdrachten(melding)
     taakopdracht_urls = {
@@ -890,7 +1030,7 @@ def taak_annuleren(request, melding_uuid):
     if request.POST:
         form = TaakAnnulerenForm(request.POST, taakopdracht_opties=taakopdracht_opties)
         if form.is_valid():
-            mor_core_service.taak_status_aanpassen(
+            response = mor_core_service.taak_status_aanpassen(
                 taakopdracht_url=taakopdracht_urls.get(
                     form.cleaned_data.get("taakopdracht")
                 ),
@@ -900,7 +1040,10 @@ def taak_annuleren(request, melding_uuid):
                 gebruiker=request.user.email,
                 bijlagen=[],
             )
-
+            if isinstance(response, dict) and response.get("error"):
+                messages.error(request=request, message=TAAK_ANNULEREN_ERROR)
+            else:
+                messages.success(request=request, message=TAAK_ANNULEREN_SUCCESS)
             return redirect("melding_detail", id=melding_uuid)
     return render(
         request,
@@ -915,7 +1058,7 @@ def taak_annuleren(request, melding_uuid):
 @login_required
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def informatie_toevoegen(request, id):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     form = InformatieToevoegenForm()
     if request.method == "POST":
         form = InformatieToevoegenForm(request.POST, request.FILES)
@@ -927,12 +1070,20 @@ def informatie_toevoegen(request, id):
                 file_name = default_storage.save(f.name, f)
                 bijlagen_base64.append({"bestand": to_base64(file_name)})
 
-            mor_core_service.melding_gebeurtenis_toevoegen(
+            response = mor_core_service.melding_gebeurtenis_toevoegen(
                 id,
                 bijlagen=bijlagen_base64,
                 omschrijving_intern=opmerking,
                 gebruiker=request.user.email,
             )
+            if isinstance(response, dict) and response.get("error"):
+                messages.error(
+                    request=request, message=MELDING_INFORMATIE_TOEVOEGEN_ERROR
+                )
+            else:
+                messages.success(
+                    request=request, message=MELDING_INFORMATIE_TOEVOEGEN_SUCCESS
+                )
             return redirect("melding_detail", id=id)
     return render(
         request,
@@ -959,8 +1110,11 @@ def gebruiker_info(request, gebruiker_email):
 @login_required
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def melding_pdf_download(request, id):
-    mor_core_service = MORCoreService(request=request)
+    mor_core_service = MORCoreService()
     melding = mor_core_service.get_melding(id)
+    if isinstance(melding, dict) and melding.get("error"):
+        messages.error(request=request, message=MELDING_OPHALEN_ERROR)
+
     base_url = request.build_absolute_uri()
     path_to_css_file = (
         "/app/frontend/public/build/app.css" if settings.DEBUG else "/static/app.css"
@@ -1003,12 +1157,8 @@ def melding_pdf_download(request, id):
 @login_required
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def meldingen_bestand(request):
-    instelling = Instelling.actieve_instelling()
-    if not instelling:
-        raise Exception(
-            "De MOR-Core url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
-        )
-    mor_core_service = MORCoreService(request=request)
+    Instelling.actieve_instelling()
+    mor_core_service = MORCoreService()
     modified_path = request.path.replace(settings.MOR_CORE_URL_PREFIX, "")
     response = mor_core_service.bestand_halen(modified_path)
     return StreamingHttpResponse(
@@ -1151,10 +1301,6 @@ def msb_melding_zoeken(request):
 @permission_required("authorisatie.msb_toegang", raise_exception=True)
 def msb_importeer_melding(request):
     instelling = Instelling.actieve_instelling()
-    if not instelling:
-        raise Exception(
-            "De MOR-Core url kan niet worden gevonden, Er zijn nog geen instellingen aangemaakt"
-        )
     if not request.session.get("msb_token"):
         return redirect(reverse("msb_login"))
     if not request.session.get("msb_melding"):
@@ -1285,47 +1431,62 @@ class StandaardExterneOmschrijvingLijstView(
 
 
 class StandaardExterneOmschrijvingAanmakenView(
-    StandaardExterneOmschrijvingView, PermissionRequiredMixin, CreateView
+    SuccessMessageMixin,
+    StandaardExterneOmschrijvingView,
+    PermissionRequiredMixin,
+    CreateView,
 ):
     form_class = StandaardExterneOmschrijvingAanmakenForm
     template_name = (
         "standaard_externe_omschrijving/standaard_externe_omschrijving_aanmaken.html"
     )
     permission_required = "authorisatie.standaard_externe_omschrijving_aanmaken"
+    success_message = "De standaard tekst '%(titel)s' is aangemaakt"
 
 
 class StandaardExterneOmschrijvingAanpassenView(
-    StandaardExterneOmschrijvingView, PermissionRequiredMixin, UpdateView
+    SuccessMessageMixin,
+    StandaardExterneOmschrijvingView,
+    PermissionRequiredMixin,
+    UpdateView,
 ):
     form_class = StandaardExterneOmschrijvingAanpassenForm
     template_name = (
         "standaard_externe_omschrijving/standaard_externe_omschrijving_aanpassen.html"
     )
     permission_required = "authorisatie.standaard_externe_omschrijving_aanpassen"
+    success_message = "De standaard tekst '%(titel)s' is aangepast"
 
 
 class StandaardExterneOmschrijvingVerwijderenView(
     StandaardExterneOmschrijvingView, PermissionRequiredMixin, DeleteView
 ):
     permission_required = "authorisatie.standaard_externe_omschrijving_verwijderen"
+    success_message = "De standaard tekst '%(titel)s is verwijderd"
 
     def get(self, request, *args, **kwargs):
-        return self.post(request, *args, **kwargs)
+        object = self.get_object()
+        response = self.delete(request, *args, **kwargs)
+        messages.success(request, f"De standaard tekst '{object.titel}' is verwijderd")
+        return response
 
-    def render_to_response(self, context, **response_kwargs):
-        return HttpResponseRedirect(self.get_success_url())
+    # def render_to_response(self, context, **response_kwargs):
+    #     return HttpResponseRedirect(self.get_success_url())
 
 
 # Locatie views
-
-
 @login_required
 @permission_required("authorisatie.locatie_aanpassen", raise_exception=True)
 def locatie_aanpassen(request, id):
     try:
-        mor_core_service = MORCoreService(request=request)
+        mor_core_service = MORCoreService()
         melding = mor_core_service.get_melding(id)
-
+        if isinstance(melding, dict) and melding.get("error"):
+            messages.error(request=request, message=MELDING_OPHALEN_ERROR)
+            return render(
+                request,
+                "melding/melding_actie_form.html",
+            )
         locaties_voor_melding = melding.get("locaties_voor_melding", [])
 
         highest_gewicht_locatie = max(
@@ -1357,12 +1518,20 @@ def locatie_aanpassen(request, id):
                     "plaatsnaam": form.cleaned_data.get("plaatsnaam"),
                 }
 
-                mor_core_service.locatie_aanpassen(
+                response = mor_core_service.locatie_aanpassen(
                     id,
                     omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
                     locatie=locatie_data,
                     gebruiker=request.user.email,
                 )
+                if isinstance(response, dict) and response.get("error"):
+                    messages.error(
+                        request=request, message=MELDING_LOCATIE_AANPASSEN_ERROR
+                    )
+                else:
+                    messages.success(
+                        request=request, message=MELDING_LOCATIE_AANPASSEN_SUCCESS
+                    )
                 return redirect("melding_detail", id=id)
 
         actieve_taken = [
@@ -1387,57 +1556,3 @@ def locatie_aanpassen(request, id):
             {"error": str(e)},
             status=getattr(e, "status_code", 500),
         )
-
-
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
-def clear_melding_token_from_cache(request):
-    cache.delete("meldingen_token")
-    return HttpResponse("melding_token removed from cache")
-
-
-# Taaktype categorie view
-class TaaktypeCategorieView(View):
-    model = TaaktypeCategorie
-    success_url = reverse_lazy("taaktype_categorie_lijst")
-
-
-class TaaktypeCategorieLijstView(
-    TaaktypeCategorieView, PermissionRequiredMixin, ListView
-):
-    context_object_name = "Taaktype categorieën"
-    permission_required = "authorisatie.taaktype_categorie_lijst_bekijken"
-    form_class = TaaktypeCategorieSearchForm
-    template_name = "taaktype_categorie/taaktype_categorie_lijst.html"
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        search = self.request.GET.get("search", "")
-        if search:
-            queryset = queryset.filter(Q(naam__icontains=search))
-        return queryset
-
-
-class TaaktypeCategorieAanmakenView(
-    TaaktypeCategorieView, PermissionRequiredMixin, CreateView
-):
-    form_class = TaaktypeCategorieAanmakenForm
-    template_name = "taaktype_categorie/taaktype_categorie_aanmaken.html"
-    permission_required = "authorisatie.taaktype_categorie_aanmaken"
-
-
-class TaaktypeCategorieAanpassenView(
-    TaaktypeCategorieView, PermissionRequiredMixin, UpdateView
-):
-    form_class = TaaktypeCategorieAanpassenForm
-    template_name = "taaktype_categorie/taaktype_categorie_aanpassen.html"
-    permission_required = "authorisatie.taaktype_categorie_aanpassen"
-
-
-class TaaktypeCategorieVerwijderenView(
-    TaaktypeCategorieView, PermissionRequiredMixin, DeleteView
-):
-    permission_required = "authorisatie.taaktype_categorie_verwijderen"
-
-    def get(self, request, *args, **kwargs):
-        return self.post(request, *args, **kwargs)

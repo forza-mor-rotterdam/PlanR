@@ -1,0 +1,30 @@
+<turbo-frame id="tf_snack_overzicht">
+<div id="snack_overzicht_aantal_ongelezen"
+     class="trigger--notificationslist">
+    {% include "public/notificaties/snack_overzicht_aantal_ongelezen.html" with aantal=ongelezen_aantal only %}
+</div>
+<div class="container__profiel_notificatie_lijst content content--uitklapper content--large">
+    <header>
+        <h2 class="h3" id="snack_overzicht_aantal">
+            {% include "public/notificaties/snack_overzicht_aantal.html" with aantal=object_list|length only %}
+        </h2>
+        <button type="button" class="btn-close--small" aria-label="Sluit">{% include "icons/close.svg" %}</button>
+    </header>
+    <div id="snack_overzicht_tabs" class="container__snack-tabs">
+        {% include "public/notificaties/snack_overzicht_tabs.html" with filter=filter ongelezen_aantal=ongelezen_aantal only %}
+    </div>
+    <div class="container__lijst">
+        <ul id="snack_overzicht" class="list-notificaties">
+            {% for object in paginering.object_list %}
+                {% include "public/notificaties/snack_overzicht_item.html" with notificatie=object action="append" target="snack_overzicht" only %}
+            {% endfor %}
+        </ul>
+        <div id="snack_overzicht_geen_resultaat">
+            {% include "public/notificaties/snack_overzicht_geen_resultaat.html" with filter=filter aantal=paginering.object_list|length only %}
+        </div>
+        <div id="snack_overzicht_laad_meer" class="container__laadmeer">
+            {% include "public/notificaties/snack_overzicht_laad_meer.html" with paginering=paginering only %}
+        </div>
+    </div>
+</div>
+</turbo-frame>

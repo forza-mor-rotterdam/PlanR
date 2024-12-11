@@ -1,36 +1,9 @@
-{% if SESSION_EXPIRY_TIMESTAMP != 0 and SESSION_EXPIRY_MAX_TIMESTAMP != 0 %}
-    <div data-controller="sessionTimer"
-         data-sessionTimer-session_expiry_max_timestamp-value="{{ SESSION_EXPIRY_MAX_TIMESTAMP }}"
-         data-sessionTimer-session_expiry_timestamp-value="{{ SESSION_EXPIRY_TIMESTAMP }}">
-        <div class="modal" data-sessionTimer-target="modal">
-            <div class="modal-backdrop modal-exit"
-                 data-sessionTimer-target="modalBackdrop"
-                 data-action="click->sessionTimer#closeModal"></div>
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1>
-                            <span>Je bent uitgelogd</span>
-                        </h1>
-                        <button type="button"
-                                class="btn-close"
-                                aria-label="Sluit"
-                                data-action="sessionTimer#closeModal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <section class="section--seperated">
-                            <div class="container__details">
-                                <p>Door de pagina opnieuw te laden, wordt je doorverwezen naar de login pagina.</p>
-                                <button type="button"
-                                        class="btn btn-action"
-                                        data-action="sessionTimer#closeModal">
-                                    <span>Herlaad pagina</span>
-                                </button>
-                            </div>
-                        </section>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endif %}
+<turbo-frame id="tf_session_timer">
+<div data-controller="sessionTimer"
+     data-sessionTimer-snack-item-value='{% include "public/notificaties/snack_item.html" with action="prepend" target="snack_lijst" notificatie=notificatie only %}'
+     data-sessionTimer-snack-item-id-value="notificatie_{{ notificatie.id }}"
+     data-sessionTimer-session-check-iterval-seconds-value="{{ SESSION_CHECK_INTERVAL_SECONDS }}"
+     data-sessionTimer-session-expiry-max-timestamp-value="{{ SESSION_EXPIRY_MAX_TIMESTAMP }}"
+     data-sessionTimer-session-expire-after-last-activity-grace-period-value="{{ SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD }}"
+     data-sessionTimer-session-expiry-timestamp-value="{{ SESSION_EXPIRY_TIMESTAMP }}"></div>
+</turbo-frame>

@@ -4,13 +4,13 @@ import math
 import uuid
 
 from apps.context.utils import get_gebruiker_context
-from apps.main.models import StandaardExterneOmschrijving, TaaktypeCategorie
-from apps.main.services import MORCoreService, TaakRService, render_onderwerp
+from apps.main.models import StandaardExterneOmschrijving
+from apps.main.services import MORCoreService, render_onderwerp
 from apps.main.utils import get_valide_filter_classes, get_valide_kolom_classes
 from django import forms
 from django.core.files.storage import default_storage
 from django.utils import timezone
-from django_select2.forms import Select2MultipleWidget, Select2Widget
+from django_select2.forms import Select2Widget
 from utils.rd_convert import rd_to_wgs
 
 logger = logging.getLogger(__name__)
@@ -1116,76 +1116,4 @@ class StandaardExterneOmschrijvingSearchForm(forms.Form):
         label="Zoeken",
         required=False,
         widget=forms.TextInput(attrs={"placeholder": "Zoek standaard tekst"}),
-    )
-
-
-# Taaktype categorie forms
-
-
-class TaaktypeCategorieAanpassenForm(forms.ModelForm):
-    taaktypes = forms.MultipleChoiceField(
-        choices=[],  # We'll set this dynamically in the form's __init__ method
-        widget=Select2MultipleWidget(attrs={"class": "select2"}),
-    )
-
-    class Meta:
-        model = TaaktypeCategorie
-        fields = ["naam", "taaktypes"]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["taaktypes"].choices = self.get_taaktypes_choices()
-
-    def get_taaktypes_choices(self):
-        alle_taaktypes = TaakRService().get_taaktypes()
-
-        current_taaktypes = (
-            [
-                (
-                    taaktype.get("_links", {}).get("taakapplicatie_taaktype_url"),
-                    taaktype.get("omschrijving"),
-                )
-                for taaktype in alle_taaktypes
-                if taaktype.get("_links", {}).get("taakapplicatie_taaktype_url")
-                in self.instance.taaktypes
-            ]
-            if self.instance
-            else []
-        )
-
-        alle_taaktypes_urls = [
-            taaktype.get("_links", {}).get("taakapplicatie_taaktype_url")
-            for taaktype in alle_taaktypes
-        ]
-
-        unused_taaktypes = [
-            (
-                taaktype.get("_links", {}).get("taakapplicatie_taaktype_url"),
-                taaktype.get("omschrijving"),
-            )
-            for taaktype, taaktype_url in zip(alle_taaktypes, alle_taaktypes_urls)
-            if not TaaktypeCategorie.objects.filter(
-                taaktypes__contains=[taaktype_url]
-            ).exists()
-        ]
-
-        return unused_taaktypes + current_taaktypes
-
-
-class TaaktypeCategorieAanmakenForm(TaaktypeCategorieAanpassenForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # self.fields[
-        #     "titel"
-        # ].help_text = "Geef een titel op voor de standaard tekst."
-        # self.fields[
-        #     "tekst"
-        # ].help_text = "Geef een standaard tekst op van maximaal 2000 tekens. Deze tekst kan bij het afhandelen van een melding aangepast worden."
-
-
-class TaaktypeCategorieSearchForm(forms.Form):
-    search = forms.CharField(
-        label="Zoeken",
-        required=False,
-        widget=forms.TextInput(attrs={"placeholder": "Zoek taaktype categorie"}),
     )

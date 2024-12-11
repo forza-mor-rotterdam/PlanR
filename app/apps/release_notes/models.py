@@ -107,14 +107,58 @@ class Bijlage(BasisModel):
 
 
 class ReleaseNote(BasisModel):
+    class BerichtTypeOpties(models.TextChoices):
+        RELEASE_NOTE = "release_note", "Release note"
+        NOTIFICATIE = "notificatie", "Notificatie"
+
+    class NotificatieTypeOpties(models.TextChoices):
+        SNACK = "snack", "Snack"
+        TOAST = "toast", "Toast"
+
+    class NotificatieNiveauOpties(models.TextChoices):
+        INFO = "info", "Informatief"
+        WARNING = "warning", "Waarschuwing"
+        ERROR = "error", "Foutmelding"
+
     titel = models.CharField(max_length=255)
-    beschrijving = models.TextField(blank=True, max_length=5000)
+    korte_beschrijving = models.TextField(blank=True, null=True, max_length=500)
+    beschrijving = models.TextField(blank=True, null=True, max_length=5000)
+    bericht_type = models.CharField(
+        max_length=50,
+        choices=BerichtTypeOpties.choices,
+        default=BerichtTypeOpties.RELEASE_NOTE,
+    )
+    notificatie_type = models.CharField(
+        max_length=50,
+        choices=NotificatieTypeOpties.choices,
+        default=NotificatieTypeOpties.SNACK,
+    )
+    notificatie_niveau = models.CharField(
+        max_length=50,
+        choices=NotificatieNiveauOpties.choices,
+        default=NotificatieNiveauOpties.INFO,
+    )
     publicatie_datum = models.DateTimeField(null=False, blank=False)
+    einde_publicatie_datum = models.DateTimeField(blank=True, null=True)
     bijlagen = GenericRelation(Bijlage)
     versie = models.CharField(max_length=20, blank=True, null=True)
+    link_titel = models.CharField(max_length=20, blank=True, null=True)
+    link_url = models.URLField(blank=True, null=True)
     bekeken_door_gebruikers = models.ManyToManyField(
         Gebruiker, blank=True, related_name="bekeken_release_notes"
     )
+    verwijderbaar = models.BooleanField(
+        default=True,
+    )
+    toast_miliseconden_zichtbaar = models.PositiveSmallIntegerField(
+        default=6000,
+    )
+
+    def has_beschrijving(self):
+        soup = BeautifulSoup(self.beschrijving, features="html.parser")
+        return soup.text.strip()
+
+    # def publicatie_datum_timestamp
 
     def is_published(self):
         """
@@ -130,6 +174,7 @@ class ReleaseNote(BasisModel):
         """
         Check if the release note is unwatched by the user and meets the specified conditions.
         """
+
         return not self.bekeken_door_gebruikers.filter(pk=user.pk).exists()
 
     @staticmethod
@@ -139,12 +184,16 @@ class ReleaseNote(BasisModel):
         """
         return sum(
             release_note.is_published() and release_note.is_unwatched_by_user(user)
-            for release_note in ReleaseNote.objects.all()
+            for release_note in ReleaseNote.objects.filter(
+                bericht_type=ReleaseNote.BerichtTypeOpties.RELEASE_NOTE
+            )
         )
 
     def __str__(self):
-        formatted_date = self.aangemaakt_op.strftime("%d-%m-%Y %H:%M:%S")
-        return f"{self.titel} - {formatted_date}"
+        if self.titel and self.aangemaakt_op:
+            formatted_date = self.aangemaakt_op.strftime("%d-%m-%Y %H:%M:%S")
+            return f"{self.titel} - {formatted_date}"
+        return self.id
 
     def clean(self):
         data = self.beschrijving
@@ -204,4 +253,6 @@ class ReleaseNote(BasisModel):
 
     def save(self, *args, **kwargs):
         self.full_clean()
+        if self.id and self.publicatie_datum > timezone.now():
+            self.bekeken_door_gebruikers.clear()
         return super().save(*args, **kwargs)

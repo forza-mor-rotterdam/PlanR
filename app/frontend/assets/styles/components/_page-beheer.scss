@@ -74,10 +74,23 @@
             padding-left: 0.5rem;
             padding-right: 0.5rem;
         }
+
+        .close {
+            path {
+                fill: $danger;
+            }
+        }
+        .checkmark {
+            width: 20px;
+            height: 20px;
+            path {
+                fill: $primary;
+            }
+        }
     }
 
     form {
-        max-width: map-get($container-max-widths, md);
+        max-width: map-get($container-max-widths, xl);
         margin: 0 auto;
     }
     .btn-row {

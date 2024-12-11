@@ -17,6 +17,8 @@ $green-tint01: #00811f;
 $green-tint02: #006e32;
 $green-tint03: #006e32;
 $green-tint04: #ebf5ed;
+$green-100: #f9fcfa;
+$green-200: #ebf5ed;
 $green-400: #cfdbd5;
 $green-600: #e3f4dd;
 
@@ -25,12 +27,23 @@ $blue-light: #0079b8;
 $blue-dark: #083968;
 $greenblue: #00846d;
 $red-tint02: #d70d0d;
+$yellow-200: #fff9eb;
 $yellow-400: #fff1ce;
+$red-200: #fcf0f0;
 $red-400: #ffd5d5;
 $blue-100: #f7f9fa;
 $blue-200: #eaeef1;
-$blue-900: #244048;
+$blue-900: #104ccb;
+$gray-100: #f4f4f5;
+$gray-200: #eaeaea;
+$gray-400: #b7bdc7;
 $gray-600: #7f838a;
+$gray-800: #666666;
+
+$neutral-900: #244048;
+$neutral-600: #bfd2d9;
+$neutral-200: #eaeef1;
+$neutral-100: #f7f9fa;
 
 // magentatinten
 $magenta-tint01: #c93675;
@@ -115,7 +128,7 @@ $focus-border-color: $gray-tint11;
 $disabled-border-color: $gray-tint08;
 
 $font-weight-normal: 400;
-$line-height-base: 1.5 !default;
+$line-height-base: 1.35 !default;
 
 // voor footer links, <small> en input field error messages
 $small-font-size: 0.75rem;
@@ -268,5 +281,5 @@ $card-height: 100%;
 $dt-font-weight: 700;
 
 //transition
-$transition-duration-default: 0.25s;
+$transition-duration-default: 0.35s;
 $transition-ease-default: ease-in-out;

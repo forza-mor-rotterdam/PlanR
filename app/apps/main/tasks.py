@@ -1,3 +1,5 @@
+import re
+
 import celery
 from apps.main.services import MercureService
 from apps.main.utils import publiceer_topic_met_subscriptions
@@ -26,19 +28,25 @@ def publiseer_melding_gebruikers_activiteiten(self):
     except MercureService.ConfigException:
         return "MercureService.ConfigException error"
 
-    alle_subscriptions = mercure_service.get_subscriptions().get("subscriptions", [])
+    alle_subscriptions = mercure_service.get_subscriptions()
+    subscriptions = alle_subscriptions.get("subscriptions", [])
 
+    pat = r"/melding/[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}/"
+    melding_subscriptions = [
+        subscription
+        for subscription in subscriptions
+        if re.compile(pat).match(subscription.get("topic"))
+    ]
     topics = list(
         set(
             [
                 subscription.get("topic")
-                for subscription in alle_subscriptions
+                for subscription in melding_subscriptions
                 if subscription.get("topic")
             ]
         )
     )
-    print(topics)
     for topic in topics:
-        publiceer_topic_met_subscriptions(topic, alle_subscriptions)
+        publiceer_topic_met_subscriptions(topic, melding_subscriptions)
 
     return f"Topics gepubliceerd: {topics}"

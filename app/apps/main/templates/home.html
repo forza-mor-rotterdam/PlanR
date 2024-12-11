@@ -17,15 +17,34 @@
             <div class="grid-container">
                 <div class="grid-item">
                     <section class="section--seperated">
-                        <div class="container__details">
-                            <h2>Om te beginnen</h2>
-                            <p>
-                                Je bent wel ingelogd, maar je account heeft nog wat aandacht nodig om gebruik te kunnen maken van PlanR.
-                                <br>
-                                Hieronder vind je de instellingen zoals je nu bij ons bekend bent.
-                            </p>
-                            {% include "auth/rollen_rechten.html" %}
-                        </div>
+                        {% if not request.user.is_authenticated %}
+                            <a href="{% url 'login' %}"
+                               class="btn btn-action"
+                               target="_top"
+                               data-turbo="false">Log in</a>
+                        {% else %}
+                            {% if perms.authorisatie.beheer_bekijken %}
+                                <a href="{% url 'beheer' %}"
+                                   class="btn btn-action"
+                                   target="_top"
+                                   data-turbo="false">Ga naar de beheeromgeving</a>
+                            {% elif perms.authorisatie.melding_lijst_bekijken %}
+                                <a href="{% url 'melding_lijst' %}"
+                                   class="btn btn-action"
+                                   target="_top"
+                                   data-turbo="false">Bekijk je meldingen</a>
+                            {% else %}
+                                <div class="container__details">
+                                    <h2>Om te beginnen</h2>
+                                    <p>
+                                        Je bent wel ingelogd, maar je account heeft nog wat aandacht nodig om gebruik te kunnen maken van PlanR.
+                                        <br>
+                                        Hieronder vind je de instellingen zoals je nu bij ons bekend bent.
+                                    </p>
+                                    {% include "auth/rollen_rechten.html" %}
+                                </div>
+                            {% endif %}
+                        {% endif %}
                     </section>
                 </div>
             </div>

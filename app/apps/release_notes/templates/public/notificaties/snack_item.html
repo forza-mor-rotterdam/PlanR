@@ -1,0 +1,34 @@
+<turbo-stream action="{{ action }}" target="{{ target }}">
+<template>
+    <div class="notification {{ notificatie.notificatie_niveau }}"
+         id="notificatie_{{ notificatie.id }}"
+         data-id="{{ notificatie.id }}"
+         data-controller="notificaties--snack-item"
+         data-notificaties--manager-target="snackItem">
+        <div class="container__icon">
+            {% if notificatie.notificatie_niveau %}
+                {% with "public/notificaties/icons/"|add:notificatie.notificatie_niveau|add:".html" as template %}
+                    {% include template %}
+                {% endwith %}
+            {% endif %}
+        </div>
+        <div class="container__content">
+            <h3 data-notificaties--snack-item-target="titel">{{ notificatie.titel }}</h3>
+            <div class="container__message">
+                {% if notificatie.link_titel and notificatie.link_url %}
+                    <div class="container__link">
+                        <a href="{{ notificatie.link_url }}" data-turbo="false">{{ notificatie.link_titel }}</a>
+                    </div>
+                {% endif %}
+                {% if notificatie.korte_beschrijving %}
+                    <p data-notificaties--snack-item-target="content">{{ notificatie.korte_beschrijving }}</p>
+                {% endif %}
+            </div>
+        </div>
+        <button type="button"
+                class="btn-close--small"
+                aria-label="Sluit"
+                data-action="notificaties--snack-item#sluitSnack">{% include "icons/close.svg" %}</button>
+    </div>
+</template>
+</turbo-stream>

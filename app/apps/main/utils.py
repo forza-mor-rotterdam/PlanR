@@ -230,7 +230,7 @@ def subscriptions_voor_topic(topic, alle_subscriptions):
         for subscription in alle_subscriptions
         if subscription.get("topic") == topic
     ]
-    return [
+    out = [
         v
         for k, v in {
             subscription.get("payload", {})
@@ -239,6 +239,7 @@ def subscriptions_voor_topic(topic, alle_subscriptions):
             for subscription in subscriptions
         }.items()
     ]
+    return out
 
 
 def publiceer_topic_met_subscriptions(topic, alle_subscriptions=None):

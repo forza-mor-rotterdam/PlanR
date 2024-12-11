@@ -495,7 +495,6 @@ FILTERS = (
     StatusFilter,
     BegraafplaatsFilter,
     OnderwerpFilter,
-    WijkFilter,
     BuurtFilter,
     SpoedFilter,
 )
@@ -528,12 +527,8 @@ FILTER_CLASS_BY_KEY = {f.key(): f for f in FILTERS}
 
 KOLOMMEN = (
     MeldingIdKolom,
-    MSBNummerKolom,
     MeldRNummerKolom,
-    AdresKolom,
     AdresBuurtWijkKolom,
-    WijkKolom,
-    BuurtKolom,
     BegraafplaatsKolom,
     GrafnummerKolom,
     VakKolom,
