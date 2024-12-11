@@ -4,25 +4,23 @@
     <div class="container__heading">
         {% if pageTitle %}<h1 class="pagetitle h2">{{ pageTitle }}</h1>{% endif %}
     </div>
-    <div class="container__user">
-        <div class="container__uitklapper"
-             data-action="click->topbar#show"
-             tabindex="0">
-            {% if request.user.is_authenticated %}
+    {% if request.user.is_authenticated %}
+        <div class="container__user">
+            <div class="container__uitklapper"
+                 data-action="click->topbar#show"
+                 tabindex="0">
                 <turbo-frame id="tf_snack_overzicht" src="{% url 'snack_overzicht' %}">
                 </turbo-frame>
-            {% endif %}
-        </div>
-        <div class="container__uitklapper"
-             data-action="click->topbar#show"
-             tabindex="0">
-            <span class="trigger--profile">
-                <span class="initials">{{ request.user|gebruikersinitialen }}</span>
-            </span>
-            <div class="content">
-                <div class="container__nav--tertiary">
-                    <ul class="list-nav--tertiary">
-                        {% if request.user.is_authenticated %}
+            </div>
+            <div class="container__uitklapper"
+                 data-action="click->topbar#show"
+                 tabindex="0">
+                <span class="trigger--profile">
+                    <span class="initials">{{ request.user|gebruikersinitialen }}</span>
+                </span>
+                <div class="content">
+                    <div class="container__nav--tertiary">
+                        <ul class="list-nav--tertiary">
                             <li>
                                 <header>
                                     <span>{{ request.user|gebruikersnaam }}</span>
@@ -49,7 +47,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="{% url 'logout' %}"  data-turbo-frame="_top">
+                                <a href="{% url 'logout' %}" data-turbo="false">
                                     <svg width="20"
                                          height="20"
                                          viewBox="0 0 32 32"
@@ -61,10 +59,10 @@
                                     <span>Uitloggen</span>
                                 </a>
                             </li>
-                        {% endif %}
-                    </ul>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% endif %}
 </div>
