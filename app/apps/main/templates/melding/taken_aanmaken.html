@@ -1,0 +1,66 @@
+{% load rotterdam_formulier_html %}
+{% load vind_in_dict from querystring_tags %}
+{% load json_encode from json_tags %}
+{% load context_template from context_tags %}
+<turbo-frame id="melding_actie_form">
+<div class="modal-dialog modal-dialog--wide">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button"
+                    class="btn-close"
+                    aria-label="Sluit"
+                    data-action="detail#closeModal"></button>
+            <h1>
+                <span>Taken aanmaken</span>
+            </h1>
+        </div>
+        <div class="modal-body">
+            <section class="section--seperated"
+                     data-testid="meldingTakenAanmaken"
+                     data-controller="taken-aanmaken--manager">
+                <div class="container__details">
+                    <div style="overflow-x: auto; height: 500px;">
+                        <div style="width: 200%;
+                                    display: flex;
+                                    flex-direction: row;
+                                    flex-basis: 100%;
+                                    flex: 1">
+                            <!-- filteren en zoeken taaktypes -->
+                            <div data-taken-aanmaken--manager-target="stap1" style="width: 50%;">
+                                <form>
+                                    <input type="search" />
+                                </form>
+                            </div>
+                            <!-- geselecteerde taaktypes aanvullen met interne opmerking -->
+                            <div data-taken-aanmaken--manager-target="stap2" style="width: 50%;">
+                                <form action="{% url 'taken_aanmaken' view.kwargs.id %}"
+                                      method="post"
+                                      novalidate>
+                                    {{ form }}
+                                    <div class="form-row btn-row">
+                                        <button type="submit" class="btn btn-action">
+                                            <span>Aanmaken</span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% comment %} {% csrf_token %}
+                        {{ form.urgentie }}
+                        <div class="form-control__with-helptext js-validation">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
+                        <div class="form-row btn-row"></div>
+                        <div class="form-row btn-row">
+                            <button type="reset" class="btn btn-tertiary" data-controller="detail" data-action="detail#closeModal" data-detail-target="modalAfhandelen">
+                                <span>Annuleren</span>
+                            </button>
+                            <button type="submit" class="btn btn-action">
+                                <span>{{ form.submit_label }}</span>
+                            </button>
+                    </div> {% endcomment %}
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+</turbo-frame>

@@ -306,6 +306,32 @@ class InformatieToevoegenForm(forms.Form):
     )
 
 
+class TakenAanmakenForm(forms.Form):
+    melding_uuid = forms.CharField(
+        widget=forms.HiddenInput(),
+        required=True,
+        max_length=200,
+    )
+    titel = forms.CharField(
+        required=True,
+        max_length=200,
+    )
+    taakapplicatie_taaktype_url = forms.CharField(
+        widget=forms.HiddenInput(),
+        required=True,
+        max_length=200,
+    )
+    bericht = forms.CharField(
+        required=True,
+        max_length=5000,
+    )
+    gebruiker = forms.CharField(
+        widget=forms.HiddenInput(),
+        required=True,
+        max_length=200,
+    )
+
+
 class TaakStartenForm(forms.Form):
     afdeling = forms.ChoiceField(
         label="Afdeling",
