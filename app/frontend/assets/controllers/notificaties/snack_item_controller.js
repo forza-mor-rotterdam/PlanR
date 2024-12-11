@@ -15,27 +15,26 @@ export default class extends Controller {
     if ('ontouchstart' in window) {
       this.element.addEventListener('touchstart', (event) => {
         event.preventDefault()
-        console.log(event.target.getAttribute('href').length > 0)
         if (event.target.hasAttribute('href') && event.target.getAttribute('href').length > 0) {
           window.location.href = event.target.getAttribute('href')
         }
-        this.initialTouchX = event.touches[0].clientX
+        // this.initialTouchX = event.touches[0].clientX
       })
 
       this.element.addEventListener('touchmove', (event) => {
         event.preventDefault()
-        this.deltaX = this.initialTouchX - event.changedTouches[0].clientX
+        // this.deltaX = this.initialTouchX - event.changedTouches[0].clientX
         // this.element.style.marginLeft = `-${this.deltaX}px`
         // this.element.style.opacity = 10 / this.deltaX
       })
 
       this.element.addEventListener('touchend', (event) => {
         event.preventDefault()
-        this.finalTouchX = event.changedTouches[0].clientX
-        if (this.deltaX < SWIPE_TRESHOLD) {
-          //   this.element.style.marginLeft = 0
-          //   this.element.style.opacity = 1
-        }
+        // this.finalTouchX = event.changedTouches[0].clientX
+        // if (this.deltaX < SWIPE_TRESHOLD) {
+        //   this.element.style.marginLeft = 0
+        //   this.element.style.opacity = 1
+        // }
         if (event.target.classList.contains('btn-close--small')) {
           this.manager.markeerSnackAlsGelezen(this.element.dataset.id)
         } else if (event.target.nodeName.toLowerCase() === 'a') {
