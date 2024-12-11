@@ -28,7 +28,7 @@ def task_aanmaken_afbeelding_versies(self, bijlage_id):
 
 
 @shared_task(bind=True, base=BaseTaskWithRetry)
-def task_activeer_notificatie(self, notificatie_id):
+def task_activeer_notificatie(self, notificatie_id, action="prepend"):
     from apps.main.services import MercureService
     from apps.release_notes.models import ReleaseNote
     from django.template.loader import render_to_string
@@ -40,7 +40,7 @@ def task_activeer_notificatie(self, notificatie_id):
         {
             "notificatie": notificatie,
             "target": "snack_lijst",
-            "action": "prepend",
+            "action": action,
         },
     )
     topic = "/notificaties/snack/"
