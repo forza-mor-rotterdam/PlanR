@@ -3,15 +3,12 @@
      class="trigger--notificationslist">
     {% include "public/notificaties/snack_overzicht_aantal_ongelezen.html" with aantal=ongelezen_aantal only %}
 </div>
-<div class="container__profiel_notificatie_lijst content content--large">
+<div class="container__profiel_notificatie_lijst content content--uitklapper content--large">
     <header>
         <h2 class="h3" id="snack_overzicht_aantal">
             {% include "public/notificaties/snack_overzicht_aantal.html" with aantal=object_list|length only %}
         </h2>
-        <button type="button"
-                class="btn-close--small"
-                aria-label="Sluit"
-                data-utils-targetcontainer-param="container__uitklapper">{% include "icons/close.svg" %}</button>
+        <button type="button" class="btn-close--small" aria-label="Sluit">{% include "icons/close.svg" %}</button>
     </header>
     <div id="snack_overzicht_tabs" class="container__snack-tabs">
         {% include "public/notificaties/snack_overzicht_tabs.html" with filter=filter ongelezen_aantal=ongelezen_aantal only %}

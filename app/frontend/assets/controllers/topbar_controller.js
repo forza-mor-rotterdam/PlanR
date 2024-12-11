@@ -24,7 +24,11 @@ export default class extends Controller {
   }
 
   show(e) {
-    if (e.target.tagName != 'A') {
+    if (
+      e.target.tagName.toUpperCase() != 'A' &&
+      e.target.tagName.toUpperCase() != 'BUTTON' &&
+      !e.target.closest('.content--uitklapper')
+    ) {
       if (this.element.querySelectorAll('.show').length) {
         this.element.querySelectorAll('.show').forEach((element) => {
           if (element != e.target.closest('.container__uitklapper')) {
