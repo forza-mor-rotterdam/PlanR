@@ -362,7 +362,6 @@
         border-bottom: 1px solid $blue-200;
 
         li {
-            padding-right: 8px;
             a {
                 text-decoration: none;
                 color: inherit;
@@ -403,6 +402,11 @@
                 flex: 1 0 auto;
                 text-align: right;
                 padding-right: 0;
+            }
+        }
+        @media (min-width: map-get($grid-breakpoints, sm)) {
+            li {
+                padding-right: 8px;
             }
         }
     }
