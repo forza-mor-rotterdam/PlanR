@@ -3,6 +3,7 @@ from apps.health.views import healthz
 from apps.main.views import (
     LoginView,
     LogoutView,
+    TakenAanmakenView,
     gebruiker_info,
     http_403,
     http_404,
@@ -111,6 +112,11 @@ urlpatterns = [
         "melding/<uuid:id>/spoed/",
         melding_spoed_veranderen,
         name="melding_spoed_veranderen",
+    ),
+    path(
+        "melding/<uuid:id>/taken-aanmaken/",
+        TakenAanmakenView.as_view(),
+        name="taken_aanmaken",
     ),
     path(
         "part/melding/<uuid:id>/taakstarten/",

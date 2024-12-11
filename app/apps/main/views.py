@@ -31,6 +31,7 @@ from apps.main.forms import (
     TaakAfrondenForm,
     TaakAnnulerenForm,
     TaakStartenForm,
+    TakenAanmakenForm,
 )
 from apps.main.messages import (
     MELDING_AFHANDELEN_ERROR,
@@ -83,12 +84,20 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.files.storage import default_storage
 from django.db.models import Q
+from django.forms import formset_factory
 from django.http import HttpResponse, JsonResponse, QueryDict, StreamingHttpResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
-from django.views.generic import CreateView, DeleteView, ListView, UpdateView, View
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    FormView,
+    ListView,
+    UpdateView,
+    View,
+)
 from utils.diversen import get_index
 from utils.rd_convert import rd_to_wgs
 
@@ -828,6 +837,11 @@ def melding_spoed_veranderen(request, id):
             "melding": melding,
         },
     )
+
+
+class TakenAanmakenView(FormView):
+    form_class = formset_factory(TakenAanmakenForm)
+    template_name = "melding/taken_aanmaken.html"
 
 
 @login_required

@@ -7,6 +7,12 @@
                     data-detail-action-param="{% url 'taak_starten' melding.uuid %}">
                 <span>Start taak</span>
             </button>
+            <button type="button"
+                    class="btn btn-{% if melding.status.naam == 'controle' %}tertiary{% else %}action{% endif %}"
+                    data-action="detail#openModal"
+                    data-detail-action-param="{% url 'taken_aanmaken' melding.uuid %}">
+                <span>Taken aanmaken</span>
+            </button>
         {% endif %}
         {% if perms.authorisatie.melding_hervatten and melding.status.naam == "pauze" or melding.status.naam == "wachten_melder" %}
             <button type="button"
