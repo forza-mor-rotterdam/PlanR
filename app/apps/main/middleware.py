@@ -2,6 +2,7 @@ import time
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth import logout
 from django.contrib.auth.views import redirect_to_login
 from django.shortcuts import redirect
 
@@ -18,6 +19,7 @@ SESSION_CURRENT_TIMEOUT_KEY = "_session_current_timestamp_"
 class SessionTimeoutMiddleware(MiddlewareMixin):
     def close_session(self, request):
         request.session.flush()
+        logout(request)
         redirect_url = getattr(settings, "SESSION_TIMEOUT_REDIRECT", None)
         if redirect_url:
             return redirect(redirect_url)
@@ -25,7 +27,11 @@ class SessionTimeoutMiddleware(MiddlewareMixin):
             return redirect_to_login(next=request.path)
 
     def process_request(self, request):
-        if not hasattr(request, "session") or request.session.is_empty():
+        if (
+            not hasattr(request, "session")
+            or request.session.is_empty()
+            or not request.user.is_authenticated
+        ):
             return
 
         time_now = time.time()
