@@ -78,6 +78,7 @@ from config.context_processors import general_settings
 from deepdiff import DeepDiff
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -153,11 +154,12 @@ class LoginView(View):
 
 class LogoutView(View):
     def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect(reverse("login"), False)
+        logout(request)
+        # if not request.user.is_authenticated:
+        #     return redirect(reverse("login"), False)
 
         if settings.OIDC_ENABLED:
-            return redirect("/oidc/logout/")
+            return redirect("/oidc/logout/?next={request.GET.get('next', '/')}")
         if settings.ENABLE_DJANGO_ADMIN_LOGIN:
             return redirect(f"/admin/logout/?next={request.GET.get('next', '/')}")
 
