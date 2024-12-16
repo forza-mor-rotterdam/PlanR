@@ -1,4 +1,6 @@
 from apps.main.services import render_onderwerp as render_onderwerp_service
+from apps.main.utils import melding_naar_tijdlijn as base_melding_naar_tijdlijn
+from apps.main.utils import melding_taken as base_melding_taken
 from django import template
 from django.utils.safestring import mark_safe
 
@@ -104,3 +106,13 @@ def get_bijlagen(melding):
         alle_bijlagen, key=lambda b: b.get("aangemaakt_op")
     )
     return alle_bijlagen_gesorteerd
+
+
+@register.simple_tag
+def melding_taken(melding):
+    return base_melding_taken(melding)
+
+
+@register.simple_tag
+def melding_naar_tijdlijn(melding):
+    return base_melding_naar_tijdlijn(melding)
