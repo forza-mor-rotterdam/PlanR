@@ -313,6 +313,11 @@ class TakenAanmakenForm(forms.Form):
         max_length=200,
     )
     titel = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "disabled": True,
+            }
+        ),
         required=True,
         max_length=200,
     )
@@ -322,7 +327,7 @@ class TakenAanmakenForm(forms.Form):
         max_length=200,
     )
     bericht = forms.CharField(
-        required=True,
+        required=False,
         max_length=5000,
     )
     gebruiker = forms.CharField(
