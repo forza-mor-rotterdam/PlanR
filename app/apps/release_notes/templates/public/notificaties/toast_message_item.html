@@ -2,8 +2,7 @@
 <template>
     <div class="notification {{ message.tags }}"
          data-controller="notificaties--toast-item"
-         data-notificaties--toast-item-niveau-value="{{ message.tags }}"
-         data-notificaties--manager-target="toastItem">
+         data-notificaties--toast-item-niveau-value="{{ message.tags }}">
         <div class="container__icon">
             {% with "public/notificaties/icons/"|add:message.tags|add:".html" as template %}
                 {% include template %}

@@ -75,16 +75,18 @@
         </script>
     </head>
     <body class="{% block body_class %}{% endblock body_class %}"
-          data-controller="notificaties--manager"
+          data-controller="notificaties--manager notificaties--toast-manager"
           data-notificaties--manager-snack-overzicht-url-value="{% url 'snack_overzicht_stream' %}"
           data-notificaties--manager-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
           data-notificaties--manager-topic-snack-value="/notificaties/snack/"
-          data-notificaties--manager-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}">
+          data-notificaties--manager-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}"
+          data-notificaties--toast-manager-toast-url-value="{% url 'toast_lijst' %}">
         <a href="#id_maincontent" class="skiplink">Ga direct naar de content</a>
         {% if request.user.is_authenticated %}
             <turbo-frame src="{% url 'snack_lijst' %}" id="tf_snack_lijst">
             </turbo-frame>
-            <turbo-frame src="{% url 'toast_lijst' %}" id="tf_toast_lijst"></turbo-frame>
+            <div class="container__notification container__notification--toast"
+                 id="toast_lijst"></div>
         {% endif %}
         <div class="container__toplevel">
             {% block aside %}
@@ -96,7 +98,7 @@
                         {% include "snippets/pageheader.html" %}
                     {% endwith %}
                 {% endblock header %}
-                <main data-controller="main">
+                <main data-controller="main modal">
                     <div class="container">
                         {% block body %}
                         {% endblock body %}
@@ -114,5 +116,6 @@
         {% endif %}
         {% block javascripts_end %}
         {% endblock javascripts_end %}
+        <div data-notificaties--toast-manager-target="herlaad"></div>
     </body>
 </html>

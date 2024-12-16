@@ -64,11 +64,10 @@ from apps.main.services import MORCoreService, TaakRService
 from apps.main.templatetags.gebruikers_tags import get_gebruiker_object_middels_email
 from apps.main.utils import (
     get_actieve_filters,
-    get_open_taakopdrachten,
     get_ordering,
     get_valide_kolom_classes,
     melding_locaties,
-    melding_naar_tijdlijn,
+    melding_taken,
     publiceer_topic_met_subscriptions,
     set_actieve_filters,
     set_ordering,
@@ -343,8 +342,7 @@ def melding_detail(request, id):
         int(request.session.get("offset", 0)) + index + 1 if index >= 0 else None
     )
 
-    open_taakopdrachten = get_open_taakopdrachten(melding)
-    tijdlijn_data = melding_naar_tijdlijn(melding)
+    open_taakopdrachten = melding_taken(melding).get("open_taken")
     locaties = melding_locaties(melding)
     taaktypes = TaakRService(request=request).get_niet_actieve_taaktypes(melding)
     categorized_taaktypes = TaakRService(request=request).categorize_taaktypes(
@@ -369,34 +367,6 @@ def melding_detail(request, id):
                 gebruiker=request.user.email,
             )
             return redirect("melding_detail", id=id)
-    taakopdrachten_voor_melding = [
-        taakopdracht for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
-    ]
-    aantal_actieve_taken = len(
-        [
-            taakopdracht
-            for taakopdracht in taakopdrachten_voor_melding
-            if taakopdracht.get("status", {}).get("naam")
-            not in {"voltooid", "voltooid_met_feedback"}
-        ]
-    )
-
-    aantal_opgeloste_taken = len(
-        [
-            taakopdracht
-            for taakopdracht in taakopdrachten_voor_melding
-            if taakopdracht.get("resolutie") == "opgelost"
-        ]
-    )
-
-    aantal_niet_opgeloste_taken = len(
-        [
-            taakopdracht
-            for taakopdracht in taakopdrachten_voor_melding
-            if taakopdracht.get("resolutie")
-            in ("niet_opgelost", "geannuleerd", "niet_gevonden")
-        ]
-    )
 
     return render(
         request,
@@ -407,10 +377,6 @@ def melding_detail(request, id):
             "form": form,
             "overview_querystring": overview_querystring,
             "taaktypes": categorized_taaktypes,
-            "aantal_actieve_taken": aantal_actieve_taken,
-            "aantal_opgeloste_taken": aantal_opgeloste_taken,
-            "aantal_niet_opgeloste_taken": aantal_niet_opgeloste_taken,
-            "tijdlijn_data": tijdlijn_data,
             "open_taakopdrachten": open_taakopdrachten,
             "meldingen_index": meldingen_index,
         },
@@ -587,13 +553,6 @@ def melding_afhandelen(request, id):
                 messages.success(request=request, message=MELDING_AFHANDELEN_SUCCESS)
             return redirect("melding_detail", id=id)
 
-    actieve_taken = [
-        taakopdracht
-        for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
-        if taakopdracht.get("status", {}).get("naam")
-        not in {"voltooid", "voltooid_met_feedback"}
-    ]
-
     return render(
         request,
         "melding/part_melding_afhandelen.html",
@@ -601,8 +560,6 @@ def melding_afhandelen(request, id):
             "form": form,
             "melding": melding,
             "bijlagen": bijlagen_flat,
-            "actieve_taken": actieve_taken,
-            "aantal_actieve_taken": len(actieve_taken),
         },
     )
 
@@ -654,13 +611,6 @@ def melding_annuleren(request, id):
                 messages.success(request=request, message=MELDING_ANNULEREN_SUCCESS)
             return redirect("melding_detail", id=id)
 
-    actieve_taken = [
-        taakopdracht
-        for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
-        if taakopdracht.get("status", {}).get("naam")
-        not in {"voltooid", "voltooid_met_feedback"}
-    ]
-
     return render(
         request,
         "melding/part_melding_annuleren.html",
@@ -668,8 +618,6 @@ def melding_annuleren(request, id):
             "form": form,
             "melding": melding,
             "bijlagen": bijlagen_flat,
-            "actieve_taken": actieve_taken,
-            "aantal_actieve_taken": len(actieve_taken),
         },
     )
 
@@ -840,8 +788,146 @@ def melding_spoed_veranderen(request, id):
 
 
 class TakenAanmakenView(FormView):
-    form_class = formset_factory(TakenAanmakenForm)
-    template_name = "melding/taken_aanmaken.html"
+    form_class = formset_factory(TakenAanmakenForm, extra=0)
+    template_name = "melding/detail/taken_aanmaken.html"
+
+    def get_success_url(self):
+        return reverse("taken_aanmaken", args=[self.kwargs.get("id")])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        mor_core_service = MORCoreService()
+        gebruiker_context = get_gebruiker_context(self.request.user)
+        melding = mor_core_service.get_melding(self.kwargs.get("id"))
+        if isinstance(melding, dict) and melding.get("error"):
+            print(melding.get("error"))
+            messages.error(request=self.request, message=MELDING_OPHALEN_ERROR)
+            # return render(
+            #     self.request,
+            #     "melding/melding_actie_form.html",
+            # )
+
+        taakr_service = TaakRService()
+        taaktypes_with_afdelingen = taakr_service.get_taaktypes_with_afdelingen(
+            melding, context_taaktypes=gebruiker_context.taaktypes
+        )
+
+        # Categorize taaktypes by afdeling and get gerelateerde onderwerpen
+        afdelingen = {}
+        onderwerp_gerelateerde_taaktypes = []
+        melding_onderwerpen = set(melding.get("onderwerpen", []))
+
+        for item in taaktypes_with_afdelingen:
+            taaktype = item["taaktype"]
+            afdeling = item["afdeling"]
+            afdeling_naam = afdeling.get("naam", "Overig")
+
+            taaktype_url = taaktype.get("_links", {}).get("taakapplicatie_taaktype_url")
+            taaktype_omschrijving = taaktype.get("omschrijving")
+
+            afdelingen.setdefault(afdeling_naam, []).append(
+                (taaktype_url, taaktype_omschrijving)
+            )
+
+            gerelateerde_onderwerpen = set(
+                item["taaktype"].get("gerelateerde_onderwerpen", [])
+            )
+            if melding_onderwerpen.intersection(gerelateerde_onderwerpen):
+                onderwerp_gerelateerde_taaktypes.append(
+                    (taaktype_url, taaktype_omschrijving)
+                )
+
+        next(iter(afdelingen.keys()), None)
+
+        afdelingen_taaktypes = [
+            (
+                afdeling_naam,
+                [
+                    (taaktype_url, taaktype_omschrijving)
+                    for taaktype_url, taaktype_omschrijving in afdeling_taaktypes
+                ],
+            )
+            for afdeling_naam, afdeling_taaktypes in afdelingen.items()
+        ]
+        afdelingen_taaktypes.sort(key=lambda x: (x[0] == "Overig", x[0]))
+
+        taaktypes = {
+            tt.get("taaktype")
+            .get("_links")
+            .get("taakapplicatie_taaktype_url"): [
+                tt.get("taaktype").get("_links").get("taakapplicatie_taaktype_url"),
+                tt.get("taaktype").get("omschrijving"),
+                tt.get("taaktype").get("_links").get("self"),
+            ]
+            for tt in taaktypes_with_afdelingen
+        }
+        taaktypes = [
+            [
+                url,
+                taaktype[1],
+                taaktype[2],
+            ]
+            for url, taaktype in taaktypes.items()
+        ]
+
+        taaktypes.sort(key=lambda x: x[1])
+        onderwerp_gerelateerde_taaktypes = list(
+            {tt[0]: tt for tt in onderwerp_gerelateerde_taaktypes}.values()
+        )
+        if onderwerp_gerelateerde_taaktypes:
+            afdelingen_taaktypes.insert(
+                0, ["Taak suggesties", onderwerp_gerelateerde_taaktypes]
+            )
+
+        context.update(
+            {
+                "afdelingen": afdelingen_taaktypes,
+                "taaktypes": taaktypes,
+                "melding": melding,
+            }
+        )
+        return context
+
+
+class TakenAanmakenStreamView(TakenAanmakenView):
+    template_name = "melding/detail/taken_aanmaken_stream.html"
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        response.headers["Content-Type"] = "text/vnd.turbo-stream.html"
+        return response
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        response.headers["Content-Type"] = "text/vnd.turbo-stream.html"
+        return response
+
+    def form_invalid(self, form):
+        print("INVALID")
+        print(form.errors)
+        return super().form_invalid(form)
+
+    def form_valid(self, form):
+        mor_core_service = MORCoreService()
+        responses = [
+            taak_data | {"response": mor_core_service.taak_aanmaken(**taak_data)}
+            for taak_data in form.cleaned_data
+        ]
+        for response in responses:
+            if response.get("response").get("error"):
+                messages.error(
+                    request=self.request,
+                    message=f"De taak '{response.get('titel')}' kon niet worden aangemaakt",
+                )
+            else:
+                messages.success(
+                    request=self.request,
+                    message=f"De taak '{response.get('titel')}' is aangemaakt",
+                )
+        context = self.get_context_data()
+        context.pop("form", None)
+        return self.render_to_response(context)
 
 
 @login_required
@@ -974,7 +1060,7 @@ def taak_afronden(request, melding_uuid):
             "melding/melding_actie_form.html",
         )
 
-    open_taakopdrachten = get_open_taakopdrachten(melding)
+    open_taakopdrachten = melding_taken(melding).get("open_taken")
     taakopdracht_urls = {
         taakopdracht.get("uuid"): taakopdracht.get("_links", {}).get("self")
         for taakopdracht in open_taakopdrachten
@@ -1031,7 +1117,7 @@ def taak_annuleren(request, melding_uuid):
             "melding/melding_actie_form.html",
         )
 
-    open_taakopdrachten = get_open_taakopdrachten(melding)
+    open_taakopdrachten = melding_taken(melding).get("open_taken")
     taakopdracht_urls = {
         taakopdracht.get("uuid"): taakopdracht.get("_links", {}).get("self")
         for taakopdracht in open_taakopdrachten
@@ -1548,21 +1634,12 @@ def locatie_aanpassen(request, id):
                     )
                 return redirect("melding_detail", id=id)
 
-        actieve_taken = [
-            taakopdracht
-            for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
-            if taakopdracht.get("status", {}).get("naam")
-            not in {"voltooid", "voltooid_met_feedback"}
-        ]
-
         return render(
             request,
             "melding/part_locatie_aanpassen.html",
             {
                 "form": form,
                 "melding": melding,
-                "actieve_taken": actieve_taken,
-                "aantal_actieve_taken": len(actieve_taken),
             },
         )
     except MORCoreService.AntwoordFout as e:
