@@ -1,4 +1,4 @@
-{% if gebruiker %}
+{% if gebruiker and perms.authorisatie.medewerker_gegevens_bekijken %}
     <dt>{{ tekst }}</dt>
     <dd>
         <a href=""
