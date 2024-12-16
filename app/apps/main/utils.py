@@ -20,14 +20,6 @@ def snake_case(s: str) -> str:
     ).lower()
 
 
-def get_open_taakopdrachten(melding):
-    return [
-        to
-        for to in melding.get("taakopdrachten_voor_melding", [])
-        if not to.get("resolutie")
-    ]
-
-
 def dict_to_querystring(d: dict) -> str:
     return "&".join([f"{p}={v}" for p, l in d.items() for v in l])
 
@@ -254,3 +246,43 @@ def publiceer_topic_met_subscriptions(topic, alle_subscriptions=None):
         )
     subscriptions = subscriptions_voor_topic(topic, alle_subscriptions)
     mercure_service.publish(topic, subscriptions)
+
+
+def melding_taken(melding):
+    taakopdrachten_voor_melding = [
+        taakopdracht for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
+    ]
+    actieve_taken = [
+        taakopdracht
+        for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
+        if taakopdracht.get("status", {}).get("naam")
+        not in {"voltooid", "voltooid_met_feedback"}
+    ]
+    open_taken = [
+        taakopdracht
+        for taakopdracht in taakopdrachten_voor_melding
+        if not taakopdracht.get("resolutie")
+    ]
+    opgeloste_taken = [
+        taakopdracht
+        for taakopdracht in taakopdrachten_voor_melding
+        if taakopdracht.get("resolutie") == "opgelost"
+    ]
+    niet_opgeloste_taken = [
+        taakopdracht
+        for taakopdracht in taakopdrachten_voor_melding
+        if taakopdracht.get("resolutie")
+        in ("niet_opgelost", "geannuleerd", "niet_gevonden")
+    ]
+
+    aantal_actieve_taken = len(actieve_taken)
+    aantal_opgeloste_taken = len(opgeloste_taken)
+    aantal_niet_opgeloste_taken = len(niet_opgeloste_taken)
+
+    return {
+        "actieve_taken": actieve_taken,
+        "open_taken": open_taken,
+        "aantal_actieve_taken": aantal_actieve_taken,
+        "aantal_opgeloste_taken": aantal_opgeloste_taken,
+        "aantal_niet_opgeloste_taken": aantal_niet_opgeloste_taken,
+    }

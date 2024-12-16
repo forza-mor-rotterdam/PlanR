@@ -19,7 +19,6 @@ export default class extends Controller {
   }
 
   connect() {
-    this.element.controller = this
     this.snackOverzichtPagina = 0
     this.snackOverzichtFilter = 'alle'
     this.snackOverzichtPaginaItemsGeladen = []
