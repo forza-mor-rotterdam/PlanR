@@ -1096,7 +1096,7 @@ def informatie_toevoegen(request, id):
 
 
 @login_required
-@permission_required("authorisatie.melding_bekijken", raise_exception=True)
+@permission_required("authorisatie.medewerker_gegevens_bekijken", raise_exception=True)
 def gebruiker_info(request, gebruiker_email):
     gebruiker = get_gebruiker_object_middels_email(gebruiker_email)
 
