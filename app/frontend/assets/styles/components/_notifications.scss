@@ -50,7 +50,7 @@
         pointer-events: all;
         transition-property: all;
         transition-duration: $transition-duration-default;
-        transition-timing-function: $transition-ease-default;
+        transition-timing-function: ease-out;
         overflow: hidden;
         display: flex;
         justify-content: flex-start;
