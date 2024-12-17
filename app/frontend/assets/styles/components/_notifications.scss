@@ -500,14 +500,15 @@
     }
 
     .container__laadmeer {
-        padding: 0.5em $input-padding-x 0.8em;
+        padding: 1em $input-padding-x 1.2em;
         border-top: 1px solid $blue-200;
         text-align: center;
 
-        &:has(a.disabled) {
+        &:has(.disabled) {
             border-top: 0;
         }
-        a {
+
+        * {
             font-size: 0.88em;
 
             &.disabled {
@@ -575,7 +576,7 @@
                 transition: height $transition-duration-default $transition-ease-default;
             }
             small {
-                font-size: 0.85em;
+                font-size: 0.75em;
                 color: $gray-800;
             }
         }

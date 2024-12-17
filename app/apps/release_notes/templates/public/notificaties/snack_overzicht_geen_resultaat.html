@@ -22,8 +22,6 @@
                    href="{% url 'snack_overzicht' %}?filter=alle">Toon alle notificaties</a>
             {% endif %}
         </div>
-    {% elif aantal < 4 and filter == 'ongelezen' %}
-        <div class="no-content">Je bent up-to-date</div>
     {% endif %}
 </template>
 </turbo-stream>
