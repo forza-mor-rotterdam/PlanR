@@ -144,6 +144,14 @@
                 }
                 a {
                     color: inherit;
+                    text-decoration: underline;
+
+                    &:hover,
+                    &:focus {
+                        color: $green-tint01;
+                        text-decoration: underline;
+                        outline: none !important;
+                    }
                 }
             }
 
@@ -531,10 +539,27 @@
                     height: 36px;
                     line-height: 44px;
                     background-color: $green-200;
+
+                    svg {
+                        max-width: 18px;
+                        max-height: 18px;
+                    }
                 }
             }
             .container__status {
                 max-width: 8px;
+            }
+
+            &.warning {
+                .initials {
+                    background-color: $yellow-200;
+                }
+            }
+
+            &.error {
+                .initials {
+                    background-color: $red-200;
+                }
             }
         }
 
