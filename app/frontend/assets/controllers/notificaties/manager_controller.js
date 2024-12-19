@@ -1,7 +1,7 @@
-import { Controller } from '@hotwired/stimulus'
 import { renderStreamMessage } from '@hotwired/turbo'
+import StreamController from '../stream_controller'
 
-export default class extends Controller {
+export default class extends StreamController {
   static targets = [
     'snackLijst',
     'snackOverzichtItem',
@@ -15,9 +15,7 @@ export default class extends Controller {
     topicSnack: String,
     topicToast: String,
     snackOverzichtAantal: Number,
-    snackOverzichtUrl: String,
   }
-
   connect() {
     this.snackOverzichtPagina = 0
     this.snackOverzichtFilter = 'alle'
@@ -36,11 +34,6 @@ export default class extends Controller {
       this.snackLijstTarget.classList.remove('expanded')
       this.snackLijstTarget.classList.add('collapsed')
     })
-    // setTimeout(() => {
-    //   if (!this.snackLijstTarget.classList.contains('expanded')) {
-    //     this.snackLijstTarget.classList.add('collapsed')
-    //   }
-    // }, 5000)
   }
   snackOverzichtLaadMeerTargetConnected() {
     if (this.snackOverzichtPaginaItemsGeladen.length) {
@@ -80,7 +73,7 @@ export default class extends Controller {
     snackItemController.markeerAlsGelezen(hideByClass)
     this.verwijderAlleSnackOverzichtItems()
     this.snackOverzichtPagina = 0
-    this.laadSnackOverzicht(`markeer-snack-als-gelezen=${notificatieId}`)
+    this.laadSnackOverzicht({ 'markeer-snack-als-gelezen': notificatieId })
   }
   markeerAlleAlsGelezen(e) {
     e.preventDefault()
@@ -88,7 +81,7 @@ export default class extends Controller {
     this.verwijderAlleSnackItems()
     this.verwijderAlleSnackOverzichtItems()
     this.snackOverzichtPagina = 0
-    this.laadSnackOverzicht('markeer-alle-snacks-als-gelezen=true')
+    this.laadSnackOverzicht({ 'markeer-alle-snacks-als-gelezen': true })
   }
   verwijderAlleSnackOverzichtItems() {
     this.snackOverzichtItemTargets.map((elem) => elem.remove())
@@ -101,22 +94,11 @@ export default class extends Controller {
     this.snackOverzichtPagina++
     this.laadSnackOverzicht()
   }
-  async laadSnackOverzicht(paramStr = '') {
-    const url = `${this.snackOverzichtUrlValue}?p=${this.snackOverzichtPagina}&filter=${
-      this.snackOverzichtFilter
-    }${paramStr ? '&' + paramStr : ''}`
-    console.log(url)
-    try {
-      const response = await fetch(`${url}`)
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`)
-      }
-      const text = await response.text()
-      console.log(text)
-      renderStreamMessage(text)
-    } catch (error) {
-      console.error('Error fetching address details:', error.message)
-    }
+  laadSnackOverzicht(params = {}) {
+    this.laadStream({
+      ...params,
+      ...{ p: this.snackOverzichtPagina, filter: this.snackOverzichtFilter },
+    })
   }
   markNotificatieAsWatched(profiel_notificatie_id) {
     const profiel_notificatie = this.profielNotificatieTargets.find(
