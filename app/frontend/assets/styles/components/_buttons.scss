@@ -218,17 +218,17 @@ textarea {
             cursor: pointer;
 
             svg {
-                width: 13px;
-                height: 13px;
+                width: 18px;
+                height: 18px;
                 pointer-events: none;
                 path {
                     fill: $black;
                 }
             }
 
-            &:hover,
-            &:active {
-                opacity: 0.75;
+            &:focus {
+                outline: none !important;
+                background-color: $gray-100;
             }
         }
     }

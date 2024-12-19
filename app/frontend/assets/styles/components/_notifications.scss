@@ -368,10 +368,7 @@
             max-height: 1em;
             margin-top: 0.83em;
             margin-right: -8px;
-            &:focus {
-                outline: none !important;
-                background-color: $gray-100;
-            }
+            padding: 7px 10px 10px 7px;
         }
     }
 
