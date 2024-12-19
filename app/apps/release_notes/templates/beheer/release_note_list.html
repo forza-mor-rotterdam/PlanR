@@ -56,7 +56,7 @@
                     <th>Titel</th>
                     <th>Beschrijving</th>
                     <th>Bericht type</th>
-                    <th>Notificatie type</th>
+                    <th>Notificatie ID</th>
                     <th>Aanmaak Datum</th>
                     <th>Publicatie Datum</th>
                     <th>Eind publicatie Datum</th>
@@ -69,16 +69,16 @@
                     <tr data-row-search-target="row">
                         <td data-row-search-target="searchable">{{ release_note.titel }}</td>
                         {% autoescape off %}
-                            <td data-row-search-target="searchable">{{ release_note.beschrijving|striptags|safe|truncate_text:200 }}</td>
+                            <td data-row-search-target="searchable">
+                                {% if release_note.korte_beschrijving|length > 0 %}
+                                    {{ release_note.korte_beschrijving|striptags|safe|truncate_text:200 }}
+                                {% else %}
+                                    {{ release_note.beschrijving|striptags|safe|truncate_text:200 }}
+                                {% endif %}
+                            </td>
                         {% endautoescape %}
                         <td data-row-search-target="searchable">{{ release_note.bericht_type }}</td>
-                        <td data-row-search-target="searchable">
-                            {% if release_note.bericht_type == "notificatie" %}
-                                {{ release_note.notificatie_type }}
-                            {% else %}
-                                -
-                            {% endif %}
-                        </td>
+                        <td data-row-search-target="searchable">{{ release_note.id }}</td>
                         <td data-row-search-target="searchable">{{ release_note.aangemaakt_op }}</td>
                         <td data-row-search-target="searchable">{{ release_note.publicatie_datum }}</td>
                         <td data-row-search-target="searchable">

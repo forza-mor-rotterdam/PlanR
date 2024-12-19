@@ -66,6 +66,11 @@ class TaakAnnulerenPermissie(BasisPermissie):
     codenaam = "taak_annuleren"
 
 
+class MedewerkerGegevensBekijkenPermissie(BasisPermissie):
+    naam = "Medewerker gegevens bekijken"
+    codenaam = "medewerker_gegevens_bekijken"
+
+
 class GebruikerLijstBekijkenPermissie(BasisPermissie):
     naam = "Gebruiker lijst bekijken"
     codenaam = "gebruiker_lijst_bekijken"
@@ -229,6 +234,7 @@ gebruikersgroep_permissies = (
     TaakAanmakenPermissie,
     TaakAfrondenPermissie,
     TaakAnnulerenPermissie,
+    MedewerkerGegevensBekijkenPermissie,
     GebruikerLijstBekijkenPermissie,
     GebruikerAanmakenPermissie,
     GebruikerBekijkenPermissie,

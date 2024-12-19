@@ -6,10 +6,18 @@
         <li id="profiel_notificatie_{{ notificatie.id }}"
             data-id="{{ notificatie.id }}"
             data-controller="notificaties--snack-overzicht-item"
-            class="{% if not notificatie_is_unwatched %} is-watched{% endif %}"
+            class="{% if not notificatie_is_unwatched %} is-watched{% endif %} {{ notificatie.notificatie_niveau }}"
             data-notificaties--manager-target="snackOverzichtItem">
             <div class="container__icon">
-                <span class="initials">{% include "icons/notification.svg" %}</span>
+                <span class="initials">
+                    {% if notificatie.notificatie_niveau and notificatie.notificatie_niveau != 'info' %}
+                        {% with "public/notificaties/icons/"|add:notificatie.notificatie_niveau|add:".html" as template %}
+                            {% include template %}
+                        {% endwith %}
+                    {% else %}
+                        {% include "icons/notification.svg" %}
+                    {% endif %}
+                </span>
             </div>
             <div class="container__content">
                 <h3>{{ notificatie.titel }}</h3>

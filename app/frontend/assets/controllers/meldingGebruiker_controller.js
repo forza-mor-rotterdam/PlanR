@@ -82,7 +82,7 @@ export default class extends Controller {
   updateGebruikerActiviteit() {
     const self = this
     if (
-      this.gebruikerLijstTarget &&
+      this.hasGebruikerLijstTarget &&
       self.mercureSubscriptions !== null &&
       Array.isArray(self.mercureSubscriptions)
     ) {

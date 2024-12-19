@@ -46,9 +46,6 @@ class SessionTimerView(LoginRequiredMixin, TemplateView):
         return context
 
 
-@method_decorator(
-    permission_required("authorisatie.gebruiker_bekijken"), name="dispatch"
-)
 class GebruikerView(View):
     model = Gebruiker
     success_url = reverse_lazy("gebruiker_lijst")
