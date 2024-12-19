@@ -10,12 +10,17 @@
               novalidate>
             {% csrf_token %}
             {{ form.management_form }}
-            <ul data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktypeContainer">
-                {% for taaktype_form in form %}
-                    <li data-taaktype-url="{{ taaktype_form.value }}"
-                        data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktype">{{ taaktype_form }}</li>
-                {% endfor %}
-            </ul>
+            <div class="form-row">
+                <ul data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktypeContainer"
+                    class="list-clean form-check-input">
+                    {% for taaktype_form in form %}
+                        <li data-taaktype-url="{{ taaktype_form.value }}"
+                            data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktype">
+                            {{ taaktype_form }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
             <div class="form-row btn-row">
                 <button type="submit" class="btn btn-action">
                     <span>Aanmaken</span>

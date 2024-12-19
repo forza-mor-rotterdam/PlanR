@@ -71,7 +71,7 @@ body.show-modal--first-filter {
     }
 
     &-content {
-        background: $white;
+        background: $blue-100;
         position: relative;
         display: flex;
         flex-direction: column;
@@ -83,7 +83,6 @@ body.show-modal--first-filter {
     &-header {
         position: relative;
         padding-left: $container-padding-x;
-        padding-bottom: 4px;
         padding: 0 $container-padding-x 4px;
 
         h1 {
@@ -94,7 +93,7 @@ body.show-modal--first-filter {
             small {
                 display: block;
                 font-weight: 400;
-                font-size: $font-size-base;
+                font-size: 0.888rem;
                 margin-top: 0.5rem;
             }
         }
@@ -104,6 +103,13 @@ body.show-modal--first-filter {
                 outline-width: thin !important;
             }
         }
+
+        &.border-bottom {
+            border-color: $blue-200;
+        }
+    }
+
+    &-footer {
     }
 
     &-body {
@@ -116,7 +122,7 @@ body.show-modal--first-filter {
         flex-shrink: 0;
         align-items: center;
         justify-content: flex-end;
-        padding: $modal-inner-padding;
+        padding: $alert-padding-x;
     }
 
     &-backdrop {

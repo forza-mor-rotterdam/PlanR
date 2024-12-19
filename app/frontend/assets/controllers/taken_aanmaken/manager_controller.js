@@ -38,7 +38,7 @@ export default class extends Controller {
     this.afdelingTaaktypesVisibility(elem, false)
   }
   searchChangeHandler(e) {
-    this.searchResultContainerTarget.style.display = e.target.value.length > 0 ? 'flex' : 'none'
+    this.searchResultContainerTarget.style.display = e.target.value.length > 0 ? 'block' : 'none'
   }
   afdelingChangeHandler(e) {
     this.afdelingTaaktypeContainerTargets.map((elem) => {
@@ -60,7 +60,7 @@ export default class extends Controller {
   }
 
   afdelingTaaktypesVisibility(elem, actief) {
-    elem.style.display = actief ? 'block' : 'none'
+    elem.style.display = actief ? 'flex' : 'none'
   }
   taaktypeToevoegen(taaktypeUrl) {
     this.geselecteerdFormulierTaaktypeContainerTarget.appendChild(
