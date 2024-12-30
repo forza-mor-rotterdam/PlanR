@@ -232,3 +232,21 @@ body.show-modal--first-filter {
         }
     }
 }
+
+.modal--taken-aanmaken {
+    .modal-content {
+        height: 66vh;
+    }
+
+    .stap1 {
+        .stap2 {
+            visibility: hidden;
+        }
+    }
+
+    .stap2 {
+        .stap1 {
+            visibility: hidden;
+        }
+    }
+}

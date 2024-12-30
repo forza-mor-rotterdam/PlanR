@@ -37,6 +37,11 @@ export default class extends Controller {
   afdelingTaaktypeContainerTargetConnected(elem) {
     this.afdelingTaaktypesVisibility(elem, false)
   }
+
+  gotoNextStep() {
+    this.element.classList.remove('stap1')
+    this.element.classList.add('stap2')
+  }
   searchChangeHandler(e) {
     this.searchResultContainerTarget.style.display = e.target.value.length > 0 ? 'block' : 'none'
   }

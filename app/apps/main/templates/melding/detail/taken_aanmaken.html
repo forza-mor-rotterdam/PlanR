@@ -3,8 +3,13 @@
 {% load json_encode from json_tags %}
 {% load context_template from context_tags %}
 <turbo-frame id="melding_actie_form">
-<div class="modal-dialog modal-dialog--wide">
-    <div class="modal-content">
+<div class="modal-dialog modal-dialog--wide modal--taken-aanmaken">
+    <div class="modal-content stap1"
+         data-controller="taken-aanmaken--manager"
+         data-taken-aanmaken--manager-afdelingen-value="{{ afdelingen|json_encode }}"
+         data-taken-aanmaken--manager-taaktypes-value="{{ taaktypes|json_encode }}"
+         data-taken-aanmaken--manager-gebruiker-value="{{ request.user.email }}"
+         data-taken-aanmaken--manager-melding-uuid-value="{{ view.kwargs.id }}">
         <div class="modal-header border-bottom">
             <button type="button"
                     class="btn-close"
@@ -16,104 +21,90 @@
             </h1>
         </div>
         <div class="modal-body">
-            <section class="section--seperated"
-                     data-testid="meldingTakenAanmaken"
-                     data-controller="taken-aanmaken--manager"
-                     data-taken-aanmaken--manager-afdelingen-value="{{ afdelingen|json_encode }}"
-                     data-taken-aanmaken--manager-taaktypes-value="{{ taaktypes|json_encode }}"
-                     data-taken-aanmaken--manager-gebruiker-value="{{ request.user.email }}"
-                     data-taken-aanmaken--manager-melding-uuid-value="{{ view.kwargs.id }}">
+            <section class="section--seperated" data-testid="meldingTakenAanmaken">
                 <div class="container__details">
-                    <div style="overflow-x: auto; height: 500px;">
-                        <div style="width: 200%;
-                                    display: flex;
-                                    flex-direction: row;
-                                    flex-basis: 100%;
-                                    flex: 1">
-                            <!-- filteren en zoeken taaktypes -->
-                            <div data-taken-aanmaken--manager-target="stap1" style="width: 50%;">
-                                <form class="taken-aanmaken">
-                                    <div data-controller="row-search"
-                                         data-row-search-disable-result-highlight-value="false"
-                                         class="container__search form-row list--form-text-input">
-                                        <input data-action="taken-aanmaken--manager#searchChangeHandler row-search#search"
-                                               data-taken-aanmaken--manager-target="search"
-                                               type="search"
-                                               class="form-control"
-                                               placeholder="Zoek een taak..." />
-                                        <ul data-taken-aanmaken--manager-target="searchResultContainer"
-                                            class="list__search-result">
-                                            {% for taaktype in taaktypes %}
-                                                <li data-row-search-target="row">
-                                                    <label for="id_search-{{ taaktype.0 }}">
-                                                        <input type="checkbox"
-                                                               data-taken-aanmaken--manager-target="taaktype"
-                                                               data-taaktype-url="{{ taaktype.0 }}"
-                                                               data-taken-aanmaken--manager-taaktype-url-param="{{ taaktype.0 }}"
-                                                               data-action="taken-aanmaken--manager#taaktypeChangeHandler"
-                                                               name="search"
-                                                               value="search-{{ taaktype.0 }}"
-                                                               id="id_search-{{ taaktype.0 }}">
-                                                        <span data-row-search-target="searchable">{{ taaktype.1 }}</span>
-                                                    </label>
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
-                                    </div>
-                                    <ul data-taken-aanmaken--manager-target="geselecteerdeTaaktypesContainer"
-                                        class="list__pills">
+                    <!-- filteren en zoeken taaktypes -->
+                    <div data-taken-aanmaken--manager-target="stap1" class="stap1">
+                        <form class="taken-aanmaken">
+                            <div data-controller="row-search"
+                                 data-row-search-disable-result-highlight-value="false"
+                                 class="container__search form-row list--form-text-input">
+                                <input data-action="taken-aanmaken--manager#searchChangeHandler row-search#search"
+                                       data-taken-aanmaken--manager-target="search"
+                                       type="search"
+                                       class="form-control"
+                                       placeholder="Zoek een taak..." />
+                                <ul data-taken-aanmaken--manager-target="searchResultContainer"
+                                    class="list__search-result">
+                                    {% for taaktype in taaktypes %}
+                                        <li data-row-search-target="row">
+                                            <label for="id_search-{{ taaktype.0 }}">
+                                                <input type="checkbox"
+                                                       data-taken-aanmaken--manager-target="taaktype"
+                                                       data-taaktype-url="{{ taaktype.0 }}"
+                                                       data-taken-aanmaken--manager-taaktype-url-param="{{ taaktype.0 }}"
+                                                       data-action="taken-aanmaken--manager#taaktypeChangeHandler"
+                                                       name="search"
+                                                       value="search-{{ taaktype.0 }}"
+                                                       id="id_search-{{ taaktype.0 }}">
+                                                <span data-row-search-target="searchable">{{ taaktype.1 }}</span>
+                                            </label>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <ul data-taken-aanmaken--manager-target="geselecteerdeTaaktypesContainer"
+                                class="list__pills">
+                            </ul>
+                            <div class="form-row input-labels">
+                                <div data-taakstartenformulier-target="afdelingContainer">
+                                    <ul class="list--level1 form-check-input">
+                                        {% for afdeling in afdelingen %}
+                                            <li>
+                                                <label for="id_{{ afdeling.0 }}">
+                                                    <input type="radio"
+                                                           data-taken-aanmaken--manager-target="afdeling"
+                                                           data-value="{{ afdeling.0 }}"
+                                                           name="afdeling"
+                                                           value="{{ afdeling.0 }}"
+                                                           id="id_{{ afdeling.0 }}"
+                                                           data-action="taken-aanmaken--manager#afdelingChangeHandler"
+                                                           data-taken-aanmaken--manager-afdeling-param="{{ afdeling.0 }}"
+                                                           class="form-check-input">
+                                                    {{ afdeling.0 }}
+                                                </label>
+                                                <ul data-taken-aanmaken--manager-target="afdelingTaaktypeContainer"
+                                                    data-afdeling="{{ afdeling.0 }}"
+                                                    class="list--level2 form-check-input">
+                                                    {% for taaktype in afdeling.1 %}
+                                                        <li>
+                                                            <label for="id_{{ afdeling.0 }}-{{ taaktype.0 }}">
+                                                                <input type="checkbox"
+                                                                       data-taken-aanmaken--manager-target="taaktype"
+                                                                       data-taaktype-url="{{ taaktype.0 }}"
+                                                                       data-taken-aanmaken--manager-taaktype-url-param="{{ taaktype.0 }}"
+                                                                       data-action="taken-aanmaken--manager#taaktypeChangeHandler"
+                                                                       name="{{ afdeling.0 }}"
+                                                                       value="{{ afdeling.0 }}-{{ taaktype.0 }}"
+                                                                       id="id_{{ afdeling.0 }}-{{ taaktype.0 }}"
+                                                                       class="form-check-input">
+                                                                {{ taaktype.1 }}
+                                                            </label>
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </li>
+                                        {% endfor %}
                                     </ul>
-                                    <div class="form-row input-labels">
-                                        <div data-taakstartenformulier-target="afdelingContainer">
-                                            <ul class="list--level1 form-check-input">
-                                                {% for afdeling in afdelingen %}
-                                                    <li>
-                                                        <label for="id_{{ afdeling.0 }}">
-                                                            <input type="radio"
-                                                                   data-taken-aanmaken--manager-target="afdeling"
-                                                                   data-value="{{ afdeling.0 }}"
-                                                                   name="afdeling"
-                                                                   value="{{ afdeling.0 }}"
-                                                                   id="id_{{ afdeling.0 }}"
-                                                                   data-action="taken-aanmaken--manager#afdelingChangeHandler"
-                                                                   data-taken-aanmaken--manager-afdeling-param="{{ afdeling.0 }}"
-                                                                   class="form-check-input">
-                                                            {{ afdeling.0 }}
-                                                        </label>
-                                                        <ul data-taken-aanmaken--manager-target="afdelingTaaktypeContainer"
-                                                            data-afdeling="{{ afdeling.0 }}"
-                                                            class="list--level2 form-check-input">
-                                                            {% for taaktype in afdeling.1 %}
-                                                                <li>
-                                                                    <label for="id_{{ afdeling.0 }}-{{ taaktype.0 }}">
-                                                                        <input type="checkbox"
-                                                                               data-taken-aanmaken--manager-target="taaktype"
-                                                                               data-taaktype-url="{{ taaktype.0 }}"
-                                                                               data-taken-aanmaken--manager-taaktype-url-param="{{ taaktype.0 }}"
-                                                                               data-action="taken-aanmaken--manager#taaktypeChangeHandler"
-                                                                               name="{{ afdeling.0 }}"
-                                                                               value="{{ afdeling.0 }}-{{ taaktype.0 }}"
-                                                                               id="id_{{ afdeling.0 }}-{{ taaktype.0 }}"
-                                                                               class="form-check-input">
-                                                                        {{ taaktype.1 }}
-                                                                    </label>
-                                                                </li>
-                                                            {% endfor %}
-                                                        </ul>
-                                                    </li>
-                                                {% endfor %}
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </form>
+                                </div>
                             </div>
-                            <!-- geselecteerde taaktypes aanvullen met interne opmerking -->
-                            <div data-taken-aanmaken--manager-target="stap2"
-                                 style="width: 50%"
-                                 id="taken_aanmaken_form">
-                                {% include "melding/detail/taken_aanmaken_form.html" with form=form view=view %}
-                            </div>
-                        </div>
+                        </form>
+                    </div>
+                    <!-- geselecteerde taaktypes aanvullen met interne opmerking -->
+                    <div data-taken-aanmaken--manager-target="stap2"
+                         class="stap2"
+                         id="taken_aanmaken_form">
+                        {% include "melding/detail/taken_aanmaken_form.html" with form=form view=view %}
                     </div>
                     {% comment %} {% csrf_token %}
                         {{ form.urgentie }}
@@ -131,7 +122,19 @@
             </section>
         </div>
         <div class="modal-footer border-top">
-            <button class="btn btn-primary">Volgende</button>
+            {% comment %} <button class="btn btn-primary">Volgende</button> {% endcomment %}
+            <div class="form-row btn-row">
+                <button type="reset"
+                        class="btn btn-tertiary"
+                        data-action="modal#closeModal"
+                        data-modal-target="modal">
+                    <span>Annuleren</span>
+                </button>
+                <button class="btn btn-action"
+                        data-action="taken-aanmaken--manager#gotoNextStep">
+                    <span>Volgende</span>
+                </button>
+            </div>
         </div>
     </div>
 </div>
