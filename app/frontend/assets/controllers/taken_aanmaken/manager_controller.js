@@ -42,6 +42,12 @@ export default class extends Controller {
     this.element.classList.remove('stap1')
     this.element.classList.add('stap2')
   }
+
+  gotoPreviousStep() {
+    this.element.classList.remove('stap2')
+    this.element.classList.add('stap1')
+  }
+
   searchChangeHandler(e) {
     this.searchResultContainerTarget.style.display = e.target.value.length > 0 ? 'block' : 'none'
   }

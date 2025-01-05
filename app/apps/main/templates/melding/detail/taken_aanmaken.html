@@ -125,14 +125,22 @@
             {% comment %} <button class="btn btn-primary">Volgende</button> {% endcomment %}
             <div class="form-row btn-row">
                 <button type="reset"
-                        class="btn btn-tertiary"
+                        class="btn btn-tertiary stap1"
                         data-action="modal#closeModal"
                         data-modal-target="modal">
                     <span>Annuleren</span>
                 </button>
-                <button class="btn btn-action"
+                <button class="btn btn-textlink stap2"
+                        data-action="taken-aanmaken--manager#gotoPreviousStep">
+                    <span>vorige</span>
+                </button>
+                <button class="btn btn-action stap1"
                         data-action="taken-aanmaken--manager#gotoNextStep">
                     <span>Volgende</span>
+                </button>
+                <button type="submit" form="formTakenAanmaken" class="btn btn-action stap2">
+                    {% comment %}  TODO get number of taaktypes for "Taak" or "Taken" {% endcomment %}
+                    <span>Aanmaken</span>
                 </button>
             </div>
         </div>

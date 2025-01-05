@@ -7,7 +7,8 @@
     {% if form %}
         <form action="{% url 'taken_aanmaken_stream' view.kwargs.id %}"
               method="post"
-              novalidate>
+              novalidate
+              id="formTakenAanmaken">
             {% csrf_token %}
             {{ form.management_form }}
             <div class="form-row">
@@ -22,15 +23,12 @@
                 </ul>
             </div>
             <div class="form-row btn-row">
-                <button type="reset"
-                        class="btn btn-tertiary"
-                        data-action="modal#closeModal"
-                        data-modal-target="modal">
+                {% comment %} <button type="reset" class="btn btn-tertiary" data-action="modal#closeModal" data-modal-target="modal">
                     <span>Annuleren</span>
-                </button>
-                <button type="submit" class="btn btn-action">
+                </button> {% endcomment %}
+                {% comment %} <button type="submit" class="btn btn-action">
                     <span>Aanmaken</span>
-                </button>
+                </button> {% endcomment %}
             </div>
         </form>
     {% else %}
