@@ -12,6 +12,9 @@ export default class extends Controller {
     'geselecteerdFormulierTaaktype',
     'geselecteerdFormulierTaaktypeContainer',
     'modalSluiten',
+    'knopVolgende',
+    'knopVorige',
+    'knopAanmaken',
   ]
   static values = {
     afdelingen: String,
@@ -83,7 +86,7 @@ export default class extends Controller {
     this.resetFormulierTaaktypeIndexes()
   }
   taaktypeVerwijderenHandler(e) {
-    this.taaktypeVerwijderen(e.target.dataset.taaktypeUrl)
+    this.taaktypeVerwijderen(e.target.closest('[data-taaktype-url]').dataset.taaktypeUrl)
   }
   taaktypeVerwijderen(taaktypeUrl) {
     this.taaktypeTargets
@@ -101,8 +104,13 @@ export default class extends Controller {
     this.resetFormulierTaaktypeIndexes()
   }
   resetFormulierTaaktypeIndexes() {
-    this.element.querySelector("input[name='form-TOTAL_FORMS']").value =
-      this.geselecteerdFormulierTaaktypeTargets.length
+    const taaktypeAantal = this.geselecteerdFormulierTaaktypeTargets.length
+    this.knopVolgendeTarget.disabled = taaktypeAantal <= 0
+    this.knopAanmakenTarget.disabled = taaktypeAantal <= 0
+    if (taaktypeAantal <= 0) {
+      this.gotoPreviousStep()
+    }
+    this.element.querySelector("input[name='form-TOTAL_FORMS']").value = taaktypeAantal
     this.geselecteerdFormulierTaaktypeTargets.map((elem, i) =>
       this.resetFormulierTaaktypeIndex(elem, i)
     )
@@ -134,7 +142,6 @@ export default class extends Controller {
     const template = document.getElementById('template_geselecteerd_formulier_taaktype')
     const clone = template.content.cloneNode(true)
     let li = clone.querySelector('li')
-    let a = clone.querySelector('a')
     let taakapplicatieTaaktypeUrlInput = clone.querySelector(
       `input[name*='-taakapplicatie_taaktype_url']`
     )
@@ -143,7 +150,6 @@ export default class extends Controller {
     let gebruikerInput = clone.querySelector(`input[name*='-gebruiker']`)
 
     li.dataset.taaktypeUrl = taaktypeUrl
-    a.dataset.taaktypeUrl = taaktypeUrl
     taakapplicatieTaaktypeUrlInput.value = taaktypeUrl
     titelInput.value = this.taaktypeByUrl[taaktypeUrl][1]
     meldingUuidInput.value = this.meldingUuidValue

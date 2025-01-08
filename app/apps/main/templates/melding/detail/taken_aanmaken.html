@@ -131,14 +131,21 @@
                     <span>Annuleren</span>
                 </button>
                 <button class="btn btn-textlink stap2"
+                        data-taken-aanmaken--manager-target="knopVorige"
                         data-action="taken-aanmaken--manager#gotoPreviousStep">
                     <span>vorige</span>
                 </button>
                 <button class="btn btn-action stap1"
-                        data-action="taken-aanmaken--manager#gotoNextStep">
+                        data-taken-aanmaken--manager-target="knopVolgende"
+                        data-action="taken-aanmaken--manager#gotoNextStep"
+                        disabled>
                     <span>Volgende</span>
                 </button>
-                <button type="submit" form="formTakenAanmaken" class="btn btn-action stap2">
+                <button type="submit"
+                        disabled
+                        form="formTakenAanmaken"
+                        class="btn btn-action stap2"
+                        data-taken-aanmaken--manager-target="knopAanmaken">
                     {% comment %}  TODO get number of taaktypes for "Taak" or "Taken" {% endcomment %}
                     <span>Aanmaken</span>
                 </button>
