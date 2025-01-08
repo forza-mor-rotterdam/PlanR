@@ -96,6 +96,11 @@ class GebruikerVerwijderenPermissie(BasisPermissie):
     codenaam = "gebruiker_verwijderen"
 
 
+class GebruikerTerughalenPermissie(BasisPermissie):
+    naam = "Gebruiker terughalen"
+    codenaam = "gebruiker_terughalen"
+
+
 class BeheerBekijkenPermissie(BasisPermissie):
     naam = "Beheer bekijken"
     codenaam = "beheer_bekijken"
@@ -240,6 +245,7 @@ gebruikersgroep_permissies = (
     GebruikerBekijkenPermissie,
     GebruikerAanpassenPermissie,
     GebruikerVerwijderenPermissie,
+    GebruikerTerughalenPermissie,
     BeheerBekijkenPermissie,
     MSBPermissie,
     ContextLijstBekijkenPermissie,

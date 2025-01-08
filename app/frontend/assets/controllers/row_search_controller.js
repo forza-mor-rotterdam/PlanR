@@ -21,13 +21,14 @@ export default class extends Controller {
         return false
       })
     }
+    this.search()
   }
   escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   }
 
-  search(e) {
-    if (e.target.value.trim().length != 0) {
+  search(e = null) {
+    if (e && e.target.value.trim().length != 0) {
       this.rowTargets.forEach((searchableContainer) => {
         searchableContainer.style.display = 'none'
       })
@@ -74,10 +75,16 @@ export default class extends Controller {
         }
       })
       if (this.hasResultCountTarget) {
-        const foundCount = this.rowTargets.filter(
-          (searchableContainer) => searchableContainer.style.display != 'none'
-        ).length
-        this.resultCountTarget.textContent = `${foundCount} / ${this.rowTargets.length}`
+        this.resultCountTargets.map((elem) => {
+          const all = this.rowTargets.filter((searchableContainer) => {
+            const container = document.getElementById(elem.dataset.containerId)
+            return container ? searchableContainer.parentNode === container : true
+          })
+          const found = all.filter(
+            (searchableContainer) => searchableContainer.style.display != 'none'
+          )
+          elem.textContent = `${found.length} / ${all.length}`
+        })
       }
     } else {
       this.rowTargets.forEach((searchableContainer) => {
@@ -87,7 +94,13 @@ export default class extends Controller {
         searchable.textContent = searchable.dataset.value
       })
       if (this.hasResultCountTarget) {
-        this.resultCountTarget.textContent = `${this.rowTargets.length} / ${this.rowTargets.length}`
+        this.resultCountTargets.map((elem) => {
+          const all = this.rowTargets.filter((searchableContainer) => {
+            const container = document.getElementById(elem.dataset.containerId)
+            return container ? searchableContainer.parentNode === container : true
+          })
+          elem.textContent = `${all.length} / ${all.length}`
+        })
       }
     }
   }
