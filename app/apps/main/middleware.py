@@ -10,11 +10,7 @@ try:
     from django.utils.deprecation import MiddlewareMixin
 except ImportError:
     MiddlewareMixin = object
-from re import Pattern as re_Pattern
 
-from django.contrib.auth import logout
-from django.urls import reverse
-from django.utils.functional import cached_property
 
 SESSION_TIMEOUT_KEY = "_session_init_timestamp_"
 SESSION_CURRENT_TIMEOUT_KEY = "_session_current_timestamp_"
@@ -25,49 +21,17 @@ class SessionTimeoutMiddleware(MiddlewareMixin):
         request.session_refreshed = "delete"
         request.session.flush()
         logout(request)
-        print("FLUSH")
         redirect_url = getattr(settings, "SESSION_TIMEOUT_REDIRECT", None)
-
-        # allowed = (
-        #     request.method == "GET"
-        #     and request.user.is_authenticated
-        #     and request.path not in self.exempt_urls
-        #     and not any(pat.match(request.path) for pat in self.exempt_url_patterns)
-        # )
-        # next = request.path if allowed else "/"
-
-        print("request.user.is_authenticated")
-        print(request.user.is_authenticated)
-
-        return redirect_to_login(next=request.path)
         if redirect_url:
             return redirect(redirect_url)
         else:
-            return redirect_to_login(next=next)
-
-    @cached_property
-    def exempt_urls(self):
-        EXEMPT_URLS = getattr(settings, "SESSION_TIMEOUT_REDIRECT_EXEMPT_URLS", [])
-        exempt_urls = []
-        for url in EXEMPT_URLS:
-            if not isinstance(url, re_Pattern):
-                exempt_urls.append(url)
-
-        return set(
-            [url if url.startswith("/") else reverse(url) for url in exempt_urls]
-        )
-
-    @cached_property
-    def exempt_url_patterns(self):
-        EXEMPT_URLS = getattr(settings, "SESSION_TIMEOUT_REDIRECT_EXEMPT_URLS", [])
-        exempt_patterns = set()
-        for url_pattern in EXEMPT_URLS:
-            if isinstance(url_pattern, re_Pattern):
-                exempt_patterns.add(url_pattern)
-        return exempt_patterns
+            return redirect_to_login(next=request.path)
 
     def process_response(self, request, response):
         expire_seconds = getattr(settings, "SESSION_EXPIRE_SECONDS", False)
+        expire_grace_period = getattr(
+            settings, "SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD", False
+        )
         max_session_seconds = getattr(
             settings, "SESSION_EXPIRE_MAXIMUM_SECONDS", settings.SESSION_COOKIE_AGE
         )
@@ -76,11 +40,18 @@ class SessionTimeoutMiddleware(MiddlewareMixin):
         current_time = request.session.get(SESSION_CURRENT_TIMEOUT_KEY, time_now)
         session_refreshed = getattr(request, "session_refreshed", False)
 
-        # if session_refreshed in ["init", "prolong"]:
+        SESSION_EXPIRY_MAX_TIMESTAMP_COOKIE_NAME = getattr(
+            settings,
+            "SESSION_EXPIRY_MAX_TIMESTAMP_COOKIE_NAME",
+            "session_expiry_max_timestamp",
+        )
+        SESSION_EXPIRY_TIMESTAMP_COOKIE_NAME = getattr(
+            settings, "SESSION_EXPIRY_TIMESTAMP_COOKIE_NAME", "session_expiry_timestamp"
+        )
+
         if session_refreshed == "init":
-            print(f"SET COOKIES: {session_refreshed}")
             response.set_cookie(
-                SESSION_TIMEOUT_KEY,
+                SESSION_EXPIRY_MAX_TIMESTAMP_COOKIE_NAME,
                 value=init_time + max_session_seconds,
                 max_age=max_session_seconds,
                 expires=init_time + max_session_seconds,
@@ -91,8 +62,8 @@ class SessionTimeoutMiddleware(MiddlewareMixin):
             request.session_refreshed = False
         if session_refreshed in ["init", "prolong"]:
             response.set_cookie(
-                SESSION_CURRENT_TIMEOUT_KEY,
-                value=current_time + expire_seconds,
+                SESSION_EXPIRY_TIMESTAMP_COOKIE_NAME,
+                value=current_time + expire_seconds + expire_grace_period,
                 max_age=max_session_seconds,
                 expires=current_time,
                 domain=None,
@@ -100,10 +71,8 @@ class SessionTimeoutMiddleware(MiddlewareMixin):
                 httponly=False,
             )
         if session_refreshed == "delete":
-            print(f"DEL COOKIES: {session_refreshed}")
-
-            response.delete_cookie(SESSION_TIMEOUT_KEY)
-            response.delete_cookie(SESSION_CURRENT_TIMEOUT_KEY)
+            response.delete_cookie(SESSION_EXPIRY_MAX_TIMESTAMP_COOKIE_NAME)
+            response.delete_cookie(SESSION_EXPIRY_TIMESTAMP_COOKIE_NAME)
         return response
 
     def process_request(self, request):
@@ -115,7 +84,6 @@ class SessionTimeoutMiddleware(MiddlewareMixin):
             return
 
         time_now = time.time()
-        print(request.session.get(SESSION_TIMEOUT_KEY, "NOT EXISTING"))
         request.session_refreshed = False
         if not request.session.get(SESSION_TIMEOUT_KEY):
             request.session_refreshed = "init"
@@ -141,16 +109,29 @@ class SessionTimeoutMiddleware(MiddlewareMixin):
                 expire_grace_period
                 and time_now < current_time + expire_seconds + expire_grace_period
             ):
-                import math
-
-                messages.info(
-                    request,
-                    f"Je login is verlengd met {math.floor((expire_grace_period + expire_seconds) / 60)} minuten",
+                notification_period = getattr(
+                    settings, "SESSION_EXPIRY_NOTIFICATION_PERIOD", False
                 )
+                if (
+                    notification_period
+                    and time_now - current_time
+                    > expire_seconds + expire_grace_period - notification_period
+                ):
+                    import math
+
+                    prolong_seconds = expire_grace_period + expire_seconds
+                    if prolong_seconds > int(max_session_seconds) - int(
+                        time_now - init_time
+                    ):
+                        prolong_seconds = int(max_session_seconds) - int(
+                            time_now - init_time
+                        )
+                    messages.info(
+                        request,
+                        f"Je login is verlengd met {math.floor((prolong_seconds) / 60)} minuten",
+                    )
                 request.session_refreshed = "prolong"
                 request.session[SESSION_CURRENT_TIMEOUT_KEY] = time_now
                 return
 
             return self.close_session(request)
-        # print('request.session_refreshed = "init"')
-        # request.session_refreshed = "init"

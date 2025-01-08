@@ -11,7 +11,6 @@ from apps.main.services import MORCoreService
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -24,26 +23,6 @@ from django.views.generic.list import ListView
 Gebruiker = get_user_model()
 
 logger = logging.getLogger(__name__)
-
-
-class SessionTimerView(LoginRequiredMixin, TemplateView):
-    template_name = "auth/session_timer.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.update(
-            {
-                "notificatie": {
-                    "id": "session_timer",
-                    "notificatie_niveau": "warning",
-                    "titel": "Je sessie verloop binnenkort",
-                    "korte_beschrijving": "&nbsp;",
-                    "link_titel": "Sessie&nbsp;verlengen",
-                    "link_url": ".",
-                }
-            }
-        )
-        return context
 
 
 class GebruikerView(View):
@@ -179,3 +158,8 @@ class GebruikerProfielView(GebruikerView, UpdateView):
     def form_valid(self, form):
         messages.success(self.request, "Gebruikersgegevens succesvol opgeslagen.")
         return super().form_valid(form)
+
+
+@method_decorator(login_required, name="dispatch")
+class GebruikerStreamView(TemplateView):
+    template_name = "authenticatie/gebruiker_stream.html"

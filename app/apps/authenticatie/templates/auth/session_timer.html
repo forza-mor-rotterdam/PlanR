@@ -1,9 +1,0 @@
-<turbo-frame id="tf_session_timer">
-<div data-controller="sessionTimer"
-     data-sessionTimer-snack-item-value='{% include "public/notificaties/snack_item.html" with action="prepend" target="snack_lijst" notificatie=notificatie only %}'
-     data-sessionTimer-snack-item-id-value="notificatie_{{ notificatie.id }}"
-     data-sessionTimer-session-check-iterval-seconds-value="{{ SESSION_CHECK_INTERVAL_SECONDS }}"
-     data-sessionTimer-session-expiry-max-timestamp-value="{{ SESSION_EXPIRY_MAX_TIMESTAMP }}"
-     data-sessionTimer-session-expire-after-last-activity-grace-period-value="{{ SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD }}"
-     data-sessionTimer-session-expiry-timestamp-value="{{ SESSION_EXPIRY_TIMESTAMP }}"></div>
-</turbo-frame>

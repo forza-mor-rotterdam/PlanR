@@ -22,7 +22,6 @@ export default class extends Controller {
         setTimeout(() => {
           this.contentTarget.style.height = `${this.contentTarget.clientHeight}px`
           this.initialHeight = this.contentTarget.clientHeight
-          console.log('on TargetConnected, height: ', this.contentTarget.clientHeight)
         }, 500)
       }
     }

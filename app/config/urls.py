@@ -1,4 +1,4 @@
-from apps.authenticatie.views import GebruikerProfielView, SessionTimerView
+from apps.authenticatie.views import GebruikerProfielView, GebruikerStreamView
 from apps.health.views import healthz
 from apps.main.views import (
     LoginView,
@@ -51,7 +51,6 @@ from rest_framework.authtoken import views
 urlpatterns = [
     path("", root, name="root"),
     path("api-token-auth/", views.obtain_auth_token),
-    path("session-timer/", SessionTimerView.as_view(), name="session_timer"),
     path(
         "login/",
         LoginView.as_view(),
@@ -185,6 +184,11 @@ urlpatterns = [
         "gebruiker/profiel/",
         GebruikerProfielView.as_view(),
         name="gebruiker_profiel",
+    ),
+    path(
+        "gebruiker/stream/",
+        GebruikerStreamView.as_view(),
+        name="gebruiker_stream",
     ),
     # sidesheet
     path(

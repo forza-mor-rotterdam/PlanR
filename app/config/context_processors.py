@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime, timedelta
 
 from apps.main.services import MercureService
 from apps.release_notes.models import ReleaseNote
@@ -18,13 +17,6 @@ def general_settings(context):
     unwatched_count = 0
     if user and getattr(user, "is_authenticated", False):
         unwatched_count = ReleaseNote.count_unwatched(user)
-
-    session_expiry_max_timestamp = context.session.get("_session_init_timestamp_", 0)
-    if session_expiry_max_timestamp:
-        session_expiry_max_timestamp += settings.SESSION_EXPIRE_MAXIMUM_SECONDS
-    session_expiry_timestamp = context.session.get("_session_current_timestamp_", 0)
-    if session_expiry_timestamp:
-        session_expiry_timestamp += settings.SESSION_EXPIRE_SECONDS
 
     mercure_service = None
     subscriber_token = None
@@ -50,19 +42,6 @@ def general_settings(context):
     return {
         "DEBUG": settings.DEBUG,
         "DEV_SOCKET_PORT": settings.DEV_SOCKET_PORT,
-        "SESSION_SHOW_TIMER_SECONDS": settings.SESSION_SHOW_TIMER_SECONDS,
-        "SESSION_CHECK_INTERVAL_SECONDS": settings.SESSION_CHECK_INTERVAL_SECONDS,
-        "SESSION_EXPIRY_MAX_TIMESTAMP": session_expiry_max_timestamp,
-        "SESSION_EXPIRY_MAX_DATETIME": datetime.fromtimestamp(
-            session_expiry_max_timestamp
-        ),
-        "SESSION_EXPIRY_TIMESTAMP": session_expiry_timestamp,
-        "SESSION_EXPIRY_DATETIME": datetime.fromtimestamp(session_expiry_timestamp),
-        "SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD": settings.SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD,
-        "SESSION_EXPIRY_DATETIME_PLUS_GRACE_PERIOD": datetime.fromtimestamp(
-            session_expiry_timestamp
-        )
-        + timedelta(seconds=settings.SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD),
         "APP_MERCURE_PUBLIC_URL": settings.APP_MERCURE_PUBLIC_URL,
         "MERCURE_SUBSCRIBER_TOKEN": subscriber_token,
         "GEBRUIKER": gebruiker,
@@ -71,4 +50,10 @@ def general_settings(context):
         "APP_ENV": settings.APP_ENV,
         "MOR_CORE_URL_PREFIX": settings.MOR_CORE_URL_PREFIX,
         "DEPLOY_DATE": deploy_date_formatted,
+        "SESSION_EXPIRE_SECONDS": settings.SESSION_EXPIRE_SECONDS,
+        "SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD": settings.SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD,
+        "SESSION_EXPIRY_MAX_TIMESTAMP_COOKIE_NAME": settings.SESSION_EXPIRY_MAX_TIMESTAMP_COOKIE_NAME,
+        "SESSION_EXPIRY_TIMESTAMP_COOKIE_NAME": settings.SESSION_EXPIRY_TIMESTAMP_COOKIE_NAME,
+        "SESSION_EXPIRY_NOTIFICATION_PERIOD": settings.SESSION_EXPIRY_NOTIFICATION_PERIOD,
+        "SESSION_EXPIRY_MAX_NOTIFICATION_PERIOD": settings.SESSION_EXPIRY_MAX_NOTIFICATION_PERIOD,
     }

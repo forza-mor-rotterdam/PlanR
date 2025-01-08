@@ -75,7 +75,14 @@
         </script>
     </head>
     <body class="{% block body_class %}{% endblock body_class %}"
-          data-controller="notificaties--manager"
+          data-controller="notificaties--manager session-manager"
+          data-session-manager-snack-item-value='{% include "public/notificaties/snack_session_item.html" only %}'
+          data-session-manager-session-expiry-max-timestamp-cookie-name-value="{{ SESSION_EXPIRY_MAX_TIMESTAMP_COOKIE_NAME }}"
+          data-session-manager-session-expiry-timestamp-cookie-name-value="{{ SESSION_EXPIRY_TIMESTAMP_COOKIE_NAME }}"
+          data-session-manager-session-expiry-notification-period-value="{{ SESSION_EXPIRY_NOTIFICATION_PERIOD }}"
+          data-session-manager-session-expiry-max-notification-period-value="{{ SESSION_EXPIRY_MAX_NOTIFICATION_PERIOD }}"
+          data-session-manager-session-expire-seconds-value="{{ SESSION_EXPIRE_SECONDS }}"
+          data-session-manager-session-expire-after-last-activity-grace-period-value="{{ SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD }}"
           data-notificaties--manager-snack-overzicht-url-value="{% url 'snack_overzicht_stream' %}"
           data-notificaties--manager-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
           data-notificaties--manager-topic-snack-value="/notificaties/snack/"

@@ -1,0 +1,35 @@
+<turbo-stream action="prepend" target="snack_lijst">
+<template>
+    <div class="notification"
+         id="notificatie_snack_sessie"
+         data-id="notificatie_snack_sessie"
+         data-controller="notificaties--sessie-snack-item"
+         data-session-manager-target="snackSessionItem"
+         data-notificaties--manager-target="snackItem">
+        <div class="container__icon">
+            {% with "public/notificaties/icons/"|add:"warning"|add:".html" as template %}
+                {% include template %}
+            {% endwith %}
+        </div>
+        <div class="container__content">
+            <h3 data-notificaties--sessie-snack-item-target="titel">Sessie bericht</h3>
+            <div class="container__message">
+                <div class="container__link"
+                     data-notificaties--sessie-snack-item-target="link">
+                    <a href="."
+                       data-turbo="false"
+                       data-action="notificaties--sessie-snack-item#verlengSessieHandler">&nbsp;</a>
+                </div>
+                <p data-notificaties--sessie-snack-item-target="content">&nbsp;</p>
+            </div>
+        </div>
+        <button type="button"
+                class="btn-close--small"
+                aria-label="Sluit"
+                data-notificaties--sessie-snack-item-target="sluitKnop"
+                data-action="notificaties--sessie-snack-item#sluitSnack session-manager#sluitSnack">
+            {% include "icons/close.svg" %}
+        </button>
+    </div>
+</template>
+</turbo-stream>
