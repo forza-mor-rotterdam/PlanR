@@ -8,51 +8,63 @@ export default class extends Controller {
   initialize() {
     this.element.controller = this
     this.manager = null
-    this.initialTouchX = null
-    this.finalTouchX = null
-    this.deltaX = null
+    this.startX = 0
+    this.startY = 0
+    this.currentX = 0
+    this.currentY = 0
+    this.isSwiping = false
 
     if ('ontouchstart' in window) {
-      this.element.addEventListener('touchstart', (event) => {
-        event.preventDefault()
-        if (event.target.hasAttribute('href') && event.target.getAttribute('href').length > 0) {
-          window.location.href = event.target.getAttribute('href')
+      this.element.addEventListener('touchstart', (e) => {
+        if (e.target.closest('A')) return
+        this.startX = e.touches[0].clientX
+        this.startY = e.touches[0].clientY
+        this.currentX = this.startX // in het geval gebruiker alleen mmar tapt ipv swipet
+        this.currentY = this.startY
+        this.isSwiping = true
+      })
+
+      this.element.addEventListener('touchmove', (e) => {
+        if (!this.isSwiping) return
+        this.currentX = e.touches[0].clientX
+        this.currentY = e.touches[0].clientY
+
+        const deltaX = this.currentX - this.startX
+        const deltaY = this.currentY - this.startY
+
+        // Controlleer of de gebruiker horizontaal of verticaal swipet
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+          // Horizontale swipe, voorkom scrollen
+          e.preventDefault()
+          if (deltaX < 0) {
+            // only swipe to left
+            this.element.style.transform = `translateX(${deltaX}px)`
+          }
         }
-        // this.initialTouchX = event.touches[0].clientX
       })
 
-      this.element.addEventListener('touchmove', (event) => {
-        event.preventDefault()
-        // this.deltaX = this.initialTouchX - event.changedTouches[0].clientX
-        // this.element.style.marginLeft = `-${this.deltaX}px`
-        // this.element.style.opacity = 10 / this.deltaX
-      })
-
-      this.element.addEventListener('touchend', (event) => {
-        event.preventDefault()
-        // this.finalTouchX = event.changedTouches[0].clientX
-        // if (this.deltaX < SWIPE_TRESHOLD) {
-        //   this.element.style.marginLeft = 0
-        //   this.element.style.opacity = 1
-        // }
-        if (event.target.classList.contains('btn-close--small')) {
-          this.manager.markeerSnackAlsGelezen(this.element.dataset.id)
-        } else if (event.target.nodeName.toLowerCase() === 'a') {
-          if (event.target.getAttribute('data-action')) {
-            this[`${event.target.getAttribute('data-action').split('#')[1]}`]()
+      this.element.addEventListener('touchend', (e) => {
+        if (!this.isSwiping) return
+        const swipeDistance = this.startX - this.currentX
+        if (e.target.classList.contains('btn-close--small')) {
+          this.manager.markeerSnackAlsGelezen(this.element.dataset.id, true)
+        } else if (e.target.nodeName.toLowerCase() === 'a') {
+          if (e.target.getAttribute('data-action')) {
+            this[`${e.target.getAttribute('data-action').split('#')[1]}`]()
           }
         } else {
-          this.element.closest('.container__notification').classList.remove('collapsed')
-          this.element.closest('.container__notification').classList.add('expanded')
-
-          //   this.handleSwipe(this.initialTouchX, this.finalTouchX)
-        }
-      })
-
-      window.addEventListener('click', () => {
-        if (this.element.closest('.container__notification')) {
-          this.element.closest('.container__notification').classList.remove('expanded')
-          this.element.closest('.container__notification').classList.add('collapsed')
+          if (swipeDistance > SWIPE_TRESHOLD) {
+            this.element.style.transform = `translateX(-100%)`
+            this.manager.markeerSnackAlsGelezen(this.element.dataset.id, false)
+          } else if (swipeDistance < 10) {
+            // Reset positie als swipe te kort is
+            this.element.style.transform = `translateX(0)`
+            this.element.closest('.container__notification').classList.remove('collapsed')
+            this.element.closest('.container__notification').classList.add('expanded')
+          } else {
+            // Reset positie als swipe te kort is
+            this.element.style.transform = `translateX(0)`
+          }
         }
       })
     }
@@ -102,18 +114,13 @@ export default class extends Controller {
     this.contentTarget.style.height = `${this.contentTarget.scrollHeight}px`
     console.log('after readMore, height: ', this.contentTarget.style.height)
   }
-  markeerAlsGelezen() {
-    this.element.classList.add('hide')
+  markeerAlsGelezen(hideByClass = true) {
+    if (hideByClass) this.element.classList.add('hide')
     this.element.addEventListener('transitionend', () => {
       this.element.remove()
     })
   }
   sluitSnack() {
-    this.manager.markeerSnackAlsGelezen(this.element.dataset.id)
-  }
-  handleSwipe() {
-    if (this.initialTouchX - this.finalTouchX > SWIPE_TRESHOLD) {
-      this.manager.markeerSnackAlsGelezen(this.element.dataset.id)
-    }
+    this.manager.markeerSnackAlsGelezen(this.element.dataset.id, true)
   }
 }

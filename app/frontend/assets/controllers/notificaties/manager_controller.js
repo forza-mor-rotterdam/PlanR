@@ -76,9 +76,9 @@ export default class extends Controller {
     this.verwijderAlleSnackOverzichtItems()
     this.laadSnackOverzicht()
   }
-  async markeerSnackAlsGelezen(notificatieId) {
+  async markeerSnackAlsGelezen(notificatieId, hideByClass = false) {
     const snackItemController = this.snackItemController(notificatieId)
-    snackItemController.markeerAlsGelezen()
+    snackItemController.markeerAlsGelezen(hideByClass)
     this.verwijderAlleSnackOverzichtItems()
     this.snackOverzichtPagina = 0
     this.laadSnackOverzicht(`markeer-snack-als-gelezen=${notificatieId}`)
