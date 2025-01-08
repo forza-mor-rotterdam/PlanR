@@ -11,6 +11,7 @@ class Gebruiker(AbstractUser):
     username = None
     email = models.EmailField(verbose_name="E-mailadres", unique=True)
     telefoonnummer = models.CharField(max_length=17, blank=True, null=True)
+    verwijderd_op = models.DateTimeField(null=True, blank=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
