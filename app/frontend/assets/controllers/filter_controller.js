@@ -40,6 +40,9 @@ export default class extends Controller {
       this.element.requestSubmit()
     }
   }
+  onToggleSearchProfielContext(e) {
+    this.onChangeFilter(e)
+  }
   clickOutsideHandler(e) {
     let self = this
     if (!e.target.closest(self.containerSelector)) {

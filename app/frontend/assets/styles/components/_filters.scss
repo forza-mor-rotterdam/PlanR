@@ -12,6 +12,9 @@
             min-width: 250px;
             max-height: 2.3em;
         }
+        &.hide {
+            visibility: hidden;
+        }
 
         @media (min-width: map-get($grid-breakpoints, md)) {
             display: flex;

@@ -113,6 +113,15 @@ class FilterForm(forms.Form):
         label="Zoeken",
         required=False,
     )
+    search_with_profiel_context = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={
+                "data-action": "filter#onToggleSearchProfielContext",
+            }
+        ),
+        label="Zoeken met filters",
+        required=False,
+    )
     foldout_states = forms.CharField(
         widget=forms.HiddenInput(
             attrs={
