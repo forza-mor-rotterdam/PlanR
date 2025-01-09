@@ -19,22 +19,17 @@ export default class extends Controller {
   ]
   static values = {
     afdelingen: String,
+    afdelingByUrl: String,
     taaktypes: String,
     meldingUuid: String,
     gebruiker: String,
   }
 
   connect() {
-    console.log(`Connect: ${this.identifier}`)
-    // this.element.controllers[this.identifier] = this
     this.afdelingen = JSON.parse(this.afdelingenValue)
     this.taaktypes = JSON.parse(this.taaktypesValue)
     this.taaktypeByUrl = this.taaktypes.reduce((o, v) => ((o[v[0]] = v), o), {})
-    console.log(this.taaktypes)
-    console.log(this.taaktypeByUrl)
-    // console.log(this.taaktypes.length)
-    // console.log(this.taaktypes)
-
+    this.afdelingenByUrl = JSON.parse(this.afdelingByUrlValue)
     this.afdelingTargets.find((elem) => elem.dataset.value == 'Taak suggesties')?.click()
   }
   modalSluitenTargetConnected() {}
@@ -141,6 +136,7 @@ export default class extends Controller {
     return clone
   }
   geselecteerdTaaktypeFormulierElement(taaktypeUrl) {
+    const taaktypeData = this.taaktypeByUrl[taaktypeUrl][3]
     const template = document.getElementById('template_geselecteerd_formulier_taaktype')
     const clone = template.content.cloneNode(true)
     let li = clone.querySelector('li')
@@ -151,6 +147,14 @@ export default class extends Controller {
     let meldingUuidInput = clone.querySelector(`input[name*='-melding_uuid']`)
     let gebruikerInput = clone.querySelector(`input[name*='-gebruiker']`)
 
+    clone.querySelector('[data-afdelingen]').textContent = taaktypeData.afdelingen
+      .map((afd) => this.afdelingenByUrl[afd])
+      .join(', ')
+    clone.querySelector('[data-verantwoordelijke-afdeling]').textContent =
+      taaktypeData.verantwoordelijke_afdeling
+    clone.querySelector('[data-toelichting]').textContent = taaktypeData.toelichting
+    console.log(this.afdelingen)
+    console.log(taaktypeData)
     li.dataset.taaktypeUrl = taaktypeUrl
     taakapplicatieTaaktypeUrlInput.value = taaktypeUrl
     titelInput.value = this.taaktypeByUrl[taaktypeUrl][1]

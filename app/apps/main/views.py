@@ -812,6 +812,10 @@ class TakenAanmakenView(FormView):
         taaktypes_with_afdelingen = taakr_service.get_taaktypes_with_afdelingen(
             melding, context_taaktypes=gebruiker_context.taaktypes
         )
+        afdeling_by_url = {
+            afdeling.get("_links", {}).get("self"): afdeling.get("naam")
+            for afdeling in taakr_service.get_afdelingen()
+        }
 
         # Categorize taaktypes by afdeling and get gerelateerde onderwerpen
         afdelingen = {}
@@ -859,6 +863,7 @@ class TakenAanmakenView(FormView):
                 tt.get("taaktype").get("_links").get("taakapplicatie_taaktype_url"),
                 tt.get("taaktype").get("omschrijving"),
                 tt.get("taaktype").get("_links").get("self"),
+                tt.get("taaktype"),
             ]
             for tt in taaktypes_with_afdelingen
         }
@@ -867,6 +872,7 @@ class TakenAanmakenView(FormView):
                 url,
                 taaktype[1],
                 taaktype[2],
+                taaktype[3],
             ]
             for url, taaktype in taaktypes.items()
         ]
@@ -883,6 +889,7 @@ class TakenAanmakenView(FormView):
         context.update(
             {
                 "afdelingen": afdelingen_taaktypes,
+                "afdeling_by_url": afdeling_by_url,
                 "taaktypes": taaktypes,
                 "melding": melding,
             }
