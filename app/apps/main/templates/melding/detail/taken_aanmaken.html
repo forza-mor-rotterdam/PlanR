@@ -3,7 +3,7 @@
 {% load json_encode from json_tags %}
 {% load context_template from context_tags %}
 <turbo-frame id="melding_actie_form">
-<div class="modal-dialog modal-dialog--wide modal--taken-aanmaken">
+<div class="modal-dialog modal-dialog--wide modal--multistep-form">
     <div class="modal-content stap1"
          data-controller="taken-aanmaken--manager"
          data-taken-aanmaken--manager-afdelingen-value="{{ afdelingen|json_encode }}"
@@ -53,6 +53,8 @@
                                     {% endfor %}
                                 </ul>
                             </div>
+                            <h2 class="h3 hidden"
+                                data-taken-aanmaken--manager-target="geselecteerdeTakenHeader">Geselecteerde taken</h2>
                             <ul data-taken-aanmaken--manager-target="geselecteerdeTaaktypesContainer"
                                 class="list__pills">
                             </ul>
@@ -125,7 +127,7 @@
             {% comment %} <button class="btn btn-primary">Volgende</button> {% endcomment %}
             <div class="form-row btn-row">
                 <button type="reset"
-                        class="btn btn-tertiary stap1"
+                        class="btn btn-textlink stap1"
                         data-action="modal#closeModal"
                         data-modal-target="modal">
                     <span>Annuleren</span>
@@ -135,7 +137,7 @@
                         data-action="taken-aanmaken--manager#gotoPreviousStep">
                     <span>vorige</span>
                 </button>
-                <button class="btn btn-action stap1"
+                <button class="btn btn-action-v2 stap1"
                         data-taken-aanmaken--manager-target="knopVolgende"
                         data-action="taken-aanmaken--manager#gotoNextStep"
                         disabled>
@@ -144,7 +146,7 @@
                 <button type="submit"
                         disabled
                         form="formTakenAanmaken"
-                        class="btn btn-action stap2"
+                        class="btn btn-action-v2 stap2"
                         data-taken-aanmaken--manager-target="knopAanmaken">
                     {% comment %}  TODO get number of taaktypes for "Taak" or "Taken" {% endcomment %}
                     <span>Aanmaken</span>
@@ -165,31 +167,36 @@
 <template id="template_geselecteerd_formulier_taaktype">
     <li data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktype">
         {% comment %} <label for="id_form-0-titel">Titel:</label> {% endcomment %}
-        <input type="text"
-               name="form-0-titel"
-               maxlength="200"
-               id="id_form-0-titel"
-               readonly>
-        {% comment %} wel versturen, niet aan te passen {% endcomment %}
-        <input type="text"
-               name="form-0-bericht"
-               maxlength="5000"
-               id="id_form-0-bericht">
-        <input type="hidden"
-               name="form-0-melding_uuid"
-               id="id_form-0-melding_uuid"
-               value="">
-        <input type="hidden"
-               name="form-0-taakapplicatie_taaktype_url"
-               id="id_form-0-taakapplicatie_taaktype_url"
-               value="">
-        <input type="hidden"
-               name="form-0-gebruiker"
-               id="id_form-0-gebruiker"
-               value="admin@admin.com">
-        {% comment %} {{ form.empty_form }} {% endcomment %}
-        <a href="#"
-           data-action="taken-aanmaken--manager#taaktypeVerwijderenHandler:prevent">{% include "icons/close.svg" %}</a>
+        <div>
+            <input type="text"
+                   name="form-0-titel"
+                   maxlength="200"
+                   id="id_form-0-titel"
+                   class="readonly"
+                   readonly>
+            {% comment %} wel versturen, niet aan te passen {% endcomment %}
+        </div>
+        <div>- afdeling -</div>
+        <div>
+            <textarea name="form-0-bericht" maxlength="5000" id="id_form-0-bericht"></textarea>
+            <input type="hidden"
+                   name="form-0-melding_uuid"
+                   id="id_form-0-melding_uuid"
+                   value="">
+            <input type="hidden"
+                   name="form-0-taakapplicatie_taaktype_url"
+                   id="id_form-0-taakapplicatie_taaktype_url"
+                   value="">
+            <input type="hidden"
+                   name="form-0-gebruiker"
+                   id="id_form-0-gebruiker"
+                   value="admin@admin.com">
+            {% comment %} {{ form.empty_form }} {% endcomment %}
+            <a href="#"
+               data-action="taken-aanmaken--manager#taaktypeVerwijderenHandler:prevent">
+                {% include "icons/close.svg" %}
+            </a>
+        </div>
     </li>
 </template>
 </turbo-frame>

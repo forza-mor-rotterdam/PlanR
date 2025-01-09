@@ -869,9 +869,10 @@ body > .select2-container--default,
 .list__pills {
     @include list-clean();
     margin: 0;
-    padding: $input-padding-x;
+    padding: $input-padding-x 0;
     display: flex;
     justify-content: flex-start;
+    flex-wrap: wrap;
     gap: 0.5em;
     li {
         flex: 0 0 auto;
@@ -880,12 +881,19 @@ body > .select2-container--default,
         font-size: 0.777rem;
         margin-bottom: 0.5em;
 
+        span {
+            display: inline-block;
+            max-width: 20em;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
         a {
             margin-left: 0.5em;
             svg {
                 width: 0.889rem;
                 height: 0.889rem;
-                transform: translateY(0.25em);
             }
         }
     }
@@ -928,6 +936,18 @@ form.taken-aanmaken {
                 font-size: 0.777rem;
                 font-weight: 400;
             }
+        }
+    }
+
+    .container__details & {
+        h2 {
+            display: block;
+            border: 0;
+            padding: 0;
+        }
+        .h3 {
+            margin-top: 1.25rem;
+            font-size: 1rem;
         }
     }
 
@@ -1061,5 +1081,27 @@ form.taken-aanmaken {
     }
     .help-block:not(.invalid-text) {
         font-size: 0.8888rem;
+    }
+
+    .list--3cols-form {
+        @include list-clean();
+        font-size: 0.889rem;
+        > li:first-child {
+            font-weight: 700;
+            padding: 0.5rem 0;
+        }
+        > li:not(:first-child) {
+            background-color: $white;
+            padding: 1rem 0.889rem;
+            margin-bottom: 4px;
+        }
+        > li,
+        > li > details {
+            display: flex;
+            gap: 1em;
+            > div {
+                flex: 1 1 33.333%;
+            }
+        }
     }
 }

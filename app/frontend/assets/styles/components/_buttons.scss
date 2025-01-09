@@ -141,6 +141,10 @@ textarea {
                 background-color: darken($neutral-900, 10%);
                 border-color: darken($neutral-900, 10%);
             }
+            &[disabled] {
+                background-color: $gray-tint04;
+                border-color: $gray-tint04;
+            }
         }
     }
 

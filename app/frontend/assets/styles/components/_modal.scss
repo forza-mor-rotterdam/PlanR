@@ -233,20 +233,53 @@ body.show-modal--first-filter {
     }
 }
 
-.modal--taken-aanmaken {
+.modal--multistep-form {
     .modal-content {
         height: 66vh;
+
+        .modal-header,
+        .modal-footer {
+            flex: 0 1 auto;
+        }
+
+        .modal-body {
+            flex: 1 1 auto;
+            overflow-y: auto;
+        }
     }
 
     .stap1 {
         .stap2 {
             visibility: hidden;
+            display: none;
         }
     }
 
     .stap2 {
         .stap1 {
             visibility: hidden;
+            display: none;
+        }
+    }
+
+    .modal-footer {
+        align-items: normal;
+        justify-content: space-between;
+        padding: 1rem;
+    }
+    .btn-row {
+        display: flex;
+        flex: 1;
+        justify-content: space-between;
+
+        .btn {
+            width: auto;
+            font-size: 0.889rem;
+            margin-bottom: 0;
+
+            &-textlink {
+                color: $black;
+            }
         }
     }
 }

@@ -8,12 +8,18 @@
         <form action="{% url 'taken_aanmaken_stream' view.kwargs.id %}"
               method="post"
               novalidate
-              id="formTakenAanmaken">
+              id="formTakenAanmaken"
+              class="taken-aanmaken">
             {% csrf_token %}
             {{ form.management_form }}
             <div class="form-row">
                 <ul data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktypeContainer"
-                    class="list-clean form-check-input">
+                    class="list--3cols-form">
+                    <li>
+                        <div>Taak</div>
+                        <div>Afdeling</div>
+                        <div>Opmerking</div>
+                    </li>
                     {% for taaktype_form in form %}
                         <li data-taaktype-url="{{ taaktype_form.value }}"
                             data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktype">

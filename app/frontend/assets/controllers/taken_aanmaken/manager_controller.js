@@ -11,6 +11,7 @@ export default class extends Controller {
     'geselecteerdTaaktype',
     'geselecteerdFormulierTaaktype',
     'geselecteerdFormulierTaaktypeContainer',
+    'geselecteerdeTakenHeader',
     'modalSluiten',
     'knopVolgende',
     'knopVorige',
@@ -107,6 +108,7 @@ export default class extends Controller {
     const taaktypeAantal = this.geselecteerdFormulierTaaktypeTargets.length
     this.knopVolgendeTarget.disabled = taaktypeAantal <= 0
     this.knopAanmakenTarget.disabled = taaktypeAantal <= 0
+    this.geselecteerdeTakenHeaderTarget.classList.toggle('hidden', taaktypeAantal <= 0)
     if (taaktypeAantal <= 0) {
       this.gotoPreviousStep()
     }
