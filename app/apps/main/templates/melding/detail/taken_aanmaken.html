@@ -166,37 +166,57 @@
 </template>
 <template id="template_geselecteerd_formulier_taaktype">
     <li data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktype">
-        {% comment %} <label for="id_form-0-titel">Titel:</label> {% endcomment %}
-        <div>
-            <input type="text"
-                   name="form-0-titel"
-                   maxlength="200"
-                   id="id_form-0-titel"
-                   class="readonly"
-                   readonly>
-            {% comment %} wel versturen, niet aan te passen {% endcomment %}
-        </div>
-        <div>- afdeling -</div>
-        <div>
-            <textarea name="form-0-bericht" maxlength="5000" id="id_form-0-bericht"></textarea>
-            <input type="hidden"
-                   name="form-0-melding_uuid"
-                   id="id_form-0-melding_uuid"
-                   value="">
-            <input type="hidden"
-                   name="form-0-taakapplicatie_taaktype_url"
-                   id="id_form-0-taakapplicatie_taaktype_url"
-                   value="">
-            <input type="hidden"
-                   name="form-0-gebruiker"
-                   id="id_form-0-gebruiker"
-                   value="admin@admin.com">
-            {% comment %} {{ form.empty_form }} {% endcomment %}
-            <a href="#"
-               data-action="taken-aanmaken--manager#taaktypeVerwijderenHandler:prevent">
-                {% include "icons/close.svg" %}
-            </a>
-        </div>
+        <details>
+            <summary>
+                <div>
+                    <input type="text"
+                           name="form-0-titel"
+                           maxlength="200"
+                           id="id_form-0-titel"
+                           class="readonly"
+                           readonly>
+                </div>
+                <div>- afdeling -</div>
+                <div>Opmerking toevoegen</div>
+            </summary>
+            <div class="container__flex">
+                <div>
+                    <h3>Taak</h3>
+                    <strong>taaktype naam</strong>
+                    <p>taaktype omschrijving</p>
+                    <h3>Afdeling(en)</h3>
+                    <ul class="list-horizontal">
+                        <li>afdeling 1,</li>
+                        <li>afdeling 2,</li>
+                        <li>afdeling 3</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Opmerking</h3>
+                    <textarea name="form-0-bericht"
+                              maxlength="5000"
+                              rows="4"
+                              id="id_form-0-bericht"></textarea>
+                    <input type="hidden"
+                           name="form-0-melding_uuid"
+                           id="id_form-0-melding_uuid"
+                           value="">
+                    <input type="hidden"
+                           name="form-0-taakapplicatie_taaktype_url"
+                           id="id_form-0-taakapplicatie_taaktype_url"
+                           value="">
+                    <input type="hidden"
+                           name="form-0-gebruiker"
+                           id="id_form-0-gebruiker"
+                           value="admin@admin.com">
+                    {% comment %} {{ form.empty_form }} {% endcomment %}
+                    <a href="#"
+                       data-action="taken-aanmaken--manager#taaktypeVerwijderenHandler:prevent">
+                        {% include "icons/close.svg" %}
+                    </a>
+                </div>
+            </div>
+        </details>
     </li>
 </template>
 </turbo-frame>

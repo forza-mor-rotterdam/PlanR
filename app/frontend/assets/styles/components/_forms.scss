@@ -1095,11 +1095,23 @@ form.taken-aanmaken {
             padding: 1rem 0.889rem;
             margin-bottom: 4px;
         }
-        > li,
-        > li > details {
+        > li:first-child,
+        > li > details > summary {
             display: flex;
             gap: 1em;
             > div {
+                flex: 1 1 33.333%;
+            }
+        }
+
+        .container__flex {
+            display: flex;
+            gap: 1em;
+
+            > div:first-child {
+                flex: 1 1 66.667%;
+            }
+            > div:last-child {
                 flex: 1 1 33.333%;
             }
         }
