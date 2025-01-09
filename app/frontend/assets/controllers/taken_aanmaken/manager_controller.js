@@ -151,7 +151,7 @@ export default class extends Controller {
       .map((afd) => this.afdelingenByUrl[afd])
       .join(', ')
     clone.querySelector('[data-verantwoordelijke-afdeling]').textContent =
-      taaktypeData.verantwoordelijke_afdeling
+      this.afdelingenByUrl[taaktypeData.verantwoordelijke_afdeling]
     clone.querySelector('[data-toelichting]').textContent = taaktypeData.toelichting
     console.log(this.afdelingen)
     console.log(taaktypeData)
