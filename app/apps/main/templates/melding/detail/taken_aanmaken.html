@@ -177,27 +177,28 @@
                            class="readonly"
                            readonly>
                 </div>
-                <div>- afdeling -</div>
+                <div>
+                    <span data-verantwoordelijke-afdeling></span>
+                </div>
                 <div>Opmerking toevoegen</div>
             </summary>
             <div class="container__flex">
                 <div>
                     <h3>Taak</h3>
-                    <strong>taaktype naam</strong>
-                    <p>taaktype omschrijving</p>
+                    <strong data-omschrijving></strong>
+                    <p>
+                        <span data-toelichting=""></span>
+                    </p>
                     <h3>Afdeling(en)</h3>
-                    <ul class="list-horizontal">
-                        <li>afdeling 1,</li>
-                        <li>afdeling 2,</li>
-                        <li>afdeling 3</li>
-                    </ul>
+                    <span data-afdelingen></span>
                 </div>
                 <div>
                     <h3>Opmerking</h3>
                     <textarea name="form-0-bericht"
                               maxlength="5000"
                               rows="4"
-                              id="id_form-0-bericht"></textarea>
+                              id="id_form-0-bericht"
+                              tabindex="0"></textarea>
                     <input type="hidden"
                            name="form-0-melding_uuid"
                            id="id_form-0-melding_uuid"

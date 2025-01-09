@@ -1088,11 +1088,11 @@ form.taken-aanmaken {
         font-size: 0.889rem;
         > li:first-child {
             font-weight: 700;
-            padding: 0.5rem 0;
+            padding: 0 0.889rem 0.5rem;
         }
         > li:not(:first-child) {
             background-color: $white;
-            padding: 1rem 0.889rem;
+            padding: 0;
             margin-bottom: 4px;
         }
         > li:first-child,
@@ -1104,9 +1104,36 @@ form.taken-aanmaken {
             }
         }
 
+        > li {
+            summary {
+                padding: 1rem 0.889rem;
+                border-bottom: 1px solid $neutral-100;
+
+                &::before {
+                    left: auto;
+                    right: 1rem;
+                    transform-origin: center;
+                }
+
+                &:focus {
+                    outline-color: transparent !important;
+                }
+            }
+            details {
+                &[open] {
+                    summary {
+                        &::before {
+                            right: calc(1rem - 3px);
+                        }
+                    }
+                }
+            }
+        }
+
         .container__flex {
             display: flex;
             gap: 1em;
+            padding: 1rem 0.889rem;
 
             > div:first-child {
                 flex: 1 1 66.667%;

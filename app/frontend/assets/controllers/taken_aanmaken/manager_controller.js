@@ -153,6 +153,7 @@ export default class extends Controller {
     clone.querySelector('[data-verantwoordelijke-afdeling]').textContent =
       this.afdelingenByUrl[taaktypeData.verantwoordelijke_afdeling]
     clone.querySelector('[data-toelichting]').textContent = taaktypeData.toelichting
+    clone.querySelector('[data-omschrijving]').textContent = taaktypeData.omschrijving
     console.log(this.afdelingen)
     console.log(taaktypeData)
     li.dataset.taaktypeUrl = taaktypeUrl
