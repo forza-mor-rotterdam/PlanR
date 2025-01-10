@@ -185,17 +185,16 @@ textarea {
         position: absolute;
         right: 0;
         top: 0;
-        background-color: black;
         padding: 8px;
         margin: 0 0 0 auto;
         box-shadow: none;
         box-sizing: content-box;
         min-width: 32px;
         min-height: 32px;
-        color: white;
-        background: $black
-            url("data:image/svg+xml,%3csvg width=%2732%27 height=%2732%27 viewBox=%270 0 32 32%27 fill=%27black%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath fill-rule=%27evenodd%27 clip-rule=%27evenodd%27 d=%27M26.6077 6.80752L25.1935 5.39331L16.0011 14.5857L6.80875 5.39331L5.39453 6.80752L14.5869 15.9999L5.39453 25.1923L6.80874 26.6065L16.0011 17.4141L25.1935 26.6065L26.6077 25.1923L17.4153 15.9999L26.6077 6.80752Z%27 fill=%27white%27/%3e%3c/svg%3e")
-            center/32px auto no-repeat;
+        color: $black;
+        background: transparent
+            url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkiIGhlaWdodD0iMTkiIHZpZXdCb3g9IjAgMCAxOSAxOSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE0LjczNjYgMTMuNjc5NEMxNC44OTUxIDEzLjgzNzkgMTQuOTg0MSAxNC4wNTI4IDE0Ljk4NDEgMTQuMjc3QzE0Ljk4NDEgMTQuNTAxMiAxNC44OTUxIDE0LjcxNjIgMTQuNzM2NiAxNC44NzQ3QzE0LjU3ODEgMTUuMDMzMiAxNC4zNjMxIDE1LjEyMjIgMTQuMTM4OSAxNS4xMjIyQzEzLjkxNDcgMTUuMTIyMiAxMy42OTk4IDE1LjAzMzIgMTMuNTQxMyAxNC44NzQ3TDkuMDc3MTIgMTAuNDA5MUw0LjYxMTU3IDE0Ljg3MzNDNC40NTMwNiAxNS4wMzE4IDQuMjM4MDggMTUuMTIwOCA0LjAxMzkxIDE1LjEyMDhDMy43ODk3NSAxNS4xMjA4IDMuNTc0NzcgMTUuMDMxOCAzLjQxNjI2IDE0Ljg3MzNDMy4yNTc3NSAxNC43MTQ4IDMuMTY4NyAxNC40OTk4IDMuMTY4NyAxNC4yNzU2QzMuMTY4NyAxNC4wNTE0IDMuMjU3NzUgMTMuODM2NSAzLjQxNjI2IDEzLjY3NzlMNy44ODE4IDkuMjEzODFMMy40MTc2NiA0Ljc0ODI2QzMuMjU5MTYgNC41ODk3NSAzLjE3MDExIDQuMzc0NzcgMy4xNzAxMSA0LjE1MDZDMy4xNzAxMSAzLjkyNjQ0IDMuMjU5MTYgMy43MTE0NiAzLjQxNzY2IDMuNTUyOTVDMy41NzYxNyAzLjM5NDQ0IDMuNzkxMTYgMy4zMDUzOSA0LjAxNTMyIDMuMzA1MzlDNC4yMzk0OSAzLjMwNTM5IDQuNDU0NDcgMy4zOTQ0NCA0LjYxMjk4IDMuNTUyOTVMOS4wNzcxMiA4LjAxODQ5TDEzLjU0MjcgMy41NTIyNEMxMy43MDEyIDMuMzkzNzQgMTMuOTE2MiAzLjMwNDY5IDE0LjE0MDMgMy4zMDQ2OUMxNC4zNjQ1IDMuMzA0NjkgMTQuNTc5NSAzLjM5Mzc0IDE0LjczOCAzLjU1MjI0QzE0Ljg5NjUgMy43MTA3NSAxNC45ODU1IDMuOTI1NzQgMTQuOTg1NSA0LjE0OTlDMTQuOTg1NSA0LjM3NDA3IDE0Ljg5NjUgNC41ODkwNSAxNC43MzggNC43NDc1NkwxMC4yNzI0IDkuMjEzODFMMTQuNzM2NiAxMy42Nzk0WiIgZmlsbD0iYmxhY2siLz4KPC9zdmc+Cg==")
+            center/26px auto no-repeat;
         border: 0;
         border-radius: 0;
         opacity: 1;
@@ -204,6 +203,11 @@ textarea {
         &:hover,
         &:active {
             opacity: 0.75;
+        }
+
+        &:focus {
+            outline: none !important;
+            background-color: $gray-100;
         }
 
         &--small {
@@ -218,7 +222,6 @@ textarea {
             min-height: 13px;
             border: 0;
             opacity: 1;
-            background-color: transparent;
             cursor: pointer;
 
             svg {
