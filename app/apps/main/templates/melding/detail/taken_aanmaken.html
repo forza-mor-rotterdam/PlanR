@@ -167,6 +167,10 @@
 </template>
 <template id="template_geselecteerd_formulier_taaktype">
     <li data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktype">
+        <a href="#"
+           role="button"
+           class="btn--remove"
+           data-action="taken-aanmaken--manager#taaktypeVerwijderenHandler:prevent">{% include "icons/bin.svg" %}</a>
         <details>
             <summary>
                 <div>
@@ -175,20 +179,21 @@
                            maxlength="200"
                            id="id_form-0-titel"
                            class="readonly"
-                           readonly>
+                           readonly
+                           tabindex="-1">
                 </div>
                 <div>
                     <span data-verantwoordelijke-afdeling></span>
                 </div>
-                <div>Opmerking toevoegen</div>
+                <div>
+                    <span class="cta--summary">Opmerking toevoegen</span>
+                </div>
             </summary>
             <div class="container__flex">
                 <div>
                     <h3>Taak</h3>
                     <strong data-omschrijving></strong>
-                    <p>
-                        <span data-toelichting=""></span>
-                    </p>
+                    <p data-toelichting="..."></p>
                     <h3>Afdeling(en)</h3>
                     <span data-afdelingen></span>
                 </div>
@@ -197,8 +202,8 @@
                     <textarea name="form-0-bericht"
                               maxlength="5000"
                               rows="4"
-                              id="id_form-0-bericht"
-                              tabindex="0"></textarea>
+                              id="id_form-0-bericht"></textarea>
+                    <p class="help-text">De opmerking wordt met de uitvoerder gedeeld.</p>
                     <input type="hidden"
                            name="form-0-melding_uuid"
                            id="id_form-0-melding_uuid"
@@ -212,10 +217,6 @@
                            id="id_form-0-gebruiker"
                            value="admin@admin.com">
                     {% comment %} {{ form.empty_form }} {% endcomment %}
-                    <a href="#"
-                       data-action="taken-aanmaken--manager#taaktypeVerwijderenHandler:prevent">
-                        {% include "icons/close.svg" %}
-                    </a>
                 </div>
             </div>
         </details>

@@ -771,6 +771,12 @@ body > .select2-container--default,
     width: 100%;
 }
 
+input.readonly {
+    border: 0;
+    font-weight: 700;
+    pointer-events: none;
+}
+
 .form--aanpassen {
     .wrapper--flex-order {
         img {
@@ -1105,6 +1111,26 @@ form.taken-aanmaken {
         }
 
         > li {
+            font-size: 0.778rem;
+            position: relative;
+
+            .btn--remove {
+                position: absolute;
+                left: -26px;
+                top: 1rem;
+
+                path {
+                    fill: $neutral-600;
+                }
+
+                &:hover,
+                &:focus {
+                    path {
+                        fill: $neutral-900;
+                    }
+                }
+            }
+
             summary {
                 padding: 1rem 0.889rem;
                 border-bottom: 1px solid $neutral-100;
@@ -1119,14 +1145,19 @@ form.taken-aanmaken {
                     outline-color: transparent !important;
                 }
             }
-            details {
-                &[open] {
-                    summary {
-                        &::before {
-                            right: calc(1rem - 3px);
-                        }
-                    }
-                }
+
+            h3 {
+                font-size: 0.889rem;
+                color: $green-tint01;
+            }
+
+            textarea {
+                max-width: none;
+                line-height: 1.25em;
+                font-family: $font-family-sans-serif;
+                width: 100%;
+                border: 1px solid $blue-200;
+                resize: none;
             }
         }
 
