@@ -42,6 +42,11 @@ export default class extends Controller {
   gotoNextStep() {
     this.element.classList.remove('stap1')
     this.element.classList.add('stap2')
+    if (this.geselecteerdFormulierTaaktypeTargets.length === 1) {
+      this.geselecteerdFormulierTaaktypeTargets[0].querySelector('details').setAttribute('open', '')
+    } else {
+      this.geselecteerdFormulierTaaktypeTargets[0].querySelector('details').removeAttribute('open')
+    }
   }
 
   gotoPreviousStep() {
