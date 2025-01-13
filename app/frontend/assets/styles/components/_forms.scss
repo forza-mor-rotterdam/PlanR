@@ -113,8 +113,8 @@ fieldset {
 
 .form-control:hover:not(:focus):not([disabled]):not([read-only]),
 .form-select:hover:not(:focus):not([disabled]):not([read-only]) {
-    border-color: $neutral-900;
-    box-shadow: 0 0 0 1px $neutral-900;
+    border-color: $text-muted;
+    box-shadow: 0 0 0 1px $text-muted;
 }
 
 .is-invalid {
@@ -280,13 +280,13 @@ textarea {
         box-shadow: 0 0 0 1px $black;
         opacity: 1;
     }
-    &:focus:not(checked) {
+    &:focus:not([checked]) {
         border-color: $gray-tint11;
         box-shadow: 0 0 0 1px $gray-tint11;
         opacity: 1;
     }
-    &:hover,
-    &:focus {
+    &:hover:not([disabled]),
+    &:focus:not([disabled]) {
         border-color: $neutral-900;
         box-shadow: 0 0 0 1px $neutral-900;
         opacity: 1;
@@ -1198,5 +1198,11 @@ form.taken-aanmaken {
     .help-block {
         font-size: 0.778rem;
         padding-left: 4px;
+    }
+
+    label {
+        &:has(input:disabled) {
+            color: $text-muted;
+        }
     }
 }
