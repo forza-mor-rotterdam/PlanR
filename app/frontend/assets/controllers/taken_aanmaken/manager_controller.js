@@ -27,6 +27,7 @@ export default class extends Controller {
   }
 
   connect() {
+    this.taaktypeMax = 10
     this.afdelingen = JSON.parse(this.afdelingenValue)
     this.taaktypes = JSON.parse(this.taaktypesValue)
     this.taaktypeByUrl = this.taaktypes.reduce((o, v) => ((o[v[0]] = v), o), {})
@@ -118,6 +119,13 @@ export default class extends Controller {
     } else {
       this.geselecteerdeTakenErrorTarget.classList.remove('hidden')
     }
+    this.taaktypeTargets
+      .filter((elem) => !elem.checked)
+      .map((elem) => (elem.disabled = taaktypeAantal >= this.taaktypeMax))
+    this.element.querySelector("input[name='form-TOTAL_FORMS']").value = taaktypeAantal
+    this.geselecteerdFormulierTaaktypeTargets.map((elem, i) =>
+      this.resetFormulierTaaktypeIndex(elem, i)
+    )
   }
   resetFormulierTaaktypeIndex(elem, index) {
     const attributes = ['id', 'for', 'name']
