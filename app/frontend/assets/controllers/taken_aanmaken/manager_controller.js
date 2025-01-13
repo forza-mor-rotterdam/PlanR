@@ -12,6 +12,7 @@ export default class extends Controller {
     'geselecteerdFormulierTaaktype',
     'geselecteerdFormulierTaaktypeContainer',
     'geselecteerdeTakenHeader',
+    'geselecteerdeTakenError',
     'modalSluiten',
     'knopVolgende',
     'knopVorige',
@@ -101,16 +102,22 @@ export default class extends Controller {
   }
   resetFormulierTaaktypeIndexes() {
     const taaktypeAantal = this.geselecteerdFormulierTaaktypeTargets.length
-    this.knopVolgendeTarget.disabled = taaktypeAantal <= 0
-    this.knopAanmakenTarget.disabled = taaktypeAantal <= 0
-    this.geselecteerdeTakenHeaderTarget.classList.toggle('hidden', taaktypeAantal <= 0)
-    if (taaktypeAantal <= 0) {
-      this.gotoPreviousStep()
+    console.log('taaktypeAantal', taaktypeAantal)
+    if (taaktypeAantal <= 10) {
+      this.knopVolgendeTarget.disabled = taaktypeAantal <= 0
+      this.knopAanmakenTarget.disabled = taaktypeAantal <= 0
+      this.geselecteerdeTakenHeaderTarget.classList.toggle('hidden', taaktypeAantal <= 0)
+      this.geselecteerdeTakenErrorTarget.classList.add('hidden')
+      if (taaktypeAantal <= 0) {
+        this.gotoPreviousStep()
+      }
+      this.element.querySelector("input[name='form-TOTAL_FORMS']").value = taaktypeAantal
+      this.geselecteerdFormulierTaaktypeTargets.map((elem, i) =>
+        this.resetFormulierTaaktypeIndex(elem, i)
+      )
+    } else {
+      this.geselecteerdeTakenErrorTarget.classList.remove('hidden')
     }
-    this.element.querySelector("input[name='form-TOTAL_FORMS']").value = taaktypeAantal
-    this.geselecteerdFormulierTaaktypeTargets.map((elem, i) =>
-      this.resetFormulierTaaktypeIndex(elem, i)
-    )
   }
   resetFormulierTaaktypeIndex(elem, index) {
     const attributes = ['id', 'for', 'name']
