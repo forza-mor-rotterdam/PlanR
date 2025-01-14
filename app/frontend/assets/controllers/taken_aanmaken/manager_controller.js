@@ -115,10 +115,6 @@ export default class extends Controller {
     if (taaktypeAantal <= 0) {
       this.gotoPreviousStep()
     }
-    this.element.querySelector("input[name='form-TOTAL_FORMS']").value = taaktypeAantal
-    this.geselecteerdFormulierTaaktypeTargets.map((elem, i) =>
-      this.resetFormulierTaaktypeIndex(elem, i)
-    )
     this.geselecteerdeTakenErrorTarget.classList.toggle('hidden', taaktypeAantal < this.taaktypeMax)
 
     this.taaktypeTargets

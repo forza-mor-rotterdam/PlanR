@@ -32,7 +32,6 @@ from apps.main.views import (
     sidesheet_actueel,
     taak_afronden,
     taak_annuleren,
-    taak_starten,
 )
 from apps.release_notes.views import (
     ReleaseNoteDetailView,
@@ -123,11 +122,6 @@ urlpatterns = [
         "melding/<uuid:id>/taken-aanmaken/stream/",
         TakenAanmakenStreamView.as_view(),
         name="taken_aanmaken_stream",
-    ),
-    path(
-        "part/melding/<uuid:id>/taakstarten/",
-        taak_starten,
-        name="taak_starten",
     ),
     path(
         "part/melding/<uuid:melding_uuid>/taak-afronden/",

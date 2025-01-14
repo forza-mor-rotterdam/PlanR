@@ -30,7 +30,6 @@ from apps.main.forms import (
     StandaardExterneOmschrijvingSearchForm,
     TaakAfrondenForm,
     TaakAnnulerenForm,
-    TaakStartenForm,
     TakenAanmakenForm,
 )
 from apps.main.messages import (
@@ -52,8 +51,6 @@ from apps.main.messages import (
     MELDING_PAUZEREN_SUCCESS,
     MELDING_URGENTIE_AANPASSEN_ERROR,
     MELDING_URGENTIE_AANPASSEN_SUCCESS,
-    TAAK_AANMAKEN_ERROR,
-    TAAK_AANMAKEN_SUCCESS,
     TAAK_AFRONDEN_ERROR,
     TAAK_AFRONDEN_SUCCESS,
     TAAK_ANNULEREN_ERROR,
@@ -787,9 +784,10 @@ def melding_spoed_veranderen(request, id):
     )
 
 
-class TakenAanmakenView(FormView):
+class TakenAanmakenView(PermissionRequiredMixin, FormView):
     form_class = formset_factory(TakenAanmakenForm, extra=0)
     template_name = "melding/detail/taken_aanmaken.html"
+    permission_required = "authorisatie.taak_aanmaken"
 
     def get_success_url(self):
         return reverse("taken_aanmaken", args=[self.kwargs.get("id")])
@@ -801,7 +799,6 @@ class TakenAanmakenView(FormView):
         gebruiker_context = get_gebruiker_context(self.request.user)
         melding = mor_core_service.get_melding(self.kwargs.get("id"))
         if isinstance(melding, dict) and melding.get("error"):
-            print(melding.get("error"))
             messages.error(request=self.request, message=MELDING_OPHALEN_ERROR)
             # return render(
             #     self.request,
@@ -899,6 +896,7 @@ class TakenAanmakenView(FormView):
 
 class TakenAanmakenStreamView(TakenAanmakenView):
     template_name = "melding/detail/taken_aanmaken_stream.html"
+    permission_required = "authorisatie.taak_aanmaken"
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
@@ -911,8 +909,8 @@ class TakenAanmakenStreamView(TakenAanmakenView):
         return response
 
     def form_invalid(self, form):
-        print("INVALID")
-        print(form.errors)
+        logger.error("TakenAanmakenStreamView: FORM INVALID")
+        logger.error(form.errors)
         return super().form_invalid(form)
 
     def form_valid(self, form):
@@ -935,124 +933,6 @@ class TakenAanmakenStreamView(TakenAanmakenView):
         context = self.get_context_data()
         context.pop("form", None)
         return self.render_to_response(context)
-
-
-@login_required
-@permission_required("authorisatie.taak_aanmaken", raise_exception=True)
-def taak_starten(request, id):
-    mor_core_service = MORCoreService()
-    gebruiker_context = get_gebruiker_context(request.user)
-    melding = mor_core_service.get_melding(id)
-    if isinstance(melding, dict) and melding.get("error"):
-        messages.error(request=request, message=MELDING_OPHALEN_ERROR)
-        return render(
-            request,
-            "melding/melding_actie_form.html",
-        )
-
-    taakr_service = TaakRService(request=request)
-    taaktypes_with_afdelingen = taakr_service.get_taaktypes_with_afdelingen(
-        melding, context_taaktypes=gebruiker_context.taaktypes
-    )
-
-    # Categorize taaktypes by afdeling and get gerelateerde onderwerpen
-    afdelingen = {}
-    onderwerp_gerelateerde_taaktypes = []
-    melding_onderwerpen = set(melding.get("onderwerpen", []))
-
-    for item in taaktypes_with_afdelingen:
-        taaktype = item["taaktype"]
-        afdeling = item["afdeling"]
-        afdeling_naam = afdeling.get("naam", "Overig")
-
-        taaktype_url = taaktype.get("_links", {}).get("taakapplicatie_taaktype_url")
-        taaktype_omschrijving = taaktype.get("omschrijving")
-
-        afdelingen.setdefault(afdeling_naam, []).append(
-            (taaktype_url, taaktype_omschrijving)
-        )
-
-        gerelateerde_onderwerpen = set(
-            item["taaktype"].get("gerelateerde_onderwerpen", [])
-        )
-        if melding_onderwerpen.intersection(gerelateerde_onderwerpen):
-            onderwerp_gerelateerde_taaktypes.append(
-                (taaktype_url, taaktype_omschrijving)
-            )
-
-    initial_afdeling = next(iter(afdelingen.keys()), None)
-
-    taaktype_choices = [
-        (
-            afdeling_naam,
-            [
-                (taaktype_url, taaktype_omschrijving)
-                for taaktype_url, taaktype_omschrijving in afdeling_taaktypes
-            ],
-        )
-        for afdeling_naam, afdeling_taaktypes in afdelingen.items()
-    ]
-
-    # Prepare afdeling choices for form
-    afdeling_choices = [
-        (afdeling_naam, afdeling_naam) for afdeling_naam in afdelingen.keys()
-    ]
-
-    # Move "Overig" to the end if it exists
-    afdeling_choices.sort(key=lambda x: (x[0] == "Overig", x[0]))
-
-    onderwerp_gerelateerde_taaktypes = list(
-        {tt[0]: tt for tt in onderwerp_gerelateerde_taaktypes}.values()
-    )
-
-    form = TaakStartenForm(
-        initial={"afdeling": initial_afdeling},
-        taaktypes=taaktype_choices,
-        afdelingen=afdeling_choices,
-        onderwerp_gerelateerde_taaktypes=onderwerp_gerelateerde_taaktypes,
-    )
-    if request.POST:
-        form = TaakStartenForm(
-            request.POST,
-            taaktypes=taaktype_choices,
-            afdelingen=afdeling_choices,
-            onderwerp_gerelateerde_taaktypes=onderwerp_gerelateerde_taaktypes,
-        )
-        if form.is_valid():
-            data = form.cleaned_data
-            taaktypes_dict = {
-                tt[0]: tt[1]
-                for afdeling_taaktypes in afdelingen.values()
-                for tt in afdeling_taaktypes
-            }
-            taaktypes_dict.update(dict(onderwerp_gerelateerde_taaktypes))
-
-            response = mor_core_service.taak_aanmaken(
-                melding_uuid=id,
-                taakapplicatie_taaktype_url=data.get("taaktype"),
-                titel=taaktypes_dict.get(data.get("taaktype"), data.get("taaktype")),
-                bericht=data.get("bericht"),
-                gebruiker=request.user.email,
-            )
-            if isinstance(response, dict) and response.get("error"):
-                messages.error(request=request, message=TAAK_AANMAKEN_ERROR)
-            else:
-                messages.success(request=request, message=TAAK_AANMAKEN_SUCCESS)
-            return redirect("melding_detail", id=id)
-        else:
-            logger.error(f"Form.errors: {form.errors}")
-
-    return render(
-        request,
-        "melding/part_taak_starten.html",
-        {
-            "form": form,
-            "melding": melding,
-            "taaktype_choices": taaktype_choices,
-            "onderwerp_gerelateerde_taaktypes": onderwerp_gerelateerde_taaktypes,
-            "initial_afdeling": initial_afdeling,
-        },
-    )
 
 
 @login_required
