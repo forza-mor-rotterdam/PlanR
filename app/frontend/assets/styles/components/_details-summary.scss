@@ -1,4 +1,23 @@
 details {
+    @media (prefers-reduced-motion: no-preference) {
+        interpolate-size: allow-keywords;
+    }
+
+    &::details-content {
+        opacity: 0;
+        block-size: 0;
+        overflow-y: clip;
+        transition:
+            content-visibility $transition-duration-default allow-discrete,
+            opacity $transition-duration-default,
+            block-size $transition-duration-default;
+    }
+    &[open] {
+        &::details-content {
+            opacity: 1;
+            block-size: auto;
+        }
+    }
     &.filter {
         &--active {
             background-color: $gray-tint01;
@@ -28,6 +47,8 @@ details {
         }
 
         .cta--summary {
+            opacity: 1;
+            transition: opacity $transition-duration-default $transition-ease-default;
             text-decoration: underline;
         }
     }
@@ -40,7 +61,7 @@ details {
             }
 
             .cta--summary {
-                display: none;
+                opacity: 0;
             }
         }
     }

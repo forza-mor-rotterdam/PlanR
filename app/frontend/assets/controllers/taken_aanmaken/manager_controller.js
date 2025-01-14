@@ -57,9 +57,12 @@ export default class extends Controller {
     this.element.classList.add('stap1')
   }
 
-  searchChangeHandler(e) {
+  showHideSearchResult(e) {
     this.searchResultContainerTarget.style.display =
-      e.target === this.searchInputTarget && e.target.value?.length > 0 ? 'block' : 'none'
+      e.target.closest('.container__search') != undefined &&
+      this.searchInputTarget.value?.length > 0
+        ? 'block'
+        : 'none'
   }
   afdelingChangeHandler(e) {
     this.afdelingTaaktypeContainerTargets.map((elem) => {

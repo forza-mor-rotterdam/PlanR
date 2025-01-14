@@ -17,6 +17,7 @@
 .col-form-label-sm,
 form label {
     font-weight: $dt-font-weight;
+    cursor: pointer;
 }
 
 /**
@@ -68,6 +69,12 @@ fieldset {
             margin-bottom: 0;
         }
     }
+}
+
+input,
+textarea,
+select {
+    transition: all $transition-duration-default $transition-ease-default;
 }
 
 .form-control,
@@ -233,6 +240,7 @@ textarea {
     background-position: center;
     border: 1px solid #7c8b90;
     border-radius: 3px;
+    transition: all $transition-duration-default $transition-ease-default;
 
     &:checked[type="checkbox"] {
         background-color: $neutral-900;
@@ -290,6 +298,7 @@ textarea {
         border-color: $neutral-900;
         box-shadow: 0 0 0 1px $neutral-900;
         opacity: 1;
+        cursor: pointer;
     }
 
     ~ .form-check-label,
@@ -1068,6 +1077,7 @@ form.taken-aanmaken {
                     line-height: 1.5em;
                     font-weight: 400;
                     cursor: pointer;
+                    transition: all $transition-duration-default $transition-ease-default;
 
                     &.checked,
                     &:hover,
@@ -1111,6 +1121,7 @@ form.taken-aanmaken {
                 flex: 0 1 45%;
                 margin: 0 0 0.5rem;
                 padding-left: 0;
+                animation: fade-in $transition-duration-default $transition-ease-default forwards;
             }
         }
     }
