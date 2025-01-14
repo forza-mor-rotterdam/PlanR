@@ -105,6 +105,10 @@ textarea {
     font-size: 1em;
     font-weight: 700;
     margin-bottom: 0.5rem;
+    transition:
+        color $transition-duration-default $transition-ease-default,
+        background-color $transition-duration-default $transition-ease-default,
+        border-color $transition-duration-default $transition-ease-default;
 
     .full-width & {
         max-width: none;
@@ -149,9 +153,9 @@ textarea {
     }
 
     &-tertiary {
-        background-color: $white;
-        border-color: $gray-tint08;
-        color: $gray-tint11;
+        background-color: transparent;
+        border-color: $gray-200;
+        color: $black;
         font-weight: 400;
 
         svg {
@@ -162,9 +166,8 @@ textarea {
 
         &:hover,
         &:focus {
-            color: $primary;
-            background-color: $white;
-            border-color: $primary;
+            background-color: $gray-200;
+            border-color: $gray-100;
         }
     }
 
