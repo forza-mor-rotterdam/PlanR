@@ -10,7 +10,8 @@
          data-taken-aanmaken--manager-afdeling-by-url-value="{{ afdeling_by_url|json_encode }}"
          data-taken-aanmaken--manager-taaktypes-value="{{ taaktypes|json_encode }}"
          data-taken-aanmaken--manager-gebruiker-value="{{ request.user.email }}"
-         data-taken-aanmaken--manager-melding-uuid-value="{{ view.kwargs.id }}">
+         data-taken-aanmaken--manager-melding-uuid-value="{{ view.kwargs.id }}"
+         data-action="click->taken-aanmaken--manager#searchChangeHandler">
         <div class="modal-header border-bottom">
             <button type="button"
                     class="btn-close"
@@ -78,7 +79,8 @@
                                                            id="id_{{ afdeling.0 }}"
                                                            data-action="taken-aanmaken--manager#afdelingChangeHandler"
                                                            data-taken-aanmaken--manager-afdeling-param="{{ afdeling.0 }}"
-                                                           class="form-check-input">
+                                                           class="form-check-input"
+                                                           {% if forloop.first %}checked{% endif %}>
                                                     {{ afdeling.0 }}
                                                 </label>
                                                 <ul data-taken-aanmaken--manager-target="afdelingTaaktypeContainer"
@@ -141,7 +143,7 @@
                 <button class="btn btn-textlink stap2"
                         data-taken-aanmaken--manager-target="knopVorige"
                         data-action="taken-aanmaken--manager#gotoPreviousStep">
-                    <span>vorige</span>
+                    <span>Vorige</span>
                 </button>
                 <button class="btn btn-action-v2 stap1"
                         data-taken-aanmaken--manager-target="knopVolgende"

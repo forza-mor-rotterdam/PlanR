@@ -36,7 +36,10 @@ export default class extends Controller {
   }
   modalSluitenTargetConnected() {}
   afdelingTaaktypeContainerTargetConnected(elem) {
-    this.afdelingTaaktypesVisibility(elem, false)
+    this.afdelingTaaktypesVisibility(
+      elem,
+      elem.parentNode.querySelector('label input').hasAttribute('checked')
+    )
   }
 
   gotoNextStep() {
@@ -55,7 +58,7 @@ export default class extends Controller {
   }
 
   searchChangeHandler(e) {
-    this.searchResultContainerTarget.style.display = e.target.value.length > 0 ? 'block' : 'none'
+    this.searchResultContainerTarget.style.display = e.target.value?.length > 0 ? 'block' : 'none'
   }
   afdelingChangeHandler(e) {
     this.afdelingTaaktypeContainerTargets.map((elem) => {
