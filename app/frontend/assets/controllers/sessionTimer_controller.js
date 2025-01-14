@@ -70,8 +70,8 @@ export default class extends Controller {
 
     const timeLeftHuman = this.humanDuration(timeLeftTotal)
 
-    console.log('timeLeft: ', this.humanDuration(timeLeft))
-    console.log('timeLeftMax: ', this.humanDuration(timeLeftMax))
+    // console.log('timeLeft: ', this.humanDuration(timeLeft))
+    // console.log('timeLeftMax: ', this.humanDuration(timeLeftMax))
     let snackItem = document.getElementById(this.snackItemIdValue)
     if (expiryTimestampTimeIsUp || expiryTimestampTimeIsUpMax) {
       const uitleg =

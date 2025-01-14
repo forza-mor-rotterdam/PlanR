@@ -55,7 +55,7 @@ export default class extends Controller {
   onMessage(e) {
     this.lastEventId = e.lastEventId
     let data = JSON.parse(e.data)
-    console.error('onMessage', this.identifier, data, new Date().toString())
+    console.log('onMessage', this.identifier, data, new Date().toString())
     this.mercureSubscriptions = data
     this.updateGebruikerActiviteit()
   }

@@ -21,20 +21,34 @@ details {
             display: none;
         }
         &::before {
-            content: url("../icons/arrow-right.svg");
+            content: url("../icons/arrow-right-v2.svg");
             position: absolute;
             top: calc(50% - 10px);
             left: 16px;
-            transform: rotate(90deg);
+        }
+
+        .cta--summary {
+            text-decoration: underline;
         }
     }
 
     &[open] {
         > summary {
             &::before {
-                transform: rotate(-90deg);
-                left: 19px;
+                transform: rotate(180deg);
+                transform-origin: center;
             }
+
+            .cta--summary {
+                display: none;
+            }
+        }
+    }
+
+    &:hover,
+    &:focus {
+        .cta--summary {
+            text-decoration: none;
         }
     }
 
