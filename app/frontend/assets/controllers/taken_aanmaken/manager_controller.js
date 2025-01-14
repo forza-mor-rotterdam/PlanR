@@ -2,9 +2,9 @@ import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
   static targets = [
-    'zoeken',
     'afdeling',
     'taaktype',
+    'searchInput',
     'afdelingTaaktypeContainer',
     'searchResultContainer',
     'geselecteerdeTaaktypesContainer',
@@ -58,7 +58,8 @@ export default class extends Controller {
   }
 
   searchChangeHandler(e) {
-    this.searchResultContainerTarget.style.display = e.target.value?.length > 0 ? 'block' : 'none'
+    this.searchResultContainerTarget.style.display =
+      e.target === this.searchInputTarget && e.target.value?.length > 0 ? 'block' : 'none'
   }
   afdelingChangeHandler(e) {
     this.afdelingTaaktypeContainerTargets.map((elem) => {
