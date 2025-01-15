@@ -1071,8 +1071,9 @@ form.taken-aanmaken {
                 margin-bottom: 0;
 
                 > label {
-                    display: block;
+                    display: inline-block;
                     padding: 0.25em 0.5em;
+                    border: 1px solid transparent;
                     border-left: 3px solid $gray-tint01;
                     line-height: 1.5em;
                     font-weight: 400;
@@ -1082,12 +1083,16 @@ form.taken-aanmaken {
                     &.checked,
                     &:hover,
                     &:has(input:focus) {
-                        border-color: $green-tint01;
+                        border-left-color: $green-tint01;
                         color: $green-tint01;
                     }
                     &:has(input:checked) {
-                        border-color: $green-tint01;
+                        border-left-color: $green-tint01;
                         color: $green-tint01;
+                    }
+                    &:has(input:focus) {
+                        border-color: $gray-200;
+                        border-left-color: $green-tint01;
                     }
                     input.form-check-input {
                         -webkit-appearance: none;
@@ -1196,10 +1201,6 @@ form.taken-aanmaken {
                     right: 1rem;
                     top: 1rem;
                     transform-origin: center;
-                }
-
-                &:focus {
-                    outline-color: transparent !important;
                 }
 
                 .container__titel {
