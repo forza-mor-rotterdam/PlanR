@@ -56,12 +56,12 @@ def melding_locaties(melding: dict):
 
     return OrderedDict(
         [
+            ("lichtmasten", lichtmasten),
+            ("graven", graven),
             (
                 "adressen",
                 sorted(adressen, key=lambda b: b.get("gewicht"), reverse=True),
             ),
-            ("lichtmasten", lichtmasten),
-            ("graven", graven),
         ]
     )
 
