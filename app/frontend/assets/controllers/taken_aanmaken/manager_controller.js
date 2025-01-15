@@ -34,9 +34,6 @@ export default class extends Controller {
     this.taaktypeByUrl = this.taaktypes.reduce((o, v) => ((o[v[0]] = v), o), {})
     this.afdelingenByUrl = JSON.parse(this.afdelingByUrlValue)
 
-    setInterval(() => {
-      console.log(document.activeElement)
-    }, 1000)
     window.setTimeout(() => {
       this.searchInputTarget.focus()
     }, 600)
@@ -52,7 +49,6 @@ export default class extends Controller {
 
   taaktypeBerichtHandler(e) {
     if (e) {
-      console.log(e.target.value)
       const target = e.target.closest('details').querySelector('.cta--summary')
       target.textContent = e.target.value
       target.classList.toggle('has-text', e.target.value.length > 0)
@@ -192,11 +188,8 @@ export default class extends Controller {
     clone.querySelector('[data-titel]').textContent = this.taaktypeByUrl[taaktypeUrl][1]
     clone.querySelector('[data-toelichting]').textContent = taaktypeData.toelichting
     clone.querySelector('[data-omschrijving]').textContent = taaktypeData.omschrijving
-    console.log(this.afdelingen)
-    console.log(taaktypeData)
     li.dataset.taaktypeUrl = taaktypeUrl
     taakapplicatieTaaktypeUrlInput.value = taaktypeUrl
-    console.log(`value: ${this.taaktypeByUrl[taaktypeUrl][1]}`)
     titelInput.value = this.taaktypeByUrl[taaktypeUrl][1]
     meldingUuidInput.value = this.meldingUuidValue
     gebruikerInput.value = this.gebruikerValue

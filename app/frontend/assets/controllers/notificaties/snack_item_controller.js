@@ -83,7 +83,6 @@ export default class extends Controller {
         this.contentTarget.innerHTML = truncatedString
         setTimeout(() => {
           this.contentTarget.style.height = `${this.contentTarget.clientHeight}px`
-          console.log('on TargetConnected, height: ', this.contentTarget.clientHeight)
         }, 500)
       }
     }
