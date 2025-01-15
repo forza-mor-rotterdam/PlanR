@@ -33,16 +33,30 @@ export default class extends Controller {
     this.taaktypes = JSON.parse(this.taaktypesValue)
     this.taaktypeByUrl = this.taaktypes.reduce((o, v) => ((o[v[0]] = v), o), {})
     this.afdelingenByUrl = JSON.parse(this.afdelingByUrlValue)
+
+    setInterval(() => {
+      console.log(document.activeElement)
+    }, 1000)
     window.setTimeout(() => {
       this.searchInputTarget.focus()
     }, 600)
   }
   modalSluitenTargetConnected() {}
+
   afdelingTaaktypeContainerTargetConnected(elem) {
     this.afdelingTaaktypesVisibility(
       elem,
       elem.parentNode.querySelector('label input').hasAttribute('checked')
     )
+  }
+
+  taaktypeBerichtHandler(e) {
+    if (e) {
+      console.log(e.target.value)
+      const target = e.target.closest('details').querySelector('.cta--summary')
+      target.textContent = e.target.value
+      target.classList.toggle('has-text', e.target.value.length > 0)
+    }
   }
 
   gotoNextStep() {
@@ -193,7 +207,7 @@ export default class extends Controller {
     if (!e.target.closest('details').open) {
       setTimeout(() => {
         e.target.closest('details').querySelector('textarea').focus()
-      }, 100)
+      }, 500)
     }
   }
 }

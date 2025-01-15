@@ -277,6 +277,13 @@ table {
         @include focus-outline();
     }
 }
+details:has(summary:focus) {
+    @include focus-outline();
+}
+
+summary:focus {
+    outline-color: transparent !important;
+}
 a,
 .link {
     color: $primary;
