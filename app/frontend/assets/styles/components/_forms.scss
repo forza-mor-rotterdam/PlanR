@@ -1122,6 +1122,13 @@ form.taken-aanmaken {
                 margin: 0 0 0.5rem;
                 padding-left: 0;
                 animation: fade-in $transition-duration-default $transition-ease-default forwards;
+
+                label span {
+                    max-width: 20em;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                }
             }
         }
     }
@@ -1147,6 +1154,7 @@ form.taken-aanmaken {
             gap: 1em;
             > div {
                 flex: 1 1 33.333%;
+                max-width: 33.333%;
             }
         }
 
@@ -1156,18 +1164,26 @@ form.taken-aanmaken {
 
             .btn--remove {
                 position: absolute;
-                left: -26px;
-                top: 1rem;
+                right: 54px;
+                top: 0.5rem;
+                width: 34px;
+                height: 34px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+
+                svg {
+                    display: block;
+                    margin: 0 auto;
+                }
 
                 path {
-                    fill: $neutral-600;
+                    fill: $black;
                 }
 
                 &:hover,
                 &:focus {
-                    path {
-                        fill: $neutral-900;
-                    }
+                    background-color: $gray-100;
                 }
             }
 
@@ -1178,11 +1194,16 @@ form.taken-aanmaken {
                 &::before {
                     left: auto;
                     right: 1rem;
+                    top: 1rem;
                     transform-origin: center;
                 }
 
                 &:focus {
                     outline-color: transparent !important;
+                }
+
+                .container__titel {
+                    font-weight: 700;
                 }
             }
 
@@ -1195,7 +1216,7 @@ form.taken-aanmaken {
                 max-width: none;
                 line-height: 1.25em;
                 font-family: $font-family-sans-serif;
-                width: 100%;
+                width: calc(100% - 8px);
                 border: 1px solid $blue-200;
                 resize: none;
             }
@@ -1203,7 +1224,7 @@ form.taken-aanmaken {
 
         .container__flex {
             display: flex;
-            gap: 1em;
+            gap: 2em;
             padding: 1rem 0.889rem;
 
             > div:first-child {

@@ -20,12 +20,6 @@ export default class extends Controller {
     })
 
     this.lastFocussedItem = event.target.closest('button')
-    setTimeout(function () {
-      const closeButton = modal.querySelectorAll('.btn-close')[0]
-      if (closeButton) {
-        closeButton.focus()
-      }
-    }, 1000)
   }
   closeModal() {
     const modalBackdrop = document.querySelector('.modal-backdrop')

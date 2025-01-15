@@ -99,7 +99,7 @@
                                                                        value="{{ afdeling.0 }}-{{ taaktype.0 }}"
                                                                        id="id_{{ afdeling.0 }}-{{ taaktype.0 }}"
                                                                        class="form-check-input">
-                                                                {{ taaktype.1 }}
+                                                                <span>{{ taaktype.1 }}</span>
                                                             </label>
                                                         </li>
                                                     {% endfor %}
@@ -175,26 +175,22 @@
 </template>
 <template id="template_geselecteerd_formulier_taaktype">
     <li data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktype">
-        <a href="#"
-           role="button"
-           class="btn--remove"
-           data-action="taken-aanmaken--manager#taaktypeVerwijderenHandler:prevent">{% include "icons/bin.svg" %}</a>
-        <details>
+        <details data-action="click->taken-aanmaken--manager#toggleDetailsHandler">
             <summary>
-                <div>
-                    <input type="text"
-                           name="form-0-titel"
-                           maxlength="200"
-                           id="id_form-0-titel"
-                           class="readonly"
-                           readonly
-                           tabindex="-1">
+                <div class="container__titel">
+                    <span data-titel></span>
                 </div>
                 <div>
                     <span data-verantwoordelijke-afdeling></span>
                 </div>
                 <div>
                     <span class="cta--summary">Opmerking toevoegen</span>
+                    <a href="#"
+                       role="button"
+                       class="btn--remove"
+                       data-action="taken-aanmaken--manager#taaktypeVerwijderenHandler:prevent">
+                        {% include "icons/bin.svg" %}
+                    </a>
                 </div>
             </summary>
             <div class="container__flex">
@@ -212,6 +208,10 @@
                               rows="4"
                               id="id_form-0-bericht"></textarea>
                     <p class="help-text">De opmerking wordt met de uitvoerder gedeeld.</p>
+                    <input type="hidden"
+                           name="form-0-titel"
+                           maxlength="200"
+                           id="id_form-0-titel">
                     <input type="hidden"
                            name="form-0-melding_uuid"
                            id="id_form-0-melding_uuid"

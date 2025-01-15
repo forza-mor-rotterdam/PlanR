@@ -17,6 +17,7 @@ export default class extends Controller {
     'knopVolgende',
     'knopVorige',
     'knopAanmaken',
+    'detail',
   ]
   static values = {
     afdelingen: String,
@@ -32,7 +33,9 @@ export default class extends Controller {
     this.taaktypes = JSON.parse(this.taaktypesValue)
     this.taaktypeByUrl = this.taaktypes.reduce((o, v) => ((o[v[0]] = v), o), {})
     this.afdelingenByUrl = JSON.parse(this.afdelingByUrlValue)
-    this.afdelingTargets.find((elem) => elem.dataset.value == 'Taak suggesties')?.click()
+    window.setTimeout(() => {
+      this.searchInputTarget.focus()
+    }, 600)
   }
   modalSluitenTargetConnected() {}
   afdelingTaaktypeContainerTargetConnected(elem) {
@@ -172,15 +175,25 @@ export default class extends Controller {
       .join(', ')
     clone.querySelector('[data-verantwoordelijke-afdeling]').textContent =
       this.afdelingenByUrl[taaktypeData.verantwoordelijke_afdeling]
+    clone.querySelector('[data-titel]').textContent = this.taaktypeByUrl[taaktypeUrl][1]
     clone.querySelector('[data-toelichting]').textContent = taaktypeData.toelichting
     clone.querySelector('[data-omschrijving]').textContent = taaktypeData.omschrijving
     console.log(this.afdelingen)
     console.log(taaktypeData)
     li.dataset.taaktypeUrl = taaktypeUrl
     taakapplicatieTaaktypeUrlInput.value = taaktypeUrl
+    console.log(`value: ${this.taaktypeByUrl[taaktypeUrl][1]}`)
     titelInput.value = this.taaktypeByUrl[taaktypeUrl][1]
     meldingUuidInput.value = this.meldingUuidValue
     gebruikerInput.value = this.gebruikerValue
     return clone
+  }
+
+  toggleDetailsHandler(e) {
+    if (!e.target.closest('details').open) {
+      setTimeout(() => {
+        e.target.closest('details').querySelector('textarea').focus()
+      }, 100)
+    }
   }
 }
