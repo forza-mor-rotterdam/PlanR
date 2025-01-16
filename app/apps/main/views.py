@@ -71,6 +71,7 @@ from apps.main.utils import (
     to_base64,
     update_qd_met_standaard_meldingen_filter_qd,
 )
+from bs4 import BeautifulSoup
 from config.context_processors import general_settings
 from deepdiff import DeepDiff
 from django.conf import settings
@@ -91,6 +92,7 @@ from django.views.generic import (
     DeleteView,
     FormView,
     ListView,
+    TemplateView,
     UpdateView,
     View,
 )
@@ -346,7 +348,6 @@ def melding_detail(request, id):
     meldingen_index = (
         int(request.session.get("offset", 0)) + index + 1 if index >= 0 else None
     )
-
     open_taakopdrachten = melding_taken(melding).get("open_taken")
     locaties = melding_locaties(melding)
     taaktypes = TaakRService(request=request).get_niet_actieve_taaktypes(melding)
@@ -386,6 +387,53 @@ def melding_detail(request, id):
             "meldingen_index": meldingen_index,
         },
     )
+
+
+class LichtmastView(PermissionRequiredMixin, TemplateView):
+    template_name = "melding/detail/lichtmast.html"
+    permission_required = "authorisatie.melding_bekijken"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        lichtmast_id = self.kwargs.get("lichtmast_id")
+        url = f"https://ows.gis.rotterdam.nl/cgi-bin/mapserv.exe?map=d:%5Cgwr%5Cwebdata%5Cmapserver%5Cmap%5Cbbdwh_pub.map&service=wfs&version=2.0.0&request=GetFeature&typeNames=namespace:sdo_gwr_bsb_ovl&Filter=<Filter><PropertyIsEqualTo><PropertyName>LICHTPUNT_ID</PropertyName><Literal>{lichtmast_id}</Literal></PropertyIsEqualTo></Filter>"
+        response = requests.get(url)
+        soup = BeautifulSoup(response.content, "xml")
+        lichtmast_data = {}
+        fields = (
+            ("ms:LICHTPUNT_ID", "Lichtmast id"),
+            ("ms:LICHTPUNTNUMMER", "Lichtpuntnummer"),
+            ("ms:LAMP_ID", "Lamp id"),
+            ("ms:STRAAT", "Straat"),
+            ("ms:BEHEERDER", "Beheerder"),
+            ("ms:EIGENAAR", "Eigenaar"),
+            ("ms:AMBITIENIVEAU", "Ambitieniveau"),
+            ("ms:LAATSTE_MUTATIE_ARMATUUR", "Laatste mutatie armatuur"),
+            ("ms:LAATSTE_MUTATIE_LICHTBRON", "Laatste mutatie lichtbron"),
+            ("ms:PLAATSINGSDATUM_LICHTBRON", "Plaatsingsdatum lichtbron"),
+            ("ms:IND_IN_STORING", "Storing"),
+            ("ms:STORING_OMSCHRIJVINGEN", "Storings omschrijving"),
+            ("gml:pos", "rd"),
+        )
+
+        lichtmast_data = [
+            (f[1], soup.find_all(f[0])[0].text if soup.find_all(f[0]) else "-")
+            for f in fields
+        ]
+        rd_list = (
+            lichtmast_data[-1][1].split(" ")
+            if len(lichtmast_data[-1][1].split(" ")) == 2
+            else []
+        )
+        rd = [float(xy) for xy in rd_list]
+        print(rd)
+        lichtmast_data.append(("gps", rd_to_wgs(*rd) if rd else []))
+        context.update(
+            {
+                "lichtmast_data": lichtmast_data,
+            }
+        )
+        return context
 
 
 @login_required
@@ -1482,18 +1530,30 @@ def locatie_aanpassen(request, id):
                 request,
                 "melding/melding_actie_form.html",
             )
-        locaties_voor_melding = melding.get("locaties_voor_melding", [])
+        locatie = None
+        locaties = melding_locaties(melding)
 
+        locaties_primair = [
+            locatie
+            for locatie in locaties.get("adressen", [])
+            if locatie.get("primair") and locatie.get("geometrie") is not None
+        ]
         highest_gewicht_locatie = max(
-            locaties_voor_melding, key=lambda locatie: locatie.get("gewicht", 0)
+            locaties.get("adressen", []), key=lambda locatie: locatie.get("gewicht", 0)
         )
+        if locaties_primair:
+            locatie = locaties_primair[0]
+        if highest_gewicht_locatie and not locatie:
+            locatie = highest_gewicht_locatie
 
+        if not locatie:
+            messages.error(request=request, message="Geen primaire lokatie gevonden")
+            return render(
+                request,
+                "melding/melding_actie_form.html",
+            )
         form_initial = {
-            "geometrie": (
-                highest_gewicht_locatie.get("geometrie", "")
-                if highest_gewicht_locatie
-                else ""
-            ),
+            "geometrie": locatie.get("geometrie"),
         }
 
         form = LocatieAanpassenForm(initial=form_initial)
@@ -1535,6 +1595,7 @@ def locatie_aanpassen(request, id):
             {
                 "form": form,
                 "melding": melding,
+                "locatie": locatie,
             },
         )
     except MORCoreService.AntwoordFout as e:

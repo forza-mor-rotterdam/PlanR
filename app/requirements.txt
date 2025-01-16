@@ -36,3 +36,4 @@ beautifulsoup4==4.12.3
 git+https://github.com/forza-mor-rotterdam/mor-api-services.git@c0ad24eb237113e8c413b7b99ff8a1cf8d2aa894
 opentelemetry.instrumentation.wsgi
 opentelemetry.instrumentation.django
+lxml

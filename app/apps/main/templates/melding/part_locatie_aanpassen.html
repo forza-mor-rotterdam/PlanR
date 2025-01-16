@@ -69,7 +69,7 @@
                           method="post"
                           class="form-locatie-aanpassen"
                           data-controller="locatieaanpassenformulier"
-                          data-locatieaanpassenformulier-locatie-value="{{ melding.locaties_voor_melding|dictsort:'gewicht'|last|json_encode }}"
+                          data-locatieaanpassenformulier-locatie-value="{{ locatie|json_encode }}"
                           data-turbo-frame="overview"
                           enctype="multipart/form-data"
                           novalidate>
@@ -102,9 +102,9 @@
                                 </h3>
                                 <div class="card">
                                     <p>
-                                        {{ melding.locaties_voor_melding.0.straatnaam }} {{ melding.locaties_voor_melding.0.huisnummer }}{{ melding.locaties_voor_melding.0.huisletter }} {{ melding.locaties_voor_melding.0.toevoeging }}
+                                        {{ locatie.straatnaam }} {{ locatie.huisnummer }}{{ locatie.huisletter }} {{ locatie.toevoeging }}
                                         <br>
-                                        {{ melding.locaties_voor_melding.0.wijknaam }} {{ melding.locaties_voor_melding.0.buurtnaam }}
+                                        {{ locatie.wijknaam }} {{ locatie.buurtnaam }}
                                         <br>
                                         <small><span data-locatieaanpassenformulier-target="currentAddressDistance"></span> meter vanaf huidige locatie</small>
                                     </p>
