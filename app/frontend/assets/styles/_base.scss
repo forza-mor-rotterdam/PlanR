@@ -1,7 +1,7 @@
 @mixin focus-outline {
     outline-style: solid !important;
     outline-width: thin !important;
-    outline-color: $gray-tint11 !important;
+    outline-color: $gray-400 !important;
 }
 
 html,
@@ -276,6 +276,13 @@ table {
     &:focus {
         @include focus-outline();
     }
+}
+details:has(summary:focus) {
+    @include focus-outline();
+}
+
+summary:focus {
+    outline-color: transparent !important;
 }
 a,
 .link {
@@ -777,6 +784,10 @@ body.no-js {
 
 .border-bottom {
     border-bottom: 1px solid $gray-600;
+}
+
+.border-top {
+    border-top: 1px solid $blue-200;
 }
 
 .counter {

@@ -2,6 +2,8 @@ from apps.authenticatie.views import (
     GebruikerAanmakenView,
     GebruikerAanpassenView,
     GebruikerLijstView,
+    GebruikerTerughalenView,
+    GebruikerVerwijderenView,
     gebruiker_bulk_import,
 )
 from apps.authorisatie.views import (
@@ -52,6 +54,16 @@ urlpatterns = [
         "gebruiker/<int:pk>/aanpassen/",
         GebruikerAanpassenView.as_view(),
         name="gebruiker_aanpassen",
+    ),
+    path(
+        "gebruiker/<int:pk>/verwijderen/",
+        GebruikerVerwijderenView.as_view(),
+        name="gebruiker_verwijderen",
+    ),
+    path(
+        "gebruiker/<int:pk>/terughalen/",
+        GebruikerTerughalenView.as_view(),
+        name="gebruiker_terughalen",
     ),
     path("context/", ContextLijstView.as_view(), name="context_lijst"),
     path(

@@ -9,16 +9,28 @@ class GebruikerAdmin(UserAdmin):
         "email",
         "is_staff",
         "is_active",
+        "is_superuser",
+        "verwijderd_op",
         "profiel",
     )
     list_filter = (
         "email",
         "is_staff",
         "is_active",
+        "is_superuser",
+        "verwijderd_op",
     )
     fieldsets = (
-        (None, {"fields": ("email", "password")}),
-        ("MOR permissies", {"fields": ("groups",)}),
+        (None, {"fields": ("email", "password", "first_name", "last_name")}),
+        (
+            "MOR permissies",
+            {
+                "fields": (
+                    "groups",
+                    "verwijderd_op",
+                )
+            },
+        ),
         ("Permissions", {"fields": ("is_staff", "is_active", "is_superuser")}),
     )
     add_fieldsets = (
@@ -30,6 +42,8 @@ class GebruikerAdmin(UserAdmin):
                     "email",
                     "password1",
                     "password2",
+                    "first_name",
+                    "last_name",
                     "is_staff",
                     "is_active",
                     "is_superuser",

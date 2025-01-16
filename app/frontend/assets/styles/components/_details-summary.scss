@@ -1,4 +1,23 @@
 details {
+    @media (prefers-reduced-motion: no-preference) {
+        interpolate-size: allow-keywords;
+    }
+
+    &::details-content {
+        opacity: 0;
+        block-size: 0;
+        overflow-y: clip;
+        transition:
+            content-visibility $transition-duration-default allow-discrete,
+            opacity $transition-duration-default,
+            block-size $transition-duration-default;
+    }
+    &[open] {
+        &::details-content {
+            opacity: 1;
+            block-size: auto;
+        }
+    }
     &.filter {
         &--active {
             background-color: $gray-tint01;
@@ -21,20 +40,36 @@ details {
             display: none;
         }
         &::before {
-            content: url("../icons/arrow-right.svg");
+            content: url("../icons/arrow-right-v2.svg");
             position: absolute;
             top: calc(50% - 10px);
             left: 16px;
-            transform: rotate(90deg);
+        }
+
+        .cta--summary {
+            opacity: 1;
+            transition: opacity $transition-duration-default $transition-ease-default;
+            text-decoration: underline;
         }
     }
 
     &[open] {
         > summary {
             &::before {
-                transform: rotate(-90deg);
-                left: 19px;
+                transform: rotate(180deg);
+                transform-origin: center;
             }
+
+            .cta--summary {
+                opacity: 0;
+            }
+        }
+    }
+
+    &:hover,
+    &:focus {
+        .cta--summary {
+            text-decoration: none;
         }
     }
 

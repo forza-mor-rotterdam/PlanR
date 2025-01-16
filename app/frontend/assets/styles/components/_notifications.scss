@@ -369,6 +369,11 @@
             margin-top: 0.83em;
             margin-right: -8px;
             padding: 7px 10px 10px 7px;
+            background-color: transparent;
+
+            &:focus {
+                background-color: $gray-100;
+            }
         }
     }
 

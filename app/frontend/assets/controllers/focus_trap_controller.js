@@ -6,6 +6,7 @@ const focusElementsquerySelectorString =
   "a[href]:not([tabindex='-1']), area[href]:not([tabindex='-1']), input:not([disabled]):not([tabindex='-1']), select:not([disabled]):not([tabindex='-1']),textarea:not([disabled]):not([tabindex='-1']),button:not([disabled]):not([tabindex='-1']),iframe:not([tabindex='-1']),[tabindex]:not([tabindex='-1']),[contentEditable=true]:not([tabindex='-1'])"
 
 export default class extends Controller {
+  static targets = ['branch']
   initialize() {
     this.element.controllers = this.element.controllers || {}
     this.element.controllers[this.identifier] = this
@@ -13,13 +14,20 @@ export default class extends Controller {
     this.lastFocusElement = null
   }
   connect() {
-    console.log(`${this.identifier} connected`)
     document.addEventListener('keydown', (e) => {
       this.keyDownHandler(e)
     })
   }
+  branchTargetConnected(target) {
+    this.setBranchElement(target)
+  }
+  branchTargetDisconnected() {
+    this.removeBranchElement()
+  }
   getFocusableElements() {
-    return this.focusBranch.querySelectorAll(focusElementsquerySelectorString)
+    return Array.from(this.focusBranch.querySelectorAll(focusElementsquerySelectorString)).filter(
+      (elem) => elem.checkVisibility()
+    )
   }
   setBranchElement(elem) {
     this.focusBranch = elem
@@ -43,11 +51,11 @@ export default class extends Controller {
       }
       const focusableElements = this.getFocusableElements()
       if (e.shiftKey) {
-        /* shift + tab */ if (document.activeElement === focusableElements[0]) {
+        if (document.activeElement === focusableElements[0]) {
           focusableElements[focusableElements.length - 1].focus()
           e.preventDefault()
         }
-      } /* tab */ else {
+      } else {
         if (document.activeElement === focusableElements[focusableElements.length - 1]) {
           focusableElements[0].focus()
           e.preventDefault()
