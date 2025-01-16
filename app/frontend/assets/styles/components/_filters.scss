@@ -97,6 +97,7 @@
     @media (min-width: map-get($grid-breakpoints, md)) {
         display: flex;
         flex: 1;
+        margin-bottom: 2em;
 
         .toggle {
             width: auto;
