@@ -34,9 +34,10 @@
                 </span>
             </div>
             <div class="container__tools">
-                <div class="container__filter" data-filter-target="filterOverview">
-                    {{ form.foldout_states }}
-                    {{ form.limit|render_rotterdam_formulier }}
+                {{ form.foldout_states }}
+                {{ form.limit|render_rotterdam_formulier }}
+                <div class="container__filter {% if not form.search_with_profiel_context.value %}disabled{% endif %}"
+                     data-filter-target="filterOverview">
                     {% for veld in form.filters %}
                         {% with foldout_name="foldout_filter-"|add:veld.name %}
                             <div class="container__multiselect{% if foldout_name in form.foldout_states.value|json_encode %} show{% endif %}">
@@ -45,13 +46,28 @@
                                         data-filter-target="filterButton"
                                         data-foldout-name="{{ foldout_name }}"
                                         class="toggle js-toggle{% if veld.data|length > 0 %} active {% endif %}"
-                                        type="button">{{ veld.label|capfirst }}</button>
+                                        type="button"
+                                        {% if not form.search_with_profiel_context.value %}tabindex="-1"{% endif %}>
+                                    {{ veld.label|capfirst }}
+                                </button>
                                 <div class="wrapper">{{ veld }}</div>
                             </div>
                         {% endwith %}
                     {% endfor %}
                 </div>
-                <div class="container__search" data-filter-target="containerSearch">{{ form.q|render_rotterdam_formulier }}</div>
+                <div class="container__search">
+                    <div class="container__info">
+                        <button type="button" class="btn-textlink searchinfo-CTA">
+                            {% include "icons/info.svg" %}
+                            Meer info
+                        </button>
+                        <div class="searchinfo-tooltip">
+                            <span>Maak gebruik van komma's om op meerdere termen te zoeken</span>
+                        </div>
+                    </div>
+                    {{ form.q|render_rotterdam_formulier }}
+                    {{ form.search_with_profiel_context|render_rotterdam_formulier }}
+                </div>
             </div>
             <div class="container__table">
                 <table class="table--overview">

@@ -103,14 +103,22 @@ class FilterForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "class": "list--form-text-input",
-                "hideLabel": True,
                 "typeOfInput": "search",
                 "data-action": "filter#onChangeFilter",
                 "placeHolder": "Zoek op straatnaam, contactgegevens of MeldR-nummer",
             }
         ),
-        help_text="Maak gebruik van komma's om op meerdere termen te zoeken",
         label="Zoeken",
+        required=False,
+    )
+    search_with_profiel_context = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={
+                "class": "form-check-input",
+                "data-action": "filter#onToggleSearchProfielContext",
+            }
+        ),
+        label="Pas filters toe op zoekresultaten",
         required=False,
     )
     foldout_states = forms.CharField(

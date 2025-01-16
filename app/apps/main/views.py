@@ -61,13 +61,13 @@ from apps.main.services import MORCoreService, TaakRService
 from apps.main.templatetags.gebruikers_tags import get_gebruiker_object_middels_email
 from apps.main.utils import (
     get_actieve_filters,
-    get_ordering,
+    get_ui_instellingen,
     get_valide_kolom_classes,
     melding_locaties,
     melding_taken,
     publiceer_topic_met_subscriptions,
     set_actieve_filters,
-    set_ordering,
+    set_ui_instellingen,
     to_base64,
     update_qd_met_standaard_meldingen_filter_qd,
 )
@@ -210,9 +210,9 @@ def melding_lijst(request):
 
     standaard_waardes = {
         "limit": "25",
-        "ordering": get_ordering(gebruiker),
         "foldout_states": "[]",
     }
+    standaard_waardes.update(get_ui_instellingen(gebruiker))
     actieve_filters = get_actieve_filters(gebruiker)
 
     qs = QueryDict("", mutable=True)
@@ -233,8 +233,12 @@ def melding_lijst(request):
         nieuwe_actieve_filters = {
             k: qs.getlist(k, []) for k, v in actieve_filters.items()
         }
-        standaard_waardes["ordering"] = set_ordering(
-            gebruiker, qs.get("ordering", standaard_waardes["ordering"])
+        standaard_waardes.update(
+            set_ui_instellingen(
+                gebruiker,
+                qs.get("ordering", standaard_waardes["ordering"]),
+                qs.get("search_with_profiel_context"),
+            )
         )
         standaard_waardes["foldout_states"] = qs.get("foldout_states")
 
@@ -257,7 +261,11 @@ def melding_lijst(request):
 
     form_qs = QueryDict("", mutable=True)
     if request.session.get("q"):
-        form_qs.update({"q": request.session.get("q")})
+        form_qs.update(
+            {
+                "q": request.session.get("q"),
+            }
+        )
     form_qs.update(standaard_waardes)
 
     for k, v in actieve_filters.items():
@@ -420,12 +428,12 @@ def melding_next(request, id, richting):
         actieve_filters = get_actieve_filters(gebruiker)
         standaard_waardes = {
             "limit": f"{pagina_item_aantal}",
-            "ordering": get_ordering(gebruiker),
             "q": request.session.get("q", ""),
             "offset": str(
                 (int(pagina / pagina_item_aantal) + richting) * pagina_item_aantal
             ),
         }
+        standaard_waardes.update(get_ui_instellingen(gebruiker))
 
         pagina = (int(pagina / pagina_item_aantal) + richting) * pagina_item_aantal
         standaard_waardes["offset"] = str(pagina)
