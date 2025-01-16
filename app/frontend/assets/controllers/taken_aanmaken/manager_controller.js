@@ -161,9 +161,9 @@ export default class extends Controller {
     const template = document.getElementById('template_geselecteerd_taaktype')
     const clone = template.content.cloneNode(true)
     let li = clone.querySelector('li')
-    let a = clone.querySelector('a')
+    let button = clone.querySelector('button')
     li.dataset.taaktypeUrl = taaktypeUrl
-    a.dataset.taaktypeUrl = taaktypeUrl
+    button.dataset.taaktypeUrl = taaktypeUrl
     let span = clone.querySelector('span')
     span.textContent = this.taaktypeByUrl[taaktypeUrl][1]
     return clone

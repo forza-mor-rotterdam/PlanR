@@ -169,8 +169,10 @@
         {# djlint:off #}
             <span></span>
         {# djlint:on #}
-        <a href="#"
-           data-action="taken-aanmaken--manager#taaktypeVerwijderenHandler:prevent">{% include "icons/close.svg" %}</a>
+        <button class="btn--clean"
+                data-action="taken-aanmaken--manager#taaktypeVerwijderenHandler:prevent">
+            {% include "icons/close.svg" %}
+        </button>
     </li>
 </template>
 <template id="template_geselecteerd_formulier_taaktype">
