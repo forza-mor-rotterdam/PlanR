@@ -1,6 +1,7 @@
 from apps.authenticatie.views import GebruikerProfielView, SessionTimerView
 from apps.health.views import healthz
 from apps.main.views import (
+    LichtmastView,
     LoginView,
     LogoutView,
     TakenAanmakenStreamView,
@@ -65,6 +66,7 @@ urlpatterns = [
     ),
     path("melding/", melding_lijst, name="melding_lijst"),
     path("melding/<uuid:id>/", melding_detail, name="melding_detail"),
+    path("lichtmast/<int:lichtmast_id>/", LichtmastView.as_view(), name="lichtmast"),
     path(
         "melding/<uuid:id>/volgende/",
         melding_next,

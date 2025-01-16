@@ -2,7 +2,7 @@
     <label for="egd_id">
         <input id="egd_id"
                type="checkbox"
-               data-detail-map-layer-type-param="EGD"
+               data-detail-map-layer-types-param='["EGD"]'
                data-action="detail#onMapLayerChange">
         Toon EGD-kaartlaag
     </label>
@@ -42,6 +42,24 @@
         </div>
     </div>
 </div>
+{% if lichtmasten %}
+    <div>
+        <label for="lichtmasten_id">
+            <input id="lichtmasten_id"
+                   type="checkbox"
+                   data-detail-map-layer-types-param='["lichtmasten", "lichtmastenSto"]'
+                   data-action="detail#onMapLayerChange">
+            Toon lichtmasten
+        </label>
+        <div class="container__uitklapper">
+            <span>{% include "icons/info.svg" %}</span>
+            <div class="legenda">
+                <ul class="list-clean">
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endif %}
 <div class="container__map full-width">
     <div class="map"
          id="incidentMap"
