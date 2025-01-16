@@ -470,7 +470,8 @@ textarea {
         cursor: pointer;
         padding: 0.25rem 0.25rem 0 0.25rem;
 
-        &:focus {
+        &:focus,
+        &:hover {
             background-color: $gray-100;
             outline-width: 0 !important;
         }
