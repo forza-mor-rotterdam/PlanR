@@ -850,7 +850,8 @@ input.readonly {
 .container__search {
     width: 100%;
     max-width: 455px;
-    > input {
+    position: relative;
+    input[type="search"] {
         margin: 0;
         border: 1px solid $blue-200;
         padding-right: 36px;

@@ -1,7 +1,6 @@
 .container__tools {
-    margin-top: $alert-padding-y;
-
     .container__filter {
+        margin-top: $alert-padding-y;
         > label {
             line-height: 3.2;
             margin-right: $alert-padding-x;
@@ -12,8 +11,12 @@
             min-width: 250px;
             max-height: 2.3em;
         }
-        &.hide {
-            visibility: hidden;
+        &.disabled {
+            opacity: 0.5;
+
+            * {
+                pointer-events: none;
+            }
         }
 
         @media (min-width: map-get($grid-breakpoints, md)) {
@@ -23,6 +26,65 @@
 
             > div {
                 margin-bottom: 0.25em;
+            }
+        }
+    }
+
+    .container__search {
+        input[type="search"] {
+            margin-bottom: 0.25rem;
+        }
+        label {
+            font-size: 0.778rem;
+            display: inline;
+            &:has(input) {
+                margin-top: 0.25rem;
+                font-weight: 400;
+            }
+
+            input {
+                vertical-align: top;
+                margin-right: 0.25rem;
+            }
+        }
+
+        .container__info {
+            position: absolute;
+            right: 0;
+            top: 0.35rem;
+            font-size: 0.778rem;
+            z-index: 20;
+
+            .searchinfo-CTA {
+                text-decoration: none;
+                color: $black;
+                svg {
+                    width: 14px;
+                    height: 14px;
+                    vertical-align: top;
+                    path {
+                        fill: $black;
+                    }
+                }
+            }
+
+            .searchinfo-tooltip {
+                opacity: 0;
+                pointer-events: none;
+                position: absolute;
+                right: -0.5rem;
+                top: 1.5rem;
+                width: 200px;
+                border: 1px solid $blue-200;
+                background-color: $white;
+                padding: 0.5rem;
+                transition: opacity $transition-duration-default $transition-ease-default;
+            }
+
+            .searchinfo-CTA:hover + .searchinfo-tooltip,
+            .searchinfo-CTA:focus + .searchinfo-tooltip {
+                opacity: 1;
+                pointer-events: all;
             }
         }
     }
