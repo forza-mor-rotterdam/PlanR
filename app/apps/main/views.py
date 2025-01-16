@@ -61,7 +61,6 @@ from apps.main.services import MORCoreService, TaakRService
 from apps.main.templatetags.gebruikers_tags import get_gebruiker_object_middels_email
 from apps.main.utils import (
     get_actieve_filters,
-    get_open_taakopdrachten,
     get_ui_instellingen,
     get_valide_kolom_classes,
     melding_locaties,
