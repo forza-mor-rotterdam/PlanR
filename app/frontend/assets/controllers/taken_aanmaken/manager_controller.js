@@ -1,5 +1,4 @@
 import { Controller } from '@hotwired/stimulus'
-
 export default class extends Controller {
   static targets = [
     'afdeling',
@@ -38,6 +37,7 @@ export default class extends Controller {
       this.searchInputTarget.focus()
     }, 600)
   }
+
   modalSluitenTargetConnected() {}
 
   afdelingTaaktypeContainerTargetConnected(elem) {
@@ -50,7 +50,7 @@ export default class extends Controller {
   taaktypeBerichtHandler(e) {
     if (e) {
       const target = e.target.closest('details').querySelector('.cta--summary')
-      target.textContent = e.target.value
+      target.textContent = e.target.value.length ? e.target.value : 'Opmerking toevoegen'
       target.classList.toggle('has-text', e.target.value.length > 0)
     }
   }
@@ -61,7 +61,7 @@ export default class extends Controller {
     if (this.geselecteerdFormulierTaaktypeTargets.length === 1) {
       this.geselecteerdFormulierTaaktypeTargets[0].querySelector('details').setAttribute('open', '')
     } else {
-      this.geselecteerdFormulierTaaktypeTargets[0].querySelector('details').removeAttribute('open')
+      // this.geselecteerdFormulierTaaktypeTargets[0].querySelector('details').removeAttribute('open')
     }
   }
 
