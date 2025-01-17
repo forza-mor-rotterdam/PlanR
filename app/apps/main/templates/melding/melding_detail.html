@@ -416,7 +416,7 @@
                                     <section class="section--seperated {% if melding.status.naam is 'afgehandeld' or melding.status.naam is not 'geannuleerd' %}no-padding{% endif %}"
                                              data-testid="detailTijdlijn"
                                              id="melding_detail_tijdlijn">
-                                        {% include "melding/detail/tijdlijn.html" with melding=melding only %}
+                                        {% include "melding/detail/tijdlijn.html" with melding=melding perms=perms only %}
                                     </section>
                                 </div>
                             </div>
