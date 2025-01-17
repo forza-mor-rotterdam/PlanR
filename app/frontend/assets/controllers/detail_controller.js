@@ -61,8 +61,6 @@ export default class extends Controller {
     )
     const locatie = locatiePrimair ? locatiePrimair : validLocaties[0]
 
-    this.coordinates.push(locatie.geometrie.coordinates.reverse())
-
     if (this.hasThumbListTarget) {
       const element = this.thumbListTarget.getElementsByTagName('li')[0]
       element.classList.add('selected')
@@ -124,7 +122,8 @@ export default class extends Controller {
       },
     }
 
-    if (mapDiv && this.coordinates[0]?.length == 2) {
+    if (mapDiv && locatie) {
+      this.coordinates.push(locatie.geometrie.coordinates.reverse())
       const url =
         'https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/{layerName}/{crs}/{z}/{x}/{y}.{format}'
       const config = {
