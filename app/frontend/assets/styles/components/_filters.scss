@@ -1,6 +1,7 @@
 .container__tools {
     .container__filter {
         margin-top: $alert-padding-y;
+        transition: opacity $transition-duration-default $transition-ease-default;
         > label {
             line-height: 3.2;
             margin-right: $alert-padding-x;
@@ -45,6 +46,16 @@
             input {
                 vertical-align: top;
                 margin-right: 0.25rem;
+            }
+        }
+
+        .container__toggle-profile {
+            opacity: 1;
+            transition: opacity $transition-duration-default $transition-ease-default;
+
+            &.hidden {
+                height: auto;
+                opacity: 0;
             }
         }
 

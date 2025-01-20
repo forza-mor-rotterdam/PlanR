@@ -104,7 +104,7 @@ class FilterForm(forms.Form):
             attrs={
                 "class": "list--form-text-input",
                 "typeOfInput": "search",
-                "data-action": "filter#onChangeFilter",
+                "data-action": "search->filter#onClearSearch focusout->filter#hideSearchProfielToggle focus->filter#showSearchProfielToggle",
                 "placeHolder": "Zoek op straatnaam, contactgegevens of MeldR-nummer",
             }
         ),
