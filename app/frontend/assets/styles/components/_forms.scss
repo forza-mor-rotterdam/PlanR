@@ -1079,6 +1079,8 @@ form.taken-aanmaken {
                     line-height: 1.5em;
                     font-weight: 400;
                     cursor: pointer;
+                    max-width: 95%;
+                    word-wrap: break-word;
                     transition: all $transition-duration-default $transition-ease-default;
 
                     &.checked,
