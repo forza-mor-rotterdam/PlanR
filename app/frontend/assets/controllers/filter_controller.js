@@ -53,7 +53,7 @@ export default class extends Controller {
     }
   }
   onToggleSearchProfielContext(e) {
-    this.filterOverviewTarget.classList.toggle('disabled')
+    // this.filterOverviewTarget.classList.toggle('disabled')
     this.onChangeFilter(e)
   }
 

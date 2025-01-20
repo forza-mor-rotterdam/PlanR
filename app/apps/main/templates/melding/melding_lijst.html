@@ -36,7 +36,7 @@
             <div class="container__tools">
                 {{ form.foldout_states }}
                 {{ form.limit|render_rotterdam_formulier }}
-                <div class="container__filter {% if not form.search_with_profiel_context.value %}disabled{% endif %}"
+                <div class="container__filter {% comment %} {% if not form.search_with_profiel_context.value %}disabled{% endif %}{% endcomment %}"
                      data-filter-target="filterOverview">
                     {% for veld in form.filters %}
                         {% with foldout_name="foldout_filter-"|add:veld.name %}

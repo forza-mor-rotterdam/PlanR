@@ -215,7 +215,7 @@ def get_ui_instellingen(gebruiker):
             "ordering", "-origineel_aangemaakt"
         ),
         "search_with_profiel_context": gebruiker.profiel.ui_instellingen.get(
-            "search_with_profiel_context", "on"
+            "search_with_profiel_context"
         ),
     }
 
