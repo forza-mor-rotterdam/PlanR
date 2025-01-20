@@ -196,11 +196,35 @@ export default class extends Controller {
     return clone
   }
 
+  smoothScrollTo(container, targetTop, duration = 500) {
+    const start = container.scrollTop
+    const distance = targetTop - start
+    let startTime = null
+
+    function animationStep(timestamp) {
+      if (!startTime) startTime = timestamp
+      const progress = Math.min((timestamp - startTime) / duration, 1)
+      container.scrollTop = start + distance * progress
+      if (progress < 1) {
+        requestAnimationFrame(animationStep)
+      }
+    }
+
+    requestAnimationFrame(animationStep)
+  }
+
   toggleDetailsHandler(e) {
-    if (!e.target.closest('details').open) {
+    if (e.target.closest('details').open) {
       setTimeout(() => {
+        const container = e.target.closest('.modal-body')
+        const details = e.target.closest('details')
+        const containerRect = container.getBoundingClientRect()
+        const detailsRect = details.getBoundingClientRect()
+        const targetTop = container.scrollTop + (detailsRect.top - containerRect.top)
+        this.smoothScrollTo(container, targetTop)
+
         e.target.closest('details').querySelector('textarea').focus()
-      }, 500)
+      }, 100)
     }
   }
 }

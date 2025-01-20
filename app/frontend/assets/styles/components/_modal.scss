@@ -248,6 +248,7 @@ body.show-modal--first-filter {
         .modal-body {
             flex: 1 1 auto;
             overflow-y: auto;
+            scroll-behavior: smooth;
             padding: 0 2rem;
         }
         .modal-footer {
