@@ -8,7 +8,9 @@ export default class extends Controller {
     'filterButton',
     'foldoutStateField',
     'containerSearch',
+    'searchProfielContext',
     'toggleSearchProfileContainer',
+    'toggleSearchProfielContext',
   ]
 
   connect() {
@@ -38,8 +40,16 @@ export default class extends Controller {
     document.removeEventListener('click', this.clickOutsideHandler)
   }
 
-  onClearSearch() {
-    this.hideSearchProfielToggle()
+  toggleSearchProfileContainerTargetConnected() {
+    if (this.searchProfielContextTarget.value.length) {
+      this.toggleSearchProfileContainerTarget.classList.remove('hidden')
+    }
+  }
+
+  onClearSearch(e) {
+    if (e.target.value.length === 0) {
+      this.toggleSearchProfielContextTarget.checked = true
+    }
     this.element.requestSubmit()
   }
 
@@ -53,18 +63,8 @@ export default class extends Controller {
     }
   }
   onToggleSearchProfielContext(e) {
-    // this.filterOverviewTarget.classList.toggle('disabled')
+    this.filterOverviewTarget.classList.toggle('disabled')
     this.onChangeFilter(e)
-  }
-
-  hideSearchProfielToggle(e) {
-    if (!e || e?.target?.value.length === 0) {
-      this.toggleSearchProfileContainerTarget.classList.add('hidden')
-    }
-  }
-
-  showSearchProfielToggle() {
-    this.toggleSearchProfileContainerTarget.classList.remove('hidden')
   }
 
   clickOutsideHandler(e) {

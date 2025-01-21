@@ -1,6 +1,11 @@
 .container__tools {
+    margin-top: $alert-padding-y;
+    .h5 {
+        font-size: 0.778rem;
+        margin: 0.1rem 0 0;
+        line-height: 24px;
+    }
     .container__filter {
-        margin-top: $alert-padding-y;
         transition: opacity $transition-duration-default $transition-ease-default;
         > label {
             line-height: 3.2;

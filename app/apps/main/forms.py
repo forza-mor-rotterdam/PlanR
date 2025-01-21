@@ -104,7 +104,8 @@ class FilterForm(forms.Form):
             attrs={
                 "class": "list--form-text-input",
                 "typeOfInput": "search",
-                "data-action": "search->filter#onClearSearch focusout->filter#hideSearchProfielToggle focus->filter#showSearchProfielToggle",
+                "data-filter-target": "searchProfielContext",
+                "data-action": "search->filter#onClearSearch",
                 "placeHolder": "Zoek op straatnaam, contactgegevens of MeldR-nummer",
             }
         ),
@@ -115,6 +116,7 @@ class FilterForm(forms.Form):
         widget=forms.CheckboxInput(
             attrs={
                 "class": "form-check-input",
+                "data-filter-target": "toggleSearchProfielContext",
                 "data-action": "filter#onToggleSearchProfielContext",
             }
         ),
