@@ -72,7 +72,7 @@ export default class extends Controller {
       layerName: 'standaard',
       type: 'wmts',
       minZoom: 11,
-      maxZoom: 19,
+      maxZoom: 22,
       tileSize: 256,
       attribution: '',
     }
