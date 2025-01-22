@@ -1,5 +1,6 @@
 .container__tools {
     margin-top: $alert-padding-y;
+
     .h5 {
         font-size: 0.778rem;
         margin: 0.1rem 0 0;
@@ -114,6 +115,7 @@
     @media (min-width: map-get($grid-breakpoints, md)) {
         display: flex;
         flex: 1;
+        justify-content: space-between;
         margin-bottom: 2em;
 
         .toggle {

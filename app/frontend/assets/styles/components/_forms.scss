@@ -906,9 +906,11 @@ input.readonly {
         }
     }
 
-    &:has(input:focus) {
+    &:has(input:focus),
+    &:focus-within {
         .container__toggle-profile {
-            opacity: 1;
+            opacity: 1 !important;
+            pointer-events: all !important;
         }
     }
 }
