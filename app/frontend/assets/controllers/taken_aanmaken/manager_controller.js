@@ -47,6 +47,40 @@ export default class extends Controller {
     )
   }
 
+  searchInputTargetConnected(elem) {
+    this.addSearchListener(elem)
+  }
+
+  taaktypeTargetConnected(elem) {
+    this.addSearchListener(elem)
+  }
+
+  searchInputTargetDisConnected(elem) {
+    this.removeSearchListener(elem)
+  }
+
+  taaktypeTargetDisConnected(elem) {
+    this.removeSearchListener(elem)
+  }
+
+  addSearchListener(elem) {
+    elem.addEventListener('keypress', function (e) {
+      if (e.keyCode === 13 || e.which === 13) {
+        e.preventDefault()
+        return false
+      }
+    })
+  }
+
+  removeSearchListener(elem) {
+    elem.removeEventListener('keypress', function (e) {
+      if (e.keyCode === 13 || e.which === 13) {
+        e.preventDefault()
+        return false
+      }
+    })
+  }
+
   taaktypeBerichtHandler(e) {
     if (e) {
       const target = e.target.closest('details').querySelector('.cta--summary')
