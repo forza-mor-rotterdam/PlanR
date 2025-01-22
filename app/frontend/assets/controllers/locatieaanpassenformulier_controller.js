@@ -79,6 +79,7 @@ export default class extends Controller {
 
     const map = L.map(this.mapTarget).setView([0, 0], 17) // 17 is the zoom level
     if (map) {
+      map.scrollWheelZoom.disable()
       markerIcon = L.Icon.extend({
         options: {
           iconSize: [32, 32],
