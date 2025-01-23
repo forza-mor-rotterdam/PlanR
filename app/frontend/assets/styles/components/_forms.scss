@@ -1143,11 +1143,12 @@ form.taken-aanmaken {
             top: 0;
             width: 75%;
             display: flex;
-            gap: 0.5rem 2em;
+            gap: 0.5rem 1em;
             margin: 0;
 
             li {
-                flex: 0 1 45%;
+                flex: 0 1 47%;
+                min-width: 47%;
                 margin: 0 0 0.5rem;
                 padding-left: 0;
                 animation: fade-in $transition-duration-default $transition-ease-default forwards;
@@ -1190,6 +1191,7 @@ form.taken-aanmaken {
                 &:nth-child(2) {
                     flex: 1 1 20%;
                     max-width: 20%;
+                    word-break: break-word;
                 }
             }
         }
