@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus'
+
 export default class extends Controller {
   static targets = [
     'afdeling',
@@ -92,6 +93,8 @@ export default class extends Controller {
   gotoNextStep() {
     this.element.classList.remove('stap1')
     this.element.classList.add('stap2')
+    this.element.querySelector('.modal-body').scrollTop = 0
+
     if (this.geselecteerdFormulierTaaktypeTargets.length === 1) {
       this.geselecteerdFormulierTaaktypeTargets[0].querySelector('details').setAttribute('open', '')
     } else {
@@ -102,6 +105,7 @@ export default class extends Controller {
   gotoPreviousStep() {
     this.element.classList.remove('stap2')
     this.element.classList.add('stap1')
+    this.element.querySelector('.modal-body').scrollTop = 0
   }
 
   showHideSearchResult(e) {
