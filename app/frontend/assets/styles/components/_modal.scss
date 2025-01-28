@@ -51,6 +51,7 @@ body.show-modal--first-filter {
         align-items: center;
         height: 97vh;
         overflow-y: auto;
+        box-sizing: border-box;
     }
 
     &-dialog {

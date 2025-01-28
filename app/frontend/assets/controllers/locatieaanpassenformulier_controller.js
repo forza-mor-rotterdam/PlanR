@@ -4,7 +4,8 @@ import L from 'leaflet'
 
 // eslint-disable-next-line no-unused-vars
 let inputList,
-  savedScrollPosition = null
+  savedScrollPosition,
+  scrollbarWidth = null
 // eslint-disable-next-line no-unused-vars
 let initialGeometry = {}
 let markerBlue, markerMagenta, markerIcon
@@ -143,19 +144,33 @@ export default class extends Controller {
         await this.updateAddressDetails(this.newLocationCoordinates)
       })
 
-      map.on('mousemove', (e) => {
-        console.log('wheel on map')
-        if (e.originalEvent && e.originalEvent.ctrlKey) {
-          console.log('ctrl')
+      map.getContainer().addEventListener('wheel', (e) => {
+        if (e.ctrlKey) {
           map.scrollWheelZoom.enable()
+          this.preventScrollJumps(true)
+          map.once('zoomend', function () {
+            map.scrollWheelZoom.disable()
+            // preventScrollJumps(false)
+          })
         } else {
-          console.log('no ctrl')
           map.scrollWheelZoom.disable()
+          this.preventScrollJumps(false)
         }
+      })
+
+      document.addEventListener('keyup', (e) => {
+        if (e.key === 'Control') {
+          this.preventScrollJumps(false)
+        }
+      })
+
+      map.once('mouseover', () => {
+        this.setScrollBarWidth()
       })
 
       map.on('mouseout', function () {
         map.scrollWheelZoom.disable()
+        document.querySelector('#melding_actie_form').style.overflowY = 'auto'
       })
 
       oldLocationMarker.on('mouseover mouseout', function (event) {
@@ -183,6 +198,24 @@ export default class extends Controller {
         document.querySelector('#melding_actie_form').scrollTop = savedScrollPosition
       }
     })
+  }
+
+  setScrollBarWidth() {
+    const content = document.querySelector('#melding_actie_form')
+    scrollbarWidth = content.offsetWidth - content.clientWidth
+  }
+  preventScrollJumps(enable) {
+    const content = document.querySelector('#melding_actie_form')
+
+    if (enable) {
+      // Voorkom verspringen door padding toe te voegen
+      content.style.overflow = 'hidden'
+      content.style.paddingRight = `${scrollbarWidth}px`
+    } else {
+      // Herstel originele instellingen
+      content.style.overflow = ''
+      content.style.paddingRight = ''
+    }
   }
 
   updateFormFields(locatie) {
