@@ -3,7 +3,8 @@ import { capitalize } from 'lodash'
 import L from 'leaflet'
 
 // eslint-disable-next-line no-unused-vars
-let inputList = null
+let inputList,
+  savedScrollPosition = null
 // eslint-disable-next-line no-unused-vars
 let initialGeometry = {}
 let markerBlue, markerMagenta, markerIcon
@@ -77,9 +78,8 @@ export default class extends Controller {
       attribution: '',
     }
 
-    const map = L.map(this.mapTarget).setView([0, 0], 17) // 17 is the zoom level
+    const map = L.map(this.mapTarget, { scrollWheelZoom: false }).setView([0, 0], 17)
     if (map) {
-      map.scrollWheelZoom.disable()
       markerIcon = L.Icon.extend({
         options: {
           iconSize: [32, 32],
@@ -108,10 +108,17 @@ export default class extends Controller {
       ]
 
       const newLocation = locatieCoordinates
-      const oldLocationMarker = L.marker(locatieCoordinates, { icon: markerMagenta })
+      const oldLocationMarker = L.marker(locatieCoordinates, {
+        icon: markerMagenta,
+        draggable: false,
+        autoPan: false,
+      })
         .bindPopup('Oude locatie')
         .addTo(map)
-      const newLocationMarker = L.marker(newLocation, { draggable: true, icon: markerBlue })
+      const newLocationMarker = L.marker(newLocation, {
+        draggable: true,
+        icon: markerBlue,
+      })
         .bindPopup('Nieuwe locatie')
         .addTo(map)
 
@@ -124,13 +131,31 @@ export default class extends Controller {
         // You can use this.newLocationCoordinates as needed
       })
 
+      newLocationMarker.on('mouseup', () => {
+        document.activeElement.blur()
+      })
+
       map.on('click', async (event) => {
+        console.log('klik')
         const clickedCoordinates = [event.latlng.lat, event.latlng.lng]
         newLocationMarker.setLatLng(clickedCoordinates)
         this.newLocationCoordinates = clickedCoordinates
         await this.updateAddressDetails(this.newLocationCoordinates)
+      })
 
-        // You can use this.newLocationCoordinates as needed
+      map.on('mousemove', (e) => {
+        console.log('wheel on map')
+        if (e.originalEvent && e.originalEvent.ctrlKey) {
+          console.log('ctrl')
+          map.scrollWheelZoom.enable()
+        } else {
+          console.log('no ctrl')
+          map.scrollWheelZoom.disable()
+        }
+      })
+
+      map.on('mouseout', function () {
+        map.scrollWheelZoom.disable()
       })
 
       oldLocationMarker.on('mouseover mouseout', function (event) {
@@ -150,6 +175,14 @@ export default class extends Controller {
       })
       map.setView(locatieCoordinates)
     }
+    document.querySelector('#melding_actie_form').addEventListener('scroll', (e) => {
+      e.preventDefault()
+      if (document.activeElement != document.querySelector('.leaflet-marker-draggable')) {
+        savedScrollPosition = document.querySelector('#melding_actie_form').scrollTop
+      } else {
+        document.querySelector('#melding_actie_form').scrollTop = savedScrollPosition
+      }
+    })
   }
 
   updateFormFields(locatie) {
@@ -229,17 +262,6 @@ export default class extends Controller {
       }
       elem.innerHTML = newContent
     })
-    // this.addressTargets.forEach((address) => {
-    //   const re = new RegExp(e.target.value, 'gi')
-    //   let newContent = address.dataset.searchContent
-    //   if (re.test(address.dataset.searchContent)) {
-    //     address.style.display = 'list-item'
-    //     newContent = newContent.replace(re, function (match) {
-    //       return '<mark>' + match + '</mark>'
-    //     })
-    //   }
-    //   address.querySelector('label span').innerHTML = newContent
-    // })
   }
   addressSelectHandler(e) {
     Array.from(this.adresResultListTarget.querySelectorAll('.new-address')).map((elem) =>
