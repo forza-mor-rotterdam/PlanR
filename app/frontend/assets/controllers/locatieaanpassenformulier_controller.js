@@ -170,7 +170,7 @@ export default class extends Controller {
         this.setScrollBarWidth()
       })
 
-      map.on('mouseout', function () {
+      map.on('mouseout', () => {
         map.scrollWheelZoom.disable()
         this.preventScrollJumps(false)
       })
