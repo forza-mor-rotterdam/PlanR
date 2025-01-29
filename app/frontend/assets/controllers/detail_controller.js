@@ -346,6 +346,7 @@ export default class extends Controller {
   }
   openModal(event) {
     event.preventDefault()
+    console.log('___openModal from detail_controller')
     const modal = this.modalAfhandelenTarget
     const modalBackdrop = document.querySelector('.modal-backdrop')
     this.turboActionModalTarget.setAttribute('src', event.params.action)
