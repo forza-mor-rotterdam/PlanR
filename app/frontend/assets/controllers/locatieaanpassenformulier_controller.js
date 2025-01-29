@@ -148,14 +148,16 @@ export default class extends Controller {
         if (e.ctrlKey) {
           map.scrollWheelZoom.enable()
           this.preventScrollJumps(true)
-          map.once('zoomend', function () {
-            map.scrollWheelZoom.disable()
-            // preventScrollJumps(false)
-          })
         } else {
           map.scrollWheelZoom.disable()
           this.preventScrollJumps(false)
         }
+      })
+
+      // Zet scroll-zoom weer uit zodra de muis het wiel loslaat
+      map.getContainer().addEventListener('mouseleave', () => {
+        map.scrollWheelZoom.disable()
+        this.preventScrollJumps(false)
       })
 
       document.addEventListener('keyup', (e) => {
@@ -170,7 +172,7 @@ export default class extends Controller {
 
       map.on('mouseout', function () {
         map.scrollWheelZoom.disable()
-        document.querySelector('#melding_actie_form').style.overflowY = 'auto'
+        this.preventScrollJumps(false)
       })
 
       oldLocationMarker.on('mouseover mouseout', function (event) {
