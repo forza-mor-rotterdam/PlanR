@@ -143,16 +143,20 @@ export default class extends Controller {
         this.newLocationCoordinates = clickedCoordinates
         await this.updateAddressDetails(this.newLocationCoordinates)
       })
-
-      map.getContainer().addEventListener('wheel', (e) => {
-        if (e.ctrlKey) {
-          map.scrollWheelZoom.enable()
-          this.preventScrollJumps(true)
-        } else {
-          map.scrollWheelZoom.disable()
-          this.preventScrollJumps(false)
-        }
-      })
+      map.getContainer().addEventListener(
+        'wheel',
+        (e) => {
+          if (e.ctrlKey) {
+            e.preventDefault()
+            map.scrollWheelZoom.enable()
+            this.preventScrollJumps(true)
+          } else {
+            map.scrollWheelZoom.disable()
+            this.preventScrollJumps(false)
+          }
+        },
+        { passive: false }
+      )
 
       // Zet scroll-zoom weer uit zodra de muis het wiel loslaat
       map.getContainer().addEventListener('mouseleave', () => {
@@ -165,6 +169,18 @@ export default class extends Controller {
           this.preventScrollJumps(false)
         }
       })
+      document.addEventListener(
+        'wheel',
+        function (e) {
+          if (e.ctrlKey) {
+            // Als de muis niet op de kaart staat, laat browser-zoom toe
+            if (!map.getContainer().contains(e.target)) {
+              return // Niets blokkeren → standaard browser-zoom
+            }
+          }
+        },
+        { passive: false }
+      )
 
       map.once('mouseover', () => {
         this.setScrollBarWidth()
