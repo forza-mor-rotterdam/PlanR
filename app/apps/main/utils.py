@@ -214,19 +214,20 @@ def get_ui_instellingen(gebruiker):
         "ordering": gebruiker.profiel.ui_instellingen.get(
             "ordering", "-origineel_aangemaakt"
         ),
-        "search_with_profiel_context": gebruiker.profiel.ui_instellingen.get(
-            "search_with_profiel_context", "on"
-        ),
+        # "search_with_profiel_context": gebruiker.profiel.ui_instellingen.get(
+        #     "search_with_profiel_context", "on"
+        # ),
     }
 
 
 def set_ui_instellingen(gebruiker, nieuwe_ordering, search_with_profiel_context):
     ui_instellingen = {
         "ordering": nieuwe_ordering,
-        "search_with_profiel_context": search_with_profiel_context,
+        # "search_with_profiel_context": search_with_profiel_context,
     }
     gebruiker.profiel.ui_instellingen.update(ui_instellingen)
     gebruiker.profiel.save()
+    ui_instellingen.update({"search_with_profiel_context": search_with_profiel_context})
     return ui_instellingen
 
 
