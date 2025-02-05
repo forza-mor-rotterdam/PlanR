@@ -945,6 +945,7 @@ class TakenAanmakenView(PermissionRequiredMixin, FormView):
                 "afdeling_by_url": afdeling_by_url,
                 "taaktypes": taaktypes,
                 "melding": melding,
+                "locaties": melding_locaties(melding),
             }
         )
         return context
