@@ -71,8 +71,8 @@
                           class="form-locatie-aanpassen"
                           data-controller="locatieaanpassenformulier"
                           data-locatieaanpassenformulier-locatie-value="{{ locatie|json_encode }}"
-                          data-turbo-frame="overview"
                           enctype="multipart/form-data"
+                          data-turbo-frame="_top"
                           novalidate>
                         {% csrf_token %}
                         {{ form.geometrie }}
