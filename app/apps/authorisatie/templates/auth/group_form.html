@@ -15,7 +15,7 @@
 {% endblock header %}
 {% block body %}
     <turbo-frame id="beheer" data-turbo-action="advance">
-    <div class="page__beheer" data-turbo-action="advance">
+    <div class="page__beheer">
         <div>
             <a href="{% url 'rechtengroep_lijst' %}"
                data-turbo-action='advance'
@@ -58,7 +58,7 @@
                         </div>
                     </div>
                 {% endif %}
-                <form action="." method="post">
+                <form action="." method="post" data-turbo="false">
                     {% csrf_token %}
                     <fieldset>
                         {{ form.name|render_rotterdam_formulier }}

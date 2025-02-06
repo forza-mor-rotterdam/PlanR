@@ -356,23 +356,6 @@ def melding_detail(request, id):
     )
     form = InformatieToevoegenForm()
     overview_querystring = request.session.get("overview_querystring", "")
-    if request.method == "POST":
-        form = InformatieToevoegenForm(request.POST, request.FILES)
-        if form.is_valid():
-            opmerking = form.cleaned_data.get("opmerking")
-            bijlagen = request.FILES.getlist("bijlagen_extra")
-            bijlagen_base64 = []
-            for f in bijlagen:
-                file_name = default_storage.save(f.name, f)
-                bijlagen_base64.append({"bestand": to_base64(file_name)})
-
-            mor_core_service.melding_gebeurtenis_toevoegen(
-                id,
-                bijlagen=bijlagen_base64,
-                omschrijving_intern=opmerking,
-                gebruiker=request.user.email,
-            )
-            return redirect("melding_detail", id=id)
 
     return render(
         request,

@@ -3,28 +3,29 @@ import { Controller } from '@hotwired/stimulus'
 export default class extends Controller {
   static targets = ['modal', 'turboActionModal', 'modalSluiten']
 
-  connect() {
-    console.log(`Connect: ${this.identifier}`)
-  }
+  connect() {}
   openModal(event) {
     event.preventDefault()
-    console.log('___openModal from modal_controller')
     const modal = this.modalTarget
     const modalBackdrop = document.querySelector('.modal-backdrop')
     this.turboActionModalTarget.setAttribute('src', event.params.action)
+    modal.classList.add('show')
+    modalBackdrop.classList.add('show')
+    document.body.classList.add('show-modal')
     this.turboActionModalTarget.addEventListener('turbo:frame-load', (event) => {
       if (event.target.children.length) {
-        modal.classList.add('show')
-        modalBackdrop.classList.add('show')
-        document.body.classList.add('show-modal')
+        // modal content loaded
       }
     })
 
     this.lastFocussedItem = event.target.closest('button')
   }
+  turboActionModalTargetConnected(target) {
+    this.turboActionModalTargetClone = target.cloneNode(true)
+  }
   closeModal() {
     const modalBackdrop = document.querySelector('.modal-backdrop')
-    if (this.hasmodalTarget) {
+    if (this.hasModalTarget) {
       this.modalTarget.classList.remove('show')
     }
     if (this.hasModalImagesTarget) {
@@ -36,7 +37,7 @@ export default class extends Controller {
       this.lastFocussedItem.focus()
     }
     if (this.hasTurboActionModalTarget) {
-      this.turboActionModalTarget.innerHTML = ''
+      this.turboActionModalTarget.replaceWith(this.turboActionModalTargetClone.cloneNode(true))
     }
     window.removeEventListener('mousemove', this.getRelativeCoordinates, true)
   }

@@ -32,6 +32,7 @@
         {% if form %}
             <form method="post"
                   action="{% url 'gebruiker_bulk_import' %}"
+                  data-turbo="false"
                   enctype="multipart/form-data">
                 {% csrf_token %}
                 {% if not form.errors and form.cleaned_data and not form.cleaned_data.csv_file.all_rows %}
