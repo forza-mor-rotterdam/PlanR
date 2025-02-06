@@ -120,7 +120,7 @@ class FilterForm(forms.Form):
                 "data-action": "filter#onToggleSearchProfielContext",
             }
         ),
-        label="Pas filters toe op zoekresultaten",
+        label="Gebruik filters",
         required=False,
     )
     foldout_states = forms.CharField(

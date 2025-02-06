@@ -54,17 +54,7 @@
                 margin-right: 0.25rem;
             }
         }
-
-        .container__toggle-profile {
-            opacity: 1;
-            transition: opacity $transition-duration-default $transition-ease-default;
-
-            &.hidden {
-                height: auto;
-                opacity: 0;
-                pointer-events: none;
-            }
-        }
+        // sorry, @Remco
 
         .container__info {
             position: absolute;

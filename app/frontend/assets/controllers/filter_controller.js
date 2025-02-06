@@ -46,10 +46,7 @@ export default class extends Controller {
     }
   }
 
-  onClearSearch(e) {
-    if (e.target.value.length === 0) {
-      this.toggleSearchProfielContextTarget.checked = true
-    }
+  onClearSearch() {
     this.element.requestSubmit()
   }
 
