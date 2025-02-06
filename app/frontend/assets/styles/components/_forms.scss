@@ -898,21 +898,7 @@ input.readonly {
         padding: 2px 0 08px;
         font-size: 0.666em;
     }
-
-    &:has(input:placeholder-shown) {
-        .container__toggle-profile {
-            opacity: 0;
-            pointer-events: none;
-        }
-    }
-
-    &:has(input:focus),
-    &:focus-within {
-        .container__toggle-profile {
-            opacity: 1 !important;
-            pointer-events: all !important;
-        }
-    }
+    // sorry @Remco
 }
 
 .list__pills {

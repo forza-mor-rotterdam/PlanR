@@ -223,7 +223,7 @@ def get_ui_instellingen(gebruiker):
 def set_ui_instellingen(gebruiker, nieuwe_ordering, search_with_profiel_context):
     ui_instellingen = {
         "ordering": nieuwe_ordering,
-        # "search_with_profiel_context": search_with_profiel_context,
+        "search_with_profiel_context": search_with_profiel_context,
     }
     gebruiker.profiel.ui_instellingen.update(ui_instellingen)
     gebruiker.profiel.save()

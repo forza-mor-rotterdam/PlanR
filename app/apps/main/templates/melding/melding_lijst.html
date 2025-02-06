@@ -73,8 +73,9 @@
                     </div>
                     {{ form.q|render_rotterdam_formulier }}
                     <div class="container__toggle-profile"
-                         data-filter-target="toggleSearchProfileContainer"
-                         tabindex="0">{{ form.search_with_profiel_context|render_rotterdam_formulier }}</div>
+                         data-filter-target="toggleSearchProfileContainer">
+                        {{ form.search_with_profiel_context|render_rotterdam_formulier }}
+                    </div>
                 </div>
             </div>
             <div class="container__table">
