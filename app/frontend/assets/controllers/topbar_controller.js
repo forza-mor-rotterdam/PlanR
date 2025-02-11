@@ -1,5 +1,7 @@
 import { Controller } from '@hotwired/stimulus'
 export default class extends Controller {
+  static targets = ['containerUitklapper']
+
   connect() {
     window.addEventListener('click', (e) => {
       if (
@@ -18,6 +20,15 @@ export default class extends Controller {
 
     this.element.addEventListener('keydown', function (e) {
       if (e.code == 'Enter') {
+        document.activeElement.click()
+      }
+    })
+  }
+
+  containerUitklapperTargetConnected(element) {
+    element.addEventListener('keydown', function (e) {
+      if (e.code == 'Space') {
+        e.preventDefault()
         document.activeElement.click()
       }
     })

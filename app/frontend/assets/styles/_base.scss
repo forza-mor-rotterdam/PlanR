@@ -273,15 +273,15 @@ table {
 }
 
 * {
-    &:focus {
+    &:focus-visible {
         @include focus-outline();
     }
 }
-details:has(summary:focus) {
+details:has(summary:focus-visible) {
     @include focus-outline();
 }
 
-summary:focus {
+summary:focus-visible {
     outline-color: transparent !important;
 }
 a,
@@ -629,6 +629,9 @@ body.no-js {
 }
 
 // HELPER-CLASSES
+.keyboard-focus {
+    outline: 2px solid blue !important;
+}
 
 .align-right {
     text--align: right;

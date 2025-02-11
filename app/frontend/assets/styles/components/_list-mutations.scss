@@ -86,7 +86,7 @@
             font-size: $small-font-size;
             text-align: right;
 
-            &:focus {
+            &:focus-visible {
                 outline-width: thin !important;
                 outline-color: $gray-tint02 !important;
             }
