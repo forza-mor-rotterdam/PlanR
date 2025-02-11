@@ -1,0 +1,235 @@
+{% load rotterdam_formulier_html %}
+{% load vind_in_dict from querystring_tags %}
+{% load json_encode from json_tags %}
+{% load context_template from context_tags %}
+<turbo-frame id="melding_actie_form">
+<div class="modal-dialog modal-dialog--wide modal--multistep-form">
+    <div class="modal-content stap1"
+         data-controller="taken-aanmaken--manager"
+         data-focus-trap-target="branch"
+         data-taken-aanmaken--manager-afdelingen-value="{{ afdelingen|json_encode }}"
+         data-taken-aanmaken--manager-afdeling-by-url-value="{{ afdeling_by_url|json_encode }}"
+         data-taken-aanmaken--manager-taaktypes-value="{{ taaktypes|json_encode }}"
+         data-taken-aanmaken--manager-gebruiker-value="{{ request.user.email }}"
+         data-taken-aanmaken--manager-melding-uuid-value="{{ view.kwargs.id }}"
+         data-action="click->taken-aanmaken--manager#showHideSearchResult">
+        <div class="modal-header border-bottom">
+            <button type="button"
+                    class="btn-close"
+                    aria-label="Sluit"
+                    data-action="modal#closeModal"></button>
+            <h1>
+                <span>Taken aanmaken</span>
+                <small>Selecteer een of meerdere taken. Opmerkingen kunnen later toegevoegd worden.</small>
+            </h1>
+        </div>
+        <div class="modal-body">
+            <section class="section--seperated" data-testid="meldingTakenAanmaken">
+                <div class="container__details">
+                    <!-- filteren en zoeken taaktypes -->
+                    <div data-taken-aanmaken--manager-target="stap1" class="stap1">
+                        <form class="taken-aanmaken">
+                            <div data-controller="row-search"
+                                 data-row-search-disable-result-highlight-value="false"
+                                 class="container__search form-row list--form-text-input">
+                                <input data-action="taken-aanmaken--manager#showHideSearchResult row-search#search"
+                                       data-taken-aanmaken--manager-target="searchInput"
+                                       type="search"
+                                       class="form-control"
+                                       placeholder="Zoek een taak..." />
+                                <ul data-taken-aanmaken--manager-target="searchResultContainer"
+                                    class="list__search-result">
+                                    {% for taaktype in taaktypes %}
+                                        <li data-row-search-target="row">
+                                            <label for="id_search-{{ taaktype.0 }}">
+                                                <input type="checkbox"
+                                                       data-taken-aanmaken--manager-target="taaktype"
+                                                       data-taaktype-url="{{ taaktype.0 }}"
+                                                       data-taken-aanmaken--manager-taaktype-url-param="{{ taaktype.0 }}"
+                                                       data-action="taken-aanmaken--manager#taaktypeChangeHandler"
+                                                       name="search"
+                                                       value="search-{{ taaktype.0 }}"
+                                                       id="id_search-{{ taaktype.0 }}"
+                                                       class="form-check-input">
+                                                <span data-row-search-target="searchable">{{ taaktype.1 }}</span>
+                                            </label>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <h2 class="h3 hidden"
+                                data-taken-aanmaken--manager-target="geselecteerdeTakenHeader">Geselecteerde taken</h2>
+                            <ul data-taken-aanmaken--manager-target="geselecteerdeTaaktypesContainer"
+                                class="list__pills">
+                            </ul>
+                            <div class="help-block error hidden"
+                                 data-taken-aanmaken--manager-target="geselecteerdeTakenError">
+                                <p>Je hebt het maximum van 10 taken tegelijkertijd bereikt. Ga naar de volgende stap.</p>
+                            </div>
+                            <div class="form-row input-labels">
+                                <div data-taakstartenformulier-target="afdelingContainer">
+                                    <ul class="list--level1 form-check-input">
+                                        {% for afdeling in afdelingen %}
+                                            <li>
+                                                <label for="id_{{ afdeling.0 }}">
+                                                    <input type="radio"
+                                                           data-taken-aanmaken--manager-target="afdeling"
+                                                           data-value="{{ afdeling.0 }}"
+                                                           name="afdeling"
+                                                           value="{{ afdeling.0 }}"
+                                                           id="id_{{ afdeling.0 }}"
+                                                           data-action="taken-aanmaken--manager#afdelingChangeHandler"
+                                                           data-taken-aanmaken--manager-afdeling-param="{{ afdeling.0 }}"
+                                                           class="form-check-input"
+                                                           {% if forloop.first %}checked{% endif %}>
+                                                    {{ afdeling.0 }}
+                                                </label>
+                                                <ul data-taken-aanmaken--manager-target="afdelingTaaktypeContainer"
+                                                    data-afdeling="{{ afdeling.0 }}"
+                                                    class="list--level2 form-check-input">
+                                                    {% for taaktype in afdeling.1 %}
+                                                        <li>
+                                                            <label for="id_{{ afdeling.0 }}-{{ taaktype.0 }}">
+                                                                <input type="checkbox"
+                                                                       data-taken-aanmaken--manager-target="taaktype"
+                                                                       data-taaktype-url="{{ taaktype.0 }}"
+                                                                       data-taken-aanmaken--manager-taaktype-url-param="{{ taaktype.0 }}"
+                                                                       data-action="taken-aanmaken--manager#taaktypeChangeHandler"
+                                                                       name="{{ afdeling.0 }}"
+                                                                       value="{{ afdeling.0 }}-{{ taaktype.0 }}"
+                                                                       id="id_{{ afdeling.0 }}-{{ taaktype.0 }}"
+                                                                       class="form-check-input">
+                                                                <span>{{ taaktype.1 }}</span>
+                                                            </label>
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- geselecteerde taaktypes aanvullen met interne opmerking -->
+                    <div data-taken-aanmaken--manager-target="stap2"
+                         class="stap2"
+                         id="taken_aanmaken_form">
+                        {% include "melding/detail/taken_aanmaken_form.html" with form=form view=view %}
+                    </div>
+                    {% comment %} {% csrf_token %}
+                        {{ form.urgentie }}
+                        <div class="form-control__with-helptext js-validation">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
+                        <div class="form-row btn-row"></div>
+                        <div class="form-row btn-row">
+                            <button type="reset" class="btn btn-tertiary" data-controller="detail" data-action="modal#closeModal" data-modal-target="modal">
+                                <span>Annuleren</span>
+                            </button>
+                            <button type="submit" class="btn btn-action">
+                                <span>{{ form.submit_label }}</span>
+                            </button>
+                    </div> {% endcomment %}
+                </div>
+            </section>
+        </div>
+        <div class="modal-footer border-top">
+            {% comment %} <button class="btn btn-primary">Volgende</button> {% endcomment %}
+            <div class="form-row btn-row">
+                <button type="reset"
+                        class="btn btn-tertiary stap1"
+                        data-action="modal#closeModal"
+                        data-modal-target="modal">
+                    <span>Annuleren</span>
+                </button>
+                <button class="btn btn-tertiary stap2"
+                        data-taken-aanmaken--manager-target="knopVorige"
+                        data-action="taken-aanmaken--manager#gotoPreviousStep">
+                    <span>Vorige</span>
+                </button>
+                <button class="btn btn-action-v2 stap1"
+                        data-taken-aanmaken--manager-target="knopVolgende"
+                        data-action="taken-aanmaken--manager#gotoNextStep"
+                        disabled>
+                    <span>Volgende</span>
+                </button>
+                <button type="submit"
+                        disabled
+                        form="formTakenAanmaken"
+                        class="btn btn-action-v2 stap2"
+                        data-taken-aanmaken--manager-target="knopAanmaken">
+                    {% comment %}  TODO get number of taaktypes for "Taak" or "Taken" {% endcomment %}
+                    <span>Aanmaken</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<template id="template_geselecteerd_taaktype">
+    <li data-taken-aanmaken--manager-target="geselecteerdTaaktype">
+        {# djlint:off #}
+            <span></span>
+        {# djlint:on #}
+        <button class="btn--clean"
+                data-action="taken-aanmaken--manager#taaktypeVerwijderenHandler:prevent">
+            {% include "icons/close.svg" %}
+        </button>
+    </li>
+</template>
+<template id="template_geselecteerd_formulier_taaktype">
+    <li data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktype">
+        <details data-action="taken-aanmaken--manager#toggleDetailsHandler">
+            <summary>
+                <div class="container__titel">
+                    <span data-titel></span>
+                </div>
+                <div>
+                    <span data-verantwoordelijke-afdeling></span>
+                </div>
+                <div>
+                    <span class="cta--summary">Opmerking toevoegen</span>
+                    <button role="button"
+                            class="btn--clean btn--remove"
+                            data-action="taken-aanmaken--manager#taaktypeVerwijderenHandler:prevent">
+                        {% include "icons/bin.svg" %}
+                    </button>
+                </div>
+            </summary>
+            <div class="container__flex">
+                <div>
+                    <h3>Taak</h3>
+                    <strong data-omschrijving></strong>
+                    <p data-toelichting="..."></p>
+                    <h3>Afdeling(en)</h3>
+                    <span data-afdelingen></span>
+                </div>
+                <div>
+                    <h3>Opmerking</h3>
+                    <textarea name="form-0-bericht"
+                              maxlength="5000"
+                              rows="4"
+                              id="id_form-0-bericht"
+                              data-action="taken-aanmaken--manager#taaktypeBerichtHandler"></textarea>
+                    <p class="help-text">De opmerking wordt met de uitvoerder gedeeld.</p>
+                    <input type="hidden"
+                           name="form-0-titel"
+                           maxlength="200"
+                           id="id_form-0-titel">
+                    <input type="hidden"
+                           name="form-0-melding_uuid"
+                           id="id_form-0-melding_uuid"
+                           value="">
+                    <input type="hidden"
+                           name="form-0-taakapplicatie_taaktype_url"
+                           id="id_form-0-taakapplicatie_taaktype_url"
+                           value="">
+                    <input type="hidden"
+                           name="form-0-gebruiker"
+                           id="id_form-0-gebruiker"
+                           value="admin@admin.com">
+                    {% comment %} {{ form.empty_form }} {% endcomment %}
+                </div>
+            </div>
+        </details>
+    </li>
+</template>
+</turbo-frame>

@@ -52,7 +52,7 @@
                     </div>
                 {% endif %}
                 {% if form.taaktypes|length and form.onderwerpen_choices and form.onderwerp_alias_list|length %}
-                    <form action="." method="post">
+                    <form action="." method="post" data-turbo="false">
                         {% csrf_token %}
                         <fieldset>
                             <div class="form-control__with-helptext js-validation">{{ form.naam|render_rotterdam_formulier }}</div>

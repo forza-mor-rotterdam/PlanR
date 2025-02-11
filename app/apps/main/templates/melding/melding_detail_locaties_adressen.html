@@ -4,7 +4,7 @@
         <div class="locatie-container">
             {% include "melding/melding_detail_locaties_adres.html" with locatie=locatie melding=melding only %}
             {% if locatie.geometrie.coordinates %}
-                {% include "melding/melding_detail_locaties_adres_kaart.html" with locatie=locatie only %}
+                {% include "melding/melding_detail_locaties_adres_kaart.html" with locatie=locatie lichtmasten=lichtmasten only %}
             {% endif %}
         </div>
     {% endif %}

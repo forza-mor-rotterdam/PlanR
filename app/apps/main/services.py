@@ -64,10 +64,12 @@ class OnderwerpenService(BasisOnderwerpenService):
 
 class TaakRService(BasisTaakRService):
     def __init__(self, *args, **kwargs):
+        default_cache_timeout = 60 * 60 * 24
         instellingen = Instelling.actieve_instelling()
         kwargs.update(
             {
                 "basis_url": instellingen.taakr_basis_url,
+                "cache_timeout": kwargs.get("cache_timeout", default_cache_timeout),
             }
         )
         super().__init__(*args, **kwargs)

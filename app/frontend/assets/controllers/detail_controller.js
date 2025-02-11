@@ -3,8 +3,7 @@ import { visit } from '@hotwired/turbo'
 import L from 'leaflet'
 
 let lastFocussedItem = null
-let markerIcon,
-  sliderContainerWidth,
+let sliderContainerWidth,
   imageSliderWidth,
   imageSliderThumbContainer = null,
   detailScrollY = 0,
@@ -18,7 +17,7 @@ let markerIcon,
 export default class extends Controller {
   static values = {
     signalen: String,
-    locatie: String,
+    locaties: String,
     afbeeldingen: String,
     urlPrefix: String,
   }
@@ -37,10 +36,11 @@ export default class extends Controller {
     'imageCounter',
     'btnToTop',
     'containerActions',
+    'lichtmast',
   ]
 
   initialize() {
-    let self = this
+    this.coordinates = []
     if (this.hasTabsTarget && this.hasTabsContentTarget) {
       const tabs = this.tabsTarget.querySelectorAll('.btn--tab')
       const tabsContent = this.tabsContentTarget.querySelectorAll('.tab-content')
@@ -52,22 +52,20 @@ export default class extends Controller {
       const tabsContent = this.tabsContent2Target.querySelectorAll('.tab-content')
       this.activateTabs(tabs, tabsContent, this)
     }
-    if (this.locatieValue) {
-      this.coordinates = JSON.parse(this.locatieValue)?.geometrie?.coordinates?.reverse()
-    }
-
-    if (this.signalenValue) {
-      this.signalen =
-        JSON.parse(this.signalenValue)?.filter(
-          (signaal) => signaal.locaties_voor_signaal?.[0]?.geometrie?.coordinates
-        ) ?? []
-    }
+    const locaties = this.hasLocatiesValue ? JSON.parse(this.locatiesValue) : []
+    const validLocaties = locaties
+      .filter((locatie) => locatie.geometrie?.coordinates)
+      .sort((a, b) => b.gewicht - a.gewicht)
+    const locatiePrimair = validLocaties.find(
+      (locatie) => locatie.geometrie?.coordinates && locatie.primair
+    )
+    const locatie = locatiePrimair ? locatiePrimair : validLocaties[0]
 
     if (this.hasThumbListTarget) {
       const element = this.thumbListTarget.getElementsByTagName('li')[0]
       element.classList.add('selected')
-      imageSliderWidth = self.imageSliderWidthTarget
-      imageSliderThumbContainer = self.imageSliderThumbContainerTarget
+      imageSliderWidth = this.imageSliderWidthTarget
+      imageSliderThumbContainer = this.imageSliderThumbContainerTarget
       sliderContainerWidth = imageSliderWidth.offsetWidth
       imageSliderThumbContainer.style.maxWidth = `${sliderContainerWidth}px`
     }
@@ -98,26 +96,34 @@ export default class extends Controller {
           }
         ),
       },
+      lichtmasten: {
+        layer: L.tileLayer.wms(
+          'https://www.gis.rotterdam.nl/GisWeb2/js/modules/kaart/WmsHandler.ashx',
+          {
+            layers: 'OBSURV.OVL.LP',
+            format: 'image/png',
+            transparent: true,
+            minZoom: 10,
+            maxZoom: 19,
+          }
+        ),
+      },
+      lichtmastenSto: {
+        layer: L.tileLayer.wms(
+          'https://www.gis.rotterdam.nl/GisWeb2/js/modules/kaart/WmsHandler.ashx',
+          {
+            layers: 'OBSURV.OVL.LP.STO',
+            format: 'image/png',
+            transparent: true,
+            minZoom: 10,
+            maxZoom: 19,
+          }
+        ),
+      },
     }
 
-    if (mapDiv && this.coordinates?.length == 2) {
-      markerIcon = L.Icon.extend({
-        options: {
-          iconSize: [32, 32],
-          iconAnchor: [18, 18],
-          popupAnchor: [0, -17],
-        },
-      })
-
-      const markerMagenta = new markerIcon({
-        iconUrl:
-          'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMy43NzgzIDYuMjI0MTJDMTkuNTAwMyAxLjk0NjEzIDEyLjQ5OTkgMS45NDYxMyA4LjIyMTkzIDYuMjI0MTJDMy45NDM5MyAxMC41MDIxIDMuOTQzOTMgMTcuNTAyNSA4LjIyMTkzIDIxLjc4MDVMMTYuMDAwMSAyOS41NTg2TDIzLjc3ODMgMjEuNzgwNUMyOC4wNTYzIDE3LjUwMjUgMjguMDU2MyAxMC41MDIxIDIzLjc3ODMgNi4yMjQxMlpNMTYuMDAwMSAxOC4wMDIzQzE4LjIwOTIgMTguMDAyMyAyMC4wMDAxIDE2LjIxMTQgMjAuMDAwMSAxNC4wMDIzQzIwLjAwMDEgMTEuNzkzMiAxOC4yMDkyIDEwLjAwMjMgMTYuMDAwMSAxMC4wMDIzQzEzLjc5MSAxMC4wMDIzIDEyLjAwMDEgMTEuNzkzMiAxMi4wMDAxIDE0LjAwMjNDMTIuMDAwMSAxNi4yMTE0IDEzLjc5MSAxOC4wMDIzIDE2LjAwMDEgMTguMDAyM1oiIGZpbGw9IiNDOTM2NzUiLz4KPC9zdmc+Cg==',
-      })
-      const markerGreen = new markerIcon({
-        iconUrl:
-          'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjYiIHZpZXdCb3g9IjAgMCAyMCAyNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGQ9Ik0xNy42MzQ4IDMuNjEzMTVDMTYuNzA4OSAyLjQ4Mzc1IDE1LjU0MzkgMS41NzM4OCAxNC4yMjM5IDAuOTQ5MTM4QzEyLjkwMzggMC4zMjQzOTEgMTEuNDYxNiAwLjAwMDMzNTY5MyAxMC4wMDEyIDAuMDAwMzM1NjkzQzguNTQwNzIgMC4wMDAzMzU2OTMgNy4wOTg0OSAwLjMyNDM5MSA1Ljc3ODQzIDAuOTQ5MTM4QzQuNDU4MzggMS41NzM4OCAzLjI5MzQgMi40ODM3NSAyLjM2NzQ4IDMuNjEzMTVDMC44Mzc1NTUgNS40Njg3MiAwLjAwMDg1NDQ5MiA3Ljc5ODc1IDAuMDAwODU0NDkyIDEwLjIwMzdDMC4wMDA4NTQ0OTIgMTIuNjA4NyAwLjgzNzU1NSAxNC45Mzg3IDIuMzY3NDggMTYuNzk0M0wxMC4wMDEyIDI2LjAwMDVMMTcuNjM2IDE2Ljc5NDNDMTkuMTY1MSAxNC45MzgzIDIwLjAwMTIgMTIuNjA4MyAyMC4wMDEgMTAuMjAzNUMyMC4wMDA4IDcuNzk4NzIgMTkuMTY0MyA1LjQ2ODg2IDE3LjYzNDggMy42MTMxNVpNMTAgMTMuOTk5MUM5LjExMDA0IDEzLjk5OTEgOC4yNDAwNCAxMy43MzUyIDcuNTAwMDUgMTMuMjQwN0M2Ljc2MDA2IDEyLjc0NjMgNi4xODMzMSAxMi4wNDM1IDUuODQyNzMgMTEuMjIxM0M1LjUwMjE1IDEwLjM5OSA1LjQxMzAzIDkuNDk0MjggNS41ODY2NiA4LjYyMTRDNS43NjAyOSA3Ljc0ODUyIDYuMTg4ODUgNi45NDY3MyA2LjgxODE3IDYuMzE3NDFDNy40NDc0OCA1LjY4ODEgOC4yNDkyNyA1LjI1OTU0IDkuMTIyMTUgNS4wODU5MUM5Ljk5NTAzIDQuOTEyMjggMTAuODk5OCA1LjAwMTM5IDExLjcyMiA1LjM0MTk4QzEyLjU0NDMgNS42ODI1NiAxMy4yNDcgNi4yNTkzMSAxMy43NDE1IDYuOTk5M0MxNC4yMzU5IDcuNzM5MjkgMTQuNDk5OCA4LjYwOTI5IDE0LjQ5OTggOS40OTkyN0MxNC40OTk4IDEwLjY5MjggMTQuMDI1OCAxMS44Mzc1IDEzLjE4MTkgMTIuNjgxNUMxMi4zMzgxIDEzLjUyNTYgMTEuMTkzNiAxMy45OTk5IDEwIDE0LjAwMDJWMTMuOTk5MVoiIGZpbGw9IiMwMDgxMUYiLz4KPC9zdmc+Cg==',
-      })
-
+    if (mapDiv && locatie) {
+      this.coordinates.push(locatie.geometrie.coordinates.reverse())
       const url =
         'https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/{layerName}/{crs}/{z}/{x}/{y}.{format}'
       const config = {
@@ -131,23 +137,12 @@ export default class extends Controller {
         tileSize: 256,
         attribution: '',
       }
-      this.map = L.map('incidentMap').setView(this.coordinates, 18)
+      this.map = L.map('incidentMap').setView(this.coordinates[0], 18)
       L.tileLayer(url, config).addTo(this.map)
 
-      for (const signaal of this.signalen) {
-        const coordinates = signaal.locaties_voor_signaal[0].geometrie.coordinates.reverse()
-        const marker = new L.Marker(coordinates, { icon: markerMagenta })
-        marker.addTo(this.map)
-        const popupContent = `<div></div><div class="container__content"><p>${signaal.bron_signaal_id}</p></div>`
-        marker.bindPopup(popupContent)
-      }
-      const bounds = new L.LatLngBounds(
-        this.signalen
-          .map((signaal) => signaal.locaties_voor_signaal[0].geometrie.coordinates)
-          .concat([this.coordinates])
-      )
-      this.map.fitBounds(bounds)
-      new L.Marker(this.coordinates, { icon: markerGreen }).addTo(this.map)
+      this.addSignalen()
+      this.fitMarkers()
+      new L.Marker(this.coordinates[0], { icon: this.markerGreen() }).addTo(this.map)
     }
 
     if (this.hasThumbListTarget) {
@@ -192,7 +187,68 @@ export default class extends Controller {
       false
     )
   }
-
+  fitMarkers() {
+    const bounds = new L.LatLngBounds(this.coordinates)
+    this.map.fitBounds(bounds)
+  }
+  lichtmastTargetConnected(lichtmast) {
+    const lichtmastData = JSON.parse(lichtmast.dataset.lichtmastData)
+    const gps = lichtmastData.find((d) => d[0] === 'gps')
+    if (gps) {
+      this.coordinates.push(gps[1])
+      const marker = new L.Marker(gps[1], { icon: this.markerMagenta() })
+      marker.addTo(this.map)
+      const ldHTML = lichtmastData
+        .filter((ld) => !['rd'].includes(ld[0]))
+        .reduce((o, ld) => `${o}<dt>${ld[0]}</dt><dd>${ld[1] || '-'}</dd>`, '')
+      const popupContent = `<div></div><div class="container__content"><dl>${ldHTML}</dl></div>`
+      marker.bindPopup(popupContent)
+      this.fitMarkers()
+    }
+  }
+  markerIcon() {
+    return L.Icon.extend({
+      options: {
+        iconSize: [32, 32],
+        iconAnchor: [18, 18],
+        popupAnchor: [0, -17],
+      },
+    })
+  }
+  markerMagenta() {
+    const iconClass = this.markerIcon()
+    return new iconClass({
+      iconUrl:
+        'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMy43NzgzIDYuMjI0MTJDMTkuNTAwMyAxLjk0NjEzIDEyLjQ5OTkgMS45NDYxMyA4LjIyMTkzIDYuMjI0MTJDMy45NDM5MyAxMC41MDIxIDMuOTQzOTMgMTcuNTAyNSA4LjIyMTkzIDIxLjc4MDVMMTYuMDAwMSAyOS41NTg2TDIzLjc3ODMgMjEuNzgwNUMyOC4wNTYzIDE3LjUwMjUgMjguMDU2MyAxMC41MDIxIDIzLjc3ODMgNi4yMjQxMlpNMTYuMDAwMSAxOC4wMDIzQzE4LjIwOTIgMTguMDAyMyAyMC4wMDAxIDE2LjIxMTQgMjAuMDAwMSAxNC4wMDIzQzIwLjAwMDEgMTEuNzkzMiAxOC4yMDkyIDEwLjAwMjMgMTYuMDAwMSAxMC4wMDIzQzEzLjc5MSAxMC4wMDIzIDEyLjAwMDEgMTEuNzkzMiAxMi4wMDAxIDE0LjAwMjNDMTIuMDAwMSAxNi4yMTE0IDEzLjc5MSAxOC4wMDIzIDE2LjAwMDEgMTguMDAyM1oiIGZpbGw9IiNDOTM2NzUiLz4KPC9zdmc+Cg==',
+    })
+  }
+  markerGreen() {
+    const iconClass = this.markerIcon()
+    return new iconClass({
+      iconUrl:
+        'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjYiIHZpZXdCb3g9IjAgMCAyMCAyNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGQ9Ik0xNy42MzQ4IDMuNjEzMTVDMTYuNzA4OSAyLjQ4Mzc1IDE1LjU0MzkgMS41NzM4OCAxNC4yMjM5IDAuOTQ5MTM4QzEyLjkwMzggMC4zMjQzOTEgMTEuNDYxNiAwLjAwMDMzNTY5MyAxMC4wMDEyIDAuMDAwMzM1NjkzQzguNTQwNzIgMC4wMDAzMzU2OTMgNy4wOTg0OSAwLjMyNDM5MSA1Ljc3ODQzIDAuOTQ5MTM4QzQuNDU4MzggMS41NzM4OCAzLjI5MzQgMi40ODM3NSAyLjM2NzQ4IDMuNjEzMTVDMC44Mzc1NTUgNS40Njg3MiAwLjAwMDg1NDQ5MiA3Ljc5ODc1IDAuMDAwODU0NDkyIDEwLjIwMzdDMC4wMDA4NTQ0OTIgMTIuNjA4NyAwLjgzNzU1NSAxNC45Mzg3IDIuMzY3NDggMTYuNzk0M0wxMC4wMDEyIDI2LjAwMDVMMTcuNjM2IDE2Ljc5NDNDMTkuMTY1MSAxNC45MzgzIDIwLjAwMTIgMTIuNjA4MyAyMC4wMDEgMTAuMjAzNUMyMC4wMDA4IDcuNzk4NzIgMTkuMTY0MyA1LjQ2ODg2IDE3LjYzNDggMy42MTMxNVpNMTAgMTMuOTk5MUM5LjExMDA0IDEzLjk5OTEgOC4yNDAwNCAxMy43MzUyIDcuNTAwMDUgMTMuMjQwN0M2Ljc2MDA2IDEyLjc0NjMgNi4xODMzMSAxMi4wNDM1IDUuODQyNzMgMTEuMjIxM0M1LjUwMjE1IDEwLjM5OSA1LjQxMzAzIDkuNDk0MjggNS41ODY2NiA4LjYyMTRDNS43NjAyOSA3Ljc0ODUyIDYuMTg4ODUgNi45NDY3MyA2LjgxODE3IDYuMzE3NDFDNy40NDc0OCA1LjY4ODEgOC4yNDkyNyA1LjI1OTU0IDkuMTIyMTUgNS4wODU5MUM5Ljk5NTAzIDQuOTEyMjggMTAuODk5OCA1LjAwMTM5IDExLjcyMiA1LjM0MTk4QzEyLjU0NDMgNS42ODI1NiAxMy4yNDcgNi4yNTkzMSAxMy43NDE1IDYuOTk5M0MxNC4yMzU5IDcuNzM5MjkgMTQuNDk5OCA4LjYwOTI5IDE0LjQ5OTggOS40OTkyN0MxNC40OTk4IDEwLjY5MjggMTQuMDI1OCAxMS44Mzc1IDEzLjE4MTkgMTIuNjgxNUMxMi4zMzgxIDEzLjUyNTYgMTEuMTkzNiAxMy45OTk5IDEwIDE0LjAwMDJWMTMuOTk5MVoiIGZpbGw9IiMwMDgxMUYiLz4KPC9zdmc+Cg==',
+    })
+  }
+  addSignalen() {
+    if (this.signalenValue) {
+      this.signalen =
+        JSON.parse(this.signalenValue)?.filter(
+          (signaal) =>
+            signaal.locaties_voor_signaal.filter((locatie) => locatie.geometrie?.coordinates)?.[0]
+              .geometrie?.coordinates
+        ) ?? []
+      for (const signaal of this.signalen) {
+        const coordinates = signaal.locaties_voor_signaal
+          .filter((locatie) => locatie.geometrie?.coordinates)[0]
+          .geometrie.coordinates.reverse()
+        this.coordinates.push(coordinates)
+        const marker = new L.Marker(coordinates, { icon: this.markerMagenta() })
+        marker.addTo(this.map)
+        const popupContent = `<div></div><div class="container__content"><p>${signaal.bron_signaal_id}</p></div>`
+        marker.bindPopup(popupContent)
+      }
+    }
+  }
   checkScrollPosition() {
     if (window.innerWidth > 767) {
       if (distance === 0) {
@@ -281,14 +337,16 @@ export default class extends Controller {
   }
 
   onMapLayerChange(e) {
+    const layerTypes = e.params.mapLayerTypes
     if (e.target.checked) {
-      this.mapLayers[e.params.mapLayerType].layer.addTo(this.map)
+      layerTypes.map((type) => this.mapLayers[type].layer.addTo(this.map))
     } else {
-      this.map.removeLayer(this.mapLayers[e.params.mapLayerType].layer)
+      layerTypes.map((type) => this.map.removeLayer(this.mapLayers[type].layer))
     }
   }
   openModal(event) {
     event.preventDefault()
+    console.log('___openModal from detail_controller')
     const modal = this.modalAfhandelenTarget
     const modalBackdrop = document.querySelector('.modal-backdrop')
     this.turboActionModalTarget.setAttribute('src', event.params.action)

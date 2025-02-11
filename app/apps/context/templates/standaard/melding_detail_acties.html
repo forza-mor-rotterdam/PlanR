@@ -1,26 +1,33 @@
-<div class="container__actions" data-detail-target="containerActions">
+{% extends "snippets/turbo_stream_wrapper.html" %}
+{% load melding_taken from melding_tags %}
+<!-- djlint:off -->
+{% block action %}update{% endblock action %}
+{% block target %}melding_detail_acties{% endblock target %}
+<!-- djlint:on -->
+{% block content %}
+    {% melding_taken melding as taak_info %}
     <p>
         {% if perms.authorisatie.taak_aanmaken and taaktypes and melding.status.naam != 'afgehandeld' and melding.status.naam != 'geannuleerd' and melding.status.naam != "pauze" and melding.status.naam != "wachten_melder" %}
             <button type="button"
                     class="btn btn-{% if melding.status.naam == 'controle' %}tertiary{% else %}action{% endif %}"
-                    data-action="detail#openModal"
-                    data-detail-action-param="{% url 'taak_starten' melding.uuid %}">
-                <span>Start taak</span>
+                    data-action="modal#openModal"
+                    data-modal-action-param="{% url 'taken_aanmaken' melding.uuid %}">
+                <span>Taken aanmaken</span>
             </button>
         {% endif %}
         {% if perms.authorisatie.melding_hervatten and melding.status.naam == "pauze" or melding.status.naam == "wachten_melder" %}
             <button type="button"
                     class="btn btn-action"
-                    data-action="detail#openModal"
-                    data-detail-action-param="{% url 'melding_hervatten' melding.uuid %}">
+                    data-action="modal#openModal"
+                    data-modal-action-param="{% url 'melding_hervatten' melding.uuid %}">
                 <span>Hervatten</span>
             </button>
         {% endif %}
         {% if perms.authorisatie.melding_afhandelen and not melding.afgesloten_op %}
             <button type="button"
                     class="btn btn-{% if melding.status.naam == 'controle' %}action{% else %}tertiary{% endif %}"
-                    data-action="detail#openModal"
-                    data-detail-action-param="{% url 'melding_afhandelen' melding.uuid %}">
+                    data-action="modal#openModal"
+                    data-modal-action-param="{% url 'melding_afhandelen' melding.uuid %}">
                 <span>Melding afhandelen</span>
             </button>
         {% endif %}
@@ -28,20 +35,20 @@
         {% if perms.authorisatie.melding_heropenen and melding.afgesloten_op %}
             <button type="button"
                     class="btn btn-tertiary"
-                    data-action="detail#openModal"
-                    data-detail-action-param="{% url 'melding_heropenen' melding.uuid %}">
+                    data-action="modal#openModal"
+                    data-modal-action-param="{% url 'melding_heropenen' melding.uuid %}">
                 <span>Melding heropenen</span>
             </button>
         {% endif %}
     </p>
     <ul class="list-links padding--bottom">
-        {% if open_taakopdrachten %}
+        {% if taak_info.open_taken %}
             {% if perms.authorisatie.taak_afronden %}
                 <li>
                     <button type="button"
                             class="btn btn-icon btn-textlink"
-                            data-action="detail#openModal"
-                            data-detail-action-param="{% url 'taak_afronden' melding.uuid %}">
+                            data-action="modal#openModal"
+                            data-modal-action-param="{% url 'taak_afronden' melding.uuid %}">
                         <svg width="18"
                              height="18"
                              viewBox="0 0 55 43"
@@ -57,8 +64,8 @@
                 <li>
                     <button type="button"
                             class="btn btn-icon btn-textlink"
-                            data-action="detail#openModal"
-                            data-detail-action-param="{% url 'taak_annuleren' melding.uuid %}">
+                            data-action="modal#openModal"
+                            data-modal-action-param="{% url 'taak_annuleren' melding.uuid %}">
                         <svg width="18"
                              height="18"
                              viewBox="0 0 18 18"
@@ -76,8 +83,8 @@
                 <li>
                     <button type="button"
                             class="btn btn-icon btn-textlink"
-                            data-action="detail#openModal"
-                            data-detail-action-param="{% url 'melding_annuleren' melding.uuid %}">
+                            data-action="modal#openModal"
+                            data-modal-action-param="{% url 'melding_annuleren' melding.uuid %}">
                         <svg width="18"
                              height="18"
                              viewBox="0 0 18 18"
@@ -93,8 +100,8 @@
                 <li>
                     <button type="button"
                             class="btn btn-icon btn-textlink"
-                            data-action="detail#openModal"
-                            data-detail-action-param="{% url 'melding_pauzeren' melding.uuid %}">
+                            data-action="modal#openModal"
+                            data-modal-action-param="{% url 'melding_pauzeren' melding.uuid %}">
                         <svg width="18"
                              height="18"
                              viewBox="0 0 22 22"
@@ -111,8 +118,8 @@
                 <li>
                     <button type="button"
                             class="btn btn-icon btn-textlink"
-                            data-action="detail#openModal"
-                            data-detail-action-param="{% url 'locatie_aanpassen' melding.uuid %}">
+                            data-action="modal#openModal"
+                            data-modal-action-param="{% url 'locatie_aanpassen' melding.uuid %}">
                         <svg width="18"
                              height="18"
                              viewBox="0 0 18 18"
@@ -130,8 +137,8 @@
         <div>
             <button type="button"
                     class="btn btn-icon btn-checkbox{% if melding.urgentie >= 0.5 %} checked{% endif %}"
-                    data-action="detail#openModal"
-                    data-detail-action-param="{% url 'melding_spoed_veranderen' melding.uuid %}">
+                    data-action="modal#openModal"
+                    data-modal-action-param="{% url 'melding_spoed_veranderen' melding.uuid %}">
                 <input type="checkbox"
                        class="form-check-input"
                        id="cb__spoed"
@@ -150,4 +157,4 @@
             </button>
         </div>
     {% endif %}
-</div>
+{% endblock content %}

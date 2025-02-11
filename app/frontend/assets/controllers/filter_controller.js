@@ -3,7 +3,15 @@ import { Controller } from '@hotwired/stimulus'
 let targetElementInView = null
 let focusElement = null
 export default class extends Controller {
-  static targets = ['filterOverview', 'filterButton', 'foldoutStateField', 'containerSearch']
+  static targets = [
+    'filterOverview',
+    'filterButton',
+    'foldoutStateField',
+    'containerSearch',
+    'searchProfielContext',
+    'toggleSearchProfileContainer',
+    'toggleSearchProfielContext',
+  ]
 
   connect() {
     let self = this
@@ -31,6 +39,17 @@ export default class extends Controller {
   disconnect() {
     document.removeEventListener('click', this.clickOutsideHandler)
   }
+
+  toggleSearchProfileContainerTargetConnected() {
+    if (this.searchProfielContextTarget.value.length) {
+      this.toggleSearchProfileContainerTarget.classList.remove('hidden')
+    }
+  }
+
+  onClearSearch() {
+    this.element.requestSubmit()
+  }
+
   onChangeFilter(e) {
     focusElement = e.target
     clearTimeout(this.searchTimeout)
@@ -40,6 +59,11 @@ export default class extends Controller {
       this.element.requestSubmit()
     }
   }
+  onToggleSearchProfielContext(e) {
+    this.filterOverviewTarget.classList.toggle('disabled')
+    this.onChangeFilter(e)
+  }
+
   clickOutsideHandler(e) {
     let self = this
     if (!e.target.closest(self.containerSelector)) {

@@ -57,6 +57,13 @@
     img {
         width: 100%;
     }
+
+    .modal & {
+        padding-bottom: 60%;
+        .map {
+            padding-bottom: 60%;
+        }
+    }
 }
 .container__map-tools {
     height: 76px;

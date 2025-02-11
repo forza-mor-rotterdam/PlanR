@@ -56,6 +56,9 @@
             margin-right: 0;
             transform: translateY(-3px);
         }
+        input {
+            vertical-align: top;
+        }
     }
 
     &.stayFixed {
@@ -126,9 +129,13 @@
             margin-top: 0;
         }
 
+        label {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
         input[type="checkbox"] {
             @include form-check-input();
-            margin-bottom: 1em;
+            vertical-align: sub;
         }
     }
 

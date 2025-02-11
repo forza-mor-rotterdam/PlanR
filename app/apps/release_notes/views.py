@@ -119,6 +119,11 @@ class SnackView(LoginRequiredMixin, ListView):
 class ToastView(LoginRequiredMixin, TemplateView):
     template_name = "public/notificaties/toast_lijst.html"
 
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        response.headers["Content-Type"] = "text/vnd.turbo-stream.html"
+        return response
+
 
 class SnackOverzichtView(LoginRequiredMixin, ListView):
     template_name = "public/notificaties/snack_overzicht.html"

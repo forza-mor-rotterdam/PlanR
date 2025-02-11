@@ -1,8 +1,11 @@
 from apps.authenticatie.views import GebruikerProfielView, SessionTimerView
 from apps.health.views import healthz
 from apps.main.views import (
+    LichtmastView,
     LoginView,
     LogoutView,
+    TakenAanmakenStreamView,
+    TakenAanmakenView,
     gebruiker_info,
     http_403,
     http_404,
@@ -30,7 +33,6 @@ from apps.main.views import (
     sidesheet_actueel,
     taak_afronden,
     taak_annuleren,
-    taak_starten,
 )
 from apps.release_notes.views import (
     ReleaseNoteDetailView,
@@ -64,6 +66,7 @@ urlpatterns = [
     ),
     path("melding/", melding_lijst, name="melding_lijst"),
     path("melding/<uuid:id>/", melding_detail, name="melding_detail"),
+    path("lichtmast/<int:lichtmast_id>/", LichtmastView.as_view(), name="lichtmast"),
     path(
         "melding/<uuid:id>/volgende/",
         melding_next,
@@ -113,9 +116,14 @@ urlpatterns = [
         name="melding_spoed_veranderen",
     ),
     path(
-        "part/melding/<uuid:id>/taakstarten/",
-        taak_starten,
-        name="taak_starten",
+        "melding/<uuid:id>/taken-aanmaken/",
+        TakenAanmakenView.as_view(),
+        name="taken_aanmaken",
+    ),
+    path(
+        "melding/<uuid:id>/taken-aanmaken/stream/",
+        TakenAanmakenStreamView.as_view(),
+        name="taken_aanmaken_stream",
     ),
     path(
         "part/melding/<uuid:melding_uuid>/taak-afronden/",

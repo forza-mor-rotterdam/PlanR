@@ -30,7 +30,7 @@ from apps.main.forms import (
     StandaardExterneOmschrijvingSearchForm,
     TaakAfrondenForm,
     TaakAnnulerenForm,
-    TaakStartenForm,
+    TakenAanmakenForm,
 )
 from apps.main.messages import (
     MELDING_AFHANDELEN_ERROR,
@@ -51,8 +51,6 @@ from apps.main.messages import (
     MELDING_PAUZEREN_SUCCESS,
     MELDING_URGENTIE_AANPASSEN_ERROR,
     MELDING_URGENTIE_AANPASSEN_SUCCESS,
-    TAAK_AANMAKEN_ERROR,
-    TAAK_AANMAKEN_SUCCESS,
     TAAK_AFRONDEN_ERROR,
     TAAK_AFRONDEN_SUCCESS,
     TAAK_ANNULEREN_ERROR,
@@ -63,17 +61,17 @@ from apps.main.services import MORCoreService, TaakRService
 from apps.main.templatetags.gebruikers_tags import get_gebruiker_object_middels_email
 from apps.main.utils import (
     get_actieve_filters,
-    get_open_taakopdrachten,
-    get_ordering,
+    get_ui_instellingen,
     get_valide_kolom_classes,
     melding_locaties,
-    melding_naar_tijdlijn,
+    melding_taken,
     publiceer_topic_met_subscriptions,
     set_actieve_filters,
-    set_ordering,
+    set_ui_instellingen,
     to_base64,
     update_qd_met_standaard_meldingen_filter_qd,
 )
+from bs4 import BeautifulSoup
 from config.context_processors import general_settings
 from deepdiff import DeepDiff
 from django.conf import settings
@@ -83,12 +81,21 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.files.storage import default_storage
 from django.db.models import Q
+from django.forms import formset_factory
 from django.http import HttpResponse, JsonResponse, QueryDict, StreamingHttpResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
-from django.views.generic import CreateView, DeleteView, ListView, UpdateView, View
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    FormView,
+    ListView,
+    TemplateView,
+    UpdateView,
+    View,
+)
 from utils.diversen import get_index
 from utils.rd_convert import rd_to_wgs
 
@@ -205,9 +212,9 @@ def melding_lijst(request):
 
     standaard_waardes = {
         "limit": "25",
-        "ordering": get_ordering(gebruiker),
         "foldout_states": "[]",
     }
+    standaard_waardes.update(get_ui_instellingen(gebruiker))
     actieve_filters = get_actieve_filters(gebruiker)
 
     qs = QueryDict("", mutable=True)
@@ -228,8 +235,12 @@ def melding_lijst(request):
         nieuwe_actieve_filters = {
             k: qs.getlist(k, []) for k, v in actieve_filters.items()
         }
-        standaard_waardes["ordering"] = set_ordering(
-            gebruiker, qs.get("ordering", standaard_waardes["ordering"])
+        standaard_waardes.update(
+            set_ui_instellingen(
+                gebruiker,
+                qs.get("ordering", standaard_waardes["ordering"]),
+                qs.get("search_with_profiel_context"),
+            )
         )
         standaard_waardes["foldout_states"] = qs.get("foldout_states")
 
@@ -252,7 +263,11 @@ def melding_lijst(request):
 
     form_qs = QueryDict("", mutable=True)
     if request.session.get("q"):
-        form_qs.update({"q": request.session.get("q")})
+        form_qs.update(
+            {
+                "q": request.session.get("q"),
+            }
+        )
     form_qs.update(standaard_waardes)
 
     for k, v in actieve_filters.items():
@@ -333,9 +348,7 @@ def melding_detail(request, id):
     meldingen_index = (
         int(request.session.get("offset", 0)) + index + 1 if index >= 0 else None
     )
-
-    open_taakopdrachten = get_open_taakopdrachten(melding)
-    tijdlijn_data = melding_naar_tijdlijn(melding)
+    open_taakopdrachten = melding_taken(melding).get("open_taken")
     locaties = melding_locaties(melding)
     taaktypes = TaakRService(request=request).get_niet_actieve_taaktypes(melding)
     categorized_taaktypes = TaakRService(request=request).categorize_taaktypes(
@@ -343,51 +356,6 @@ def melding_detail(request, id):
     )
     form = InformatieToevoegenForm()
     overview_querystring = request.session.get("overview_querystring", "")
-    if request.method == "POST":
-        form = InformatieToevoegenForm(request.POST, request.FILES)
-        if form.is_valid():
-            opmerking = form.cleaned_data.get("opmerking")
-            bijlagen = request.FILES.getlist("bijlagen_extra")
-            bijlagen_base64 = []
-            for f in bijlagen:
-                file_name = default_storage.save(f.name, f)
-                bijlagen_base64.append({"bestand": to_base64(file_name)})
-
-            mor_core_service.melding_gebeurtenis_toevoegen(
-                id,
-                bijlagen=bijlagen_base64,
-                omschrijving_intern=opmerking,
-                gebruiker=request.user.email,
-            )
-            return redirect("melding_detail", id=id)
-    taakopdrachten_voor_melding = [
-        taakopdracht for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
-    ]
-    aantal_actieve_taken = len(
-        [
-            taakopdracht
-            for taakopdracht in taakopdrachten_voor_melding
-            if taakopdracht.get("status", {}).get("naam")
-            not in {"voltooid", "voltooid_met_feedback"}
-        ]
-    )
-
-    aantal_opgeloste_taken = len(
-        [
-            taakopdracht
-            for taakopdracht in taakopdrachten_voor_melding
-            if taakopdracht.get("resolutie") == "opgelost"
-        ]
-    )
-
-    aantal_niet_opgeloste_taken = len(
-        [
-            taakopdracht
-            for taakopdracht in taakopdrachten_voor_melding
-            if taakopdracht.get("resolutie")
-            in ("niet_opgelost", "geannuleerd", "niet_gevonden")
-        ]
-    )
 
     return render(
         request,
@@ -398,14 +366,57 @@ def melding_detail(request, id):
             "form": form,
             "overview_querystring": overview_querystring,
             "taaktypes": categorized_taaktypes,
-            "aantal_actieve_taken": aantal_actieve_taken,
-            "aantal_opgeloste_taken": aantal_opgeloste_taken,
-            "aantal_niet_opgeloste_taken": aantal_niet_opgeloste_taken,
-            "tijdlijn_data": tijdlijn_data,
             "open_taakopdrachten": open_taakopdrachten,
             "meldingen_index": meldingen_index,
         },
     )
+
+
+class LichtmastView(PermissionRequiredMixin, TemplateView):
+    template_name = "melding/detail/lichtmast.html"
+    permission_required = "authorisatie.melding_bekijken"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        lichtmast_id = self.kwargs.get("lichtmast_id")
+        url = f"https://ows.gis.rotterdam.nl/cgi-bin/mapserv.exe?map=d:%5Cgwr%5Cwebdata%5Cmapserver%5Cmap%5Cbbdwh_pub.map&service=wfs&version=2.0.0&request=GetFeature&typeNames=namespace:sdo_gwr_bsb_ovl&Filter=<Filter><PropertyIsEqualTo><PropertyName>LICHTPUNT_ID</PropertyName><Literal>{lichtmast_id}</Literal></PropertyIsEqualTo></Filter>"
+        response = requests.get(url)
+        soup = BeautifulSoup(response.content, "xml")
+        lichtmast_data = {}
+        fields = (
+            ("ms:LICHTPUNT_ID", "Lichtmast id"),
+            ("ms:LICHTPUNTNUMMER", "Lichtpuntnummer"),
+            ("ms:LAMP_ID", "Lamp id"),
+            ("ms:STRAAT", "Straat"),
+            ("ms:BEHEERDER", "Beheerder"),
+            ("ms:EIGENAAR", "Eigenaar"),
+            ("ms:AMBITIENIVEAU", "Ambitieniveau"),
+            ("ms:LAATSTE_MUTATIE_ARMATUUR", "Laatste mutatie armatuur"),
+            ("ms:LAATSTE_MUTATIE_LICHTBRON", "Laatste mutatie lichtbron"),
+            ("ms:PLAATSINGSDATUM_LICHTBRON", "Plaatsingsdatum lichtbron"),
+            ("ms:IND_IN_STORING", "Storing"),
+            ("ms:STORING_OMSCHRIJVINGEN", "Storings omschrijving"),
+            ("gml:pos", "rd"),
+        )
+
+        lichtmast_data = [
+            (f[1], soup.find_all(f[0])[0].text if soup.find_all(f[0]) else "-")
+            for f in fields
+        ]
+        rd_list = (
+            lichtmast_data[-1][1].split(" ")
+            if len(lichtmast_data[-1][1].split(" ")) == 2
+            else []
+        )
+        rd = [float(xy) for xy in rd_list]
+        print(rd)
+        lichtmast_data.append(("gps", rd_to_wgs(*rd) if rd else []))
+        context.update(
+            {
+                "lichtmast_data": lichtmast_data,
+            }
+        )
+        return context
 
 
 @login_required
@@ -448,12 +459,12 @@ def melding_next(request, id, richting):
         actieve_filters = get_actieve_filters(gebruiker)
         standaard_waardes = {
             "limit": f"{pagina_item_aantal}",
-            "ordering": get_ordering(gebruiker),
             "q": request.session.get("q", ""),
             "offset": str(
                 (int(pagina / pagina_item_aantal) + richting) * pagina_item_aantal
             ),
         }
+        standaard_waardes.update(get_ui_instellingen(gebruiker))
 
         pagina = (int(pagina / pagina_item_aantal) + richting) * pagina_item_aantal
         standaard_waardes["offset"] = str(pagina)
@@ -578,13 +589,6 @@ def melding_afhandelen(request, id):
                 messages.success(request=request, message=MELDING_AFHANDELEN_SUCCESS)
             return redirect("melding_detail", id=id)
 
-    actieve_taken = [
-        taakopdracht
-        for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
-        if taakopdracht.get("status", {}).get("naam")
-        not in {"voltooid", "voltooid_met_feedback"}
-    ]
-
     return render(
         request,
         "melding/part_melding_afhandelen.html",
@@ -592,8 +596,6 @@ def melding_afhandelen(request, id):
             "form": form,
             "melding": melding,
             "bijlagen": bijlagen_flat,
-            "actieve_taken": actieve_taken,
-            "aantal_actieve_taken": len(actieve_taken),
         },
     )
 
@@ -645,13 +647,6 @@ def melding_annuleren(request, id):
                 messages.success(request=request, message=MELDING_ANNULEREN_SUCCESS)
             return redirect("melding_detail", id=id)
 
-    actieve_taken = [
-        taakopdracht
-        for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
-        if taakopdracht.get("status", {}).get("naam")
-        not in {"voltooid", "voltooid_met_feedback"}
-    ]
-
     return render(
         request,
         "melding/part_melding_annuleren.html",
@@ -659,8 +654,6 @@ def melding_annuleren(request, id):
             "form": form,
             "melding": melding,
             "bijlagen": bijlagen_flat,
-            "actieve_taken": actieve_taken,
-            "aantal_actieve_taken": len(actieve_taken),
         },
     )
 
@@ -830,122 +823,156 @@ def melding_spoed_veranderen(request, id):
     )
 
 
-@login_required
-@permission_required("authorisatie.taak_aanmaken", raise_exception=True)
-def taak_starten(request, id):
-    mor_core_service = MORCoreService()
-    gebruiker_context = get_gebruiker_context(request.user)
-    melding = mor_core_service.get_melding(id)
-    if isinstance(melding, dict) and melding.get("error"):
-        messages.error(request=request, message=MELDING_OPHALEN_ERROR)
-        return render(
-            request,
-            "melding/melding_actie_form.html",
+class TakenAanmakenView(PermissionRequiredMixin, FormView):
+    form_class = formset_factory(TakenAanmakenForm, extra=0)
+    template_name = "melding/detail/taken_aanmaken.html"
+    permission_required = "authorisatie.taak_aanmaken"
+
+    def get_success_url(self):
+        return reverse("taken_aanmaken", args=[self.kwargs.get("id")])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        mor_core_service = MORCoreService()
+        gebruiker_context = get_gebruiker_context(self.request.user)
+        melding = mor_core_service.get_melding(self.kwargs.get("id"))
+        if isinstance(melding, dict) and melding.get("error"):
+            messages.error(request=self.request, message=MELDING_OPHALEN_ERROR)
+            # return render(
+            #     self.request,
+            #     "melding/melding_actie_form.html",
+            # )
+
+        taakr_service = TaakRService()
+        taaktypes_with_afdelingen = taakr_service.get_taaktypes_with_afdelingen(
+            melding, context_taaktypes=gebruiker_context.taaktypes
         )
+        afdeling_by_url = {
+            afdeling.get("_links", {}).get("self"): afdeling.get("naam")
+            for afdeling in taakr_service.get_afdelingen()
+        }
 
-    taakr_service = TaakRService(request=request)
-    taaktypes_with_afdelingen = taakr_service.get_taaktypes_with_afdelingen(
-        melding, context_taaktypes=gebruiker_context.taaktypes
-    )
+        # Categorize taaktypes by afdeling and get gerelateerde onderwerpen
+        afdelingen = {}
+        onderwerp_gerelateerde_taaktypes = []
+        melding_onderwerpen = set(melding.get("onderwerpen", []))
 
-    # Categorize taaktypes by afdeling and get gerelateerde onderwerpen
-    afdelingen = {}
-    onderwerp_gerelateerde_taaktypes = []
-    melding_onderwerpen = set(melding.get("onderwerpen", []))
+        for item in taaktypes_with_afdelingen:
+            taaktype = item["taaktype"]
+            afdeling = item["afdeling"]
+            afdeling_naam = afdeling.get("naam", "Overig")
 
-    for item in taaktypes_with_afdelingen:
-        taaktype = item["taaktype"]
-        afdeling = item["afdeling"]
-        afdeling_naam = afdeling.get("naam", "Overig")
+            taaktype_url = taaktype.get("_links", {}).get("taakapplicatie_taaktype_url")
+            taaktype_omschrijving = taaktype.get("omschrijving")
 
-        taaktype_url = taaktype.get("_links", {}).get("taakapplicatie_taaktype_url")
-        taaktype_omschrijving = taaktype.get("omschrijving")
-
-        afdelingen.setdefault(afdeling_naam, []).append(
-            (taaktype_url, taaktype_omschrijving)
-        )
-
-        gerelateerde_onderwerpen = set(
-            item["taaktype"].get("gerelateerde_onderwerpen", [])
-        )
-        if melding_onderwerpen.intersection(gerelateerde_onderwerpen):
-            onderwerp_gerelateerde_taaktypes.append(
+            afdelingen.setdefault(afdeling_naam, []).append(
                 (taaktype_url, taaktype_omschrijving)
             )
 
-    initial_afdeling = next(iter(afdelingen.keys()), None)
+            gerelateerde_onderwerpen = set(
+                item["taaktype"].get("gerelateerde_onderwerpen", [])
+            )
+            if melding_onderwerpen.intersection(gerelateerde_onderwerpen):
+                onderwerp_gerelateerde_taaktypes.append(
+                    (taaktype_url, taaktype_omschrijving)
+                )
 
-    taaktype_choices = [
-        (
-            afdeling_naam,
+        next(iter(afdelingen.keys()), None)
+
+        afdelingen_taaktypes = [
+            (
+                afdeling_naam,
+                [
+                    (taaktype_url, taaktype_omschrijving)
+                    for taaktype_url, taaktype_omschrijving in afdeling_taaktypes
+                ],
+            )
+            for afdeling_naam, afdeling_taaktypes in afdelingen.items()
+        ]
+        afdelingen_taaktypes.sort(key=lambda x: (x[0] == "Overig", x[0]))
+
+        taaktypes = {
+            tt.get("taaktype")
+            .get("_links")
+            .get("taakapplicatie_taaktype_url"): [
+                tt.get("taaktype").get("_links").get("taakapplicatie_taaktype_url"),
+                tt.get("taaktype").get("omschrijving"),
+                tt.get("taaktype").get("_links").get("self"),
+                tt.get("taaktype"),
+            ]
+            for tt in taaktypes_with_afdelingen
+        }
+        taaktypes = [
             [
-                (taaktype_url, taaktype_omschrijving)
-                for taaktype_url, taaktype_omschrijving in afdeling_taaktypes
-            ],
+                url,
+                taaktype[1],
+                taaktype[2],
+                taaktype[3],
+            ]
+            for url, taaktype in taaktypes.items()
+        ]
+
+        taaktypes.sort(key=lambda x: x[1])
+        onderwerp_gerelateerde_taaktypes = list(
+            {tt[0]: tt for tt in onderwerp_gerelateerde_taaktypes}.values()
         )
-        for afdeling_naam, afdeling_taaktypes in afdelingen.items()
-    ]
-
-    # Prepare afdeling choices for form
-    afdeling_choices = [
-        (afdeling_naam, afdeling_naam) for afdeling_naam in afdelingen.keys()
-    ]
-
-    # Move "Overig" to the end if it exists
-    afdeling_choices.sort(key=lambda x: (x[0] == "Overig", x[0]))
-
-    onderwerp_gerelateerde_taaktypes = list(
-        {tt[0]: tt for tt in onderwerp_gerelateerde_taaktypes}.values()
-    )
-
-    form = TaakStartenForm(
-        initial={"afdeling": initial_afdeling},
-        taaktypes=taaktype_choices,
-        afdelingen=afdeling_choices,
-        onderwerp_gerelateerde_taaktypes=onderwerp_gerelateerde_taaktypes,
-    )
-    if request.POST:
-        form = TaakStartenForm(
-            request.POST,
-            taaktypes=taaktype_choices,
-            afdelingen=afdeling_choices,
-            onderwerp_gerelateerde_taaktypes=onderwerp_gerelateerde_taaktypes,
-        )
-        if form.is_valid():
-            data = form.cleaned_data
-            taaktypes_dict = {
-                tt[0]: tt[1]
-                for afdeling_taaktypes in afdelingen.values()
-                for tt in afdeling_taaktypes
-            }
-            taaktypes_dict.update(dict(onderwerp_gerelateerde_taaktypes))
-
-            response = mor_core_service.taak_aanmaken(
-                melding_uuid=id,
-                taakapplicatie_taaktype_url=data.get("taaktype"),
-                titel=taaktypes_dict.get(data.get("taaktype"), data.get("taaktype")),
-                bericht=data.get("bericht"),
-                gebruiker=request.user.email,
+        if onderwerp_gerelateerde_taaktypes:
+            afdelingen_taaktypes.insert(
+                0, ["Taak suggesties", onderwerp_gerelateerde_taaktypes]
             )
-            if isinstance(response, dict) and response.get("error"):
-                messages.error(request=request, message=TAAK_AANMAKEN_ERROR)
-            else:
-                messages.success(request=request, message=TAAK_AANMAKEN_SUCCESS)
-            return redirect("melding_detail", id=id)
-        else:
-            logger.error(f"Form.errors: {form.errors}")
 
-    return render(
-        request,
-        "melding/part_taak_starten.html",
-        {
-            "form": form,
-            "melding": melding,
-            "taaktype_choices": taaktype_choices,
-            "onderwerp_gerelateerde_taaktypes": onderwerp_gerelateerde_taaktypes,
-            "initial_afdeling": initial_afdeling,
-        },
-    )
+        context.update(
+            {
+                "afdelingen": afdelingen_taaktypes,
+                "afdeling_by_url": afdeling_by_url,
+                "taaktypes": taaktypes,
+                "melding": melding,
+                "locaties": melding_locaties(melding),
+            }
+        )
+        return context
+
+
+class TakenAanmakenStreamView(TakenAanmakenView):
+    template_name = "melding/detail/taken_aanmaken_stream.html"
+    permission_required = "authorisatie.taak_aanmaken"
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        response.headers["Content-Type"] = "text/vnd.turbo-stream.html"
+        return response
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        response.headers["Content-Type"] = "text/vnd.turbo-stream.html"
+        return response
+
+    def form_invalid(self, form):
+        logger.error("TakenAanmakenStreamView: FORM INVALID")
+        logger.error(form.errors)
+        return super().form_invalid(form)
+
+    def form_valid(self, form):
+        mor_core_service = MORCoreService()
+        responses = [
+            taak_data | {"response": mor_core_service.taak_aanmaken(**taak_data)}
+            for taak_data in form.cleaned_data
+        ]
+        for response in responses:
+            if response.get("response").get("error"):
+                messages.error(
+                    request=self.request,
+                    message=f"De taak '{response.get('titel')}' kon niet worden aangemaakt",
+                )
+            else:
+                messages.success(
+                    request=self.request,
+                    message=f"De taak '{response.get('titel')}' is aangemaakt",
+                )
+        context = self.get_context_data()
+        context.pop("form", None)
+        return self.render_to_response(context)
 
 
 @login_required
@@ -960,7 +987,7 @@ def taak_afronden(request, melding_uuid):
             "melding/melding_actie_form.html",
         )
 
-    open_taakopdrachten = get_open_taakopdrachten(melding)
+    open_taakopdrachten = melding_taken(melding).get("open_taken")
     taakopdracht_urls = {
         taakopdracht.get("uuid"): taakopdracht.get("_links", {}).get("self")
         for taakopdracht in open_taakopdrachten
@@ -1017,7 +1044,7 @@ def taak_annuleren(request, melding_uuid):
             "melding/melding_actie_form.html",
         )
 
-    open_taakopdrachten = get_open_taakopdrachten(melding)
+    open_taakopdrachten = melding_taken(melding).get("open_taken")
     taakopdracht_urls = {
         taakopdracht.get("uuid"): taakopdracht.get("_links", {}).get("self")
         for taakopdracht in open_taakopdrachten
@@ -1487,18 +1514,30 @@ def locatie_aanpassen(request, id):
                 request,
                 "melding/melding_actie_form.html",
             )
-        locaties_voor_melding = melding.get("locaties_voor_melding", [])
+        locatie = None
+        locaties = melding_locaties(melding)
 
+        locaties_primair = [
+            locatie
+            for locatie in locaties.get("adressen", [])
+            if locatie.get("primair") and locatie.get("geometrie") is not None
+        ]
         highest_gewicht_locatie = max(
-            locaties_voor_melding, key=lambda locatie: locatie.get("gewicht", 0)
+            locaties.get("adressen", []), key=lambda locatie: locatie.get("gewicht", 0)
         )
+        if locaties_primair:
+            locatie = locaties_primair[0]
+        if highest_gewicht_locatie and not locatie:
+            locatie = highest_gewicht_locatie
 
+        if not locatie:
+            messages.error(request=request, message="Geen primaire lokatie gevonden")
+            return render(
+                request,
+                "melding/melding_actie_form.html",
+            )
         form_initial = {
-            "geometrie": (
-                highest_gewicht_locatie.get("geometrie", "")
-                if highest_gewicht_locatie
-                else ""
-            ),
+            "geometrie": locatie.get("geometrie"),
         }
 
         form = LocatieAanpassenForm(initial=form_initial)
@@ -1534,21 +1573,13 @@ def locatie_aanpassen(request, id):
                     )
                 return redirect("melding_detail", id=id)
 
-        actieve_taken = [
-            taakopdracht
-            for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
-            if taakopdracht.get("status", {}).get("naam")
-            not in {"voltooid", "voltooid_met_feedback"}
-        ]
-
         return render(
             request,
             "melding/part_locatie_aanpassen.html",
             {
                 "form": form,
                 "melding": melding,
-                "actieve_taken": actieve_taken,
-                "aantal_actieve_taken": len(actieve_taken),
+                "locatie": locatie,
             },
         )
     except MORCoreService.AntwoordFout as e:

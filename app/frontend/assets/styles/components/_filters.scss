@@ -1,7 +1,13 @@
 .container__tools {
     margin-top: $alert-padding-y;
 
+    .h5 {
+        font-size: 0.778rem;
+        margin: 0.1rem 0 0;
+        line-height: 24px;
+    }
     .container__filter {
+        transition: opacity $transition-duration-default $transition-ease-default;
         > label {
             line-height: 3.2;
             margin-right: $alert-padding-x;
@@ -11,6 +17,13 @@
             flex: 0 1 20%;
             min-width: 250px;
             max-height: 2.3em;
+        }
+        &.disabled {
+            opacity: 0.2;
+
+            * {
+                pointer-events: none;
+            }
         }
 
         @media (min-width: map-get($grid-breakpoints, md)) {
@@ -24,6 +37,66 @@
         }
     }
 
+    .container__search {
+        input[type="search"] {
+            margin-bottom: 0.25rem;
+        }
+        label {
+            font-size: 0.778rem;
+            display: inline;
+            &:has(input) {
+                margin-top: 0.25rem;
+                font-weight: 400;
+            }
+
+            input {
+                vertical-align: top;
+                margin-right: 0.25rem;
+            }
+        }
+        // sorry, @Remco
+
+        .container__info {
+            position: absolute;
+            right: 0;
+            top: 0.35rem;
+            font-size: 0.778rem;
+            z-index: 20;
+
+            .searchinfo-CTA {
+                text-decoration: none;
+                color: $black;
+                svg {
+                    width: 14px;
+                    height: 14px;
+                    vertical-align: top;
+                    path {
+                        fill: $black;
+                    }
+                }
+            }
+
+            .searchinfo-tooltip {
+                opacity: 0;
+                pointer-events: none;
+                position: absolute;
+                right: -0.5rem;
+                top: 1.5rem;
+                width: 200px;
+                border: 1px solid $blue-200;
+                background-color: $white;
+                padding: 0.5rem;
+                transition: opacity $transition-duration-default $transition-ease-default;
+            }
+
+            .searchinfo-CTA:hover + .searchinfo-tooltip,
+            .searchinfo-CTA:focus + .searchinfo-tooltip {
+                opacity: 1;
+                pointer-events: all;
+            }
+        }
+    }
+
     > .btn {
         padding: 0 16px 0 10px;
         flex: 0;
@@ -32,6 +105,8 @@
     @media (min-width: map-get($grid-breakpoints, md)) {
         display: flex;
         flex: 1;
+        justify-content: space-between;
+        margin-bottom: 2em;
 
         .toggle {
             width: auto;
@@ -44,44 +119,6 @@
     @media (min-width: map-get($grid-breakpoints, md)) {
         display: flex;
         justify-content: space-between;
-    }
-}
-
-.container__search {
-    width: 100%;
-    input {
-        margin: 0;
-        border: 1px solid $gray-tint04;
-        padding-left: 36px;
-        background: transparent
-            url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xOS41MDAxIDkuNzVDMTkuNTAwMSA2LjgyNSAxNy4xNzUxIDQuNSAxNC4yNTAxIDQuNUMxMS4zMjUxIDQuNSA5LjAwMDEgNi44MjUgOS4wMDAxIDkuNzVDOS4wMDAxIDEyLjY3NSAxMS4zMjUxIDE1IDE0LjI1MDEgMTVDMTcuMTc1MSAxNSAxOS41MDAxIDEyLjY3NSAxOS41MDAxIDkuNzVaTTcuNTAwMSA5Ljc1QzcuNTAwMSA2IDEwLjUwMDEgMyAxNC4yNTAxIDNDMTguMDAwMSAzIDIxLjAwMDEgNiAyMS4wMDAxIDkuNzVDMjEuMDAwMSAxMy41IDE4LjAwMDEgMTYuNSAxNC4yNTAxIDE2LjVDMTIuNjQ3NCAxNi41IDExLjE4MTggMTUuOTUyMSAxMC4wMjg3IDE1LjAzMThMNC4yNTc0MyAyMC44MDMxTDMuMTk2NzggMTkuNzQyNUw4Ljk2ODExIDEzLjk3MTFDOC4wNDc5NyAxMi44MTgxIDcuNTAwMSAxMS4zNTI1IDcuNTAwMSA5Ljc1WiIgZmlsbD0iIzQwNEI0RiIvPgo8L3N2Zz4K)
-            no-repeat;
-        background-position: 8px 50%;
-        color: $gray-tint11;
-        font-size: 0.875em;
-
-        &::-webkit-search-cancel-button {
-            -webkit-appearance: none;
-            height: 20px;
-            width: 20px;
-            background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNC44OTQyIDE1Ljk1NUwxNS45NTQ4IDE0Ljg5NDNMOS4wNjA1MyA4TDE1Ljk1NDggMS4xMDU3MUwxNC44OTQyIDAuMDQ1MDUyNUw3Ljk5OTg3IDYuOTM5MzRMMS4xMDU1OCAwLjA0NTA1MTZMMC4wNDQ5MjM0IDEuMTA1NzFMNi45MzkyMSA4TDAuMDQ0OTIxOSAxNC44OTQzTDEuMTA1NTggMTUuOTU1TDcuOTk5ODcgOS4wNjA2NkwxNC44OTQyIDE1Ljk1NVoiIGZpbGw9IiM3QzhCOTAiLz4KPC9zdmc+Cg==)
-                no-repeat 50% 50%;
-            position: absolute;
-            right: 6px;
-            cursor: pointer;
-        }
-    }
-    input::placeholder {
-        font-size: inherit;
-    }
-
-    .help-block {
-        padding: 2px 0 08px;
-        font-size: 0.666em;
-    }
-
-    @media (min-width: map-get($grid-breakpoints, md)) {
-        width: 455px;
     }
 }
 

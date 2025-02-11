@@ -20,14 +20,6 @@ def snake_case(s: str) -> str:
     ).lower()
 
 
-def get_open_taakopdrachten(melding):
-    return [
-        to
-        for to in melding.get("taakopdrachten_voor_melding", [])
-        if not to.get("resolutie")
-    ]
-
-
 def dict_to_querystring(d: dict) -> str:
     return "&".join([f"{p}={v}" for p, l in d.items() for v in l])
 
@@ -64,12 +56,12 @@ def melding_locaties(melding: dict):
 
     return OrderedDict(
         [
+            ("lichtmasten", lichtmasten),
+            ("graven", graven),
             (
                 "adressen",
                 sorted(adressen, key=lambda b: b.get("gewicht"), reverse=True),
             ),
-            ("lichtmasten", lichtmasten),
-            ("graven", graven),
         ]
     )
 
@@ -179,6 +171,10 @@ def update_qd_met_standaard_meldingen_filter_qd(qd, gebruiker_context=None):
             else:
                 meldingen_filter_qd.update({k: v})
     meldingen_filter_qd.update(qd)
+    if not qd.get("search_with_profiel_context"):
+        for f in gebruiker_context.filters.get("fields", []):
+            if meldingen_filter_qd.get(f):
+                del meldingen_filter_qd[f]
     return meldingen_filter_qd
 
 
@@ -197,31 +193,42 @@ def get_actieve_filters(gebruiker):
     }
 
 
-def set_actieve_filters(gebruiker, actieve_filters):
-    actieve_filters = {
-        k: actieve_filters.get(k, [])
-        for k in gebruiker.profiel.context.filters.get("fields", [])
-    }
-    gebruiker.profiel.filters.update(actieve_filters)
-    unused_keys = [
-        k
-        for k, v in gebruiker.profiel.filters.items()
-        if k not in gebruiker.profiel.context.filters.get("fields", [])
-    ]
+def set_actieve_filters(gebruiker, actieve_filters, save=True):
+    import copy
+
+    filters = copy.deepcopy(gebruiker.profiel.filters)
+    available_fields = gebruiker.profiel.context.filters.get("fields", [])
+    actieve_filters = {k: actieve_filters.get(k, []) for k in available_fields}
+    filters.update(actieve_filters)
+    unused_keys = [k for k, v in filters.items() if k not in available_fields]
     for k in unused_keys:
-        gebruiker.profiel.filters.pop(k, None)
+        filters.pop(k, None)
+    if save:
+        gebruiker.profiel.filters = filters
+        gebruiker.profiel.save()
+    return filters
+
+
+def get_ui_instellingen(gebruiker):
+    return {
+        "ordering": gebruiker.profiel.ui_instellingen.get(
+            "ordering", "-origineel_aangemaakt"
+        ),
+        "search_with_profiel_context": gebruiker.profiel.ui_instellingen.get(
+            "search_with_profiel_context", "on"
+        ),
+    }
+
+
+def set_ui_instellingen(gebruiker, nieuwe_ordering, search_with_profiel_context):
+    ui_instellingen = {
+        "ordering": nieuwe_ordering,
+        "search_with_profiel_context": search_with_profiel_context,
+    }
+    gebruiker.profiel.ui_instellingen.update(ui_instellingen)
     gebruiker.profiel.save()
-    return gebruiker.profiel.filters
-
-
-def get_ordering(gebruiker):
-    return gebruiker.profiel.ui_instellingen.get("ordering", "-origineel_aangemaakt")
-
-
-def set_ordering(gebruiker, nieuwe_ordering):
-    gebruiker.profiel.ui_instellingen.update({"ordering": nieuwe_ordering})
-    gebruiker.profiel.save()
-    return gebruiker.profiel.ui_instellingen.get("ordering")
+    ui_instellingen.update({"search_with_profiel_context": search_with_profiel_context})
+    return ui_instellingen
 
 
 def subscriptions_voor_topic(topic, alle_subscriptions):
@@ -254,3 +261,43 @@ def publiceer_topic_met_subscriptions(topic, alle_subscriptions=None):
         )
     subscriptions = subscriptions_voor_topic(topic, alle_subscriptions)
     mercure_service.publish(topic, subscriptions)
+
+
+def melding_taken(melding):
+    taakopdrachten_voor_melding = [
+        taakopdracht for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
+    ]
+    actieve_taken = [
+        taakopdracht
+        for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
+        if taakopdracht.get("status", {}).get("naam")
+        not in {"voltooid", "voltooid_met_feedback"}
+    ]
+    open_taken = [
+        taakopdracht
+        for taakopdracht in taakopdrachten_voor_melding
+        if not taakopdracht.get("resolutie")
+    ]
+    opgeloste_taken = [
+        taakopdracht
+        for taakopdracht in taakopdrachten_voor_melding
+        if taakopdracht.get("resolutie") == "opgelost"
+    ]
+    niet_opgeloste_taken = [
+        taakopdracht
+        for taakopdracht in taakopdrachten_voor_melding
+        if taakopdracht.get("resolutie")
+        in ("niet_opgelost", "geannuleerd", "niet_gevonden")
+    ]
+
+    aantal_actieve_taken = len(actieve_taken)
+    aantal_opgeloste_taken = len(opgeloste_taken)
+    aantal_niet_opgeloste_taken = len(niet_opgeloste_taken)
+
+    return {
+        "actieve_taken": actieve_taken,
+        "open_taken": open_taken,
+        "aantal_actieve_taken": aantal_actieve_taken,
+        "aantal_opgeloste_taken": aantal_opgeloste_taken,
+        "aantal_niet_opgeloste_taken": aantal_niet_opgeloste_taken,
+    }

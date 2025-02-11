@@ -103,14 +103,24 @@ class FilterForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "class": "list--form-text-input",
-                "hideLabel": True,
                 "typeOfInput": "search",
-                "data-action": "filter#onChangeFilter",
+                "data-filter-target": "searchProfielContext",
+                "data-action": "search->filter#onClearSearch",
                 "placeHolder": "Zoek op straatnaam, contactgegevens of MeldR-nummer",
             }
         ),
-        help_text="Maak gebruik van komma's om op meerdere termen te zoeken",
         label="Zoeken",
+        required=False,
+    )
+    search_with_profiel_context = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={
+                "class": "form-check-input",
+                "data-filter-target": "toggleSearchProfielContext",
+                "data-action": "filter#onToggleSearchProfielContext",
+            }
+        ),
+        label="Gebruik filters",
         required=False,
     )
     foldout_states = forms.CharField(
@@ -306,83 +316,35 @@ class InformatieToevoegenForm(forms.Form):
     )
 
 
-class TaakStartenForm(forms.Form):
-    afdeling = forms.ChoiceField(
-        label="Afdeling",
+class TakenAanmakenForm(forms.Form):
+    melding_uuid = forms.CharField(
+        widget=forms.HiddenInput(),
         required=True,
-        widget=forms.RadioSelect(
-            attrs={
-                "data-taakstartenformulier-target": "afdelingField",
-                "class": "form-check-input",
-            }
-        ),
+        max_length=200,
     )
-
-    onderwerp_gerelateerd_taaktype = forms.ChoiceField(
-        widget=forms.RadioSelect(
+    titel = forms.CharField(
+        widget=forms.TextInput(
             attrs={
-                "data-taakstartenformulier-target": "onderwerpGerelateerdTaaktypeField",
-                "class": "form-check-input",
+                "disabled": True,
             }
         ),
-        label="Onderwerp gerelateerde taak",
-        required=False,
-    )
-
-    taaktype = forms.ChoiceField(
-        widget=forms.RadioSelect(
-            attrs={
-                "data-taakstartenformulier-target": "taaktypeField",
-                "class": "form-check-input",
-            }
-        ),
-        label="Taak",
         required=True,
+        max_length=200,
     )
-
+    taakapplicatie_taaktype_url = forms.CharField(
+        widget=forms.HiddenInput(),
+        required=True,
+        max_length=200,
+    )
     bericht = forms.CharField(
-        label="Interne opmerking",
-        help_text="Deze tekst wordt niet naar de melder verstuurd.",
-        widget=forms.Textarea(
-            attrs={
-                "data-controller": "characterCount",
-                "data-action": "characterCount#onChangeText",
-                "class": "form-control",
-                "data-testid": "information",
-                "rows": "2",
-            }
-        ),
         required=False,
         max_length=5000,
     )
-
-    def __init__(self, *args, **kwargs):
-        taaktype_choices = kwargs.pop("taaktypes", None)
-        afdeling_choices = kwargs.pop("afdelingen", None)
-        onderwerp_gerelateerde_taaktypes = kwargs.pop(
-            "onderwerp_gerelateerde_taaktypes", None
-        )
-        super().__init__(*args, **kwargs)
-
-        self.fields["afdeling"].choices = afdeling_choices
-
-        # Set all taaktype choices
-        if taaktype_choices:
-            all_taaktypes = [
-                (taaktype[0], taaktype[1])
-                for afdeling_taaktypes in taaktype_choices
-                for taaktype in afdeling_taaktypes[1]
-            ]
-            self.fields["taaktype"].choices = all_taaktypes
-        else:
-            self.fields["taaktype"].choices = []
-
-        if onderwerp_gerelateerde_taaktypes:
-            self.fields[
-                "onderwerp_gerelateerd_taaktype"
-            ].choices = onderwerp_gerelateerde_taaktypes
-        else:
-            self.fields["onderwerp_gerelateerd_taaktype"].widget = forms.HiddenInput()
+    gebruiker = forms.CharField(
+        widget=forms.HiddenInput(),
+        required=True,
+        max_length=200,
+    )
 
 
 class TaakAfrondenForm(forms.Form):

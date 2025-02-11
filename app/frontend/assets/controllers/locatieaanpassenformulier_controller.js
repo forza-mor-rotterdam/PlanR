@@ -3,7 +3,9 @@ import { capitalize } from 'lodash'
 import L from 'leaflet'
 
 // eslint-disable-next-line no-unused-vars
-let inputList = null
+let inputList,
+  savedScrollPosition,
+  scrollbarWidth = null
 // eslint-disable-next-line no-unused-vars
 let initialGeometry = {}
 let markerBlue, markerMagenta, markerIcon
@@ -72,12 +74,12 @@ export default class extends Controller {
       layerName: 'standaard',
       type: 'wmts',
       minZoom: 11,
-      maxZoom: 19,
+      maxZoom: 22,
       tileSize: 256,
       attribution: '',
     }
 
-    const map = L.map(this.mapTarget).setView([0, 0], 17) // 17 is the zoom level
+    const map = L.map(this.mapTarget, { scrollWheelZoom: false }).setView([0, 0], 17)
     if (map) {
       markerIcon = L.Icon.extend({
         options: {
@@ -107,10 +109,17 @@ export default class extends Controller {
       ]
 
       const newLocation = locatieCoordinates
-      const oldLocationMarker = L.marker(locatieCoordinates, { icon: markerMagenta })
+      const oldLocationMarker = L.marker(locatieCoordinates, {
+        icon: markerMagenta,
+        draggable: false,
+        autoPan: false,
+      })
         .bindPopup('Oude locatie')
         .addTo(map)
-      const newLocationMarker = L.marker(newLocation, { draggable: true, icon: markerBlue })
+      const newLocationMarker = L.marker(newLocation, {
+        draggable: true,
+        icon: markerBlue,
+      })
         .bindPopup('Nieuwe locatie')
         .addTo(map)
 
@@ -123,13 +132,63 @@ export default class extends Controller {
         // You can use this.newLocationCoordinates as needed
       })
 
+      newLocationMarker.on('mouseup', () => {
+        document.activeElement.blur()
+      })
+
       map.on('click', async (event) => {
+        console.log('klik')
         const clickedCoordinates = [event.latlng.lat, event.latlng.lng]
         newLocationMarker.setLatLng(clickedCoordinates)
         this.newLocationCoordinates = clickedCoordinates
         await this.updateAddressDetails(this.newLocationCoordinates)
+      })
+      map.getContainer().addEventListener(
+        'wheel',
+        (e) => {
+          if (e.ctrlKey) {
+            e.preventDefault()
+            map.scrollWheelZoom.enable()
+            this.preventScrollJumps(true)
+          } else {
+            map.scrollWheelZoom.disable()
+            this.preventScrollJumps(false)
+          }
+        },
+        { passive: false }
+      )
 
-        // You can use this.newLocationCoordinates as needed
+      // Zet scroll-zoom weer uit zodra de muis het wiel loslaat
+      map.getContainer().addEventListener('mouseleave', () => {
+        map.scrollWheelZoom.disable()
+        this.preventScrollJumps(false)
+      })
+
+      document.addEventListener('keyup', (e) => {
+        if (e.key === 'Control') {
+          this.preventScrollJumps(false)
+        }
+      })
+      document.addEventListener(
+        'wheel',
+        function (e) {
+          if (e.ctrlKey) {
+            // Als de muis niet op de kaart staat, laat browser-zoom toe
+            if (!map.getContainer().contains(e.target)) {
+              return // Niets blokkeren → standaard browser-zoom
+            }
+          }
+        },
+        { passive: false }
+      )
+
+      map.once('mouseover', () => {
+        this.setScrollBarWidth()
+      })
+
+      map.on('mouseout', () => {
+        map.scrollWheelZoom.disable()
+        this.preventScrollJumps(false)
       })
 
       oldLocationMarker.on('mouseover mouseout', function (event) {
@@ -148,6 +207,32 @@ export default class extends Controller {
         }
       })
       map.setView(locatieCoordinates)
+    }
+    document.querySelector('#melding_actie_form').addEventListener('scroll', (e) => {
+      e.preventDefault()
+      if (document.activeElement != document.querySelector('.leaflet-marker-draggable')) {
+        savedScrollPosition = document.querySelector('#melding_actie_form').scrollTop
+      } else {
+        document.querySelector('#melding_actie_form').scrollTop = savedScrollPosition
+      }
+    })
+  }
+
+  setScrollBarWidth() {
+    const content = document.querySelector('#melding_actie_form')
+    scrollbarWidth = content.offsetWidth - content.clientWidth
+  }
+  preventScrollJumps(enable) {
+    const content = document.querySelector('#melding_actie_form')
+
+    if (enable) {
+      // Voorkom verspringen door padding toe te voegen
+      content.style.overflow = 'hidden'
+      content.style.paddingRight = `${scrollbarWidth}px`
+    } else {
+      // Herstel originele instellingen
+      content.style.overflow = ''
+      content.style.paddingRight = ''
     }
   }
 
@@ -228,17 +313,6 @@ export default class extends Controller {
       }
       elem.innerHTML = newContent
     })
-    // this.addressTargets.forEach((address) => {
-    //   const re = new RegExp(e.target.value, 'gi')
-    //   let newContent = address.dataset.searchContent
-    //   if (re.test(address.dataset.searchContent)) {
-    //     address.style.display = 'list-item'
-    //     newContent = newContent.replace(re, function (match) {
-    //       return '<mark>' + match + '</mark>'
-    //     })
-    //   }
-    //   address.querySelector('label span').innerHTML = newContent
-    // })
   }
   addressSelectHandler(e) {
     Array.from(this.adresResultListTarget.querySelectorAll('.new-address')).map((elem) =>

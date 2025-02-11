@@ -2,14 +2,16 @@
 {% load vind_in_dict from querystring_tags %}
 {% load json_encode from json_tags %}
 {% load context_template from context_tags %}
+{% load melding_taken from melding_tags %}
+{% melding_taken melding as taak_info %}
 <turbo-frame id="melding_actie_form">
-<div class="modal-dialog">
+<div class="modal-dialog modal-dialog--wide">
     <div class="modal-content">
         <div class="modal-header">
             <button type="button"
                     class="btn-close"
                     aria-label="Sluit"
-                    data-action="detail#closeModal"></button>
+                    data-action="modal#closeModal"></button>
             <h1>
                 <span>Locatie aanpassen</span>
             </h1>
@@ -25,13 +27,14 @@
                 </span>
                 <div>
                     Sleep het blauwe bolletje naar de juiste plek of klik op de kaart. Selecteer daarna het meest toepasselijke adres bij de coördinaten.
+                    Houd de CTRL-toets ingedrukt om de kaart in- en uit te zoomen met het muiswiel.
                 </div>
             </div>
         </div>
         <div class="modal-body">
             <section class="section--seperated" data-testid="detailReporter">
                 <div class="container__details">
-                    {% if aantal_actieve_taken > 0 %}
+                    {% if taak_info.aantal_actieve_taken > 0 %}
                         <div class="alert alert--warning">
                             <span>
                                 <svg width="32"
@@ -44,17 +47,17 @@
                             </span>
                             <div>
                                 Deze melding bevat de volgende openstaande
-                                {% if aantal_actieve_taken == 1 %}
+                                {% if taak_info.aantal_actieve_taken == 1 %}
                                     taak
                                 {% else %}
                                     taken
                                 {% endif %}
                                 :
                                 <ul>
-                                    {% for taak in actieve_taken %}<li>{{ taak.titel }}</li>{% endfor %}
+                                    {% for taak in taak_info.actieve_taken %}<li>{{ taak.titel }}</li>{% endfor %}
                                 </ul>
                                 <span>Als de locatie wordt aangepast wordt de locatie van deze
-                                    {% if aantal_actieve_taken == 1 %}
+                                    {% if taak_info.aantal_actieve_taken == 1 %}
                                         taak
                                     {% else %}
                                         taken
@@ -67,9 +70,9 @@
                           method="post"
                           class="form-locatie-aanpassen"
                           data-controller="locatieaanpassenformulier"
-                          data-locatieaanpassenformulier-locatie-value="{{ melding.locaties_voor_melding|dictsort:'gewicht'|last|json_encode }}"
-                          data-turbo-frame="overview"
+                          data-locatieaanpassenformulier-locatie-value="{{ locatie|json_encode }}"
                           enctype="multipart/form-data"
+                          data-turbo-frame="_top"
                           novalidate>
                         {% csrf_token %}
                         {{ form.geometrie }}
@@ -100,9 +103,9 @@
                                 </h3>
                                 <div class="card">
                                     <p>
-                                        {{ melding.locaties_voor_melding.0.straatnaam }} {{ melding.locaties_voor_melding.0.huisnummer }}{{ melding.locaties_voor_melding.0.huisletter }} {{ melding.locaties_voor_melding.0.toevoeging }}
+                                        {{ locatie.straatnaam }} {{ locatie.huisnummer }}{{ locatie.huisletter }} {{ locatie.toevoeging }}
                                         <br>
-                                        {{ melding.locaties_voor_melding.0.wijknaam }} {{ melding.locaties_voor_melding.0.buurtnaam }}
+                                        {{ locatie.wijknaam }} {{ locatie.buurtnaam }}
                                         <br>
                                         <small><span data-locatieaanpassenformulier-target="currentAddressDistance"></span> meter vanaf huidige locatie</small>
                                     </p>
@@ -132,8 +135,8 @@
                             <div class="form-row btn-row">
                                 <button type="reset"
                                         class="btn btn-tertiary"
-                                        data-detail-target="modalAfhandelen"
-                                        data-action="detail#closeModal">
+                                        data-modal-target="modal"
+                                        data-action="modal#closeModal">
                                     <span>Annuleren</span>
                                 </button>
                                 <button disabled

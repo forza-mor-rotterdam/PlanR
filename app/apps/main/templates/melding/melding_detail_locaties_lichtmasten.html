@@ -1,26 +1,18 @@
 {% if locaties %}
-    <ul class="list-clean">
-        <li>
-            <div class="display--flex--md">
-                <ul class="list-clean">
-                    <li>
-                        <h3 class="h5">
-                            Lichtmast
-                            {% if locaties|length > 1 %}
-                                nummers
-                            {% else %}
-                                nummer
-                            {% endif %}
-                        </h3>
-                        <p>
-                            {% for locatie in locaties %}
-                                {{ locatie.lichtmast_id }}
-                                {% if not forloop.last %},{% endif %}
-                            {% endfor %}
-                        </p>
-                    </li>
-                </ul>
-            </div>
-        </li>
+    <h4>Lichtmasten({{ locaties|length }})</h4>
+    <ul>
+        {% for locatie in locaties %}
+            <li>
+                <div class="display--flex--md">
+                    <details>
+                        <summary>
+                            <h5>Lichtmast nummer: {{ locatie.lichtmast_id }}</h5>
+                        </summary>
+                        <turbo-frame loading="lazy" src="{% url 'lichtmast' locatie.lichtmast_id %}" id="lichtmast_{{ locatie.lichtmast_id }}">
+                        </turbo-frame>
+                    </details>
+                </div>
+            </li>
+        {% endfor %}
     </ul>
 {% endif %}

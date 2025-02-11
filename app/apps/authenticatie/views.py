@@ -13,8 +13,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.shortcuts import render
-from django.urls import reverse_lazy
+from django.shortcuts import redirect, render
+from django.urls import reverse, reverse_lazy
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import TemplateView
@@ -58,9 +59,16 @@ class GebruikerLijstView(GebruikerView, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         object_list = self.object_list
-        context["geauthoriseerde_gebruikers"] = object_list.filter(groups__isnull=False)
+        context["geauthoriseerde_gebruikers"] = object_list.filter(
+            groups__isnull=False,
+            verwijderd_op__isnull=True,
+        )
         context["ongeauthoriseerde_gebruikers"] = object_list.filter(
-            groups__isnull=True
+            groups__isnull=True,
+            verwijderd_op__isnull=True,
+        )
+        context["verwijderde_gebruikers"] = object_list.filter(
+            verwijderd_op__isnull=False
         )
         return context
 
@@ -115,6 +123,41 @@ class GebruikerAanmakenView(
     template_name = "authenticatie/gebruiker_aanmaken.html"
     form_class = GebruikerAanmakenForm
     success_message = "De gebruiker '%(email)s' is aangemaakt"
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required("authorisatie.gebruiker_verwijderen", raise_exception=True),
+    name="dispatch",
+)
+class GebruikerVerwijderenView(GebruikerAanmakenAanpassenView, UpdateView):
+    def get(self, request, *args, **kwargs):
+        object = self.get_object()
+        object.verwijderd_op = timezone.now()
+        object.groups.clear()
+        object.save(update_fields=["verwijderd_op"])
+        messages.success(
+            request,
+            f"De gebruiker '{object.email}' is verwijderd",
+        )
+        return redirect(reverse("gebruiker_lijst"))
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required("authorisatie.gebruiker_terughalen", raise_exception=True),
+    name="dispatch",
+)
+class GebruikerTerughalenView(GebruikerAanmakenAanpassenView, UpdateView):
+    def get(self, request, *args, **kwargs):
+        object = self.get_object()
+        object.verwijderd_op = None
+        object.save(update_fields=["verwijderd_op"])
+        messages.success(
+            request,
+            f"De gebruiker '{object.email}' is teruggehaald",
+        )
+        return redirect(reverse("gebruiker_lijst"))
 
 
 @login_required

@@ -1,0 +1,43 @@
+{% extends "snippets/turbo_stream_wrapper.html" %}
+<!-- djlint:off -->
+{% block action %}update{% endblock action %}
+{% block target %}taken_aanmaken_form{% endblock target %}
+<!-- djlint:on -->
+{% block content %}
+    {% if form %}
+        <form action="{% url 'taken_aanmaken_stream' view.kwargs.id %}"
+              method="post"
+              novalidate
+              id="formTakenAanmaken"
+              class="taken-aanmaken">
+            {% csrf_token %}
+            {{ form.management_form }}
+            <div class="form-row">
+                <ul data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktypeContainer"
+                    class="list--3cols-form">
+                    <li>
+                        <div>Taak</div>
+                        <div>Verantwoordelijke afdeling</div>
+                        <div>Opmerking</div>
+                    </li>
+                    {% for taaktype_form in form %}
+                        <li data-taaktype-url="{{ taaktype_form.value }}"
+                            data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktype">
+                            {{ taaktype_form }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="form-row btn-row">
+                {% comment %} <button type="reset" class="btn btn-tertiary" data-action="modal#closeModal" data-modal-target="modal">
+                    <span>Annuleren</span>
+                </button> {% endcomment %}
+                {% comment %} <button type="submit" class="btn btn-action">
+                    <span>Aanmaken</span>
+                </button> {% endcomment %}
+            </div>
+        </form>
+    {% else %}
+        <div data-modal-target="modalSluiten"></div>
+    {% endif %}
+{% endblock content %}
