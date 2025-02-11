@@ -908,13 +908,12 @@ input.readonly {
     display: flex;
     justify-content: flex-start;
     flex-wrap: wrap;
-    gap: 0.5em;
+    gap: 0.5rem;
     li {
         flex: 0 0 auto;
         padding: 1em 0.8em;
         background-color: $white;
         font-size: 0.777rem;
-        margin-bottom: 0.5em;
 
         span {
             display: inline-block;
@@ -925,7 +924,6 @@ input.readonly {
         }
 
         button {
-            margin-left: 0.5em;
             svg {
                 width: 0.889rem;
                 height: 0.889rem;
@@ -943,7 +941,7 @@ form.taken-aanmaken {
         gap: 16px;
 
         .form-check-input {
-            margin-top: 0;
+            margin-top: -1px;
         }
     }
 
@@ -979,7 +977,7 @@ form.taken-aanmaken {
             box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.07);
 
             li:not(:last-child) {
-                margin-bottom: 0.5em;
+                margin-bottom: 0.75rem;
             }
 
             label {
@@ -990,7 +988,7 @@ form.taken-aanmaken {
 
         input {
             &.form-check-input {
-                margin: 0;
+                margin-top: -1px;
             }
         }
     }
@@ -1079,10 +1077,10 @@ form.taken-aanmaken {
                 margin-bottom: 0;
 
                 > label {
+                    position: relative;
                     display: inline-block;
                     padding: 0.25em 0.5em;
                     border: 1px solid transparent;
-                    border-left: 3px solid $gray-tint01;
                     line-height: 1.5em;
                     font-weight: 400;
                     cursor: pointer;
@@ -1090,19 +1088,37 @@ form.taken-aanmaken {
                     word-wrap: break-word;
                     transition: all $transition-duration-default $transition-ease-default;
 
+                    &::before {
+                        content: "";
+                        position: absolute;
+                        top: -1px;
+                        bottom: -1px;
+                        left: 0;
+                        width: 3px;
+                        background: transparent;
+                        transform: translateX(-100%);
+                    }
+
                     &.checked,
                     &:hover,
                     &:has(input:focus) {
-                        border-left-color: $green-tint01;
+                        &::before {
+                            background: $green-tint01;
+                        }
                         color: $green-tint01;
                     }
                     &:has(input:checked) {
-                        border-left-color: $green-tint01;
+                        font-weight: 600;
+                        &::before {
+                            background: $green-tint01;
+                        }
                         color: $green-tint01;
                     }
                     &:has(input:focus) {
                         border-color: $gray-200;
-                        border-left-color: $green-tint01;
+                        &::before {
+                            background: $green-tint01;
+                        }
                     }
                     input.form-check-input {
                         -webkit-appearance: none;
@@ -1139,11 +1155,13 @@ form.taken-aanmaken {
                 padding-left: 0;
                 animation: fade-in $transition-duration-default $transition-ease-default forwards;
 
-                label span {
-                    max-width: 20em;
-                    overflow: hidden;
-                    white-space: nowrap;
-                    text-overflow: ellipsis;
+                label {
+                    span {
+                        max-width: 20em;
+                        overflow: hidden;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                    }
                 }
             }
         }
