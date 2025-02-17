@@ -1,0 +1,50 @@
+{% extends "snippets/turbo_stream_wrapper.html" %}
+{% load rotterdam_formulier_html %}
+{% load vind_in_dict from querystring_tags %}
+{% load json_encode from json_tags %}
+{% load context_template from context_tags %}
+<!-- djlint:off -->
+{% block action %}update{% endblock action %}
+{% block target %}modal_content{% endblock target %}
+<!-- djlint:on -->
+{% block content %}
+    <div class="modal-header">
+        <button type="button"
+                class="btn-close"
+                aria-label="Sluit"
+                data-action="modal#closeModal"></button>
+        <h1>
+            <span>Melding
+                {% if melding.urgentie >= .5 %}niet{% endif %}
+            met spoed oppakken</span>
+        </h1>
+    </div>
+    <div class="modal-body">
+        <section class="section--seperated" data-testid="detailReporter">
+            <div class="container__details">
+                <form action="{% url 'melding_spoed_veranderen' melding.uuid %}"
+                      method="post"
+                      class="form--horizontal"
+                      data-turbo-frame="_top"
+                      id="spoedVeranderenForm"
+                      novalidate>
+                    {% csrf_token %}
+                    {{ form.urgentie }}
+                    <div class="form-control__with-helptext js-validation">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
+                    <div class="form-row btn-row"></div>
+                    <div class="form-row btn-row">
+                        <button type="reset"
+                                class="btn btn-tertiary"
+                                data-controller="detail"
+                                data-action="modal#closeModal">
+                            <span>Annuleren</span>
+                        </button>
+                        <button type="submit" class="btn btn-action">
+                            <span>{{ form.submit_label }}</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+{% endblock content %}

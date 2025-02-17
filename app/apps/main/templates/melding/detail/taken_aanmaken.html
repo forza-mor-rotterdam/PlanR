@@ -1,10 +1,14 @@
+{% extends "snippets/turbo_stream_wrapper.html" %}
 {% load rotterdam_formulier_html %}
 {% load vind_in_dict from querystring_tags %}
 {% load json_encode from json_tags %}
 {% load context_template from context_tags %}
-<turbo-frame id="melding_actie_form">
-<div class="modal-dialog modal-dialog--wide modal--multistep-form">
-    <div class="modal-content stap1"
+<!-- djlint:off -->
+{% block action %}update{% endblock action %}
+{% block target %}modal_content{% endblock target %}
+<!-- djlint:on -->
+{% block content %}
+    <div class="stap1"
          data-controller="taken-aanmaken--manager"
          data-focus-trap-target="branch"
          data-taken-aanmaken--manager-afdelingen-value="{{ afdelingen|json_encode }}"
@@ -14,10 +18,7 @@
          data-taken-aanmaken--manager-melding-uuid-value="{{ view.kwargs.id }}"
          data-action="click->taken-aanmaken--manager#showHideSearchResult">
         <div class="modal-header border-bottom">
-            <button type="button"
-                    class="btn-close"
-                    aria-label="Sluit"
-                    data-action="modal#closeModal"></button>
+            {% comment %} <button type="button" class="btn-close" aria-label="Sluit" data-action="modal#closeModal"></button> {% endcomment %}
             <h1>
                 <span>Taken aanmaken</span>
                 <small>Selecteer een of meerdere taken. Opmerkingen kunnen later toegevoegd worden.</small>
@@ -115,7 +116,7 @@
                     <div data-taken-aanmaken--manager-target="stap2"
                          class="stap2"
                          id="taken_aanmaken_form">
-                        {% include "melding/detail/taken_aanmaken_form.html" with form=form view=view %}
+                        {% include "melding/detail/taken_aanmaken_form.html" with form=form view=view disable_stream=True %}
                     </div>
                     {% comment %} {% csrf_token %}
                         {{ form.urgentie }}
@@ -137,8 +138,7 @@
             <div class="form-row btn-row">
                 <button type="reset"
                         class="btn btn-tertiary stap1"
-                        data-action="modal#closeModal"
-                        data-modal-target="modal">
+                        data-action="modal#closeModal">
                     <span>Annuleren</span>
                 </button>
                 <button class="btn btn-tertiary stap2"
@@ -163,73 +163,72 @@
             </div>
         </div>
     </div>
-</div>
-<template id="template_geselecteerd_taaktype">
-    <li data-taken-aanmaken--manager-target="geselecteerdTaaktype">
-        {# djlint:off #}
+    <template id="template_geselecteerd_taaktype">
+        <li data-taken-aanmaken--manager-target="geselecteerdTaaktype">
+            {# djlint:off #}
             <span></span>
-        {# djlint:on #}
-        <button class="btn--clean"
-                data-action="taken-aanmaken--manager#taaktypeVerwijderenHandler:prevent">
-            {% include "icons/close.svg" %}
-        </button>
-    </li>
-</template>
-<template id="template_geselecteerd_formulier_taaktype">
-    <li data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktype">
-        <details data-action="taken-aanmaken--manager#toggleDetailsHandler">
-            <summary>
-                <div class="container__titel">
-                    <span data-titel></span>
+            {# djlint:on #}
+            <button class="btn--clean"
+                    data-action="taken-aanmaken--manager#taaktypeVerwijderenHandler:prevent">
+                {% include "icons/close.svg" %}
+            </button>
+        </li>
+    </template>
+    <template id="template_geselecteerd_formulier_taaktype">
+        <li data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktype">
+            <details data-action="taken-aanmaken--manager#toggleDetailsHandler">
+                <summary>
+                    <div class="container__titel">
+                        <span data-titel></span>
+                    </div>
+                    <div>
+                        <span data-verantwoordelijke-afdeling></span>
+                    </div>
+                    <div>
+                        <span class="cta--summary">Opmerking toevoegen</span>
+                        <button role="button"
+                                class="btn--clean btn--remove"
+                                data-action="taken-aanmaken--manager#taaktypeVerwijderenHandler:prevent">
+                            {% include "icons/bin.svg" %}
+                        </button>
+                    </div>
+                </summary>
+                <div class="container__flex">
+                    <div>
+                        <h3>Taak</h3>
+                        <strong data-omschrijving></strong>
+                        <p data-toelichting="..."></p>
+                        <h3>Afdeling(en)</h3>
+                        <span data-afdelingen></span>
+                    </div>
+                    <div>
+                        <h3>Opmerking</h3>
+                        <textarea name="form-0-bericht"
+                                  maxlength="5000"
+                                  rows="4"
+                                  id="id_form-0-bericht"
+                                  data-action="taken-aanmaken--manager#taaktypeBerichtHandler"></textarea>
+                        <p class="help-text">De opmerking wordt met de uitvoerder gedeeld.</p>
+                        <input type="hidden"
+                               name="form-0-titel"
+                               maxlength="200"
+                               id="id_form-0-titel">
+                        <input type="hidden"
+                               name="form-0-melding_uuid"
+                               id="id_form-0-melding_uuid"
+                               value="">
+                        <input type="hidden"
+                               name="form-0-taakapplicatie_taaktype_url"
+                               id="id_form-0-taakapplicatie_taaktype_url"
+                               value="">
+                        <input type="hidden"
+                               name="form-0-gebruiker"
+                               id="id_form-0-gebruiker"
+                               value="admin@admin.com">
+                        {% comment %} {{ form.empty_form }} {% endcomment %}
+                    </div>
                 </div>
-                <div>
-                    <span data-verantwoordelijke-afdeling></span>
-                </div>
-                <div>
-                    <span class="cta--summary">Opmerking toevoegen</span>
-                    <button role="button"
-                            class="btn--clean btn--remove"
-                            data-action="taken-aanmaken--manager#taaktypeVerwijderenHandler:prevent">
-                        {% include "icons/bin.svg" %}
-                    </button>
-                </div>
-            </summary>
-            <div class="container__flex">
-                <div>
-                    <h3>Taak</h3>
-                    <strong data-omschrijving></strong>
-                    <p data-toelichting="..."></p>
-                    <h3>Afdeling(en)</h3>
-                    <span data-afdelingen></span>
-                </div>
-                <div>
-                    <h3>Opmerking</h3>
-                    <textarea name="form-0-bericht"
-                              maxlength="5000"
-                              rows="4"
-                              id="id_form-0-bericht"
-                              data-action="taken-aanmaken--manager#taaktypeBerichtHandler"></textarea>
-                    <p class="help-text">De opmerking wordt met de uitvoerder gedeeld.</p>
-                    <input type="hidden"
-                           name="form-0-titel"
-                           maxlength="200"
-                           id="id_form-0-titel">
-                    <input type="hidden"
-                           name="form-0-melding_uuid"
-                           id="id_form-0-melding_uuid"
-                           value="">
-                    <input type="hidden"
-                           name="form-0-taakapplicatie_taaktype_url"
-                           id="id_form-0-taakapplicatie_taaktype_url"
-                           value="">
-                    <input type="hidden"
-                           name="form-0-gebruiker"
-                           id="id_form-0-gebruiker"
-                           value="admin@admin.com">
-                    {% comment %} {{ form.empty_form }} {% endcomment %}
-                </div>
-            </div>
-        </details>
-    </li>
-</template>
-</turbo-frame>
+            </details>
+        </li>
+    </template>
+{% endblock content %}
