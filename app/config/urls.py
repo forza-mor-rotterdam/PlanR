@@ -4,6 +4,7 @@ from apps.main.views import (
     LichtmastView,
     LoginView,
     LogoutView,
+    ModalContentView,
     TakenAanmakenStreamView,
     TakenAanmakenView,
     gebruiker_info,
@@ -25,9 +26,6 @@ from apps.main.views import (
     melding_spoed_veranderen,
     melding_verzonden,
     meldingen_bestand,
-    msb_importeer_melding,
-    msb_login,
-    msb_melding_zoeken,
     publiceer_topic,
     root,
     sidesheet_actueel,
@@ -53,6 +51,7 @@ from rest_framework.authtoken import views
 urlpatterns = [
     path("", root, name="root"),
     path("api-token-auth/", views.obtain_auth_token),
+    path("modal-content/", ModalContentView.as_view(), name="modal_content"),
     path("session-timer/", SessionTimerView.as_view(), name="session_timer"),
     path(
         "login/",
@@ -82,9 +81,6 @@ urlpatterns = [
     path("publiceer-topic/<uuid:id>/", publiceer_topic, name="publiceer_topic"),
     path("health/", include("health_check.urls")),
     path("healthz/", healthz, name="healthz"),
-    path("msb/login/", msb_login, name="msb_login"),
-    path("msb/zoeken/", msb_melding_zoeken, name="msb_melding_zoeken"),
-    path("msb/importeer/", msb_importeer_melding, name="msb_importeer_melding"),
     path(
         "part/melding/<uuid:id>/afhandelen/",
         melding_afhandelen,

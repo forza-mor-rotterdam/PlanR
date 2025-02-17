@@ -75,7 +75,7 @@
         </script>
     </head>
     <body class="{% block body_class %}{% endblock body_class %}"
-          data-controller="notificaties--manager notificaties--toast-manager focus-trap utils"
+          data-controller=" notificaties--manager notificaties--toast-manager focus-trap modal"
           data-notificaties--manager-snack-overzicht-url-value="{% url 'snack_overzicht_stream' %}"
           data-notificaties--manager-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
           data-notificaties--manager-topic-snack-value="/notificaties/snack/"
@@ -98,7 +98,7 @@
                         {% include "snippets/pageheader.html" %}
                     {% endwith %}
                 {% endblock header %}
-                <main data-controller="main modal">
+                <main data-controller=" main ">
                     <div class="container">
                         {% block body %}
                         {% endblock body %}
@@ -117,5 +117,6 @@
         {% block javascripts_end %}
         {% endblock javascripts_end %}
         <div data-notificaties--toast-manager-target="herlaad"></div>
+        {% include "snippets/modal_template.html" %}
     </body>
 </html>

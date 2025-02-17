@@ -1,0 +1,42 @@
+{% extends "snippets/turbo_stream_wrapper.html" %}
+{% load rotterdam_formulier_html %}
+{% load vind_in_dict from querystring_tags %}
+{% load json_encode from json_tags %}
+<!-- djlint:off -->
+{% block action %}update{% endblock action %}
+{% block target %}modal_content{% endblock target %}
+<!-- djlint:on -->
+{% block content %}
+    <div class="modal-header">
+        <h1>
+            <span>Taak annuleren</span>
+        </h1>
+        <button type="button"
+                class="btn-close"
+                aria-label="Sluit"
+                data-action="modal#closeModal"></button>
+    </div>
+    <div class="modal-body">
+        {% if form.taakopdracht %}
+            <form action="{% url 'taak_annuleren' melding.uuid %}"
+                  method="post"
+                  class="form--horizontal"
+                  data-turbo-frame="_top"
+                  enctype="multipart/form-data">
+                {% csrf_token %}
+                <div data-controller="select2Modal">{{ form.taakopdracht|render_rotterdam_formulier }}</div>
+                <div class="form-control__with-helptext">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
+                <div class="form-row btn-row">
+                    <button type="reset" class="btn btn-tertiary" data-action="modal#closeModal">
+                        <span>Annuleren</span>
+                    </button>
+                    <button type="submit" class="btn btn-action">
+                        <span>Taak annuleren</span>
+                    </button>
+                </div>
+            </form>
+        {% else %}
+            Alle taken zijn afgerond
+        {% endif %}
+    </div>
+{% endblock content %}

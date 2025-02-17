@@ -1,4 +1,3 @@
-import base64
 import logging
 import math
 import os
@@ -9,7 +8,6 @@ import weasyprint
 from apps.context.constanten import FilterManager
 from apps.context.utils import get_gebruiker_context
 from apps.instellingen.models import Instelling
-from apps.main.constanten import MSB_WIJKEN
 from apps.main.forms import (
     TAAK_RESOLUTIE_GEANNULEERD,
     TAAK_STATUS_VOLTOOID,
@@ -23,11 +21,6 @@ from apps.main.forms import (
     MeldingHervattenForm,
     MeldingPauzerenForm,
     MeldingSpoedForm,
-    MSBLoginForm,
-    MSBMeldingZoekenForm,
-    StandaardExterneOmschrijvingAanmakenForm,
-    StandaardExterneOmschrijvingAanpassenForm,
-    StandaardExterneOmschrijvingSearchForm,
     TaakAfrondenForm,
     TaakAnnulerenForm,
     TakenAanmakenForm,
@@ -56,7 +49,6 @@ from apps.main.messages import (
     TAAK_ANNULEREN_ERROR,
     TAAK_ANNULEREN_SUCCESS,
 )
-from apps.main.models import StandaardExterneOmschrijving
 from apps.main.services import MORCoreService, TaakRService
 from apps.main.templatetags.gebruikers_tags import get_gebruiker_object_middels_email
 from apps.main.utils import (
@@ -78,24 +70,14 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.contrib.messages.views import SuccessMessageMixin
 from django.core.files.storage import default_storage
-from django.db.models import Q
 from django.forms import formset_factory
 from django.http import HttpResponse, JsonResponse, QueryDict, StreamingHttpResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
-from django.urls import reverse, reverse_lazy
-from django.utils import timezone
-from django.views.generic import (
-    CreateView,
-    DeleteView,
-    FormView,
-    ListView,
-    TemplateView,
-    UpdateView,
-    View,
-)
+from django.urls import reverse
+from django.views.generic import FormView, TemplateView, View
+from django.views.generic.base import ContextMixin
 from utils.diversen import get_index
 from utils.rd_convert import rd_to_wgs
 
@@ -139,6 +121,41 @@ def http_500(request):
             "path": request.build_absolute_uri(request.path),
         },
     )
+
+
+class StreamViewMixin(View):
+    is_stream = True
+
+    def dispatch(self, *args, **kwargs):
+        response = super().dispatch(*args, **kwargs)
+        response.headers["Content-Type"] = "text/vnd.turbo-stream.html"
+        return response
+
+
+class MeldingDetailViewMixin(ContextMixin):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        mor_core_service = MORCoreService()
+        gebruiker_context = get_gebruiker_context(self.request.user)
+        melding = mor_core_service.get_melding(self.kwargs.get("id"))
+        if isinstance(melding, dict) and melding.get("error"):
+            messages.error(request=self.request, message=MELDING_OPHALEN_ERROR)
+            return render(
+                self.request,
+                "melding/melding_actie_form.html",
+            )
+        context.update(
+            {
+                "melding": melding,
+                "locaties": melding_locaties(melding),
+                "gebruiker_context": gebruiker_context,
+            }
+        )
+        return context
+
+
+class ModalContentView(StreamViewMixin, TemplateView):
+    template_name = "melding/detail/modal_content.html"
 
 
 class LoginView(View):
@@ -552,17 +569,6 @@ def melding_afhandelen(request, id):
             "melding/melding_actie_form.html",
         )
 
-    melding_bijlagen = [
-        [
-            b
-            for b in (
-                meldinggebeurtenis.get("taakgebeurtenis", {}).get("bijlagen", [])
-                if meldinggebeurtenis.get("taakgebeurtenis")
-                else []
-            )
-        ]
-        for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
-    ]
     benc_user = request.user.profiel.context.template == "benc"
     signaal = (
         melding.get("signalen_voor_melding")[0]
@@ -577,7 +583,6 @@ def melding_afhandelen(request, id):
             or not signaal.get("melder", {}).get("email")
         )
     )
-    bijlagen_flat = [b for bl in melding_bijlagen for b in bl]
     form = MeldingAfhandelenForm(
         standaard_omschrijving_niet_weergeven=standaard_omschrijving_niet_weergeven
     )
@@ -610,11 +615,10 @@ def melding_afhandelen(request, id):
 
     return render(
         request,
-        "melding/part_melding_afhandelen.html",
+        "melding/detail/melding_afhandelen.html",
         {
             "form": form,
             "melding": melding,
-            "bijlagen": bijlagen_flat,
         },
     )
 
@@ -668,7 +672,7 @@ def melding_annuleren(request, id):
 
     return render(
         request,
-        "melding/part_melding_annuleren.html",
+        "melding/detail/melding_annuleren.html",
         {
             "form": form,
             "melding": melding,
@@ -706,7 +710,7 @@ def melding_heropenen(request, id):
 
     return render(
         request,
-        "melding/melding_heropenen.html",
+        "melding/detail/melding_heropenen.html",
         {
             "form": form,
             "melding": melding,
@@ -750,7 +754,7 @@ def melding_pauzeren(request, id):
 
     return render(
         request,
-        "melding/melding_pauzeren.html",
+        "melding/detail/melding_pauzeren.html",
         {
             "form": form,
             "melding": melding,
@@ -790,7 +794,7 @@ def melding_hervatten(request, id):
 
     return render(
         request,
-        "melding/melding_hervatten.html",
+        "melding/detail/melding_hervatten.html",
         {
             "form": form,
             "melding": melding,
@@ -834,7 +838,7 @@ def melding_spoed_veranderen(request, id):
 
     return render(
         request,
-        "melding/melding_spoed_veranderen.html",
+        "melding/detail/melding_spoed_veranderen.html",
         {
             "form": form,
             "melding": melding,
@@ -842,7 +846,9 @@ def melding_spoed_veranderen(request, id):
     )
 
 
-class TakenAanmakenView(PermissionRequiredMixin, FormView):
+class TakenAanmakenView(
+    MeldingDetailViewMixin, StreamViewMixin, PermissionRequiredMixin, FormView
+):
     form_class = formset_factory(TakenAanmakenForm, extra=0)
     template_name = "melding/detail/taken_aanmaken.html"
     permission_required = "authorisatie.taak_aanmaken"
@@ -957,16 +963,6 @@ class TakenAanmakenStreamView(TakenAanmakenView):
     template_name = "melding/detail/taken_aanmaken_stream.html"
     permission_required = "authorisatie.taak_aanmaken"
 
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        response.headers["Content-Type"] = "text/vnd.turbo-stream.html"
-        return response
-
-    def get(self, request, *args, **kwargs):
-        response = super().get(request, *args, **kwargs)
-        response.headers["Content-Type"] = "text/vnd.turbo-stream.html"
-        return response
-
     def form_invalid(self, form):
         logger.error("TakenAanmakenStreamView: FORM INVALID")
         logger.error(form.errors)
@@ -1043,7 +1039,7 @@ def taak_afronden(request, melding_uuid):
 
     return render(
         request,
-        "melding/part_taak_afronden.html",
+        "melding/detail/taak_afronden.html",
         {
             "form": form,
             "melding": melding,
@@ -1093,7 +1089,7 @@ def taak_annuleren(request, melding_uuid):
             return redirect("melding_detail", id=melding_uuid)
     return render(
         request,
-        "melding/part_taak_annuleren.html",
+        "melding/detail/taak_annuleren.html",
         {
             "form": form,
             "melding": melding,
@@ -1133,7 +1129,7 @@ def informatie_toevoegen(request, id):
             return redirect("melding_detail", id=id)
     return render(
         request,
-        "melding/part_informatie_toevoegen.html",
+        "melding/detail/informatie_toevoegen.html",
         {
             "melding_uuid": id,
             "form": form,
@@ -1145,10 +1141,9 @@ def informatie_toevoegen(request, id):
 @permission_required("authorisatie.medewerker_gegevens_bekijken", raise_exception=True)
 def gebruiker_info(request, gebruiker_email):
     gebruiker = get_gebruiker_object_middels_email(gebruiker_email)
-
     return render(
         request,
-        "melding/part_gebruiker_info.html",
+        "melding/gebruiker_info.html",
         {"gebruiker": gebruiker},
     )
 
@@ -1280,246 +1275,6 @@ def melding_verzonden(request, signaal_uuid):
     )
 
 
-@login_required
-@permission_required("authorisatie.msb_toegang", raise_exception=True)
-def msb_login(request):
-    form = MSBLoginForm()
-    errors = None
-    if request.POST:
-        form = MSBLoginForm(request.POST)
-        is_valid = form.is_valid()
-        if is_valid:
-            msb_base_url = form.cleaned_data.get("omgeving")
-            url = f"{msb_base_url}/sbmob/api/login"
-            login_data = {
-                "uid": form.cleaned_data["gebruikersnummer"],
-                "pwd": form.cleaned_data["wachtwoord"],
-            }
-            response = requests.post(url=url, data=login_data)
-            if response.status_code == 200:
-                request.session["msb_token"] = response.json().get("result")
-                request.session["msb_base_url"] = msb_base_url
-                return redirect(reverse("msb_melding_zoeken"))
-            logger.error("msb_login error=%s", response.text)
-            errors = [response.text]
-
-    return render(request, "msb/login.html", {"form": form, "errors": errors})
-
-
-@login_required
-@permission_required("authorisatie.msb_toegang", raise_exception=True)
-def msb_melding_zoeken(request):
-    if not request.session.get("msb_token"):
-        return redirect(reverse("msb_login"))
-    form = MSBMeldingZoekenForm()
-    msb_data = request.session.get("msb_melding")
-    if request.POST:
-        form = MSBMeldingZoekenForm(request.POST)
-        is_valid = form.is_valid()
-        if is_valid:
-            url = f"{request.session['msb_base_url']}/sbmob/api/msb/melding/{form.cleaned_data.get('msb_nummer')}"
-            response = requests.get(
-                url,
-                headers={
-                    "Authorization": f"Bearer {request.session.get('msb_token')}",
-                },
-            )
-            if response.status_code == 200:
-                msb_data = response.json().get("result", {"test": "test"})
-                request.session["msb_melding"] = response.json().get("result")
-                return redirect(reverse("msb_melding_zoeken"))
-            if response.status_code == 401:
-                return redirect(reverse("msb_login"))
-
-            logger.error("msb melding zoeken error=%s", response.text)
-
-    return render(
-        request,
-        "msb/melding_zoeken.html",
-        {
-            "form": form,
-            "msb_data": msb_data,
-        },
-    )
-
-
-@login_required
-@permission_required("authorisatie.msb_toegang", raise_exception=True)
-def msb_importeer_melding(request):
-    instelling = Instelling.actieve_instelling()
-    if not request.session.get("msb_token"):
-        return redirect(reverse("msb_login"))
-    if not request.session.get("msb_melding"):
-        return redirect(reverse("msb_melding_zoeken"))
-    msb_base_url = request.session["msb_base_url"]
-
-    def _to_base64(binary_file_data):
-        base64_encoded_data = base64.b64encode(binary_file_data)
-        base64_message = base64_encoded_data.decode("utf-8")
-        return base64_message
-
-    msb_data = request.session.get("msb_melding")
-    msb_id = msb_data.get("id")
-    now = timezone.localtime(timezone.now())
-    wijk_buurt = [
-        {
-            "wijknaam": w.get("omschrijving"),
-            "buurtnaam": b.get("omschrijving"),
-        }
-        for w in MSB_WIJKEN
-        for b in w.get("buurten", [])
-        if b.get("code") == msb_data.get("locatie", {}).get("buurtNummer")
-    ]
-    huisnummer = msb_data.get("locatie", {}).get("adres", {}).get("huisnummer")
-    huisletter = None
-    try:
-        huisnummer = int(huisnummer)
-    except Exception:
-        huisletter = huisnummer
-        huisnummer = None
-
-    post_data = {
-        "signaal_url": "https://planr.rotterdam.nl/melding/signaal/42",
-        "melder": {
-            "naam": msb_data.get("melder", {}).get("naam"),
-            "email": msb_data.get("melder", {}).get("email"),
-            "telefoonnummer": msb_data.get("melder", {}).get("telefoon"),
-        },
-        "origineel_aangemaakt": msb_data.get("datumMelding", now.isoformat()),
-        "onderwerpen": [
-            f"{instelling.mor_core_basis_url}/api/v1/onderwerp/grofvuil-op-straat/"
-        ],
-        "omschrijving_melder": msb_data.get("omschrijving", "")[:500],
-        "aanvullende_informatie": msb_data.get("aanvullendeInformatie", "")[:5000],
-        "meta": msb_data,
-        "meta_uitgebreid": {},
-        "adressen": [
-            {
-                "plaatsnaam": "Rotterdam",
-                "straatnaam": msb_data.get("locatie", {})
-                .get("adres", {})
-                .get("straatNaam"),
-            },
-        ],
-    }
-    if huisnummer:
-        post_data["adressen"][0]["huisnummer"] = huisnummer
-    if huisletter:
-        post_data["adressen"][0]["huisletter"] = huisletter
-
-    if wijk_buurt:
-        post_data["adressen"][0]["wijknaam"] = wijk_buurt[0].get("wijknaam")
-        post_data["adressen"][0]["buurtnaam"] = wijk_buurt[0].get("buurtnaam")
-    try:
-        wgs = rd_to_wgs(
-            msb_data.get("locatie", {}).get("x", 0),
-            msb_data.get("locatie", {}).get("y", 0),
-        )
-        post_data["adressen"][0]["geometrie"] = {
-            "type": "Point",
-            "coordinates": [wgs[1], wgs[0]],
-        }
-    except Exception:
-        logger.error("rd x=%s", msb_data.get("locatie", {}).get("x", 0))
-        logger.error("rd y=%s", msb_data.get("locatie", {}).get("y", 0))
-
-    foto_urls = [f"{msb_base_url}{f.get('url')}" for f in msb_data.get("fotos", [])]
-
-    post_data["bijlagen"] = []
-    for f in foto_urls:
-        f_response = requests.get(
-            url=f,
-            headers={
-                "Authorization": f"Bearer {request.session.get('msb_token')}",
-            },
-            stream=True,
-        )
-        b64 = _to_base64(f_response.content)
-        post_data["bijlagen"].append({"bestand": b64})
-
-    MORCoreService().signaal_aanmaken(
-        data=post_data,
-    )
-    del request.session["msb_melding"]
-    return render(
-        request,
-        "msb/melding_importeren.html",
-        {
-            "msb_id": msb_id,
-        },
-    )
-
-
-# Standaard tekst views
-class StandaardExterneOmschrijvingView(View):
-    model = StandaardExterneOmschrijving
-    success_url = reverse_lazy("standaard_externe_omschrijving_lijst")
-
-
-class StandaardExterneOmschrijvingLijstView(
-    StandaardExterneOmschrijvingView, PermissionRequiredMixin, ListView
-):
-    context_object_name = "standaardteksten"
-    permission_required = "authorisatie.standaard_externe_omschrijving_lijst_bekijken"
-    form_class = StandaardExterneOmschrijvingSearchForm
-    template_name = (
-        "standaard_externe_omschrijving/standaard_externe_omschrijving_lijst.html"
-    )
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        search = self.request.GET.get("search", "")
-        if search:
-            queryset = queryset.filter(
-                Q(titel__icontains=search) | Q(tekst__icontains=search)
-            )
-        return queryset
-
-
-class StandaardExterneOmschrijvingAanmakenView(
-    SuccessMessageMixin,
-    StandaardExterneOmschrijvingView,
-    PermissionRequiredMixin,
-    CreateView,
-):
-    form_class = StandaardExterneOmschrijvingAanmakenForm
-    template_name = (
-        "standaard_externe_omschrijving/standaard_externe_omschrijving_aanmaken.html"
-    )
-    permission_required = "authorisatie.standaard_externe_omschrijving_aanmaken"
-    success_message = "De standaard tekst '%(titel)s' is aangemaakt"
-
-
-class StandaardExterneOmschrijvingAanpassenView(
-    SuccessMessageMixin,
-    StandaardExterneOmschrijvingView,
-    PermissionRequiredMixin,
-    UpdateView,
-):
-    form_class = StandaardExterneOmschrijvingAanpassenForm
-    template_name = (
-        "standaard_externe_omschrijving/standaard_externe_omschrijving_aanpassen.html"
-    )
-    permission_required = "authorisatie.standaard_externe_omschrijving_aanpassen"
-    success_message = "De standaard tekst '%(titel)s' is aangepast"
-
-
-class StandaardExterneOmschrijvingVerwijderenView(
-    StandaardExterneOmschrijvingView, PermissionRequiredMixin, DeleteView
-):
-    permission_required = "authorisatie.standaard_externe_omschrijving_verwijderen"
-    success_message = "De standaard tekst '%(titel)s is verwijderd"
-
-    def get(self, request, *args, **kwargs):
-        object = self.get_object()
-        response = self.delete(request, *args, **kwargs)
-        messages.success(request, f"De standaard tekst '{object.titel}' is verwijderd")
-        return response
-
-    # def render_to_response(self, context, **response_kwargs):
-    #     return HttpResponseRedirect(self.get_success_url())
-
-
 # Locatie views
 @login_required
 @permission_required("authorisatie.locatie_aanpassen", raise_exception=True)
@@ -1594,7 +1349,7 @@ def locatie_aanpassen(request, id):
 
         return render(
             request,
-            "melding/part_locatie_aanpassen.html",
+            "melding/detail/locatie_aanpassen.html",
             {
                 "form": form,
                 "melding": melding,
