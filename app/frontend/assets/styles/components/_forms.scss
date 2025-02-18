@@ -319,12 +319,6 @@ textarea {
     }
     input {
         @include form-check-input();
-        &:hover:not([disabled]),
-        &:focus-visible:not([disabled]) {
-            border: 0;
-            box-shadow: none;
-            outline: none !important;
-        }
     }
     label {
         font-weight: 400;
