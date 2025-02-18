@@ -55,12 +55,17 @@ export default class extends Controller {
 
     this.dialogTarget.showModal()
 
-    if (this.params.cssClass) {
-      this.dialogTarget.classList.add(...this.params.cssClass.split(' '))
-    }
-    this.dialogTarget.addEventListener('close', () => {
+    this.dialogTarget.addEventListener('cancel', (e) => {
+      e.preventDefault()
       this.closeModal()
     })
+    requestAnimationFrame(() => {
+      if (this.params.cssClass) {
+        this.dialogTarget.classList.add(...this.params.cssClass.split(' '))
+      }
+      this.dialogTarget.classList.add('fade-in')
+    })
+
     this.dialogTarget.addEventListener('click', (event) => {
       var rect = this.dialogTarget.getBoundingClientRect()
       var isInDialog =
@@ -82,14 +87,13 @@ export default class extends Controller {
   }
   closeModal() {
     this.abortController.abort()
-    this.dialogTarget.close()
-    document.body.classList.remove('show-modal')
-
-    // TODO: dialog transitioned wait and remove
-    this.dialogTarget.addEventListener('transitionend', () => {
-      this.hasdialogTarget && this.dialogTarget.remove()
-    })
-    this.dialogTarget.remove()
+    this.dialogTarget.classList.remove('fade-in')
+    setTimeout(() => {
+      document.body.classList.remove('show-modal')
+      if (this.hasDialogTarget) {
+        this.dialogTarget.remove()
+      }
+    }, 300)
   }
   modalSluitenTargetConnected() {
     this.closeModal()
