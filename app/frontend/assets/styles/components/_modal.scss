@@ -1,19 +1,27 @@
 dialog {
-    margin: 1.5em auto;
     max-height: calc(100% - 3em);
     border-style: none;
     padding: 0;
     align-items: center;
     width: 90%;
     max-width: map-get($container-max-widths, lg);
-    overflow: hidden;
-    &[open] {
+    opacity: 0;
+    box-shadow: 0 0 0 100vw rgba(0, 0, 0, 0);
+    overflow: auto;
+    transition:
+        box-shadow $transition-duration-default $transition-ease-default,
+        opacity $transition-duration-default $transition-ease-default;
+
+    &.fade-in {
+        opacity: 1;
+        transition:
+            box-shadow $transition-duration-default $transition-ease-default,
+            opacity $transition-duration-default $transition-ease-default;
+        box-shadow: 0 0 0 100vw rgba(0, 0, 0, 0.4);
     }
 }
 ::backdrop {
-    background-color: $black;
-    backdrop-filter: blur(10px);
-    opacity: 0.5;
+    background-color: transparent;
 }
 
 @mixin bodyModal {
