@@ -42,7 +42,9 @@ export default class extends Controller {
       })
   }
   dialogTargetConnected() {
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
     document.body.classList.add('show-modal')
+    document.body.style.paddingRight = `${scrollbarWidth}px`
     console.log('CLONE')
     if (this.params.action) {
       this.fetchModalContent(this.params.action)
@@ -90,6 +92,7 @@ export default class extends Controller {
     this.dialogTarget.classList.remove('fade-in')
     setTimeout(() => {
       document.body.classList.remove('show-modal')
+      document.body.style.paddingRight = ``
       if (this.hasDialogTarget) {
         this.dialogTarget.remove()
       }
