@@ -58,6 +58,9 @@ export default class extends Controller {
     if (this.params.cssClass) {
       this.dialogTarget.classList.add(...this.params.cssClass.split(' '))
     }
+    this.dialogTarget.addEventListener('close', () => {
+      this.closeModal()
+    })
     this.dialogTarget.addEventListener('click', (event) => {
       var rect = this.dialogTarget.getBoundingClientRect()
       var isInDialog =
