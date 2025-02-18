@@ -194,9 +194,20 @@
             cursor: zoom-out;
         }
     }
+    &.fullSize {
+        .image {
+            background-size: cover;
+            cursor: zoom-out;
+        }
+    }
 
     .image-counter {
         line-height: 40px;
+    }
+    .image-label {
+        position: absolute;
+        right: 0;
+        bottom: 40px;
     }
 
     .container__navigate-images {
@@ -244,6 +255,16 @@
 
         .navigate-images--right {
             right: 0;
+        }
+    }
+    &.fullSize {
+        .image {
+            background-size: cover;
+            cursor: zoom-out;
+        }
+        .container__navigate-images {
+            pointer-events: none;
+            opacity: 0;
         }
     }
 }
