@@ -7,6 +7,7 @@ export default class extends Controller {
     defaultLatLon: String,
   }
   init() {
+    this.markerList = []
     this.coordinates = []
     const url =
       'https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/{layerName}/{crs}/{z}/{x}/{y}.{format}'
@@ -38,13 +39,22 @@ export default class extends Controller {
   }
   pinTargetConnected(pin) {
     const latLon = JSON.parse(pin.dataset.latLon)
-    if (latLon) {
+    if (latLon && pin.dataset.pinId) {
       this.coordinates.push(latLon)
-      const marker = new L.Marker(latLon, { icon: this.markerMagenta() })
+      const marker = new L.Marker(latLon, {
+        icon: this.markerMagenta(),
+        markerId: pin.dataset.pinId,
+      })
       marker.addTo(this.map)
-      pin.dataset.leafletId = marker.leafletId
+      this.markerList.push(marker)
       if (pin.dataset.popupContent) {
         marker.bindPopup(pin.dataset.popupContent)
+      }
+      const details = pin.closest('details')
+      if (details) {
+        details.addEventListener('toggle', () => {
+          marker.setIcon(details.hasAttribute('open') ? this.markerGreen() : this.markerMagenta())
+        })
       }
       this.fitMarkers()
     }
