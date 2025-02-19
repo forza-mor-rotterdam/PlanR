@@ -1,18 +1,28 @@
-{% if locaties %}
-    <h4>Lichtmasten({{ locaties|length }})</h4>
-    <ul>
-        {% for locatie in locaties %}
-            <li>
-                <div class="display--flex--md">
-                    <details>
-                        <summary>
-                            <h5>Lichtmast nummer: {{ locatie.lichtmast_id }}</h5>
-                        </summary>
-                        <turbo-frame loading="lazy" src="{% url 'lichtmast' locatie.lichtmast_id %}" id="lichtmast_{{ locatie.lichtmast_id }}">
-                        </turbo-frame>
-                    </details>
+{% if lichtmasten %}
+    <div data-controller="map"
+         data-map-default-lat-lon="[51.924420, 4.477750]">
+        <h4>Lichtmasten({{ lichtmasten|length }})</h4>
+        <ul>
+            {% for lichtmast in lichtmasten %}
+                <li>
+                    <div class="display--flex--md">
+                        <details>
+                            <summary>
+                                <h5>Lichtmast {{ lichtmast.lichtmast_id }}</h5>
+                            </summary>
+                            <turbo-frame src="{% url 'lichtmast' lichtmast.lichtmast_id %}" id="lichtmast_{{ lichtmast.lichtmast_id }}">
+                            </turbo-frame>
+                        </details>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+        <div class="container__map full-width">
+            <div class="map" data-map-target="tiles">
+                <div class="map__overlay">
+                    <span>Gebruik twee vingers om de kaart te verplaatsen</span>
                 </div>
-            </li>
-        {% endfor %}
-    </ul>
+            </div>
+        </div>
+    </div>
 {% endif %}

@@ -1,0 +1,24 @@
+{% load json_encode from json_tags %}
+<turbo-frame id="lichtmast_{{ view.kwargs.lichtmast_id }}">
+<dl>
+    <dt>{{ lichtmast_data.lichtpuntnummer.label }}</dt>
+    <dd>
+        {{ lichtmast_data.lichtpuntnummer.value }}
+    </dd>
+    <dt>{{ lichtmast_data.lichtpunt_id.label }}</dt>
+    <dd>
+        {{ lichtmast_data.lichtpunt_id.value }}
+    </dd>
+    <dt>{{ lichtmast_data.mast_id.label }}</dt>
+    <dd>
+        {{ lichtmast_data.mast_id.value }}
+    </dd>
+    <dt>{{ lichtmast_data.straat.label }}</dt>
+    <dd>
+        {{ lichtmast_data.straat.value }}
+    </dd>
+</dl>
+<div data-map-target="pin"
+     data-popup-content="Test content"
+     data-lat-lon="{{ lichtmast_data.gps.value|json_encode }}"></div>
+</turbo-frame>
