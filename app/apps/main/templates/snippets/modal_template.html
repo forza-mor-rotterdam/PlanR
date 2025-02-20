@@ -1,16 +1,25 @@
 <div data-modal-target="modal">
     <template data-modal-target="template">
         <dialog data-modal-target="dialog">
-            <div class="modal-content" id="modal_content">
-                <div class="modal-header" id="modal_header"></div>
-                <div class="modal-body" id="modal_body"></div>
+            <div class="modal-content" id="modal_content" data-modal-target="content">
+                <div class="modal-header border-bottom"
+                     id="modal_header"
+                     data-modal-target="header">
+                    <h1>
+                        <span id="modal_header_title"></span>
+                        <small id="modal_header_subtitle"></small>
+                    </h1>
+                </div>
+                <div class="modal-body" id="modal_body" data-modal-target="body"></div>
+                <div class="modal-footer border-top"
+                     id="modal_footer"
+                     data-modal-target="footer"></div>
             </div>
+            <button id="modal_close_button"
+                    type="button"
+                    class="btn-close"
+                    aria-label="Sluit"
+                    data-action="modal#closeModal"></button>
         </dialog>
-    </template>
-    <template data-modal-target="templateButton">
-        <button type="button"
-                class="btn-close"
-                aria-label="Sluit"
-                data-action="modal#closeModal"></button>
     </template>
 </div>
