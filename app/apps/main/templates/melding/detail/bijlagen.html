@@ -18,7 +18,7 @@
                         <div class="image" style="background-image: url('{{ bijlage.afbeelding_relative_url|mor_core_url }}')" data-action="click->modal#openModal" data-modal-content-param='
                             {% include "melding/detail/bijlagen_modal_content.html" with bijlage=bijlage only %}
                             ' data-modal-css-class-param="modal-dialog--full">
-                            <span>{{ bijlage.label }}</span>
+                            <span class="tag--in-image">{{ bijlage.label }}</span>
                         </div>
                     </li>
                 {% endfor %}
