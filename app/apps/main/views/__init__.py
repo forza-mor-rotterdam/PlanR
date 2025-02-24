@@ -16,6 +16,25 @@ from apps.main.utils import (
     get_ui_instellingen,
     update_qd_met_standaard_meldingen_filter_qd,
 )
+from apps.main.views.melding_detail import MeldingDetail  # NOQA
+from apps.main.views.melding_detail import TakenAanmakenStreamView  # NOQA
+from apps.main.views.melding_detail import TakenAanmakenView  # NOQA
+from apps.main.views.melding_detail import informatie_toevoegen  # NOQA
+from apps.main.views.melding_detail import locatie_aanpassen  # NOQA
+from apps.main.views.melding_detail import melding_aanmaken  # NOQA
+from apps.main.views.melding_detail import melding_afhandelen  # NOQA
+from apps.main.views.melding_detail import melding_annuleren  # NOQA
+from apps.main.views.melding_detail import melding_heropenen  # NOQA
+from apps.main.views.melding_detail import melding_hervatten  # NOQA
+from apps.main.views.melding_detail import melding_locaties  # NOQA
+from apps.main.views.melding_detail import melding_pauzeren  # NOQA
+from apps.main.views.melding_detail import melding_spoed_veranderen  # NOQA
+from apps.main.views.melding_detail import melding_taken  # NOQA
+from apps.main.views.melding_detail import melding_verzonden  # NOQA
+from apps.main.views.melding_detail import publiceer_topic  # NOQA
+from apps.main.views.melding_detail import taak_afronden  # NOQA
+from apps.main.views.melding_detail import taak_annuleren  # NOQA
+from apps.main.views.melding_list import melding_lijst  # NOQA
 from bs4 import BeautifulSoup
 from config.context_processors import general_settings
 from django.conf import settings
