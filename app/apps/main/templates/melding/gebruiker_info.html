@@ -1,0 +1,47 @@
+<turbo-stream target="modal_header_title" action="update">
+<template>
+    {{ gebruiker.full_name }}
+</template>
+</turbo-stream>
+<turbo-stream target="modal_body" action="update">
+<template>
+    {% if perms.authorisatie.medewerker_gegevens_bekijken %}
+        <p>
+            {% if gebruiker.rechtengroep %}{{ gebruiker.rechtengroep }} |{% endif %}
+            {% if gebruiker.rol %}{{ gebruiker.rol }}{% endif %}
+        </p>
+        <ul class="list-clean">
+            {% if gebruiker.telefoonnummer %}
+                <li class="padding--bottom">
+                    <a href="tel:{{ gebruiker.telefoonnummer }}"
+                       target="_blank"
+                       class="link link--phone">
+                        <svg width="20"
+                             height="22"
+                             viewBox="0 0 14 22"
+                             fill="none"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M1.43934 0.5H12.5607L13.75 1.68934V20.3107L12.5607 21.5H1.43934L0.25 20.3107V1.68934L1.43934 0.5ZM2.06066 2L1.75 2.31066V19.6893L2.06066 20H11.9393L12.25 19.6893V2.31066L11.9393 2H10L9.25 3.5H4.75L4 2H2.06066ZM7 16.25C6.17157 16.25 5.5 16.9216 5.5 17.75C5.5 18.5784 6.17157 19.25 7 19.25C7.82843 19.25 8.5 18.5784 8.5 17.75C8.5 16.9216 7.82843 16.25 7 16.25Z" fill="#00811F" />
+                        </svg>
+                        {{ gebruiker.telefoonnummer }}
+                    </a>
+                </li>
+            {% endif %}
+            <li>
+                <a href="mailto:{{ gebruiker.email }}"
+                   target="_blank"
+                   class="link link--email">
+                    <svg width="20"
+                         height="16"
+                         viewBox="0 0 20 16"
+                         fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M19.75 0.5H0.25V15.5H19.75V0.5ZM1.75 4.5V2H18.25V4.5L10 7.9375L1.75 4.5ZM1.75 6.125V14H18.25V6.125L10 9.5625L1.75 6.125Z" fill="#00811F" />
+                    </svg>
+                    {{ gebruiker.email }}
+                </a>
+            </li>
+        </ul>
+    {% endif %}
+</template>
+</turbo-stream>

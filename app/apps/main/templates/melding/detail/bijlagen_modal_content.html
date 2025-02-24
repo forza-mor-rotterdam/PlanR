@@ -1,0 +1,30 @@
+{% load mor_core_url replace_n from main_tags %}
+<div class="container__modalImageSlider"
+     data-controller="modal-image-slider"
+     tabindex="0"
+     id="modal-image-slider"
+     data-action="keydown.right->modal-image-slider#nextHandler keydown.left->modal-image-slider#previousHandler"
+     data-modal-image-slider-initial-image-uuid-value="{{ bijlage.uuid }}">
+    <div class="image"
+         data-modal-image-slider-target="image"
+         data-action="click->modal-image-slider#imageClickToggleHandler"
+         style="background-image: url({{ bijlage.afbeelding_relative_url|mor_core_url }});
+                background-position: 50% 50%">
+        <span class="tag--in-image" data-modal-image-slider-target="label"></span>
+    </div>
+    <div class="image-counter" data-modal-image-slider-target="counter"></div>
+    <!-- <div class="image-label" data-modal-image-slider-target="label"></div> -->
+    <div class="container__navigate-images"
+         data-modal-image-slider-target="nav">
+        <div class="navigate-images--left inactive"
+             data-modal-image-slider-target="previous"
+             data-action="click->modal-image-slider#previousHandler">
+            <span aria-label="Bekijk vorige afbeelding">{% include "icons/arrow-right.svg" %}</span>
+        </div>
+        <div class="navigate-images--right inactive"
+             data-modal-image-slider-target="next"
+             data-action="click->modal-image-slider#nextHandler">
+            <span aria-label="Bekijk volgende afbeelding">{% include "icons/arrow-right.svg" %}</span>
+        </div>
+    </div>
+</div>

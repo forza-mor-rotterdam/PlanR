@@ -108,13 +108,6 @@ class StandaardKolom:
         )
 
 
-class MSBNummerKolom(StandaardKolom):
-    _key = "msb_nummer"
-    _kolom_hoofd = "MSB Nummer"
-    _kolom_inhoud = "melding.meta.id"
-    _th_standaard_classes = "nowrap"
-
-
 class AdresKolom(StandaardKolom):
     _key = "adres"
     _kolom_hoofd = "Ter hoogte van"

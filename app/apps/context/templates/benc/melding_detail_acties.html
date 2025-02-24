@@ -7,7 +7,7 @@
 {% block content %}
     {% melding_taken melding as taak_info %}
     <p>
-        {% if perms.authorisatie.taak_aanmaken and taaktypes and melding.status.naam != 'afgehandeld' and melding.status.naam != 'geannuleerd' %}
+        {% if perms.authorisatie.taak_aanmaken and taakr_taaktypes_niet_ingebruik_met_afdelingen and melding.status.naam != 'afgehandeld' and melding.status.naam != 'geannuleerd' %}
             <button type="button"
                     class="btn btn-{% if melding.status.naam == 'controle' %}tertiary{% else %}action{% endif %}"
                     data-action="modal#openModal"

@@ -12,18 +12,18 @@ from apps.authorisatie.views import (
     RechtengroepLijstView,
     RechtengroepVerwijderenView,
 )
-from apps.beheer.views import beheer
+from apps.beheer.views import (
+    StandaardExterneOmschrijvingAanmakenView,
+    StandaardExterneOmschrijvingAanpassenView,
+    StandaardExterneOmschrijvingLijstView,
+    StandaardExterneOmschrijvingVerwijderenView,
+    beheer,
+)
 from apps.context.views import (
     ContextAanmakenView,
     ContextAanpassenView,
     ContextLijstView,
     ContextVerwijderenView,
-)
-from apps.main.views import (
-    StandaardExterneOmschrijvingAanmakenView,
-    StandaardExterneOmschrijvingAanpassenView,
-    StandaardExterneOmschrijvingLijstView,
-    StandaardExterneOmschrijvingVerwijderenView,
 )
 from apps.release_notes.views import (
     ReleaseNoteAanmakenView,
