@@ -1,14 +1,10 @@
-{% extends "snippets/turbo_stream_wrapper.html" %}
 {% load rotterdam_formulier_html %}
 {% load vind_in_dict from querystring_tags %}
 {% load json_encode from json_tags %}
 {% load context_template from context_tags %}
-<!-- djlint:off -->
-{% block action %}update{% endblock action %}
-{% block target %}modal_content{% endblock target %}
-<!-- djlint:on -->
-{% block content %}
-    <div class="stap1"
+<turbo-stream target="modal_content" action="update">
+<template>
+    <div class="modal-content stap1"
          data-controller="taken-aanmaken--manager"
          data-focus-trap-target="branch"
          data-taken-aanmaken--manager-afdelingen-value="{{ afdelingen|json_encode }}"
@@ -17,14 +13,10 @@
          data-taken-aanmaken--manager-gebruiker-value="{{ request.user.email }}"
          data-taken-aanmaken--manager-melding-uuid-value="{{ view.kwargs.id }}"
          data-action="click->taken-aanmaken--manager#showHideSearchResult">
-        <div class="modal-header border-bottom">
-            <button type="button"
-                    class="btn-close"
-                    aria-label="Sluit"
-                    data-action="modal#closeModal"></button>
+        <div class="modal-header border-bottom" id="modal_header">
             <h1>
-                <span>Taken aanmaken</span>
-                <small>Selecteer een of meerdere taken. Opmerkingen kunnen later toegevoegd worden.</small>
+                <span id="modal_header_title">Taken aanmaken</span>
+                <small id="modal_header_subtitle"></small>
             </h1>
         </div>
         <div class="modal-body">
@@ -122,22 +114,21 @@
                         {% include "melding/detail/taken_aanmaken_form.html" with form=form view=view disable_stream=True %}
                     </div>
                     {% comment %} {% csrf_token %}
-                        {{ form.urgentie }}
-                        <div class="form-control__with-helptext js-validation">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
-                        <div class="form-row btn-row"></div>
-                        <div class="form-row btn-row">
-                            <button type="reset" class="btn btn-tertiary" data-controller="detail" data-action="modal#closeModal" data-modal-target="modal">
-                                <span>Annuleren</span>
-                            </button>
-                            <button type="submit" class="btn btn-action">
-                                <span>{{ form.submit_label }}</span>
-                            </button>
+                            {{ form.urgentie }}
+                            <div class="form-control__with-helptext js-validation">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
+                            <div class="form-row btn-row"></div>
+                            <div class="form-row btn-row">
+                                <button type="reset" class="btn btn-tertiary" data-controller="detail" data-action="modal#closeModal" data-modal-target="modal">
+                                    <span>Annuleren</span>
+                                </button>
+                                <button type="submit" class="btn btn-action">
+                                    <span>{{ form.submit_label }}</span>
+                                </button>
                     </div> {% endcomment %}
                 </div>
             </section>
         </div>
         <div class="modal-footer border-top">
-            {% comment %} <button class="btn btn-primary">Volgende</button> {% endcomment %}
             <div class="form-row btn-row">
                 <button type="reset"
                         class="btn btn-tertiary stap1"
@@ -169,7 +160,7 @@
     <template id="template_geselecteerd_taaktype">
         <li data-taken-aanmaken--manager-target="geselecteerdTaaktype">
             {# djlint:off #}
-            <span></span>
+                <span></span>
             {# djlint:on #}
             <button class="btn--clean"
                     data-action="taken-aanmaken--manager#taaktypeVerwijderenHandler:prevent">
@@ -228,10 +219,10 @@
                                name="form-0-gebruiker"
                                id="id_form-0-gebruiker"
                                value="admin@admin.com">
-                        {% comment %} {{ form.empty_form }} {% endcomment %}
                     </div>
                 </div>
             </details>
         </li>
     </template>
-{% endblock content %}
+</template>
+</turbo-stream>

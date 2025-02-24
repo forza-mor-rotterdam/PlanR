@@ -390,7 +390,7 @@ def melding_detail(request, id):
 
 
 class LichtmastView(PermissionRequiredMixin, TemplateView):
-    template_name = "melding/detail/lichtmast.html"
+    template_name = "locatie/lichtmast.html"
     permission_required = "authorisatie.melding_bekijken"
 
     def get_context_data(self, **kwargs):
@@ -401,33 +401,52 @@ class LichtmastView(PermissionRequiredMixin, TemplateView):
         soup = BeautifulSoup(response.content, "xml")
         lichtmast_data = {}
         fields = (
-            ("ms:LICHTPUNT_ID", "Lichtmast id"),
-            ("ms:LICHTPUNTNUMMER", "Lichtpuntnummer"),
-            ("ms:LAMP_ID", "Lamp id"),
-            ("ms:STRAAT", "Straat"),
-            ("ms:BEHEERDER", "Beheerder"),
-            ("ms:EIGENAAR", "Eigenaar"),
-            ("ms:AMBITIENIVEAU", "Ambitieniveau"),
-            ("ms:LAATSTE_MUTATIE_ARMATUUR", "Laatste mutatie armatuur"),
-            ("ms:LAATSTE_MUTATIE_LICHTBRON", "Laatste mutatie lichtbron"),
-            ("ms:PLAATSINGSDATUM_LICHTBRON", "Plaatsingsdatum lichtbron"),
-            ("ms:IND_IN_STORING", "Storing"),
-            ("ms:STORING_OMSCHRIJVINGEN", "Storings omschrijving"),
-            ("gml:pos", "rd"),
+            ("ms:MAST_ID", "Mast id", "mast_id"),
+            ("ms:LICHTPUNT_ID", "Lichtpunt id", "lichtpunt_id"),
+            ("ms:LICHTPUNTNUMMER", "Lichtpuntnummer", "lichtpuntnummer"),
+            ("ms:LAMP_ID", "Lamp id", "lamp_id"),
+            ("ms:STRAAT", "Straat", "straat"),
+            ("ms:BEHEERDER", "Beheerder", "beheerder"),
+            ("ms:EIGENAAR", "Eigenaar", "eigenaar"),
+            ("ms:AMBITIENIVEAU", "Ambitieniveau", "ambitieniveau"),
+            (
+                "ms:LAATSTE_MUTATIE_ARMATUUR",
+                "Laatste mutatie armatuur",
+                "laatste_mutatie_armatuur",
+            ),
+            (
+                "ms:LAATSTE_MUTATIE_LICHTBRON",
+                "Laatste mutatie lichtbron",
+                "laatste_mutatie_lichtbron",
+            ),
+            (
+                "ms:PLAATSINGSDATUM_LICHTBRON",
+                "Plaatsingsdatum lichtbron",
+                "plaatsingsdatum_lichtbron",
+            ),
+            ("ms:IND_IN_STORING", "Storing", "storing"),
+            (
+                "ms:STORING_OMSCHRIJVINGEN",
+                "Storings omschrijving",
+                "storings_omschrijving",
+            ),
+            ("gml:pos", "rd", "rd"),
         )
-
         lichtmast_data = [
-            (f[1], soup.find_all(f[0])[0].text if soup.find_all(f[0]) else "-")
+            (f[2], f[1], soup.find_all(f[0])[0].text if soup.find_all(f[0]) else "-")
             for f in fields
         ]
         rd_list = (
-            lichtmast_data[-1][1].split(" ")
-            if len(lichtmast_data[-1][1].split(" ")) == 2
+            lichtmast_data[-1][2].split(" ")
+            if len(lichtmast_data[-1][2].split(" ")) == 2
             else []
         )
         rd = [float(xy) for xy in rd_list]
-        print(rd)
-        lichtmast_data.append(("gps", rd_to_wgs(*rd) if rd else []))
+        lichtmast_data.append(("gps", "gps", rd_to_wgs(*rd) if rd else []))
+        lichtmast_data = {
+            lm[0]: {"value": lm[2], "label": lm[1]} for lm in lichtmast_data
+        }
+
         context.update(
             {
                 "lichtmast_data": lichtmast_data,

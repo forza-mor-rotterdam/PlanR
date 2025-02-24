@@ -2,7 +2,16 @@ import { Controller } from '@hotwired/stimulus'
 import { renderStreamMessage } from '@hotwired/turbo'
 
 export default class extends Controller {
-  static targets = ['modal', 'modalSluiten', 'template', 'templateButton', 'dialog']
+  static targets = [
+    'modal',
+    'modalSluiten',
+    'template',
+    'dialog',
+    'content',
+    'header',
+    'body',
+    'footer',
+  ]
 
   connect() {
     this.observer = new MutationObserver((mutationList) => {
@@ -27,7 +36,7 @@ export default class extends Controller {
     e.preventDefault()
     this.abortController = new AbortController()
     this.params = e.params
-    if (!this.hasTemplateTarget || !this.hasModalTarget || !this.hasTemplateButtonTarget) {
+    if (!this.hasTemplateTarget || !this.hasModalTarget) {
       return
     }
     const templateClone = this.getCloneModalTemplate()
@@ -41,7 +50,7 @@ export default class extends Controller {
         console.error(` Err: ${err}`)
       })
   }
-  dialogTargetConnected() {
+  contentTargetConnected() {
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
     document.body.classList.add('show-modal')
     document.body.style.paddingRight = `${scrollbarWidth}px`
@@ -50,9 +59,8 @@ export default class extends Controller {
       this.fetchModalContent(this.params.action)
       // this.observer.observe(this.dialogTarget, { childList: true })
     } else if (this.params.content) {
-      this.dialogTarget.innerHTML = ''
-      this.dialogTarget.insertAdjacentHTML('beforeend', this.params.content)
-      this.dialogTarget.appendChild(this.templateButtonTarget.content.cloneNode(true))
+      this.contentTarget.innerHTML = ''
+      this.contentTarget.insertAdjacentHTML('beforeend', this.params.content)
     }
 
     this.dialogTarget.showModal()

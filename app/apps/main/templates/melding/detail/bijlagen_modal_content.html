@@ -9,9 +9,11 @@
          data-modal-image-slider-target="image"
          data-action="click->modal-image-slider#imageClickToggleHandler"
          style="background-image: url({{ bijlage.afbeelding_relative_url|mor_core_url }});
-                background-position: 50% 50%"></div>
+                background-position: 50% 50%">
+        <span class="tag--in-image" data-modal-image-slider-target="label"></span>
+    </div>
     <div class="image-counter" data-modal-image-slider-target="counter"></div>
-    <div class="image-label" data-modal-image-slider-target="label"></div>
+    <!-- <div class="image-label" data-modal-image-slider-target="label"></div> -->
     <div class="container__navigate-images"
          data-modal-image-slider-target="nav">
         <div class="navigate-images--left inactive"

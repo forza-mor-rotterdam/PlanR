@@ -9,6 +9,15 @@
         pointer-events: none;
     }
 }
+
+.tag--in-image {
+    font-size: 0.625rem;
+    padding: 6px 10px;
+    background-color: $blue-100;
+    width: auto;
+    border-radius: 4px;
+}
+
 .container__imageslider {
     overflow-x: auto;
     scroll-snap-type: x mandatory;
@@ -40,15 +49,11 @@
             background-repeat: no-repeat;
             position: relative;
 
-            span {
-                position: absolute;
-                bottom: 0;
-                left: 0;
+            .tag--in-image {
                 display: inline-block;
-                padding: 2px 8px;
-                background-color: $blue-light;
-                color: $white;
-                font-size: 12px;
+                position: absolute;
+                right: 0.667rem;
+                bottom: 0.667rem;
             }
         }
     }
@@ -149,7 +154,7 @@
 }
 
 .container__modalImageSlider {
-    padding: 1% 1% 40px;
+    padding: 1vh 1vh 40px;
     height: calc(100% - 1% - 40px);
 
     .modal-dialog {
@@ -193,6 +198,12 @@
             background-size: cover;
             cursor: zoom-out;
         }
+
+        .tag--in-image {
+            position: absolute;
+            right: 10px;
+            bottom: 7px;
+        }
     }
     &.fullSize {
         .image {
@@ -203,11 +214,7 @@
 
     .image-counter {
         line-height: 40px;
-    }
-    .image-label {
-        position: absolute;
-        right: 0;
-        bottom: 40px;
+        font-size: 0.625rem;
     }
 
     .container__navigate-images {

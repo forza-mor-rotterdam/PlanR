@@ -7,12 +7,14 @@
     {% if request.user.is_authenticated %}
         <div class="container__user">
             <div class="container__uitklapper"
+                 data-topbar-target="containerUitklapper"
                  data-action="click->topbar#show"
                  tabindex="0">
                 <turbo-frame id="tf_snack_overzicht" src="{% url 'snack_overzicht' %}">
                 </turbo-frame>
             </div>
             <div class="container__uitklapper"
+                 data-topbar-target="containerUitklapper"
                  data-action="click->topbar#show"
                  tabindex="0">
                 <span class="trigger--profile">

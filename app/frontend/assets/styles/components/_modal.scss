@@ -135,7 +135,7 @@ body.show-modal--first-filter {
         }
 
         .btn-close {
-            &:focus {
+            &:focus-visible {
                 outline-width: thin !important;
             }
         }
