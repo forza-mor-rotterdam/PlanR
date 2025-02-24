@@ -116,3 +116,8 @@ def melding_taken(melding):
 @register.simple_tag
 def melding_naar_tijdlijn(melding):
     return base_melding_naar_tijdlijn(melding)
+
+
+@register.filter(name="get")
+def get(d, k):
+    return d.get(k, None)

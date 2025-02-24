@@ -11,7 +11,7 @@
                 Hi!!!
             </h1>
         ">Modal test action</a>
-        {% if perms.authorisatie.taak_aanmaken and taaktypes and melding.status.naam != 'afgehandeld' and melding.status.naam != 'geannuleerd' and melding.status.naam != "pauze" and melding.status.naam != "wachten_melder" %}
+        {% if perms.authorisatie.taak_aanmaken and taakr_taaktypes_niet_ingebruik_met_afdelingen and melding.status.naam != 'afgehandeld' and melding.status.naam != 'geannuleerd' and melding.status.naam != "pauze" and melding.status.naam != "wachten_melder" %}
             <button type="button"
                     class="btn btn-{% if melding.status.naam == 'controle' %}tertiary{% else %}action{% endif %}"
                     data-action="modal#openModal"
