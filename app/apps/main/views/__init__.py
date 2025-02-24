@@ -16,7 +16,6 @@ from apps.main.utils import (
     get_ui_instellingen,
     update_qd_met_standaard_meldingen_filter_qd,
 )
-from apps.main.views.mixins import StreamViewMixin
 from bs4 import BeautifulSoup
 from config.context_processors import general_settings
 from django.conf import settings
@@ -71,10 +70,6 @@ def http_500(request):
             "path": request.build_absolute_uri(request.path),
         },
     )
-
-
-class ModalContentView(StreamViewMixin, TemplateView):
-    template_name = "melding/detail/modal_content.html"
 
 
 class LoginView(View):

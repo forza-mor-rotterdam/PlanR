@@ -5,7 +5,6 @@ from apps.main.views import (
     LoginView,
     LogoutView,
     MeldingDetail,
-    ModalContentView,
     TakenAanmakenStreamView,
     TakenAanmakenView,
     gebruiker_info,
@@ -51,7 +50,6 @@ from rest_framework.authtoken import views
 urlpatterns = [
     path("", root, name="root"),
     path("api-token-auth/", views.obtain_auth_token),
-    path("modal-content/", ModalContentView.as_view(), name="modal_content"),
     path("session-timer/", SessionTimerView.as_view(), name="session_timer"),
     path(
         "login/",
