@@ -34,7 +34,7 @@
                                        placeholder="Zoek een taak..." />
                                 <ul data-taken-aanmaken--manager-target="searchResultContainer"
                                     class="list__search-result">
-                                    {% for taakr_taaktype in taakr_taaktypes_met_afdelingen %}
+                                    {% for taakr_taaktype in taakr_taaktypes_niet_ingebruik_met_afdelingen %}
                                         {% with taakr_taaktype_links=taakr_taaktype|get:"_links" %}
                                             <li data-row-search-target="row">
                                                 <label for="id_search-{{ taakr_taaktype_links.taakapplicatie_taaktype_url }}">
