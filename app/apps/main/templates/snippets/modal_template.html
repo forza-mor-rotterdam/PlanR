@@ -1,6 +1,12 @@
 <div data-modal-target="modal">
     <template data-modal-target="template">
         <dialog data-modal-target="dialog">
+            <button id="modal_close_button"
+                    type="button"
+                    class="btn-close"
+                    aria-label="Sluit"
+                    data-action="modal#closeModal"
+                    autofocus></button>
             <div class="modal-content" id="modal_content" data-modal-target="content">
                 <div class="modal-header border-bottom"
                      id="modal_header"
@@ -12,11 +18,6 @@
                 </div>
                 <div class="modal-body" id="modal_body" data-modal-target="body"></div>
             </div>
-            <button id="modal_close_button"
-                    type="button"
-                    class="btn-close"
-                    aria-label="Sluit"
-                    data-action="modal#closeModal"></button>
         </dialog>
     </template>
 </div>

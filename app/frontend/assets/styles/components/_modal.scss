@@ -19,6 +19,13 @@ dialog {
             opacity $transition-duration-default $transition-ease-default;
         box-shadow: 0 0 0 100vw rgba(0, 0, 0, 0.4);
     }
+
+    .btn-close {
+        z-index: 10;
+        &:focus-visible {
+            outline-width: thin !important;
+        }
+    }
 }
 ::backdrop {
     background-color: transparent;
@@ -131,12 +138,6 @@ body.show-modal--first-filter {
                 font-weight: 400;
                 font-size: 0.888rem;
                 margin-top: 0.5rem;
-            }
-        }
-
-        .btn-close {
-            &:focus-visible {
-                outline-width: thin !important;
             }
         }
 
