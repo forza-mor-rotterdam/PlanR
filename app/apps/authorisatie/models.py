@@ -106,11 +106,6 @@ class BeheerBekijkenPermissie(BasisPermissie):
     codenaam = "beheer_bekijken"
 
 
-class MSBPermissie(BasisPermissie):
-    naam = "MSB toegang"
-    codenaam = "msb_toegang"
-
-
 class ContextLijstBekijkenPermissie(BasisPermissie):
     naam = "Rol lijst bekijken"
     codenaam = "context_lijst_bekijken"
@@ -247,7 +242,6 @@ gebruikersgroep_permissies = (
     GebruikerVerwijderenPermissie,
     GebruikerTerughalenPermissie,
     BeheerBekijkenPermissie,
-    MSBPermissie,
     ContextLijstBekijkenPermissie,
     ContextAanmakenPermissie,
     ContextBekijkenPermissie,

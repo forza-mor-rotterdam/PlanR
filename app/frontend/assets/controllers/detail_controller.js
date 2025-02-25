@@ -2,15 +2,7 @@ import { Controller } from '@hotwired/stimulus'
 import { visit } from '@hotwired/turbo'
 import L from 'leaflet'
 
-let lastFocussedItem = null
-let sliderContainerWidth,
-  imageSliderWidth,
-  imageSliderThumbContainer = null,
-  detailScrollY = 0,
-  selectedImageIndex = 0,
-  imagesList = null,
-  fullSizeImageContainer = null,
-  keyFunctions = null,
+let detailScrollY = 0,
   distance = 0,
   actionsHeight = 0
 
@@ -21,23 +13,7 @@ export default class extends Controller {
     afbeeldingen: String,
     urlPrefix: String,
   }
-  static targets = [
-    'selectedImage',
-    'selectedImageModal',
-    'thumbList',
-    'imageSliderContainer',
-    'imageSliderThumbContainer',
-    'turboActionModal',
-    'modalAfhandelen',
-    'modalImages',
-    'imageSliderWidth',
-    'navigateImagesLeft',
-    'navigateImagesRight',
-    'imageCounter',
-    'btnToTop',
-    'containerActions',
-    'lichtmast',
-  ]
+  static targets = ['turboActionModal', 'btnToTop', 'containerActions', 'lichtmast']
 
   initialize() {
     this.coordinates = []
@@ -60,15 +36,6 @@ export default class extends Controller {
       (locatie) => locatie.geometrie?.coordinates && locatie.primair
     )
     const locatie = locatiePrimair ? locatiePrimair : validLocaties[0]
-
-    if (this.hasThumbListTarget) {
-      const element = this.thumbListTarget.getElementsByTagName('li')[0]
-      element.classList.add('selected')
-      imageSliderWidth = this.imageSliderWidthTarget
-      imageSliderThumbContainer = this.imageSliderThumbContainerTarget
-      sliderContainerWidth = imageSliderWidth.offsetWidth
-      imageSliderThumbContainer.style.maxWidth = `${sliderContainerWidth}px`
-    }
     const mapDiv = document.getElementById('incidentMap')
     this.mapLayers = {
       containers: {
@@ -144,14 +111,6 @@ export default class extends Controller {
       this.fitMarkers()
       new L.Marker(this.coordinates[0], { icon: this.markerGreen() }).addTo(this.map)
     }
-
-    if (this.hasThumbListTarget) {
-      const resizeObserver = new ResizeObserver(() => {
-        sliderContainerWidth = imageSliderWidth.offsetWidth
-        imageSliderThumbContainer.style.maxWidth = `${sliderContainerWidth}px`
-      })
-      resizeObserver.observe(imageSliderWidth)
-    }
   }
 
   connect() {
@@ -159,25 +118,6 @@ export default class extends Controller {
     this.urlParams = new URLSearchParams(window.location.search)
     this.tabIndex = Number(this.urlParams.get('tabIndex'))
     this.selectTab(this.tabIndex || 1)
-    if (this.afbeeldingenValue) {
-      imagesList = JSON.parse(this.afbeeldingenValue).map(
-        (bestand) => bestand.afbeelding_relative_url
-      )
-    }
-
-    keyFunctions = (e) => {
-      if (e.key === 'Escape') {
-        this.closeModal()
-      }
-      if (e.key === 'ArrowLeft') {
-        this.showPreviousImageInModal()
-      }
-      if (e.key === 'ArrowRight') {
-        this.showNextImageInModal()
-      }
-    }
-
-    document.addEventListener('keyup', keyFunctions)
     actionsHeight = this.containerActionsTarget.offsetHeight
     window.addEventListener(
       'scroll',
@@ -271,11 +211,6 @@ export default class extends Controller {
       }
     }
   }
-
-  disconnect() {
-    document.removeEventListener('keyup', keyFunctions)
-  }
-
   scrollToTop(e) {
     e.target.blur()
     window.scrollTo({
@@ -344,169 +279,10 @@ export default class extends Controller {
       layerTypes.map((type) => this.map.removeLayer(this.mapLayers[type].layer))
     }
   }
-  openModal(event) {
-    event.preventDefault()
-    console.log('___openModal from detail_controller')
-    const modal = this.modalAfhandelenTarget
-    const modalBackdrop = document.querySelector('.modal-backdrop')
-    this.turboActionModalTarget.setAttribute('src', event.params.action)
-    this.turboActionModalTarget.addEventListener('turbo:frame-load', (event) => {
-      if (event.target.children.length) {
-        modal.classList.add('show')
-        modalBackdrop.classList.add('show')
-        document.body.classList.add('show-modal')
-      }
-    })
-
-    // lastFocussedItem = event.target.closest('button')
-    // setTimeout(function () {
-    //   const closeButton = modal.querySelectorAll('.btn-close')[0]
-    //   if (closeButton) {
-    //     closeButton.focus()
-    //   }
-    // }, 1000)
-  }
-
-  closeModal() {
-    const modalBackdrop = document.querySelector('.modal-backdrop')
-    if (this.hasModalAfhandelenTarget) {
-      this.modalAfhandelenTarget.classList.remove('show')
-    }
-    if (this.hasModalImagesTarget) {
-      this.modalImagesTarget.classList.remove('show')
-    }
-    modalBackdrop.classList.remove('show')
-    document.body.classList.remove('show-modal')
-    if (lastFocussedItem) {
-      lastFocussedItem.focus()
-    }
-    if (this.hasTurboActionModalTarget) {
-      this.turboActionModalTarget.innerHTML = ''
-    }
-    window.removeEventListener('mousemove', this.getRelativeCoordinates, true)
-  }
-
-  onScrollSlider() {
-    this.highlightThumb(
-      Math.floor(
-        this.imageSliderContainerTarget.scrollLeft / this.imageSliderContainerTarget.offsetWidth
-      )
-    )
-  }
-
-  imageScrollInView(index) {
-    this.imageSliderContainerTarget.scrollTo({
-      left: Number(index) * this.imageSliderContainerTarget.offsetWidth,
-      top: 0,
-    })
-  }
-
-  selectImage(e) {
-    this.imageScrollInView(e.params.imageIndex)
-    this.deselectThumbs(e.target.closest('ul'))
-    e.target.closest('li').classList.add('selected')
-  }
-
-  highlightThumb(index) {
-    this.deselectThumbs(this.thumbListTarget)
-    const thumb = this.thumbListTarget.getElementsByTagName('li')[index]
-    thumb.classList.add('selected')
-    const thumbWidth = thumb.offsetWidth
-    const offsetNum = thumbWidth * index
-    const maxScroll = this.thumbListTarget.offsetWidth - sliderContainerWidth
-
-    const newLeft =
-      offsetNum - sliderContainerWidth / 2 > 0
-        ? offsetNum - sliderContainerWidth / 3 < maxScroll
-          ? offsetNum - sliderContainerWidth / 3
-          : maxScroll
-        : 0
-    this.thumbListTarget.style.left = `-${newLeft}px`
-  }
-
-  deselectThumbs(list) {
-    for (const item of list.querySelectorAll('li')) {
-      item.classList.remove('selected')
-    }
-  }
-
   cancelInformatieToevoegen(e) {
     const form = e.target.closest('form')
     // form.find(input["type=file"]).value=null
     form.reset()
     e.target.closest('details').open = false
-  }
-
-  showPreviousImageInModal() {
-    if (selectedImageIndex > 0) {
-      selectedImageIndex--
-      this.showImage()
-    }
-  }
-
-  showNextImageInModal() {
-    if (selectedImageIndex < imagesList.length - 1) {
-      selectedImageIndex++
-      this.showImage()
-    }
-  }
-
-  showImage() {
-    this.selectedImageModalTarget.style.backgroundImage = `url('${this.urlPrefixValue}${imagesList[selectedImageIndex]}')`
-    this.showHideImageNavigation()
-    this.imageCounterTarget.textContent = `Foto ${selectedImageIndex + 1} van ${imagesList.length}`
-    this.imageScrollInView(selectedImageIndex) //image in detailpage
-    fullSizeImageContainer = this.selectedImageModalTarget
-    this.showNormal()
-    window.addEventListener('mousemove', this.getRelativeCoordinates, true)
-    this.selectedImageModalTarget.addEventListener('click', this.showLarge)
-  }
-
-  getRelativeCoordinates(e) {
-    if (fullSizeImageContainer.classList.contains('fullSize')) {
-      fullSizeImageContainer.style.backgroundPosition = `
-        ${(e.clientX * 100) / window.innerWidth}%
-        ${(e.clientY * 100) / window.innerHeight}%
-        `
-    }
-  }
-
-  showLarge() {
-    if (fullSizeImageContainer.classList.contains('fullSize')) {
-      fullSizeImageContainer.classList.remove('fullSize')
-      fullSizeImageContainer.style.backgroundPosition = '50% 50%'
-      window.removeEventListener('mousemove', this.getRelativeCoordinates, true)
-    } else {
-      fullSizeImageContainer.classList.add('fullSize')
-      window.addEventListener('mousemove', this.getRelativeCoordinates, true)
-    }
-  }
-
-  showNormal() {
-    fullSizeImageContainer.classList.remove('fullSize')
-    fullSizeImageContainer.style.backgroundPosition = '50% 50%'
-    window.removeEventListener('mousemove', this.getRelativeCoordinates, true)
-  }
-
-  showHideImageNavigation() {
-    this.navigateImagesLeftTarget.classList.remove('inactive')
-    this.navigateImagesRightTarget.classList.remove('inactive')
-    if (selectedImageIndex === 0) {
-      this.navigateImagesLeftTarget.classList.add('inactive')
-    }
-    if (selectedImageIndex === imagesList.length - 1) {
-      this.navigateImagesRightTarget.classList.add('inactive')
-    }
-  }
-
-  showImageInModal(e) {
-    selectedImageIndex = e.params.imageIndex
-    const modal = this.modalImagesTarget
-    const modalBackdrop = document.querySelector('.modal-backdrop')
-    modal.classList.add('show')
-    modalBackdrop.classList.add('show')
-    document.body.classList.add('show-modal')
-
-    this.showImage()
   }
 }

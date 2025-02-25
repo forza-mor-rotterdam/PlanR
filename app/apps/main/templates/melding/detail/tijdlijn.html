@@ -91,7 +91,7 @@
                                                     <dd>
                                                         {{ row_data.mg.taakgebeurtenis.aangemaakt_op|to_datetime }}
                                                     </dd>
-                                                    {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
+                                                    {% include "melding/gebruiker_modal_link.html" with gebruiker=row_data.mg.taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
                                                 {% elif row_data.mg.taakgebeurtenis.taakstatus.naam|lower != "nieuw" %}
                                                     {% if row_data.mg.taakgebeurtenis.aangemaakt_op %}
                                                         <dt>Taak afgehandeld</dt>
@@ -99,7 +99,7 @@
                                                             {{ row_data.mg.taakgebeurtenis.aangemaakt_op|to_datetime }}
                                                         </dd>
                                                     {% endif %}
-                                                    {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
+                                                    {% include "melding/gebruiker_modal_link.html" with gebruiker=row_data.mg.taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
                                                     <dt>Status</dt>
                                                     <dd>
                                                         {% if row_data.mg.taakgebeurtenis.resolutie %}{{ row_data.mg.taakgebeurtenis.resolutie|vertaal }}{% endif %}
@@ -111,7 +111,7 @@
                                                             {{ row_data.mg.taakgebeurtenis.aangemaakt_op|to_datetime }}
                                                         </dd>
                                                     {% endif %}
-                                                    {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
+                                                    {% include "melding/gebruiker_modal_link.html" with gebruiker=row_data.mg.taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
                                                     <dt>Status</dt>
                                                     <dd>
                                                         {{ row_data.mg.taakgebeurtenis.taakstatus.naam }}
@@ -130,14 +130,14 @@
                                                         {{ row_data.mg.aangemaakt_op|to_datetime }}
                                                     </dd>
                                                 {% endif %}
-                                                {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email %}
+                                                {% include "melding/gebruiker_modal_link.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email %}
                                                 {% if row_data.mg.omschrijving_intern %}
                                                     <dt>Interne opmerking</dt>
                                                     <dd>
                                                         {{ row_data.mg.omschrijving_intern }}
                                                     </dd>
                                                 {% endif %}
-                                                {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.taakgebeurtenis.additionele_informatie.uitvoerder|get_gebruiker_object_middels_email %}
+                                                {% include "melding/gebruiker_modal_link.html" with gebruiker=row_data.mg.taakgebeurtenis.additionele_informatie.uitvoerder|get_gebruiker_object_middels_email %}
                                             {% elif row_data.mg.urgentie %}
                                                 {% if row_data.mg.aangemaakt_op %}
                                                     <dt>
@@ -151,7 +151,7 @@
                                                         {{ row_data.mg.aangemaakt_op|to_datetime }}
                                                     </dd>
                                                 {% endif %}
-                                                {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email %}
+                                                {% include "melding/gebruiker_modal_link.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email %}
                                                 {% if row_data.mg.omschrijving_intern %}
                                                     <dt>Interne opmerking</dt>
                                                     <dd>
@@ -170,7 +170,7 @@
                                                         {{ row_data.mg.aangemaakt_op|to_datetime }}
                                                     </dd>
                                                 {% endif %}
-                                                {% include "melding/part_gebruiker_modal_link.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email %}
+                                                {% include "melding/gebruiker_modal_link.html" with gebruiker=row_data.mg.gebruiker|get_gebruiker_object_middels_email %}
                                                 {% if row_data.mg.omschrijving_extern %}
                                                     <dt>Bericht voor de melder</dt>
                                                     <dd>

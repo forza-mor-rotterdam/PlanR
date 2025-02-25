@@ -65,7 +65,7 @@ def get_bijlagen(melding):
             **bijlage,
             "signaal": signaal,
             "aangemaakt_op": signaal.get("aangemaakt_op"),
-            "label": f"Foto van melder({signaal.get('bron_id')}): {signaal.get('bron_signaal_id')}",
+            "label": "Foto van melder",
         }
         for signaal in melding.get("signalen_voor_melding", [])
         for bijlage in signaal.get("bijlagen", [])
@@ -75,7 +75,7 @@ def get_bijlagen(melding):
             **bijlage,
             "meldinggebeurtenis": meldinggebeurtenis,
             "aangemaakt_op": meldinggebeurtenis.get("aangemaakt_op"),
-            "label": "Foto van medewerker",
+            "label": f"Midoffice({meldinggebeurtenis.get('gebruiker')})",
         }
         for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
         for bijlage in meldinggebeurtenis.get("bijlagen", [])
@@ -87,7 +87,7 @@ def get_bijlagen(melding):
             "aangemaakt_op": meldinggebeurtenis.get("taakgebeurtenis", {}).get(
                 "aangemaakt_op"
             ),
-            "label": "Foto van medewerker",
+            "label": f"Medewerker({meldinggebeurtenis.get('taakgebeurtenis', {}).get('gebruiker')})",
         }
         for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
         for bijlage in (
@@ -116,3 +116,8 @@ def melding_taken(melding):
 @register.simple_tag
 def melding_naar_tijdlijn(melding):
     return base_melding_naar_tijdlijn(melding)
+
+
+@register.filter(name="get")
+def get(d, k):
+    return d.get(k, None)
