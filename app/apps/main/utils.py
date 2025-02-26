@@ -165,6 +165,8 @@ def update_qd_met_standaard_meldingen_filter_qd(qd, gebruiker_context=None):
     meldingen_filter_qd = QueryDict("", mutable=True)
     if gebruiker_context:
         for k, v in gebruiker_context.standaard_filters.items():
+            if k == "pre_onderwerp":
+                continue
             if isinstance(v, (list, tuple)):
                 for vv in v:
                     meldingen_filter_qd.update({k: vv})
