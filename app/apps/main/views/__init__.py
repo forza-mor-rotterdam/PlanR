@@ -354,7 +354,9 @@ def melding_next(request, id, richting):
             form_qs, gebruiker_context
         )
         meldingen_data = mor_core_service.get_melding_lijst(
-            query_string=FilterManager().get_query_string(meldingen_filter_query_dict)
+            query_string=FilterManager(
+                gebruiker_context=gebruiker_context
+            ).get_query_string(meldingen_filter_query_dict)
         )
         if isinstance(meldingen_data, dict) and meldingen_data.get("error"):
             messages.error(request=request, message=MELDING_LIJST_OPHALEN_ERROR)
