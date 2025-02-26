@@ -1,7 +1,7 @@
 import string
 
 from apps.main.constanten import BEGRAAFPLAATSEN, VERTALINGEN
-from apps.main.services import render_onderwerp
+from apps.main.services import MORCoreService, render_onderwerp
 from django.http import QueryDict
 from django.template.loader import get_template
 from django.urls import reverse
@@ -494,6 +494,33 @@ class BuurtFilter(StandaardFilter):
     _key = "buurt"
     _group = True
     _label = "Wijk en buurt"
+
+    def opties(self):
+        buurten_met_wijken = MORCoreService().buurten_met_wijken(cache_timeout=5)
+        wijken = sorted(
+            list(set([locatie["wijknaam"] for locatie in buurten_met_wijken])),
+            key=lambda b: b.lower(),
+        )
+        opties = [
+            [
+                wijk,
+                sorted(
+                    [
+                        [
+                            locatie["buurtnaam"],
+                            {
+                                "label": locatie["buurtnaam"],
+                            },
+                        ]
+                        for locatie in buurten_met_wijken
+                        if wijk == locatie["wijknaam"]
+                    ],
+                    key=lambda b: b[0].lower(),
+                ),
+            ]
+            for wijk in wijken
+        ]
+        return opties
 
 
 FILTERS = (
