@@ -8,7 +8,7 @@ export default class extends Controller {
 
   connect() {
     $(this.targetFieldTarget).select2({
-      dropdownParent: $('#meldingDetailModal'),
+      dropdownParent: $('#dialogGeneral'),
     })
   }
 }

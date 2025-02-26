@@ -137,7 +137,6 @@ export default class extends Controller {
       })
 
       map.on('click', async (event) => {
-        console.log('klik')
         const clickedCoordinates = [event.latlng.lat, event.latlng.lng]
         newLocationMarker.setLatLng(clickedCoordinates)
         this.newLocationCoordinates = clickedCoordinates
@@ -208,22 +207,22 @@ export default class extends Controller {
       })
       map.setView(locatieCoordinates)
     }
-    document.querySelector('#melding_actie_form').addEventListener('scroll', (e) => {
+    document.querySelector('#dialogGeneral').addEventListener('scroll', (e) => {
       e.preventDefault()
       if (document.activeElement != document.querySelector('.leaflet-marker-draggable')) {
-        savedScrollPosition = document.querySelector('#melding_actie_form').scrollTop
+        savedScrollPosition = document.querySelector('#dialogGeneral').scrollTop
       } else {
-        document.querySelector('#melding_actie_form').scrollTop = savedScrollPosition
+        document.querySelector('#dialogGeneral').scrollTop = savedScrollPosition
       }
     })
   }
 
   setScrollBarWidth() {
-    const content = document.querySelector('#melding_actie_form')
+    const content = document.querySelector('#dialogGeneral')
     scrollbarWidth = content.offsetWidth - content.clientWidth
   }
   preventScrollJumps(enable) {
-    const content = document.querySelector('#melding_actie_form')
+    const content = document.querySelector('#dialogGeneral')
 
     if (enable) {
       // Voorkom verspringen door padding toe te voegen
@@ -348,6 +347,8 @@ export default class extends Controller {
     })
   }
   updateAdresResultList(addressList) {
+    console.log('addressList', addressList)
+    console.log('adresResultListTarget', this.adresResultListTarget)
     const currentAddressClass = (address) => (address.current ? ' current-address ' : '')
     const checked = (address) => (address.selected ? 'checked' : '')
     this.adresResultListTarget.innerHTML = ''

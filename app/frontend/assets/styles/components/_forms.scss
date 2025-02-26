@@ -670,6 +670,10 @@ input.form-radio-input {
 
     .select2-dropdown {
         padding: 0;
+
+        &--below {
+            margin-top: -9px;
+        }
         .select2-search {
             .select2-search__field {
                 background-image: url("../icons/search.svg");

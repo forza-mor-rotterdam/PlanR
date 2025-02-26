@@ -364,31 +364,6 @@
                             Terug naar boven
                         </button>
                     </div>
-                    <div class="modal" data-modal-target="modal2" id="meldingDetailModal">
-                        <div class="modal-backdrop modal-exit"
-                             id="modal-backdrop"
-                             data-action="click->modal#closeModal"></div>
-                        <turbo-frame id="melding_actie_form" class="turboframe-container" data-modal-target="turboActionModal">
-                        </turbo-frame>
-                    </div>
-                    <div class="modal modal--images"
-                         data-detail-target="modalImages"
-                         id="imageModal">
-                        <div class="modal-backdrop modal-exit"
-                             id="modal-backdrop"
-                             data-action="click->detail#closeModal"></div>
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button"
-                                            class="btn-close"
-                                            aria-label="Sluit"
-                                            data-action="detail#closeModal"></button>
-                                </div>
-                                <div class="modal-body"></div>
-                            </div>
-                        </div>
-                    </div>
                 {% endif %}
             </div>
         {% endwith %}
