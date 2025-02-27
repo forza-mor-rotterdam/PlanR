@@ -10,8 +10,10 @@
          data-action="click->modal-image-slider#imageClickToggleHandler"
          style="background-image: url({{ bijlage.afbeelding_relative_url|mor_core_url }});
                 background-position: 50% 50%">
-        <span class="tag--in-image" data-modal-image-slider-target="label"></span>
-        <span class="tag--in-image" data-modal-image-slider-target="subLabel"></span>
+        <span class="tag--in-image">
+            <span data-modal-image-slider-target="label"></span>
+            <span class="sublabel" data-modal-image-slider-target="subLabel"></span>
+        </span>
     </div>
     <div class="image-counter" data-modal-image-slider-target="counter"></div>
     <!-- <div class="image-label" data-modal-image-slider-target="label"></div> -->

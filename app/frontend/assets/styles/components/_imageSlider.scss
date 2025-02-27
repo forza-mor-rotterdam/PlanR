@@ -16,6 +16,10 @@
     background-color: $blue-100;
     width: auto;
     border-radius: 4px;
+
+    .sublabel {
+        display: none;
+    }
 }
 
 .container__imageslider {
@@ -203,6 +207,11 @@
             position: absolute;
             right: 10px;
             bottom: 7px;
+
+            .sublabel {
+                display: block;
+                color: $gray-600;
+            }
         }
     }
     &.fullSize {

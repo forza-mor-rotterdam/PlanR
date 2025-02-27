@@ -18,10 +18,12 @@
                         <div class="image" style="background-image: url('{{ bijlage.afbeelding_relative_url|mor_core_url }}')" data-action="click->modal#openModal" data-modal-content-param='
                             {% include "melding/detail/bijlagen_modal_content.html" with bijlage=bijlage only %}
                             ' data-modal-css-class-param="modal-dialog--full">
-                            <span class="tag--in-image">{{ bijlage.label }}</span>
-                            {% if bijlage.bron_signaal_id %}
-                                <span class="tag--in-image">{{ bijlage.bron_id }} - {{ bijlage.bron_signaal_id }}</span>
-                            {% endif %}
+                            <span class="tag--in-image">
+                                <span>{{ bijlage.label }}</span>
+                                {% if bijlage.bron_signaal_id %}
+                                    <span class="sublabel">{{ bijlage.bron_id }} - {{ bijlage.bron_signaal_id }}</span>
+                                {% endif %}
+                            </span>
                         </div>
                     </li>
                 {% endfor %}
