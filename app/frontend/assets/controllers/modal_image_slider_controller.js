@@ -4,7 +4,7 @@ export default class extends Controller {
   static values = {
     initialImageUuid: String,
   }
-  static targets = ['image', 'nav', 'next', 'previous', 'counter', 'label']
+  static targets = ['image', 'nav', 'next', 'previous', 'counter', 'label', 'subLabel']
 
   initialize() {
     this.selectedCls = 'selected'
@@ -52,13 +52,17 @@ export default class extends Controller {
     this.imageTarget.style.backgroundImage = `url(/core${this.bijlage().afbeelding_relative_url})`
   }
   setNavState() {
+    const bijlage = this.bijlage()
     this.nextTarget.classList[this.imageIndex >= this.imageUuids.length - 1 ? 'add' : 'remove'](
       'inactive'
     )
     this.previousTarget.classList[this.imageIndex <= 0 ? 'add' : 'remove']('inactive')
 
     this.counterTarget.textContent = `Foto ${this.imageIndex + 1} van ${this.imageUuids.length}`
-    this.labelTarget.textContent = this.bijlage().label
+    this.labelTarget.textContent = bijlage.label
+    if (bijlage.bron_signaal_id) {
+      this.subLabelTarget.textContent = `${bijlage.bron_id} - ${bijlage.bron_signaal_id}`
+    }
   }
 
   getRelativeCoordinates(e) {

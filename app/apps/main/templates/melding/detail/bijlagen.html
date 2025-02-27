@@ -19,6 +19,9 @@
                             {% include "melding/detail/bijlagen_modal_content.html" with bijlage=bijlage only %}
                             ' data-modal-css-class-param="modal-dialog--full">
                             <span class="tag--in-image">{{ bijlage.label }}</span>
+                            {% if bijlage.bron_signaal_id %}
+                                <span class="tag--in-image">{{ bijlage.bron_id }} - {{ bijlage.bron_signaal_id }}</span>
+                            {% endif %}
                         </div>
                     </li>
                 {% endfor %}
