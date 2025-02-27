@@ -147,7 +147,7 @@ class MeldingDetailTaaktypeViewMixin(MeldingDetailViewMixin):
         )
 
     def get_afdelingen_met_taakr_taaktypes(self, afdelingen, taakr_taaktypes):
-        return sorted(
+        afdelingen = sorted(
             [
                 {
                     "afdeling": afdeling,
@@ -168,6 +168,10 @@ class MeldingDetailTaaktypeViewMixin(MeldingDetailViewMixin):
             ],
             key=lambda b: b["afdeling"]["naam"].lower(),
         )
+        afdelingen_met_taakr_taaktypes = [
+            afdeling for afdeling in afdelingen if afdeling["taakr_taaktypes"]
+        ]
+        return afdelingen_met_taakr_taaktypes
 
     def get_taakr_taaktypes_zonder_afdelingen(self, taakr_taaktypes):
         return sorted(
