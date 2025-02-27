@@ -83,7 +83,8 @@ export default class extends Controller {
         event.clientY <= rect.top + rect.height &&
         rect.left <= event.clientX &&
         event.clientX <= rect.left + rect.width
-      if (!isInDialog) {
+
+      if (event.screenX > 0 && event.screenY > 0 && !isInDialog) {
         this.closeModal()
       }
     })
