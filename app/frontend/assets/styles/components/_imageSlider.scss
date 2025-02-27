@@ -206,7 +206,9 @@
         .tag--in-image {
             position: absolute;
             right: 10px;
-            bottom: 7px;
+            bottom: 0;
+            padding-right: 0;
+            text-align: right;
 
             .sublabel {
                 display: block;
