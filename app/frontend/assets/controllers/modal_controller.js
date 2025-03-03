@@ -77,6 +77,8 @@ export default class extends Controller {
     })
 
     this.dialogTarget.addEventListener('click', (event) => {
+      console.log('event.screenX', event.screenX)
+      console.log('event.screenY', event.screenY)
       var rect = this.dialogTarget.getBoundingClientRect()
       var isInDialog =
         rect.top <= event.clientY &&
@@ -84,7 +86,7 @@ export default class extends Controller {
         rect.left <= event.clientX &&
         event.clientX <= rect.left + rect.width
 
-      if (event.screenX > 0 && event.screenY > 0 && !isInDialog) {
+      if (event.screenX != 0 && event.screenY != 0 && !isInDialog) {
         this.closeModal()
       }
     })
