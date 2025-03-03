@@ -228,6 +228,7 @@ export default class extends Controller {
       // Voorkom verspringen door padding toe te voegen
       content.style.overflow = 'hidden'
       content.style.paddingRight = `${scrollbarWidth}px`
+      console.log('scrollbarWidth', scrollbarWidth)
     } else {
       // Herstel originele instellingen
       content.style.overflow = ''
@@ -347,8 +348,6 @@ export default class extends Controller {
     })
   }
   updateAdresResultList(addressList) {
-    console.log('addressList', addressList)
-    console.log('adresResultListTarget', this.adresResultListTarget)
     const currentAddressClass = (address) => (address.current ? ' current-address ' : '')
     const checked = (address) => (address.selected ? 'checked' : '')
     this.adresResultListTarget.innerHTML = ''

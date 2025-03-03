@@ -8,6 +8,7 @@ dialog {
     opacity: 0;
     box-shadow: 0 0 0 100vw rgba(0, 0, 0, 0);
     overflow: auto;
+    box-sizing: border-box;
     transition:
         box-shadow $transition-duration-default $transition-ease-default,
         opacity $transition-duration-default $transition-ease-default;

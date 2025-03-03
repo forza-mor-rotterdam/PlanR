@@ -77,8 +77,6 @@ export default class extends Controller {
     })
 
     this.dialogTarget.addEventListener('click', (event) => {
-      console.log('event.screenX', event.screenX)
-      console.log('event.screenY', event.screenY)
       var rect = this.dialogTarget.getBoundingClientRect()
       var isInDialog =
         rect.top <= event.clientY &&
