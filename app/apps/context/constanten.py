@@ -1,7 +1,7 @@
 import string
 
 from apps.main.constanten import BEGRAAFPLAATSEN, VERTALINGEN
-from apps.main.services import render_onderwerp
+from apps.main.services import MORCoreService, render_onderwerp
 from django.http import QueryDict
 from django.template.loader import get_template
 from django.urls import reverse
@@ -381,6 +381,10 @@ class StandaardFilter:
         querydict.setlist(cls._key, filter_value)
         return querydict
 
+    @classmethod
+    def default_filter_values(cls, querydict, gebruiker_context=None):
+        return querydict
+
     def optie_label(self, optie_data):
         return f"{VERTALINGEN.get(optie_data[0], optie_data[0])}"
 
@@ -480,6 +484,14 @@ class OnderwerpFilter(StandaardFilter):
     def opties(self):
         return self.gebruiker_context.onderwerp_opties_gegroepeerd()
 
+    @classmethod
+    def default_filter_values(cls, querydict, gebruiker_context=None):
+        if gebruiker_context:
+            querydict.setlist(
+                cls._key, gebruiker_context.standaard_filters.get("pre_onderwerp", [])
+            )
+        return querydict
+
 
 class WijkFilter(StandaardFilter):
     _key = "wijk"
@@ -489,6 +501,33 @@ class BuurtFilter(StandaardFilter):
     _key = "buurt"
     _group = True
     _label = "Wijk en buurt"
+
+    def opties(self):
+        buurten_met_wijken = MORCoreService().buurten_met_wijken(cache_timeout=5)
+        wijken = sorted(
+            list(set([locatie["wijknaam"] for locatie in buurten_met_wijken])),
+            key=lambda b: b.lower(),
+        )
+        opties = [
+            [
+                wijk,
+                sorted(
+                    [
+                        [
+                            locatie["buurtnaam"],
+                            {
+                                "label": locatie["buurtnaam"],
+                            },
+                        ]
+                        for locatie in buurten_met_wijken
+                        if wijk == locatie["wijknaam"]
+                    ],
+                    key=lambda b: b[0].lower(),
+                ),
+            ]
+            for wijk in wijken
+        ]
+        return opties
 
 
 FILTERS = (
@@ -502,23 +541,31 @@ FILTERS = (
 
 class FilterManager:
     _valid_filters = FILTERS
+    _gebruiker_context = None
 
     def __init__(self, *args, **kwargs):
         self._filterclass_by_key = {f.key(): f for f in self._valid_filters}
+        self._gebruiker_context = kwargs.pop("gebruiker_context", None)
 
     def _get_class_by_key(self, k):
         return self._filterclass_by_key.get(k)
 
     def get_query_string(self, query_dict):
         new_query_dict = QueryDict("", mutable=True)
-        for k, v in query_dict.items():
-            filter_cls = self._get_class_by_key(k)
-            if filter_cls:
-                filter_cls.update_filter_querydict(
-                    new_query_dict, query_dict.getlist(k)
-                )
+
+        for cls in self._valid_filters:
+            key = cls.key()
+            if key in query_dict.keys():
+                cls.update_filter_querydict(new_query_dict, query_dict.getlist(key))
             else:
+                cls.default_filter_values(
+                    new_query_dict,
+                    gebruiker_context=self._gebruiker_context,
+                )
+        for k, v in query_dict.items():
+            if not self._get_class_by_key(k):
                 new_query_dict.setlist(k, query_dict.getlist(k))
+
         return new_query_dict.urlencode()
 
 
