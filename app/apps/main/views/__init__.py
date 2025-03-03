@@ -155,6 +155,7 @@ def sidesheet_actueel(request):
 
 class LichtmastView(PermissionRequiredMixin, TemplateView):
     template_name = "locatie/lichtmast.html"
+    permission_required = "authorisatie.melding_bekijken"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
