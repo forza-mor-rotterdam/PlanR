@@ -26,6 +26,20 @@ export default class extends Controller {
     this.map = L.map(this.tilesTarget).setView(this.defaultLatLon, 18)
 
     L.tileLayer(url, config).addTo(this.map)
+
+    this.map.on('popupopen popupclose', ({ popup }) => {
+      if (popup instanceof L.Popup) {
+        const marker = popup._source
+        const eventName = popup.isOpen() ? 'markerSelectedEvent' : 'markerDeselectedEvent'
+        const event = new CustomEvent(eventName, {
+          bubbles: true,
+          cancelable: false,
+          detail: { taakId: marker.options.taakId },
+        })
+        console.log('POPUPevent', event)
+        this.element.dispatchEvent(event)
+      }
+    })
   }
   tilesTargetConnected() {
     this.defaultLatLon = this.hasDefaultLatLonValue
@@ -48,6 +62,7 @@ export default class extends Controller {
     this.map.fitBounds(bounds, { padding: [50, 50] })
   }
   pinTargetConnected(pin) {
+    console.log(pin)
     const latLon = JSON.parse(pin.dataset.latLon)
     if (latLon && pin.dataset.pinId) {
       this.coordinates.push(latLon)
@@ -69,6 +84,7 @@ export default class extends Controller {
       this.fitMarkers()
     }
   }
+
   markerIcon() {
     return L.Icon.extend({
       options: {

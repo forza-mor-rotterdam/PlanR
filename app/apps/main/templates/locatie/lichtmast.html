@@ -27,7 +27,7 @@
     </div>
 </dl>
 <div data-map-target="pin"
-     data-popup-content="Test content"
+     data-popup-content="{{ lichtmast_data.lichtpunt_id.value }}"
      data-pin-id="lichtmast_{{ view.kwargs.lichtmast_id }}"
      data-lat-lon="{{ lichtmast_data.gps.value|json_encode }}"></div>
 </turbo-frame>
