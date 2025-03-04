@@ -27,19 +27,19 @@ export default class extends Controller {
 
     L.tileLayer(url, config).addTo(this.map)
 
-    this.map.on('popupopen popupclose', ({ popup }) => {
-      if (popup instanceof L.Popup) {
-        const marker = popup._source
-        const eventName = popup.isOpen() ? 'markerSelectedEvent' : 'markerDeselectedEvent'
-        const event = new CustomEvent(eventName, {
-          bubbles: true,
-          cancelable: false,
-          detail: { options: marker.options },
-        })
-        console.log('POPUPevent', event)
-        this.element.dispatchEvent(event)
-      }
-    })
+    // this.map.on('popupopen popupclose', ({ popup }) => {
+    //   if (popup instanceof L.Popup) {
+    //     const marker = popup._source
+    //     const eventName = popup.isOpen() ? 'markerSelectedEvent' : 'markerDeselectedEvent'
+    //     const event = new CustomEvent(eventName, {
+    //       bubbles: true,
+    //       cancelable: false,
+    //       detail: { options: marker.options },
+    //     })
+    //     console.log('POPUPevent', event)
+    //     this.element.dispatchEvent(event)
+    //   }
+    // })
   }
   tilesTargetConnected() {
     this.defaultLatLon = this.hasDefaultLatLonValue
@@ -80,6 +80,7 @@ export default class extends Controller {
         details.addEventListener('toggle', () => {
           marker.setIcon(details.hasAttribute('open') ? this.markerGreen() : this.markerMagenta())
         })
+        console.log('__ details exists, pin: ', pin)
         pin.addEventListener('click', () => {
           console.log('pin click, details: ', details)
           details.open = true
