@@ -6,7 +6,7 @@
             <ul class="list-clean">
                 {% for lichtmast in lichtmasten %}
                     <li>
-                        <details>
+                        <details data-map-target="details" data-action="toggle->map#toggleDetails">
                             <summary>
                                 <h5>Lichtmast {{ lichtmast.lichtmast_id }}</h5>
                             </summary>

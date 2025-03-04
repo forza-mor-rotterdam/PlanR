@@ -2,10 +2,11 @@ import { Controller } from '@hotwired/stimulus'
 import L from 'leaflet'
 
 export default class extends Controller {
-  static targets = ['tiles', 'pin']
+  static targets = ['tiles', 'pin', 'details']
   static values = {
     defaultLatLon: String,
   }
+
   init() {
     this.markerList = []
     this.coordinates = []
@@ -31,6 +32,15 @@ export default class extends Controller {
       ? JSON.parse(this.defaultLatLonValue)
       : [51.92442, 4.47775]
     this.init()
+  }
+
+  toggleDetails(event) {
+    if (!event.target.open) return
+    this.detailsTargets.forEach((details) => {
+      if (details !== event.target) {
+        details.open = false
+      }
+    })
   }
 
   fitMarkers() {
