@@ -52,7 +52,7 @@ export default class extends Controller {
     if (latLon && pin.dataset.pinId) {
       this.coordinates.push(latLon)
       const marker = new L.Marker(latLon, {
-        icon: this.markerMagenta(),
+        icon: this.lichtmastgrijs(),
         markerId: pin.dataset.pinId,
       })
       marker.addTo(this.map)
