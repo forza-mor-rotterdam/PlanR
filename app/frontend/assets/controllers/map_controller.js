@@ -34,7 +34,7 @@ export default class extends Controller {
         const event = new CustomEvent(eventName, {
           bubbles: true,
           cancelable: false,
-          detail: { taakId: marker.options.taakId },
+          detail: { options: marker.options },
         })
         console.log('POPUPevent', event)
         this.element.dispatchEvent(event)
