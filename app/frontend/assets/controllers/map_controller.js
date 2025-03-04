@@ -81,7 +81,8 @@ export default class extends Controller {
           marker.setIcon(details.hasAttribute('open') ? this.markerGreen() : this.markerMagenta())
         })
         console.log('__ details exists, pin: ', pin)
-        pin.addEventListener('click', () => {
+        marker.on('click', () => {
+          console.log('pin click, pin: ', pin)
           console.log('pin click, details: ', details)
           details.open = true
         })
