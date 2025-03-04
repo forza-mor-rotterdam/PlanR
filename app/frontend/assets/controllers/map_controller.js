@@ -80,6 +80,10 @@ export default class extends Controller {
         details.addEventListener('toggle', () => {
           marker.setIcon(details.hasAttribute('open') ? this.markerGreen() : this.markerMagenta())
         })
+        pin.addEventListener('click', () => {
+          console.lof('pin click, details: ', details)
+          details.open = true
+        })
       }
       this.fitMarkers()
     }
