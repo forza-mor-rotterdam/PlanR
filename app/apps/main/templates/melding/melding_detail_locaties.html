@@ -15,11 +15,8 @@
             {% endif %}
         </h2>
         <div>
-            {% for locatie_type, type_locaties in locaties.items %}
-                {% with template="melding/melding_detail_locaties_"|add:locatie_type|add:".html" %}
-                    {% include template with locaties=type_locaties melding=melding lichtmasten=locaties.lichtmasten only %}
-                {% endwith %}
-            {% endfor %}
+            {% include "melding/melding_detail_locaties_graven.html" with melding=melding locaties=locaties.graven only %}
+            {% include "melding/melding_detail_locaties_adressen.html" with melding=melding locaties=locaties.adressen only %}
         </div>
     </div>
 </section>

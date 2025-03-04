@@ -80,6 +80,7 @@
                             </div>
                             <div class="grid-container">
                                 <div class="grid-item">
+                                    {% include "melding/melding_detail_locaties_lichtmasten.html" with locaties=type_locaties melding=melding lichtmasten=locaties.lichtmasten only %}
                                     {% if bijlagen|length > 0 %}
                                         {% include "melding/detail/bijlagen.html" with bijlagen=bijlagen only %}
                                     {% endif %}
