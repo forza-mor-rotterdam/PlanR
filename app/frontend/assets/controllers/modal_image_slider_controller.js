@@ -62,6 +62,8 @@ export default class extends Controller {
     this.labelTarget.textContent = bijlage.label
     if (bijlage.bron_signaal_id) {
       this.subLabelTarget.textContent = `${bijlage.bron_id} - ${bijlage.bron_signaal_id}`
+    } else {
+      this.subLabelTarget.textContent = ''
     }
   }
 
