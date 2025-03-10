@@ -1,0 +1,126 @@
+dialog.infosheet {
+    position: fixed;
+    box-sizing: border-box;
+    inset: auto 0 0 0; /* Zorgt ervoor dat de dialog onderaan blijft */
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 85vh;
+    border: none;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    padding: 0;
+    background: #fff;
+    overflow: hidden;
+    margin: 2rem 0 0;
+    transform: translateY(100%);
+    transition:
+        transform $transition-duration-default $transition-ease-default,
+        visibility 0s linear 0.3s;
+    visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    z-index: 2500;
+
+    &:has(> turbo-frame) {
+        display: block;
+
+        > turbo-frame {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+
+    &[open] {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+        transition:
+            transform $transition-duration-default ease-out,
+            visibility 0s linear;
+    }
+
+    &::before {
+        content: "";
+        width: 44px;
+        height: 3px;
+        background-color: $gray-200;
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 50%;
+    }
+
+    .btn-close--small {
+        top: 25px;
+        right: 10px;
+        padding: 5px;
+        &:focus {
+            outline: none !important;
+            background-color: #f4f4f5;
+        }
+    }
+
+    .header {
+        padding: 28px 16px 0;
+        border-bottom: 1px solid $blue-200;
+        h1 {
+            margin-top: 0;
+            padding-right: 1em;
+            font-size: 1.375rem;
+        }
+    }
+    .footer {
+        padding: 20px 16px;
+        border-top: 1px solid $blue-200;
+
+        .link--external {
+            display: inline-block;
+            margin: 0 auto;
+            color: currentColor;
+            font-size: 0.889em;
+
+            svg {
+                width: 15px;
+                height: 15px;
+                padding-right: 0.25rem;
+            }
+        }
+    }
+    .content {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .scroll-handle {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 25px;
+    }
+
+    @media (min-width: map-get($grid-breakpoints, lg)) {
+        inset: auto 0 0 auto;
+        width: 33%;
+        max-height: none;
+        border-radius: 0;
+        transform: translateX(100%);
+
+        dialog[open] {
+            transform: translateX(0); /* Verschuif van rechts naar links */
+            visibility: visible;
+        }
+        .scroll-handle,
+        &::before {
+            display: none;
+        }
+    }
+}
+
+/* Backdrop for the dialog */
+dialog.infosheet::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+}

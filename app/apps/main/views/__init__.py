@@ -9,7 +9,7 @@ from apps.context.constanten import FilterManager
 from apps.context.utils import get_gebruiker_context
 from apps.instellingen.models import Instelling
 from apps.main.messages import MELDING_LIJST_OPHALEN_ERROR, MELDING_OPHALEN_ERROR
-from apps.main.services import MORCoreService
+from apps.main.services import MORCoreService, TaakRService
 from apps.main.templatetags.gebruikers_tags import get_gebruiker_object_middels_email
 from apps.main.utils import (
     get_actieve_filters,
@@ -41,7 +41,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.http import HttpResponse, QueryDict, StreamingHttpResponse
+from django.http import Http404, HttpResponse, QueryDict, StreamingHttpResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -389,3 +389,60 @@ def melding_next(request, id, richting):
             "richting": richting,
         },
     )
+
+
+class TaakRTaaktypeView(TemplateView):
+    template_name = "taaktype/taakr.html"
+
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        taakapplicatie_taaktype_url = self.request.GET.get(
+            "taakapplicatie-taaktype-url"
+        )
+        if not taakapplicatie_taaktype_url:
+            raise Http404
+
+        taakr_taaktypes = TaakRService().get_taaktypes(
+            params={
+                "taakapplicatie_taaktype_url": taakapplicatie_taaktype_url,
+            }
+        )
+        if not taakr_taaktypes:
+            raise Http404
+
+        afdelingen = TaakRService().get_afdelingen()
+        afdelingen_middels_url = {
+            afdeling["_links"]["self"]: afdeling["naam"] for afdeling in afdelingen
+        }
+        instelling = Instelling.actieve_instelling()
+        if taakr_taaktypes:
+            taaktype = taakr_taaktypes[0]
+            voorbeeldsituaties = {
+                "waarom_wel": [],
+                "waarom_niet": [],
+            }
+            for voorbeeldsituatie_url in taaktype.get(
+                "voorbeeldsituatie_voor_taaktype", []
+            ):
+                voorbeeldsituatie = TaakRService().haal_data(voorbeeldsituatie_url)
+                voorbeeldsituaties[voorbeeldsituatie.get("type")].append(
+                    voorbeeldsituatie
+                )
+            taaktype.update(voorbeeldsituaties)
+            taaktype.update(
+                {
+                    "taakr_url": f"{instelling.taakr_basis_url}?taaktype_url={taakapplicatie_taaktype_url}",
+                    "verantwoordelijke_afdeling": afdelingen_middels_url[
+                        taaktype["verantwoordelijke_afdeling"]
+                    ]
+                    if taaktype.get("verantwoordelijke_afdeling")
+                    else "",
+                }
+            )
+
+            context.update({"taaktype": taaktype})
+        return context
