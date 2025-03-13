@@ -5,7 +5,6 @@
 {% load vertaal from vertaal_tags %}
 {% load context_template from context_tags %}
 {% load slice_iterable python_any from main_tags %}
-{% load mor_core_url replace_n from main_tags %}
 {% load render_onderwerp get_bijlagen melding_taken from melding_tags %}
 {% load json_encode from json_tags %}
 {% block title %}
@@ -46,7 +45,7 @@
                 {% if melding.uuid %}
                     <div class="page__detail">
                         <div>
-                            <a href="{% url 'melding_lijst' %}?{{ overview_querystring }}"
+                            <a href="{% url 'melding_lijst' %}"
                                data-turbo-action='advance'
                                class="link--back">
                                 <svg width="25"
@@ -75,79 +74,15 @@
                                         {% endif %}
                                     </div>
                                     <div class="padding--left" id="melding_detail_header_status">
-                                        {% include "melding/detail/header_status.html" with melding=melding only %}
+                                        {% include "melding/detail/header_status.html" with melding=melding disable_stream=True only %}
                                     </div>
                                 </div>
                             </div>
                             <div class="grid-container">
                                 <div class="grid-item">
-                                    <section class="section--seperated section--imageslider"
-                                             {% if bijlagen|length < 2 %}style="border: 0;"{% endif %}>
-                                        <div>
-                                            {% if bijlagen|length > 0 %}
-                                                <div class="container__imageslider"
-                                                     data-detail-target="imageSliderContainer"
-                                                     data-action="scroll->detail#onScrollSlider">
-                                                    <ul class="list-clean imageslider"
-                                                        style="width: calc(100% * {{ bijlagen|length }})">
-                                                        {% for bijlage in bijlagen %}
-                                                            <li class="container__image" tabindex="0">
-                                                                <div class="image"
-                                                                     style="background-image: url('{{ bijlage.afbeelding_relative_url|mor_core_url }}')"
-                                                                     data-detail-target="selectedImage"
-                                                                     data-action="click->detail#showImageInModal"
-                                                                     data-detail-image-index-param="{{ forloop.counter|add:'-1' }}">
-                                                                    <span>{{ bijlage.label }}</span>
-                                                                </div>
-                                                            </li>
-                                                        {% endfor %}
-                                                    </ul>
-                                                </div>
-                                                {% if bijlagen|length > 1 %}
-                                                    <div class="container__thumbs"
-                                                         data-detail-target="imageSliderThumbContainer">
-                                                        <ul data-detail-target="thumbList">
-                                                            {% for bijlage in bijlagen %}
-                                                                <li>
-                                                                    <button data-action="click->detail#selectImage"
-                                                                            data-detail-image-index-param="{{ forloop.counter|add:'-1' }}"
-                                                                            aria-label="Bekijk afbeelding">
-                                                                        <div class="container__image">
-                                                                            <div class="image"
-                                                                                 style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url|mor_core_url }}')">
-                                                                            </div>
-                                                                        </div>
-                                                                    </button>
-                                                                </li>
-                                                            {% endfor %}
-                                                        </ul>
-                                                    </div>
-                                                {% endif %}
-                                            {% else %}
-                                                <div class="background-image"></div>
-                                            {% endif %}
-                                        </div>
-                                        {% if bijlagen|length > 0 %}
-                                            {% include "icons/expand.svg" %}
-                                        {% endif %}
-                                    </section>
+                                    {% include "melding/melding_detail_locaties_lichtmasten.html" with locaties=type_locaties melding=melding lichtmasten=locaties.lichtmasten only %}
                                     {% if bijlagen|length > 0 %}
-                                        <section class="section--seperated section--imagelist print-only">
-                                            <div class="container__details">
-                                                {% if bijlagen|length > 0 %}
-                                                    <ul class="list-clean">
-                                                        {% for bijlage in bijlagen %}
-                                                            <li class="container__image">
-                                                                <div class="image">
-                                                                    <img src="{{ bijlage.afbeelding_relative_url|mor_core_url }}" alt="" />
-                                                                    <span>Foto van melder</span>
-                                                                </div>
-                                                            </li>
-                                                        {% endfor %}
-                                                    </ul>
-                                                {% endif %}
-                                            </div>
-                                        </section>
+                                        {% include "melding/detail/bijlagen.html" with bijlagen=bijlagen only %}
                                     {% endif %}
                                     <section class="section--seperated" data-testid="detailMelding">
                                         <div class="container__details melding">
@@ -374,7 +309,9 @@
                                     {% include "melding/melding_gebruiker_actief.html" %}
                                     <div class="container__actions"
                                          data-detail-target="containerActions"
-                                         id="melding_detail_acties">{% include acties_template %}</div>
+                                         id="melding_detail_acties">
+                                        {% include acties_template with disable_stream=True %}
+                                    </div>
                                     {% if melding.signalen_voor_melding|length > 1 %}
                                         <div class="alert alert--info">
                                             <span>
@@ -427,46 +364,6 @@
                             {% include "icons/arrow-double.svg" %}
                             Terug naar boven
                         </button>
-                    </div>
-                    <div class="modal" data-modal-target="modal" id="meldingDetailModal">
-                        <div class="modal-backdrop modal-exit"
-                             id="modal-backdrop"
-                             data-action="click->modal#closeModal"></div>
-                        <turbo-frame id="melding_actie_form" class="turboframe-container" data-modal-target="turboActionModal">
-                        </turbo-frame>
-                    </div>
-                    <div class="modal modal--images"
-                         data-detail-target="modalImages"
-                         id="imageModal">
-                        <div class="modal-backdrop modal-exit"
-                             id="modal-backdrop"
-                             data-action="click->detail#closeModal"></div>
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button"
-                                            class="btn-close"
-                                            aria-label="Sluit"
-                                            data-action="detail#closeModal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="image" data-detail-target="selectedImageModal"></div>
-                                    <div class="image-counter" data-detail-target="imageCounter"></div>
-                                    <div class="container__navigate-images">
-                                        <div class="navigate-images--left inactive"
-                                             data-detail-target="navigateImagesLeft"
-                                             data-action="click->detail#showPreviousImageInModal">
-                                            <span aria-label="Bekijk vorige afbeelding">{% include "icons/arrow-right.svg" %}</span>
-                                        </div>
-                                        <div class="navigate-images--right inactive"
-                                             data-detail-target="navigateImagesRight"
-                                             data-action="click->detail#showNextImageInModal">
-                                            <span aria-label="Bekijk volgende afbeelding">{% include "icons/arrow-right.svg" %}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 {% endif %}
             </div>

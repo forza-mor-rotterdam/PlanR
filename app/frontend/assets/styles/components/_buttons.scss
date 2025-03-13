@@ -84,7 +84,11 @@ button[class="icon"] {
     margin-left: -6px; // Result in 8px distance between icon and label
 }
 
-button,
+button {
+    &:focus-visible {
+        @include focus-outline();
+    }
+}
 input[type="text"],
 textarea {
     &:focus {
@@ -124,7 +128,7 @@ textarea {
         color: $white;
 
         &:hover,
-        &:focus {
+        &:focus-visible {
             color: $white;
             background-color: $action-active;
             border-color: $action-active;
@@ -141,7 +145,7 @@ textarea {
             transition: background-color 0.15s ease-in-out;
 
             &:hover,
-            &:focus {
+            &:focus-visible {
                 background-color: darken($neutral-900, 10%);
                 border-color: darken($neutral-900, 10%);
             }
@@ -165,7 +169,7 @@ textarea {
         }
 
         &:hover,
-        &:focus {
+        &:focus-visible {
             background-color: $gray-200;
             border-color: $gray-100;
         }
@@ -177,7 +181,7 @@ textarea {
         color: $white;
 
         &:hover,
-        &:focus {
+        &:focus-visible {
             color: $white;
             background-color: $gray-tint11;
             border-color: $gray-tint11;
@@ -208,7 +212,7 @@ textarea {
             opacity: 0.75;
         }
 
-        &:focus {
+        &:focus-visible {
             outline: none !important;
             background-color: $gray-100;
         }
@@ -236,7 +240,8 @@ textarea {
                 }
             }
 
-            &:focus {
+            &:hover,
+            &:focus-visible {
                 outline: none !important;
                 background-color: $gray-100;
             }
@@ -322,7 +327,7 @@ textarea {
         text-decoration: none;
 
         &:hover,
-        &:focus {
+        &:focus-visible {
             span {
                 text-decoration: underline;
             }
@@ -350,7 +355,7 @@ textarea {
             padding-right: 0 !important;
         }
         &:hover,
-        &:focus {
+        &:focus-visible {
             background-color: $green-600;
             transition: all 0.15s ease-in;
         }
@@ -370,7 +375,7 @@ textarea {
         transition: all 0.15s ease-in;
 
         &:hover,
-        &:focus,
+        &:focus-visible,
         &--active,
         &--disabled {
             background-color: $green-600;
@@ -455,7 +460,7 @@ textarea {
         }
 
         &:hover,
-        &:focus {
+        &:focus-visible {
             svg {
                 path {
                     fill: $green-tint01;
@@ -471,7 +476,7 @@ textarea {
         padding: 0.25rem 0.25rem 0 0.25rem;
         transition: background-color $transition-duration-default $transition-ease-default;
 
-        &:focus,
+        &:focus-visible,
         &:hover {
             background-color: $gray-100;
             outline-width: 0 !important;

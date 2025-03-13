@@ -56,7 +56,10 @@ def get_bijlagen(melding):
         {
             **bijlage,
             "aangemaakt_op": melding.get("aangemaakt_op"),
+            "oorsprong": "melder",
             "label": "Foto van melder",
+            "bron_signaal_id": None,
+            "bron_id": None,
         }
         for bijlage in melding.get("bijlagen", [])
     ]
@@ -65,7 +68,10 @@ def get_bijlagen(melding):
             **bijlage,
             "signaal": signaal,
             "aangemaakt_op": signaal.get("aangemaakt_op"),
-            "label": f"Foto van melder({signaal.get('bron_id')}): {signaal.get('bron_signaal_id')}",
+            "oorsprong": "melder",
+            "label": "Foto van melder",
+            "bron_signaal_id": signaal["bron_signaal_id"],
+            "bron_id": signaal["bron_id"],
         }
         for signaal in melding.get("signalen_voor_melding", [])
         for bijlage in signaal.get("bijlagen", [])
@@ -75,7 +81,10 @@ def get_bijlagen(melding):
             **bijlage,
             "meldinggebeurtenis": meldinggebeurtenis,
             "aangemaakt_op": meldinggebeurtenis.get("aangemaakt_op"),
-            "label": "Foto van medewerker",
+            "oorsprong": "midoffice",
+            "label": f"Midoffice({meldinggebeurtenis.get('gebruiker')})",
+            "bron_signaal_id": None,
+            "bron_id": None,
         }
         for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
         for bijlage in meldinggebeurtenis.get("bijlagen", [])
@@ -87,7 +96,10 @@ def get_bijlagen(melding):
             "aangemaakt_op": meldinggebeurtenis.get("taakgebeurtenis", {}).get(
                 "aangemaakt_op"
             ),
-            "label": "Foto van medewerker",
+            "oorsprong": "medewerker",
+            "label": f"Medewerker({meldinggebeurtenis.get('taakgebeurtenis', {}).get('gebruiker')})",
+            "bron_signaal_id": None,
+            "bron_id": None,
         }
         for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
         for bijlage in (
@@ -116,3 +128,8 @@ def melding_taken(melding):
 @register.simple_tag
 def melding_naar_tijdlijn(melding):
     return base_melding_naar_tijdlijn(melding)
+
+
+@register.filter(name="get")
+def get(d, k):
+    return d.get(k, None)

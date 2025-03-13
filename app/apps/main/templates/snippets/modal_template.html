@@ -1,0 +1,23 @@
+<div data-modal-target="modal" data-focus-trap-target="branch">
+    <template data-modal-target="template">
+        <dialog data-modal-target="dialog" id="dialogGeneral">
+            <button id="modal_close_button"
+                    type="button"
+                    class="btn-close"
+                    aria-label="Sluit"
+                    data-action="modal#closeModal"
+                    autofocus></button>
+            <div class="modal-content" id="modal_content" data-modal-target="content">
+                <div class="modal-header border-bottom"
+                     id="modal_header"
+                     data-modal-target="header">
+                    <h1>
+                        <span id="modal_header_title"></span>
+                        <small id="modal_header_subtitle"></small>
+                    </h1>
+                </div>
+                <div class="modal-body" id="modal_body" data-modal-target="body"></div>
+            </div>
+        </dialog>
+    </template>
+</div>

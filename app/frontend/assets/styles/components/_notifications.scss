@@ -147,7 +147,7 @@
                     text-decoration: underline;
 
                     &:hover,
-                    &:focus {
+                    &:focus-visible {
                         color: $green-tint01;
                         text-decoration: underline;
                         outline: none !important;
@@ -169,7 +169,7 @@
                 pointer-events: none;
             }
 
-            &:focus {
+            &:focus-visible {
                 outline: none !important;
                 background-color: $gray-100;
             }
@@ -371,7 +371,8 @@
             padding: 7px 10px 10px 7px;
             background-color: transparent;
 
-            &:focus {
+            &:hover,
+            &:focus-visible {
                 background-color: $gray-100;
             }
         }

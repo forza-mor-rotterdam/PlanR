@@ -1,3 +1,37 @@
+dialog {
+    max-height: calc(100% - 3em);
+    border-style: none;
+    padding: 0;
+    align-items: center;
+    width: 90%;
+    max-width: map-get($container-max-widths, lg);
+    opacity: 0;
+    box-shadow: 0 0 0 100vw rgba(0, 0, 0, 0);
+    overflow: auto;
+    box-sizing: border-box;
+    transition:
+        box-shadow $transition-duration-default $transition-ease-default,
+        opacity $transition-duration-default $transition-ease-default;
+
+    &.fade-in {
+        opacity: 1;
+        transition:
+            box-shadow $transition-duration-default $transition-ease-default,
+            opacity $transition-duration-default $transition-ease-default;
+        box-shadow: 0 0 0 100vw rgba(0, 0, 0, 0.4);
+    }
+
+    .btn-close {
+        z-index: 10;
+        &:focus-visible {
+            outline-width: thin !important;
+        }
+    }
+}
+::backdrop {
+    background-color: transparent;
+}
+
 @mixin bodyModal {
     overflow: hidden;
     padding-right: 0;
@@ -15,7 +49,7 @@
     }
 
     .modal-backdrop {
-        display: block;
+        visibility: visible;
         opacity: 0.5;
     }
 }
@@ -47,13 +81,12 @@ body.show-modal--first-filter {
     overflow-y: auto;
     z-index: 2100;
 
-    .turboframe-container {
+    &-dialog-container {
         align-items: center;
         height: 97vh;
         overflow-y: auto;
         box-sizing: border-box;
     }
-
     &-dialog {
         display: flex;
         align-items: center;
@@ -69,6 +102,16 @@ body.show-modal--first-filter {
         &--wide {
             max-width: map-get($container-max-widths, xxxl);
         }
+        &--full {
+            max-width: none;
+            width: 98%;
+            height: 98%;
+            margin: 0.5% auto;
+            max-height: none;
+            .modal-content {
+                height: 100%;
+            }
+        }
     }
 
     &-content {
@@ -78,7 +121,7 @@ body.show-modal--first-filter {
         flex-direction: column;
         width: 100%;
         min-height: 100%;
-        z-index: 20;
+        overflow-y: auto;
     }
 
     &-header {
@@ -96,12 +139,6 @@ body.show-modal--first-filter {
                 font-weight: 400;
                 font-size: 0.888rem;
                 margin-top: 0.5rem;
-            }
-        }
-
-        .btn-close {
-            &:focus {
-                outline-width: thin !important;
             }
         }
 
@@ -135,102 +172,8 @@ body.show-modal--first-filter {
         height: 100vh;
         background-color: $black;
         opacity: 0;
-        display: none;
-    }
-
-    &--images {
-        .modal-dialog {
-            max-width: none;
-            width: 98%;
-            height: 98%;
-            margin: 0.5% auto;
-
-            .modal-header {
-                padding: 0;
-                z-index: 10;
-            }
-
-            .modal-body {
-                padding: 1% 1% 40px;
-            }
-
-            .modal-content,
-            .modal-body,
-            ul,
-            li,
-            .image {
-                height: 100%;
-            }
-
-            .image {
-                width: 100%;
-                height: 100%;
-                max-width: 100%;
-                max-height: 100%;
-                background-size: contain;
-                background-position: 50% 50%;
-                background-repeat: no-repeat;
-                background-color: $gray-tint02;
-                cursor: zoom-in;
-
-                &.fullSize {
-                    background-size: cover;
-                    cursor: zoom-out;
-                }
-            }
-
-            .image-counter {
-                line-height: 40px;
-            }
-        }
-
-        .container__navigate-images {
-            .navigate-images--left,
-            .navigate-images--right {
-                cursor: pointer;
-                position: absolute;
-                width: 80px;
-                height: 80px;
-                position: absolute;
-                top: 50%;
-                transform: translateY(-50%);
-
-                opacity: 1;
-                transition: opacity $transition-duration-default ease-in;
-
-                span {
-                    display: block;
-
-                    background-color: $black;
-
-                    svg {
-                        width: 64px;
-                        height: 64px;
-                        margin: 8px;
-                        path {
-                            fill: $white;
-                        }
-                    }
-                }
-
-                &.inactive {
-                    opacity: 0;
-                    pointer-events: none;
-                }
-            }
-            .navigate-images--left {
-                left: 0;
-                span {
-                    svg {
-                        transform: rotate(180deg);
-                    }
-                }
-            }
-
-            .navigate-images--right {
-                right: 0;
-            }
-        }
+        visibility: hidden;
+        transition: all 0.5s ease;
     }
 }
 
