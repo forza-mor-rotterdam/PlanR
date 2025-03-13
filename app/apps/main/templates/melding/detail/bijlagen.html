@@ -1,0 +1,54 @@
+{% load json_encode from json_tags %}
+{% load mor_core_url replace_n from main_tags %}
+<section class="section--seperated section--imageslider"
+         data-controller="image-slider"
+         data-image-slider-modal-image-slider-outlet="#modal-image-slider"
+         data-image-slider-data-value="{{ bijlagen|json_encode }}">
+    <div>
+        <div class="container__imageslider"
+             data-image-slider-target="imageSliderContainer"
+             data-action="scroll->image-slider-target#onScrollSlider">
+            <ul class="list-clean imageslider"
+                style="width: calc(100% * {{ bijlagen|length }})">
+                {% for bijlage in bijlagen %}
+                    <li class="container__image"
+                        tabindex="0"
+                        data-image-slider-target="image"
+                        data-image-uuid="{{ bijlage.uuid }}">
+                        <div class="image" style="background-image: url('{{ bijlage.afbeelding_relative_url|mor_core_url }}')" data-action="click->modal#openModal" data-modal-content-param='
+                            {% include "melding/detail/bijlagen_modal_content.html" with bijlage=bijlage only %}
+                            ' data-modal-css-class-param="modal-dialog--full">
+                            {% if bijlage.oorsprong != "melder" %}
+                                <span class="tag--in-image">
+                                    <span>{{ bijlage.label }}</span>
+                                    {% if bijlage.bron_signaal_id %}
+                                        <span class="sublabel">{{ bijlage.bron_id }} - {{ bijlage.bron_signaal_id }}</span>
+                                    {% endif %}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% if bijlagen|length > 1 %}
+            <div class="container__thumbs" data-image-slider-target="thumbContainer">
+                <ul>
+                    {% for bijlage in bijlagen %}
+                        <li data-image-slider-target="thumb" data-image-uuid="{{ bijlage.uuid }}">
+                            <button data-action="image-slider#selectThumbHandler"
+                                    aria-label="Bekijk afbeelding">
+                                <div class="container__image">
+                                    <div class="image"
+                                         style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url|mor_core_url }}')">
+                                    </div>
+                                </div>
+                            </button>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+    {% include "icons/expand.svg" %}
+</section>

@@ -141,7 +141,7 @@
             border-width: 2px;
             border-color: $gray-tint08;
 
-            &:focus {
+            &:focus-visible {
                 border-color: $gray-tint11;
                 outline-width: 0 !important;
             }

@@ -20,8 +20,6 @@ export default class extends Controller {
     'detail',
   ]
   static values = {
-    afdelingen: String,
-    afdelingByUrl: String,
     taaktypes: String,
     meldingUuid: String,
     gebruiker: String,
@@ -29,10 +27,11 @@ export default class extends Controller {
 
   connect() {
     this.taaktypeMax = 10
-    this.afdelingen = JSON.parse(this.afdelingenValue)
     this.taaktypes = JSON.parse(this.taaktypesValue)
-    this.taaktypeByUrl = this.taaktypes.reduce((o, v) => ((o[v[0]] = v), o), {})
-    this.afdelingenByUrl = JSON.parse(this.afdelingByUrlValue)
+    this.taaktypeByUrl = this.taaktypes.reduce(
+      (o, v) => ((o[v._links.taakapplicatie_taaktype_url] = v), o),
+      {}
+    )
 
     window.setTimeout(() => {
       this.searchInputTarget.focus()
@@ -203,11 +202,11 @@ export default class extends Controller {
     li.dataset.taaktypeUrl = taaktypeUrl
     button.dataset.taaktypeUrl = taaktypeUrl
     let span = clone.querySelector('span')
-    span.textContent = this.taaktypeByUrl[taaktypeUrl][1]
+    span.textContent = this.taaktypeByUrl[taaktypeUrl].omschrijving
     return clone
   }
   geselecteerdTaaktypeFormulierElement(taaktypeUrl) {
-    const taaktypeData = this.taaktypeByUrl[taaktypeUrl][3]
+    const taaktypeData = this.taaktypeByUrl[taaktypeUrl]
     const template = document.getElementById('template_geselecteerd_formulier_taaktype')
     const clone = template.content.cloneNode(true)
     let li = clone.querySelector('li')
@@ -219,16 +218,16 @@ export default class extends Controller {
     let gebruikerInput = clone.querySelector(`input[name*='-gebruiker']`)
 
     clone.querySelector('[data-afdelingen]').textContent = taaktypeData.afdelingen
-      .map((afd) => this.afdelingenByUrl[afd])
+      .map((afd) => afd.naam)
       .join(', ')
     clone.querySelector('[data-verantwoordelijke-afdeling]').textContent =
-      this.afdelingenByUrl[taaktypeData.verantwoordelijke_afdeling]
-    clone.querySelector('[data-titel]').textContent = this.taaktypeByUrl[taaktypeUrl][1]
+      taaktypeData.verantwoordelijke_afdeling?.naam
+    clone.querySelector('[data-titel]').textContent = taaktypeData.omschrijving
     clone.querySelector('[data-toelichting]').textContent = taaktypeData.toelichting
     clone.querySelector('[data-omschrijving]').textContent = taaktypeData.omschrijving
     li.dataset.taaktypeUrl = taaktypeUrl
     taakapplicatieTaaktypeUrlInput.value = taaktypeUrl
-    titelInput.value = this.taaktypeByUrl[taaktypeUrl][1]
+    titelInput.value = taaktypeData.omschrijving
     meldingUuidInput.value = this.meldingUuidValue
     gebruikerInput.value = this.gebruikerValue
     return clone

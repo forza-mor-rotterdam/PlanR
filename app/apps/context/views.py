@@ -50,9 +50,9 @@ class ContextAanpassenView(
 
     def get_form_kwargs(self, *args, **kwargs):
         kwargs = super().get_form_kwargs(*args, **kwargs)
-        kwargs["taaktypes"] = TaakRService(request=self.request).get_taaktypes(
-            force_cache=True
-        )
+        taakr_service = TaakRService()
+        taakr_service.get_afdelingen(force_cache=True)
+        kwargs["taaktypes"] = taakr_service.get_taaktypes(force_cache=True)
         kwargs["onderwerp_alias_list"] = (
             MORCoreService(request=self.request)
             .onderwerp_alias_list(force_cache=True)

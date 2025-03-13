@@ -33,7 +33,7 @@ form label {
  */
 .btn.is-invalid {
     border-color: $form-feedback-invalid-color;
-    &:focus {
+    &:focus-visible {
         border-color: $form-feedback-invalid-color;
         box-shadow: 0 0 0 $input-focus-width rgba($form-feedback-invalid-color, 0.25);
     }
@@ -282,19 +282,19 @@ textarea {
     &:disabled:checked[type="radio"] {
         background-image: none;
     }
-    &:focus:checked {
+    &:focus-visible:checked {
         background-color: $black;
         border-color: $black;
         box-shadow: 0 0 0 1px $black;
         opacity: 1;
     }
-    &:focus:not([checked]) {
+    &:focus-visible:not([checked]) {
         border-color: $gray-tint11;
         box-shadow: 0 0 0 1px $gray-tint11;
         opacity: 1;
     }
     &:hover:not([disabled]),
-    &:focus:not([disabled]) {
+    &:focus-visible:not([disabled]) {
         border-color: $neutral-900;
         box-shadow: 0 0 0 1px $neutral-900;
         opacity: 1;
@@ -319,12 +319,6 @@ textarea {
     }
     input {
         @include form-check-input();
-        &:hover:not([disabled]),
-        &:focus:not([disabled]) {
-            border: 0;
-            box-shadow: none;
-            outline: none !important;
-        }
     }
     label {
         font-weight: 400;
@@ -406,7 +400,7 @@ input.form-radio-input {
         background-color: $green-tint01;
     }
 
-    input:focus + .slider {
+    input:focus-visible + .slider {
         box-shadow: 0 0 1px $green-tint01;
     }
 
@@ -676,6 +670,10 @@ input.form-radio-input {
 
     .select2-dropdown {
         padding: 0;
+
+        &--below {
+            margin-top: -9px;
+        }
         .select2-search {
             .select2-search__field {
                 background-image: url("../icons/search.svg");
@@ -1101,7 +1099,7 @@ form.taken-aanmaken {
 
                     &.checked,
                     &:hover,
-                    &:has(input:focus) {
+                    &:has(input:focus-visible) {
                         &::before {
                             background: $green-tint01;
                         }
@@ -1114,7 +1112,7 @@ form.taken-aanmaken {
                         }
                         color: $green-tint01;
                     }
-                    &:has(input:focus) {
+                    &:has(input:focus-visible) {
                         border-color: $gray-200;
                         &::before {
                             background: $green-tint01;

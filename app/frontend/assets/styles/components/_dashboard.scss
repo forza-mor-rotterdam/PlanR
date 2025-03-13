@@ -140,7 +140,7 @@ canvas {
         }
 
         &:hover,
-        &:focus {
+        &:focus-visible {
             svg {
                 path {
                     fill: $green-tint01;
@@ -171,7 +171,7 @@ canvas {
 
         &.active,
         &:hover,
-        &:focus {
+        &:focus-visible {
             outline: none !important;
             span.decorated {
                 border-bottom: 2px solid $green-tint01;
