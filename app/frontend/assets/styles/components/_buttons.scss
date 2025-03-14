@@ -339,6 +339,9 @@ textarea {
 
         svg {
             vertical-align: sub;
+            path {
+                fill: $green-tint01 !important;
+            }
         }
     }
 
