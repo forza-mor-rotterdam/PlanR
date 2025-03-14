@@ -1147,6 +1147,7 @@ form.taken-aanmaken {
             margin: 0;
 
             li {
+                display: flex;
                 flex: 0 1 47%;
                 min-width: 47%;
                 margin: 0 0 0.5rem;
@@ -1156,9 +1157,14 @@ form.taken-aanmaken {
                 label {
                     span {
                         max-width: 20em;
-                        overflow: hidden;
-                        white-space: nowrap;
-                        text-overflow: ellipsis;
+                    }
+                }
+
+                button {
+                    display: flex;
+                    margin-left: 5px;
+                    svg {
+                        transform: translateY(2px);
                     }
                 }
             }
