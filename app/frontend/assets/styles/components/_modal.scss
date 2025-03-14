@@ -27,9 +27,13 @@ dialog {
             outline-width: thin !important;
         }
     }
+
+    z-index: 2500;
 }
 ::backdrop {
+    position: relative;
     background-color: transparent;
+    z-index: 2400;
 }
 
 @mixin bodyModal {
