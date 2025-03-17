@@ -174,8 +174,9 @@ export default class extends Controller {
       this.signalen =
         JSON.parse(this.signalenValue)?.filter(
           (signaal) =>
-            signaal.locaties_voor_signaal.filter((locatie) => locatie.geometrie?.coordinates)?.[0]
-              .geometrie?.coordinates
+            signaal.locaties_voor_signaal
+              .filter((locatie) => locatie.geometrie?.coordinates)
+              .find((elem) => elem)?.geometrie?.coordinates
         ) ?? []
       for (const signaal of this.signalen) {
         const coordinates = signaal.locaties_voor_signaal
