@@ -85,7 +85,8 @@ export default class extends Controller {
   closeInfosheet() {
     if (this.hasInfosheetTarget) {
       if (this.infosheetTarget.open) {
-        setTimeout(() => (this.infosheetTurboframeTarget.innerHTML = ''), 100)
+        this.infosheetTarget.classList.add('closing')
+        setTimeout(() => (this.infosheetTurboframeTarget.innerHTML = ''), 400)
         setTimeout(() => {
           this.infosheetTarget.close()
           document.body.style.position = ''
@@ -93,7 +94,6 @@ export default class extends Controller {
           window.scrollTo({ top: scrollPositionForDialog, left: 0, behavior: 'instant' })
           this.infosheetTarget.classList.remove('closing')
         }, 500)
-        this.infosheetTarget.classList.add('closing')
       }
     }
     document.body.style.overflow = ''

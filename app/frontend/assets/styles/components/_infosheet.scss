@@ -30,11 +30,14 @@ dialog.infosheet {
     }
 
     &[open] {
-        transform: translateY(0);
+        transform: translate3d(0, 0, 0);
         transition: transform $transition-duration-default $transition-ease-default;
+        visibility: visible;
+        opacity: 1;
 
         &.closing {
-            transform: translate3d(100%, 0, 0);
+            transition: transform $transition-duration-default $transition-ease-default;
+            transform: translate3d(0, 100%, 0);
         }
     }
 
@@ -110,6 +113,12 @@ dialog.infosheet {
         border-radius: 0;
         transform: translate3d(100%, 0, 0);
         top: 0;
+
+        &[open] {
+            &.closing {
+                transform: translate3d(100%, 0, 0);
+            }
+        }
 
         .content {
             max-height: none;
