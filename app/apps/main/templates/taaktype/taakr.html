@@ -1,0 +1,76 @@
+{% extends "infosheet/turbo.html" %}
+{% block header %}
+    <div class="header">
+        <div class="scroll-handle" data-infosheet-target="scrollHandle"></div>
+        <h1>{{ taaktype.omschrijving }}</h1>
+        <button class="btn-close--small"
+                data-action="infosheet#closeInfosheet"
+                aria-label="Sluiten">{% include "icons/close.svg" %}</button>
+    </div>
+{% endblock header %}
+{% block content %}
+    <div class="content">
+        <div class="container__content--taakr">
+            {% if taaktype.toelichting %}<p>{{ taaktype.toelichting }}</p>{% endif %}
+            {% if taaktype.verantwoordelijke_afdeling %}
+                <h2 class="h5">Verantwoordelijke afdeling</h2>
+                <p>{{ taaktype.verantwoordelijke_afdeling }}</p>
+            {% endif %}
+            <h2 class="label--positive">Wanneer wel</h2>
+            {% if taaktype.waarom_wel|length > 0 %}
+                <div class="container__slider-horizontal {% if taaktype.waarom_wel|length < 2 %}single-item{% endif %}">
+                    <ul class="list-slider">
+                        {% for voorbeeldsituatie in taaktype.waarom_wel %}
+                            <li class="container__explained">
+                                <figure class="container__image">
+                                    {% if voorbeeldsituatie.bijlagen|length > 0 %}
+                                        <img src="{{ voorbeeldsituatie.bijlagen.0.afbeelding }}" />
+                                    {% else %}
+                                        Geen voorbeeldfoto gevonden
+                                    {% endif %}
+                                    <figcaption>
+                                        {% if voorbeeldsituatie.bijlagen|length > 0 %}<div class="icon--positive"></div>{% endif %}
+                                        {% if voorbeeldsituatie.toelichting %}<span>{{ voorbeeldsituatie.toelichting }}</span>{% endif %}
+                                    </figcaption>
+                                </figure>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% else %}
+                <p>Geen voorbeeldsituatie gevonden</p>
+            {% endif %}
+            <h2 class="label--negative">Wanneer niet</h2>
+            {% if taaktype.waarom_niet|length > 0 %}
+                <div class="container__slider-horizontal {% if taaktype.waarom_niet|length < 2 %}single-item{% endif %}">
+                    <ul class="list-slider">
+                        {% for voorbeeldsituatie in taaktype.waarom_niet %}
+                            <li class="container__explained">
+                                <figure class="container__image">
+                                    {% if voorbeeldsituatie.bijlagen|length > 0 %}
+                                        <img src="{{ voorbeeldsituatie.bijlagen.0.afbeelding }}" />
+                                    {% else %}
+                                        Geen voorbeeldfoto gevonden
+                                    {% endif %}
+                                    <figcaption>
+                                        {% if voorbeeldsituatie.bijlagen|length > 0 %}<div class="icon--negative"></div>{% endif %}
+                                        {% if voorbeeldsituatie.toelichting %}<span>{{ voorbeeldsituatie.toelichting }}</span>{% endif %}
+                                    </figcaption>
+                                </figure>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% else %}
+                <p>Geen voorbeeldsituatie gevonden</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock content %}
+{% block footer %}
+    <div class="footer center padding-bottom">
+        {# djlint:off #}
+        <a href="{{ taaktype.taakr_url }}" target="_blank" class="link--external">{% include "icons/external-link.svg" %}Meer weten over deze taak</a>
+        {# djlint:on #}
+    </div>
+{% endblock footer %}
