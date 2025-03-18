@@ -93,3 +93,7 @@
         }
     }
 }
+
+.container__table + .container__pagination {
+    margin-bottom: 3rem;
+}

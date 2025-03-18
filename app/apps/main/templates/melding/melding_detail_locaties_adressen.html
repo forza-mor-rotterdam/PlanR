@@ -1,6 +1,6 @@
 {% for locatie in locaties %}
     {% if forloop.first %}
-        {% if melding.locaties_voor_melding|length > 1 %}<h4>Huidige Locatie</h4>{% endif %}
+        {% if melding.locaties_voor_melding|length > 1 %}<h4>Huidige locatie</h4>{% endif %}
         <div class="locatie-container">
             {% include "melding/melding_detail_locaties_adres.html" with locatie=locatie melding=melding only %}
             {% if locatie.geometrie.coordinates %}
