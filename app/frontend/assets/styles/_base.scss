@@ -307,6 +307,10 @@ a,
             margin-right: 4px;
         }
     }
+    &:hover,
+    &:focus {
+        text-decoration: none;
+    }
 
     &.link--next {
         @include has-icon();
