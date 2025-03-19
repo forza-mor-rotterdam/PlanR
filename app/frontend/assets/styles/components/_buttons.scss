@@ -114,6 +114,10 @@ textarea {
         background-color $transition-duration-default $transition-ease-default,
         border-color $transition-duration-default $transition-ease-default;
 
+    &::before {
+        content: none;
+    }
+
     .full-width & {
         max-width: none;
     }
@@ -339,9 +343,6 @@ textarea {
 
         svg {
             vertical-align: sub;
-            path {
-                fill: $green-tint01 !important;
-            }
         }
     }
 
@@ -494,4 +495,7 @@ a.btn {
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
+    &::before {
+        content: none;
+    }
 }

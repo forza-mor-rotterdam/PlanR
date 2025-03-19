@@ -127,6 +127,9 @@
                 justify-items: flex-start;
                 color: inherit;
                 text-decoration: none;
+                &::before {
+                    content: none;
+                }
             }
         }
 
@@ -150,6 +153,9 @@
             a {
                 color: inherit;
                 text-decoration: none !important;
+                &::before {
+                    content: none;
+                }
             }
 
             h2 {

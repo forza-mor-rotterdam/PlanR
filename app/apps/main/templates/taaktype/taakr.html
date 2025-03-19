@@ -40,8 +40,8 @@
             {% else %}
                 <p>Geen voorbeeldsituatie gevonden</p>
             {% endif %}
-            <h2 class="label--negative">Wanneer niet</h2>
             {% if taaktype.waarom_niet|length > 0 %}
+                <h2 class="label--negative">Wanneer niet</h2>
                 <div class="container__slider-horizontal {% if taaktype.waarom_niet|length < 2 %}single-item{% endif %}">
                     <ul class="list-slider">
                         {% for voorbeeldsituatie in taaktype.waarom_niet %}
