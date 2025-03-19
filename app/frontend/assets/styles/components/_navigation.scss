@@ -35,9 +35,6 @@
         padding: 0.5em 1em 0.5em 2em;
         display: block;
         position: relative;
-        &::before {
-            content: none;
-        }
 
         svg {
             position: absolute;
@@ -77,9 +74,6 @@
         a {
             text-decoration: none;
             color: inherit;
-            &::before {
-                content: none;
-            }
         }
     }
     .btn,
