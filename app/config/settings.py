@@ -282,6 +282,10 @@ CSP_IMG_SRC = [
     "service.pdok.nl",
     "ows.gis.rotterdam.nl",
     "www.gis.rotterdam.nl",
+    "taakr.forzamor.nl",
+    "taakr-acc.forzamor.nl",
+    "taakr-test.forzamor.nl",
+    "taakr.mor.local:8009",
 ]
 
 CSP_FONT_SRC = ["'self'", "fonts.gstatic.com"]

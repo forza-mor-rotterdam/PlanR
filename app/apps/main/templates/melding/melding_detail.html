@@ -36,7 +36,7 @@
         {% get_bijlagen melding as bijlagen %}
         {% with signalen=melding.signalen_voor_melding %}
             <div data-controller="detail"
-                 data-detail-locaties-value="{{ melding.locaties_voor_melding|json_encode }}"
+                 data-detail-locaties-value="{{ locaties.adressen|json_encode }}"
                  data-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
                  data-detail-url-prefix-value="{{ MOR_CORE_URL_PREFIX }}"
                  data-detail-signalen-value="{{ melding.signalen_voor_melding|json_encode }}"

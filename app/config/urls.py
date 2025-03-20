@@ -5,6 +5,7 @@ from apps.main.views import (
     LoginView,
     LogoutView,
     MeldingDetail,
+    TaakRTaaktypeView,
     TakenAanmakenStreamView,
     TakenAanmakenView,
     gebruiker_info,
@@ -64,6 +65,7 @@ urlpatterns = [
     path("melding/", melding_lijst, name="melding_lijst"),
     path("melding/<uuid:id>/", MeldingDetail.as_view(), name="melding_detail"),
     path("lichtmast/<int:lichtmast_id>/", LichtmastView.as_view(), name="lichtmast"),
+    path("taaktype/taakr/", TaakRTaaktypeView.as_view(), name="taaktype_taakr"),
     path(
         "melding/<uuid:id>/volgende/",
         melding_next,

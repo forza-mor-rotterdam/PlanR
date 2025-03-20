@@ -1,6 +1,6 @@
 {% load vind_in_dict from querystring_tags %}
 <h1>
-    {% with hoogste_gewicht_locatie=melding.locaties_voor_melding|dictsort:"gewicht"|last %}
+    {% with hoogste_gewicht_locatie=locaties.adressen|first %}
         {% if hoogste_gewicht_locatie.straatnaam %}
             {{ hoogste_gewicht_locatie.straatnaam }}
             {% spaceless %}

@@ -99,7 +99,12 @@
                         </h3>
                         <div class="card">
                             <p>
-                                {{ locatie.straatnaam }} {{ locatie.huisnummer }}{{ locatie.huisletter }} {{ locatie.toevoeging }}
+                                {% if locatie.straatnaam %}
+                                    {{ locatie.straatnaam }}
+                                    {% if locatie.huisnummer %}{{ locatie.huisnummer }}{% endif %}
+                                    {% if locatie.huisletter %}{{ locatie.huisletter }}{% endif %}
+                                    {% if locatie.toevoeging %}{{ locatie.toevoeging }}{% endif %}
+                                {% endif %}
                                 <br>
                                 {{ locatie.wijknaam }} {{ locatie.buurtnaam }}
                                 <br>

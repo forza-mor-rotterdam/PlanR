@@ -60,7 +60,11 @@ def melding_locaties(melding: dict):
             ("graven", graven),
             (
                 "adressen",
-                sorted(adressen, key=lambda b: b.get("gewicht"), reverse=True),
+                sorted(
+                    sorted(adressen, key=lambda b: b.get("gewicht"), reverse=True),
+                    key=lambda b: b.get("primair"),
+                    reverse=True,
+                ),
             ),
         ]
     )
