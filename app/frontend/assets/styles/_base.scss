@@ -36,6 +36,8 @@ html {
         box-sizing: border-box;
         transition: width $transition-duration-default $transition-ease-default;
         position: fixed;
+        top: 0;
+        left: 0;
         border-right: 1px solid $green-400;
 
         .nav--small & {
