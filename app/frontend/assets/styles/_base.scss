@@ -109,11 +109,16 @@ main {
     width: 1px;
     height: 1px;
     overflow: hidden;
+    font-size: 0.75rem;
+    color: $black;
 
     &:focus {
-        position: static;
+        text-decoration: underline;
         width: auto;
         height: auto;
+        left: 24px;
+        top: 3px;
+        z-index: 50;
     }
 }
 
