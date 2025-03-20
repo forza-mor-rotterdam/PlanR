@@ -114,10 +114,6 @@ textarea {
         background-color $transition-duration-default $transition-ease-default,
         border-color $transition-duration-default $transition-ease-default;
 
-    &::before {
-        content: none;
-    }
-
     .full-width & {
         max-width: none;
     }
