@@ -11,7 +11,7 @@
 {% endblock header %}
 {% block body %}
     <turbo-frame id="beheer" data-turbo-action="advance">
-    <ul class="list--blocks-horizontal">
+    <ul class="list--blocks-horizontal" id="id_maincontent">
         <li>
             <a href="{% url 'gebruiker_lijst' %}">Gebruikers</a>
         </li>

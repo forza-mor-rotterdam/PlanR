@@ -8,7 +8,7 @@
 {% endblock title %}
 {% block body %}
     <turbo-frame id="beheer" data-turbo-action="advance">
-    <div class="page__beheer">
+    <div class="page__beheer" id="id_maincontent">
         <div>
             <a href="{% url 'release_note_lijst' %}"
                data-turbo-action='advance'

@@ -9,7 +9,7 @@
 {% endblock header %}
 {% block body %}
     <turbo-frame id="beheer" data-turbo-action="advance">
-    <div class="page__beheer" data-controller="row-search">
+    <div class="page__beheer" data-controller="row-search" id="id_maincontent">
         <div>
             <a href="{% url 'beheer' %}" class="link--back" data-turbo-frame="_top">
                 <svg width="25"

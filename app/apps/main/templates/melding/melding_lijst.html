@@ -78,12 +78,12 @@
                     </div>
                 </div>
             </div>
-            <div class="container__table">
+            <div class="container__table" id="id_maincontent">
                 <table class="table--overview">
                     <thead>
                         {{ form.ordering }}
                     </thead>
-                    <tbody id="id_maincontent">
+                    <tbody>
                         {% for melding in data.results %}
                             {% get_bijlagen melding as bijlagen %}
                             <tr data-action="click->overview#navigate"
