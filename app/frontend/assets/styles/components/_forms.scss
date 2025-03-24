@@ -978,6 +978,16 @@ form.taken-aanmaken {
                 margin-bottom: 0.75rem;
             }
 
+            li {
+                display: flex !important;
+                justify-content: space-between;
+                gap: 10px;
+
+                button {
+                    display: flex;
+                }
+            }
+
             label {
                 font-size: 0.777rem;
                 font-weight: 400;
