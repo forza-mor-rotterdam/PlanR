@@ -11,7 +11,7 @@ export default class extends Controller {
       searchable.dataset.value = searchable.textContent
     })
     this.displayTypes = {
-      LI: 'list-item',
+      LI: 'flex',
       TR: 'table-row',
     }
     let formElem = this.element.querySelector('form')
