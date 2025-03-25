@@ -973,6 +973,8 @@ form.taken-aanmaken {
             box-sizing: border-box;
             border: 1px solid $gray-400;
             box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.07);
+            max-height: 500px;
+            overflow: auto;
 
             li:not(:last-child) {
                 margin-bottom: 0.75rem;
@@ -1159,6 +1161,7 @@ form.taken-aanmaken {
             li {
                 display: flex;
                 flex: 0 1 47%;
+                justify-content: space-between;
                 min-width: 47%;
                 margin: 0 0 0.5rem;
                 padding-left: 0;
