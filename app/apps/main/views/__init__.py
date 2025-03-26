@@ -32,7 +32,6 @@ from apps.main.views.melding_detail import melding_spoed_veranderen  # NOQA
 from apps.main.views.melding_detail import melding_taken  # NOQA
 from apps.main.views.melding_detail import melding_verzonden  # NOQA
 from apps.main.views.melding_detail import publiceer_topic  # NOQA
-from apps.main.views.melding_detail import taak_afronden  # NOQA
 from apps.main.views.melding_detail import taak_annuleren  # NOQA
 from apps.main.views.melding_list import melding_lijst  # NOQA
 from bs4 import BeautifulSoup
