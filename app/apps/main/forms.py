@@ -107,6 +107,7 @@ class FilterForm(forms.Form):
                 "data-filter-target": "searchProfielContext",
                 "data-action": "search->filter#onClearSearch",
                 "placeHolder": "Zoek op straatnaam, contactgegevens of MeldR-nummer",
+                "maxlength": 100,
             }
         ),
         label="Zoeken",
