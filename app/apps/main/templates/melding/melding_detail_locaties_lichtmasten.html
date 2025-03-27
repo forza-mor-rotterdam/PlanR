@@ -21,7 +21,7 @@
                     <li>
                         <details data-map-target="details" data-action="toggle->map#toggleDetails">
                             <summary>
-                                <h5>Lichtmast {{ lichtmast.lichtmast_id }}</h5>
+                                <h5>Lichtmast {{ lichtmast.lichtmast_id }} ({{ lichtmast.bron_signaal_ids|length }})</h5>
                             </summary>
                             <turbo-frame src="{% url 'lichtmast' lichtmast.lichtmast_id %}" id="lichtmast_{{ lichtmast.lichtmast_id }}">
                             </turbo-frame>
