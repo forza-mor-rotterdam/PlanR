@@ -1,32 +1,24 @@
 {% load json_encode from json_tags %}
 <turbo-frame id="lichtmast_{{ view.kwargs.lichtmast_id }}">
-<dl>
-    <div>
-        <dt>{{ lichtmast_data.lichtpuntnummer.label }}</dt>
-        <dd>
-            {{ lichtmast_data.lichtpuntnummer.value }}
-        </dd>
-    </div>
-    <div>
-        <dt>{{ lichtmast_data.lichtpunt_id.label }}</dt>
-        <dd>
-            {{ lichtmast_data.lichtpunt_id.value }}
-        </dd>
-    </div>
-    <div>
-        <dt>{{ lichtmast_data.mast_id.label }}</dt>
-        <dd>
-            {{ lichtmast_data.mast_id.value }}
-        </dd>
-    </div>
-    <div>
-        <dt>{{ lichtmast_data.straat.label }}</dt>
-        <dd>
-            {{ lichtmast_data.straat.value }}
-        </dd>
-    </div>
-</dl>
-<div data-map-target="pin"
-     data-pin-id="lichtmast_{{ view.kwargs.lichtmast_id }}"
-     data-lat-lon="{{ lichtmast_data.gps.value|json_encode }}"></div>
+{% if lichtmast_data %}
+    <dl>
+        <div>
+            <dt>{{ lichtmast_data.lichtpuntnummer.label }}</dt>
+            <dd>
+                {{ lichtmast_data.lichtpuntnummer.value }}
+            </dd>
+        </div>
+        <div>
+            <dt>{{ lichtmast_data.straat.label }}</dt>
+            <dd>
+                {{ lichtmast_data.straat.value }}
+            </dd>
+        </div>
+    </dl>
+    <div data-map-target="pin"
+         data-pin-id="lichtmast_{{ view.kwargs.lichtmast_id }}"
+         data-lat-lon="{{ lichtmast_data.gps.value|json_encode }}"></div>
+{% else %}
+    <small>Er is zijn geen lichtmast gegevens gevonden!</small>
+{% endif %}
 </turbo-frame>
