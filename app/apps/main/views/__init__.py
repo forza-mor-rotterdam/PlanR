@@ -164,6 +164,7 @@ class LichtmastView(PermissionRequiredMixin, TemplateView):
         response = requests.get(url)
         soup = BeautifulSoup(response.content, "xml")
         lichtmast_data = {}
+
         fields = (
             ("ms:MAST_ID", "Mast id", "mast_id"),
             ("ms:LICHTPUNT_ID", "Lichtpunt id", "lichtpunt_id"),
@@ -200,6 +201,8 @@ class LichtmastView(PermissionRequiredMixin, TemplateView):
             (f[2], f[1], soup.find_all(f[0])[0].text if soup.find_all(f[0]) else "-")
             for f in fields
         ]
+        if not [lm for lm in lichtmast_data if lm[2] != "-"]:
+            return context
         rd_list = (
             lichtmast_data[-1][2].split(" ")
             if len(lichtmast_data[-1][2].split(" ")) == 2
