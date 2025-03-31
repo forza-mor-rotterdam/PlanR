@@ -119,13 +119,11 @@ export default class extends Controller {
     this.tabIndex = Number(this.urlParams.get('tabIndex'))
     this.selectTab(this.tabIndex || 1)
     actionsHeight = this.containerActionsTarget.offsetHeight
-    window.addEventListener(
-      'scroll',
-      function () {
-        this.checkScrollPosition()
-      }.bind(this),
-      false
-    )
+    this.ticking = false
+    this.updatePosition = this.updatePosition.bind(this)
+    window.addEventListener('scroll', () => {
+      this.checkScrollPosition()
+    })
   }
   fitMarkers() {
     const bounds = new L.LatLngBounds(this.coordinates)
@@ -201,15 +199,28 @@ export default class extends Controller {
       } else {
         this.btnToTopTarget.classList.remove('show')
       }
-      // actioncontainer
-      if (document.documentElement.scrollTop > distance) {
-        this.containerActionsTarget.classList.add('stayFixed')
-
-        this.containerActionsTarget.nextElementSibling.style.marginTop = `${actionsHeight}px`
-      } else {
-        this.containerActionsTarget.classList.remove('stayFixed')
-        this.containerActionsTarget.nextElementSibling.style.marginTop = 0
+      if (!this.ticking) {
+        requestAnimationFrame(this.updatePosition)
+        this.ticking = true
       }
+    }
+  }
+
+  updatePosition() {
+    this.ticking = false
+
+    // actioncontainer
+    console.log('distance', distance)
+    if (document.documentElement.scrollTop > distance) {
+      this.containerActionsTarget.classList.add('stayFixed')
+      this.containerActionsTarget.parentElement.style.height = `${actionsHeight}px`
+      this.containerActionsTarget.style.transform = `translateY(${
+        document.documentElement.scrollTop - distance
+      }px)`
+    } else {
+      this.containerActionsTarget.classList.remove('stayFixed')
+      this.containerActionsTarget.parentElement.style.height = ''
+      this.containerActionsTarget.style.transform = ``
     }
   }
   scrollToTop(e) {

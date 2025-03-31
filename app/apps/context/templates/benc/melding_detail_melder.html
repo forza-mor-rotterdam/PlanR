@@ -1,10 +1,10 @@
 {% load slice_iterable from main_tags %}
-<section class="section--seperated" data-testid="detailMelder">
+<section class="section--separated" data-testid="detailMelder">
     <div class="container__details">
         <h2>Melder</h2>
-        <div>
+        <div class="has-background--white">
             {% if melding.signalen_voor_melding|length > 1 %}
-                <div class="display--flex--md">
+                <div>
                     <ul class="list-tabs">
                         {% for signaal in melding.signalen_voor_melding %}
                             <li>
@@ -19,7 +19,7 @@
                         {% endfor %}
                     </ul>
                 </div>
-                <div class="display--flex--md">
+                <div>
                     <div class="container__tab-content">
                         {% for signaal in melding.signalen_voor_melding %}
                             <div class="tab-content" data-index="{{ forloop.counter }}">
@@ -87,7 +87,7 @@
                     </div>
                 </div>
             {% else %}
-                <div class="display--flex--md">
+                <div>
                     <ul class="list-clean incident-meta-list">
                         {% if melding.signalen_voor_melding.0.melder.naam %}
                             <li>

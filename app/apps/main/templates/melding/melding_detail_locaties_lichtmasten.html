@@ -1,7 +1,7 @@
 {% if lichtmasten %}
     <div data-controller="map"
          data-map-default-lat-lon="[51.924420, 4.477750]">
-        <h4>Lichtmasten({{ lichtmasten|length }})</h4>
+        <h4 class="green">Lichtmasten({{ lichtmasten|length }})</h4>
         {% comment %} <div>
             <label for="lichtmasten_id">
                 <input id="lichtmasten_id" type="checkbox" data-detail-map-layer-types-param='["lichtmasten", "lichtmastenSto"]' data-action="detail#onMapLayerChange">
@@ -15,7 +15,7 @@
                 </div>
             </div>
         </div> {% endcomment %}
-        <div class="container__details-list-with-map">
+        <div class="container__details-list-with-map has-background--white">
             <ul class="list-clean">
                 {% for lichtmast in lichtmasten %}
                     <li>

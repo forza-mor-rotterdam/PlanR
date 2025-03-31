@@ -11,16 +11,16 @@
 {% endblock body_class %}
 {% block content %}
     <div class="screen-xl">
-        <section class="section--seperated--l">
+        <section class="section--separated--l">
             <div class="grid-container grid-container--full"
                  data-controller="chart-utils">{{ NieuweMeldingAantallen.tabs_grafiek_met_signalen }}</div>
         </section>
-        <section class="section--seperated--l">
+        <section class="section--separated--l">
             <div class="grid-container grid-container--full"
                  data-controller="chart-utils">{{ NieuweMeldingAantallen.tabs_grafiek_nieuw_vs_afgehandeld }}</div>
         </section>
         {% if not onderwerp or not wijk %}
-            <section class="section--seperated--l">
+            <section class="section--separated--l">
                 <div>
                     <h2>Top tien</h2>
                     <div class="grid-container grid-container--3cols">
