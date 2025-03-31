@@ -24,7 +24,6 @@
                         {% for signaal in melding.signalen_voor_melding %}
                             <div class="tab-content" data-index="{{ forloop.counter }}">
                                 <div class="display--flex--md">
-                                    {% comment %} {{ signaal }} {% endcomment %}
                                     <ul class="list-clean incident-meta-list">
                                         {% if signaal.melder.naam %}
                                             <li>
@@ -69,18 +68,22 @@
                                             </li>
                                         {% endif %}
                                     </ul>
-                                    <ul class="list-clean">
+                                    <dl>
                                         {% if signaal.meta.specifiek_graf == "Ja" %}
-                                            <li>
-                                                <h3 class="h5">Is deze persoon de rechthebbende?</h3>
-                                                <p>{{ signaal.meta.rechthebbende }}</p>
-                                            </li>
+                                            <div>
+                                                <dt>Is deze persoon de rechthebbende?</dt>
+                                                <dd>
+                                                    {{ signaal.meta.rechthebbende }}
+                                                </dd>
+                                            </div>
                                         {% endif %}
-                                        <li>
-                                            <h3 class="h5">Is terugkoppeling gewenst?</h3>
-                                            <p>{{ signaal.meta.terugkoppeling_gewenst }}</p>
-                                        </li>
-                                    </ul>
+                                        <div>
+                                            <dt>Is terugkoppeling gewenst?</dt>
+                                            <dd>
+                                                {{ signaal.meta.terugkoppeling_gewenst }}
+                                            </dd>
+                                        </div>
+                                    </dl>
                                 </div>
                             </div>
                         {% endfor %}
@@ -134,18 +137,22 @@
                             </li>
                         {% endif %}
                     </ul>
-                    <ul class="list-clean">
+                    <dl>
                         {% if melding.signalen_voor_melding.0.meta.specifiek_graf == "Ja" %}
-                            <li>
-                                <h3 class="h5">Is deze persoon de rechthebbende?</h3>
-                                <p>{{ melding.signalen_voor_melding.0.meta.rechthebbende }}</p>
-                            </li>
+                            <div>
+                                <dt>Is deze persoon de rechthebbende?</dt>
+                                <dd>
+                                    {{ melding.signalen_voor_melding.0.meta.rechthebbende }}
+                                </dd>
+                            </div>
                         {% endif %}
-                        <li>
-                            <h3 class="h5">Is terugkoppeling gewenst?</h3>
-                            <p>{{ melding.signalen_voor_melding.0.meta.terugkoppeling_gewenst }}</p>
-                        </li>
-                    </ul>
+                        <div>
+                            <dt>Is terugkoppeling gewenst?</dt>
+                            <dd>
+                                {{ melding.signalen_voor_melding.0.meta.terugkoppeling_gewenst }}
+                            </dd>
+                        </div>
+                    </dl>
                 </div>
             {% endif %}
         </div>
