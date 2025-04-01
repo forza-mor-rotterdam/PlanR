@@ -48,6 +48,11 @@
                                                            class="form-check-input">
                                                     <span data-row-search-target="searchable">{{ taakr_taaktype.omschrijving }}</span>
                                                 </label>
+                                                <button class="btn btn-textlink btn-info"
+                                                        data-action="infosheet#openInfosheet"
+                                                        data-infosheet-action-param="{% url 'taaktype_taakr' %}?taakapplicatie-taaktype-url={{ taakr_taaktype_links.taakapplicatie_taaktype_url }}">
+                                                    {% include "icons/info-filled.svg" %}
+                                                </button>
                                             </li>
                                         {% endwith %}
                                     {% endfor %}
@@ -99,6 +104,11 @@
                                                                                class="form-check-input">
                                                                         <span>{{ taakr_taaktype.omschrijving }}</span>
                                                                     </label>
+                                                                    <button class="btn btn-textlink btn-info"
+                                                                            data-action="infosheet#openInfosheet"
+                                                                            data-infosheet-action-param="{% url 'taaktype_taakr' %}?taakapplicatie-taaktype-url={{ taakr_taaktype_links.taakapplicatie_taaktype_url }}">
+                                                                        {% include "icons/info-filled.svg" %}
+                                                                    </button>
                                                                 </li>
                                                             {% endwith %}
                                                         {% endfor %}

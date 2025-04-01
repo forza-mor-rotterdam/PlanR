@@ -38,6 +38,7 @@ def to_base64(file):
 
 def melding_locaties(melding: dict):
     locaties_voor_melding = melding.get("locaties_voor_melding", [])
+    signalen_voor_melding = melding.get("signalen_voor_melding", [])
     adressen = [
         locatie
         for locatie in locaties_voor_melding
@@ -45,8 +46,29 @@ def melding_locaties(melding: dict):
     ]
     lichtmasten = [
         locatie
-        for locatie in locaties_voor_melding
+        | {
+            "bron_id": signaal.get("bron_id"),
+            "bron_signaal_id": signaal.get("bron_signaal_id"),
+        }
+        for signaal in signalen_voor_melding
+        for locatie in signaal.get("locaties_voor_signaal", [])
         if locatie.get("locatie_type") == "lichtmast"
+    ]
+    lichtmast_ids = sorted(
+        list(set([lichtmast.get("lichtmast_id") for lichtmast in lichtmasten]))
+    )
+    lichtmasten = [
+        {
+            "lichtmast_id": lichtmast_id,
+        }
+        | {
+            "bron_signaal_ids": [
+                lichtmast.get("bron_signaal_id")
+                for lichtmast in lichtmasten
+                if lichtmast.get("lichtmast_id") == lichtmast_id
+            ]
+        }
+        for lichtmast_id in lichtmast_ids
     ]
     graven = [
         locatie
@@ -60,7 +82,11 @@ def melding_locaties(melding: dict):
             ("graven", graven),
             (
                 "adressen",
-                sorted(adressen, key=lambda b: b.get("gewicht"), reverse=True),
+                sorted(
+                    sorted(adressen, key=lambda b: b.get("gewicht"), reverse=True),
+                    key=lambda b: b.get("primair"),
+                    reverse=True,
+                ),
             ),
         ]
     )

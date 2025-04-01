@@ -2,6 +2,7 @@ import string
 
 from apps.main.constanten import BEGRAAFPLAATSEN, VERTALINGEN
 from apps.main.services import MORCoreService, render_onderwerp
+from apps.main.utils import melding_locaties
 from django.http import QueryDict
 from django.template.loader import get_template
 from django.urls import reverse
@@ -142,34 +143,38 @@ class AdresBuurtWijkKolom(StandaardKolom):
 
     def td_label(self):
         default = "-"
-        locatie_key = "melding.locaties_voor_melding.0"
-        if locatie := string_based_lookup(
+        locatie_key = "melding"
+        if melding := string_based_lookup(
             self.context, locatie_key, not_found_value={}
         ):
-            straatnaam = locatie.get("straatnaam", "")
-            huisnummer = (
-                f' {locatie.get("huisnummer")}' if locatie.get("huisnummer") else ""
-            )
-            huisletter = (
-                f'{locatie.get("huisletter")}' if locatie.get("huisletter") else ""
-            )
-            toevoeging = (
-                f' {locatie.get("toevoeging")}' if locatie.get("toevoeging") else ""
-            )
-            wijk = locatie.get("wijknaam", "")
-            buurt = locatie.get("buurtnaam", "")
+            locaties = melding_locaties(melding)["adressen"]
+            if locaties:
+                locatie = locaties[0]
+                straatnaam = locatie.get("straatnaam", "")
+                huisnummer = (
+                    f' {locatie.get("huisnummer")}' if locatie.get("huisnummer") else ""
+                )
+                huisletter = (
+                    f'{locatie.get("huisletter")}' if locatie.get("huisletter") else ""
+                )
+                toevoeging = (
+                    f' {locatie.get("toevoeging")}' if locatie.get("toevoeging") else ""
+                )
+                wijk = locatie.get("wijknaam", "")
+                buurt = locatie.get("buurtnaam", "")
 
-            lijst = []
-            if wijk:
-                lijst.append(wijk)
-            if buurt:
-                lijst.append(buurt)
+                lijst = []
+                if wijk:
+                    lijst.append(wijk)
+                if buurt:
+                    lijst.append(buurt)
 
-            return (
-                f"{string.capwords(straatnaam)}{huisnummer}{huisletter}{toevoeging}<br>{', '.join(lijst)}".strip()
-                if straatnaam
-                else default
-            )
+                return (
+                    f"{string.capwords(straatnaam)}{huisnummer}{huisletter}{toevoeging}<br>{', '.join(lijst)}".strip()
+                    if straatnaam
+                    else default
+                )
+        return default
 
 
 class WijkKolom(StandaardKolom):
@@ -310,8 +315,6 @@ class StatusKolom(StandaardKolom):
 class MeldRNummerKolom(StandaardKolom):
     _key = "meldr_nummer"
     _kolom_hoofd = "MeldR nummer"
-    _kolom_inhoud = "melding.meta.meldingsnummerField"
-    _ordering_value = "meta__meldingsnummerField"
     _td_standaard_classes = "nowrap"
 
     def td_label(self):
@@ -321,14 +324,8 @@ class MeldRNummerKolom(StandaardKolom):
                 "signalen_voor_melding", []
             )
         ]
-        meta_meldr_nummer = string_based_lookup(
-            self.context, self._kolom_inhoud, not_found_value=""
-        )
-        msb_meldr_nummer = string_based_lookup(
-            self.context, "melding.meta.morId", not_found_value=""
-        )
-        bron_signaal_ids.append(meta_meldr_nummer)
-        bron_signaal_ids.append(msb_meldr_nummer)
+
+        bron_signaal_ids = sorted(list(set(bron_signaal_ids)))
 
         bron_signaal_ids_joined = (
             "<div class='clamped'>"

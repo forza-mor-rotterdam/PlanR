@@ -21,6 +21,7 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-smoothing: antialiased;
+    width: 100%;
 }
 
 html {
@@ -36,6 +37,8 @@ html {
         box-sizing: border-box;
         transition: width $transition-duration-default $transition-ease-default;
         position: fixed;
+        top: 0;
+        left: 0;
         border-right: 1px solid $green-400;
 
         .nav--small & {
@@ -109,11 +112,16 @@ main {
     width: 1px;
     height: 1px;
     overflow: hidden;
+    font-size: 0.75rem;
+    color: $black;
 
     &:focus {
-        position: static;
+        text-decoration: underline;
         width: auto;
         height: auto;
+        left: 24px;
+        top: 3px;
+        z-index: 50;
     }
 }
 
@@ -211,6 +219,9 @@ p {
     line-height: $line-height-base;
     max-width: map-get($container-max-widths, lg);
 }
+h2 + p {
+    margin-top: 0;
+}
 
 a {
     transition: color $transition-duration-default $transition-ease-default;
@@ -289,11 +300,7 @@ a,
     color: $primary;
     text-decoration: $link-decoration;
     cursor: pointer;
-
-    &:hover,
-    &:focus {
-        text-decoration: none;
-    }
+    position: relative;
 
     &.link--location {
         @include has-icon();
@@ -308,6 +315,10 @@ a,
             margin-right: 4px;
         }
     }
+    &:hover,
+    &:focus {
+        text-decoration: none;
+    }
 
     &.link--next {
         @include has-icon();
@@ -318,6 +329,7 @@ a,
         padding-left: 10px;
         font-size: 0.875em;
         font-weight: 700;
+
         > svg {
             left: -20px;
             top: 3px;
@@ -628,6 +640,35 @@ body.no-js {
     }
 }
 
+.label--positive,
+.label--negative {
+    font-size: $h5-font-size;
+    line-height: 24px;
+    min-height: 32px;
+    margin-top: 0;
+    display: block;
+    padding-bottom: 1em;
+}
+
+.label--positive {
+    color: $green-tint01;
+
+    &::before {
+        content: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjUiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCA1NSA0MyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBjbGFzcz0iaWNvbi0tY2hlY2ttYXJrIj4KPHBhdGggZD0iTTQ5LjY0MzkgMC4wNDI3MjQ2TDIzLjA0NjggMzMuMjg0NUw0Ljk2Mzk3IDExLjI4NDRMMC4zMTczODMgMTUuMDc5OEwyMy4wOTY1IDQyLjgyNjFMNTQuMzI4OCAzLjc5Mjk1TDQ5LjY0MzkgMC4wNDI3MjQ2WiIgZmlsbD0iIzAwODExRiIvPgo8L3N2Zz4K");
+        vertical-align: middle;
+        margin-right: $input-padding-y;
+    }
+}
+.label--negative {
+    color: $red;
+
+    &::before {
+        content: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjUiIGhlaWdodD0iMjUiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBjbGFzcz0iaWNvbi0tY2xvc2UiPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTE0Ljg5NDIgMTUuOTU1TDE1Ljk1NDggMTQuODk0M0w5LjA2MDUzIDhMMTUuOTU0OCAxLjEwNTcxTDE0Ljg5NDIgMC4wNDUwNTI1TDcuOTk5ODcgNi45MzkzNEwxLjEwNTU4IDAuMDQ1MDUxNkwwLjA0NDkyMzQgMS4xMDU3MUw2LjkzOTIxIDhMMC4wNDQ5MjE5IDE0Ljg5NDNMMS4xMDU1OCAxNS45NTVMNy45OTk4NyA5LjA2MDY2TDE0Ljg5NDIgMTUuOTU1WiIgZmlsbD0iI0NFNEMzQiIvPgo8L3N2Zz4K");
+        vertical-align: middle;
+        margin-right: $input-padding-y;
+    }
+}
+
 // HELPER-CLASSES
 .keyboard-focus {
     outline: 2px solid blue !important;
@@ -755,6 +796,10 @@ body.no-js {
 
 .margin--bottom {
     margin-bottom: 1em !important;
+}
+
+.center {
+    text-align: center;
 }
 
 .display--flex {
