@@ -2,7 +2,8 @@
     @include list-clean();
     margin: 0;
     padding: 0 $input-padding-y;
-    background-color: $gray-tint02;
+    background-color: $white;
+    border-bottom: 1px solid $blue-200;
 
     li {
         display: inline;
@@ -14,17 +15,18 @@
         font-size: 0.875em;
         font-weight: normal;
         padding: 12px 4px;
-        color: $gray-tint11;
+        color: $gray-800;
 
         &.active {
-            border-bottom: 4px solid $green-tint01;
+            color: $green-900;
+            font-weight: 700;
         }
     }
 }
 
 .container__tab-content {
     padding: 0 $input-padding-y;
-    background-color: $gray-tint02;
+    background-color: $blue-200;
     width: 100%;
     box-sizing: border-box;
 
