@@ -84,11 +84,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="grid-container">
-                                <div class="grid-item">
-                                    {% include "melding/melding_detail_locaties_lichtmasten.html" with locaties=type_locaties melding=melding lichtmasten=locaties.lichtmasten only %}
-                                </div>
-                            </div>
+                            {% include "melding/melding_detail_locaties_lichtmasten.html" with locaties=type_locaties melding=melding lichtmasten=locaties.lichtmasten only %}
                             <div class="grid-container grid-container--half">
                                 <div class="grid-item">
                                     <section class="section--separated" data-testid="detailMelding">
@@ -96,7 +92,8 @@
                                             <h2>Meldingdetails</h2>
                                             <div>
                                                 {% if melding.signalen_voor_melding|length > 1 %}
-                                                    <div class="display--flex--md">
+                                                    <div class="container__tabs">
+                                                        <h3 class="h5">Samengevoegde melding</h3>
                                                         <ul class="list-tabs" data-detail-target="tabs">
                                                             {% for signaal in melding.signalen_voor_melding %}
                                                                 {% comment %} {{ signaal }} {% endcomment %}
@@ -116,7 +113,7 @@
                                                         {% for signaal in melding.signalen_voor_melding %}
                                                             <div class="tab-content" data-index="{{ forloop.counter }}">
                                                                 <div>
-                                                                    <dl class="has-background">
+                                                                    <dl>
                                                                         <div>
                                                                             <dt>Onderwerp</dt>
                                                                             <dd>
@@ -155,7 +152,7 @@
                                                                             </div>
                                                                         {% endif %}
                                                                     </dl>
-                                                                    <dl class="has-background">
+                                                                    <dl>
                                                                         {% if signaal.omschrijving_melder and signaal.omschrijving_melder != "- geen korte omschrijving beschikbaar -" %}
                                                                             <div>
                                                                                 <dt>Omschrijving</dt>
