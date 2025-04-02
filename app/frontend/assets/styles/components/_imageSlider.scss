@@ -8,6 +8,10 @@
         right: 12px;
         pointer-events: none;
     }
+
+    section & {
+        padding: 0;
+    }
 }
 
 .tag--in-image {

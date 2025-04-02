@@ -1,10 +1,10 @@
 {% load json_encode from json_tags %}
 {% load mor_core_url replace_n from main_tags %}
-<section class="section--seperated section--imageslider"
+<section class="section--separated section--imageslider"
          data-controller="image-slider"
          data-image-slider-modal-image-slider-outlet="#modal-image-slider"
          data-image-slider-data-value="{{ bijlagen|json_encode }}">
-    <div>
+    <div class="has-background--white">
         <div class="container__imageslider"
              data-image-slider-target="imageSliderContainer"
              data-action="scroll->image-slider-target#onScrollSlider">

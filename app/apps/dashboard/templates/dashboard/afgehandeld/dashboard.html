@@ -11,7 +11,7 @@
 {% endblock body_class %}
 {% block content %}
     <div class="screen-xl">
-        <section class="section--seperated--l">
+        <section class="section--separated--l">
             <h2>Afgehandelde meldingen</h2>
             <p>
                 De informatie die verzameld is voor onderstaande grafieken, is samengesteld op basis van de afhandel datum van meldingen in de gekozen periode. Hier is dan ook informatie verzameld over meldingen die ver voor de gekozen periode gestart kunnen zijn.
@@ -49,11 +49,11 @@
                 </div>
             </div>
         </section>
-        <section class="section--seperated--l">
+        <section class="section--separated--l">
             <div class="grid-container grid-container--full"
                  data-controller="chart-utils">{{ DoorlooptijdenAfgehandeldeMeldingen.stacked_chart_tabs }}</div>
         </section>
-        <section class="section--seperated--l">
+        <section class="section--separated--l">
             <div class="grid-container grid-container--full"
                  data-controller="chart-utils">
                 {{ StatusVeranderingDuurMeldingen.chart_tabs }}
@@ -61,7 +61,7 @@
             </div>
         </section>
         {% if not wijk or not onderwerp %}
-            <section class="section--seperated--l">
+            <section class="section--separated--l">
                 <div>
                     <h2>Top 10 totaal gemiddelde doorlooptijden</h2>
                     <div class="grid-container grid-container--half">
@@ -72,7 +72,7 @@
             </section>
         {% endif %}
         {% if not onderwerp %}
-            <section class="section--seperated--l">
+            <section class="section--separated--l">
                 <div>
                     <h2>Top 10 gemiddelde doorlooptijden van alle onderwerp per fase</h2>
                     <div class="grid-container grid-container--4cols">
@@ -85,7 +85,7 @@
             </section>
         {% endif %}
         {% if not wijk %}
-            <section class="section--seperated--l">
+            <section class="section--separated--l">
                 <div>
                     <h2>Top 10 gemiddelde doorlooptijden van alle wijken per fase</h2>
                     <div class="grid-container grid-container--4cols">
