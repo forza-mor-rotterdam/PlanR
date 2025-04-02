@@ -1,3 +1,12 @@
+.container__tabs {
+    display: flex;
+    background-color: $white;
+    padding: 0.75rem;
+
+    p {
+        flex: 0 0 40%;
+    }
+}
 .list-tabs {
     @include list-clean();
     margin: 0;
@@ -12,9 +21,11 @@
         display: inline-block;
         width: auto;
         background-color: transparent;
-        font-size: 0.875em;
+        font-size: 0.778em;
         font-weight: normal;
-        padding: 12px 4px;
+        padding: 10px 4px;
+        min-height: 32px;
+        line-height: 14px;
         color: $gray-800;
 
         &.active {
@@ -26,12 +37,17 @@
 
 .container__tab-content {
     padding: 0 $input-padding-y;
-    background-color: $blue-200;
+    background-color: white;
     width: 100%;
     box-sizing: border-box;
 
     .tab-content {
         display: none;
+
+        dl {
+            margin: 0;
+            padding: 0.75;
+        }
 
         &.active {
             display: block;
