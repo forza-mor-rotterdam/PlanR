@@ -443,8 +443,7 @@ p {
 }
 
 dl,
-ul,
-h4 {
+ul {
     .has-background--white & {
         margin-top: 0;
         margin-bottom: 0;
@@ -565,6 +564,7 @@ li {
 }
 
 dl {
+    font-size: 0.875rem;
     dt {
         font-weight: 700;
     }
