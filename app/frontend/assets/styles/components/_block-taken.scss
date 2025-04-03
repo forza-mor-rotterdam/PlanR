@@ -1,0 +1,174 @@
+.container__taken {
+    font-size: 0.778em;
+    .taken--header,
+    .container__taak > summary {
+        display: grid;
+        grid-template-columns:
+            minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr)
+            minmax(0, 1fr);
+        align-items: center;
+
+        > div {
+            padding: 0.5em;
+        }
+        > div:first-child {
+            padding-left: 0;
+        }
+
+        > div:last-child {
+            padding-right: 0;
+        }
+    }
+
+    .container__taak > div {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(0, 2fr) minmax(0, 3fr);
+    }
+
+    .taken--header {
+        font-weight: 700;
+        font-size: 0.778rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .container__taak {
+        background-color: $white;
+        margin-bottom: 0.25em;
+
+        summary {
+            padding: 0.75rem 1rem;
+
+            &::before {
+                left: auto;
+                right: 16px;
+            }
+        }
+        .description {
+            font-weight: 700;
+            padding-right: 2rem;
+
+            small {
+                font-size: 0.667rem;
+            }
+        }
+        .description p,
+        .help-text {
+            display: block;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            margin-bottom: 0;
+            line-height: 1.25;
+            font-size: 0.875rem;
+        }
+
+        &[open] {
+            summary {
+                border-bottom: 1px solid $blue-200;
+            }
+        }
+    }
+
+    .container__aanmaken {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0.75rem 1rem;
+        background-color: $white;
+
+        .help-text {
+            display: inline-block;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            font-size: 0.875rem;
+        }
+
+        .btn {
+            flex: 0 1 auto;
+            width: auto;
+            padding: 0 0.5em;
+            margin-bottom: 0;
+        }
+
+        @media (min-width: map-get($grid-breakpoints, md)) {
+            flex-direction: row;
+            justify-content: center;
+
+            .help-text {
+                white-space: nowrap;
+                position: absolute;
+                left: 1rem;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+        }
+    }
+
+    .container__taak--content {
+        padding: 0.75rem 1rem;
+        .container__content {
+            padding: 1rem 0.5rem;
+
+            &:first-child {
+                padding-left: 0;
+            }
+
+            &:last-child {
+                padding-right: 0;
+            }
+
+            h3 {
+                font-size: 0.778rem;
+                color: $green-900;
+                margin-bottom: 0.75rem;
+            }
+
+            .content {
+                padding-right: 1rem;
+
+                li {
+                    display: flex;
+                    align-items: flex-start;
+                    padding-bottom: 1rem;
+
+                    &:not(:first-child) {
+                        border-top: 1px solid $blue-200;
+                        padding-top: 1rem;
+                    }
+                }
+                .initials {
+                    flex: 0 0 auto;
+                    margin-right: 0.444rem;
+                }
+
+                .message {
+                    flex: 1;
+
+                    h4,
+                    p {
+                        font-size: 0.778rem;
+                        margin-bottom: 0;
+                        line-height: 1rem;
+                    }
+
+                    small {
+                        color: $gray-800;
+                        font-size: 0.667rem;
+                    }
+                }
+            }
+        }
+    }
+
+    &.has-taken {
+        .container__aanmaken {
+            background-color: transparent;
+        }
+
+        .help-text {
+            display: none;
+        }
+    }
+}
