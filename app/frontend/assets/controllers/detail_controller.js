@@ -119,7 +119,6 @@ export default class extends Controller {
     this.tabIndex = Number(this.urlParams.get('tabIndex'))
     this.selectTab(this.tabIndex || 1)
     actionsHeight = this.containerActionsTarget.offsetHeight
-    this.ticking = false
     this.updatePosition = this.updatePosition.bind(this)
     window.addEventListener('scroll', () => {
       this.checkScrollPosition()
@@ -199,24 +198,18 @@ export default class extends Controller {
       } else {
         this.btnToTopTarget.classList.remove('show')
       }
-      if (!this.ticking) {
-        requestAnimationFrame(this.updatePosition)
-        this.ticking = true
-      }
+      this.updatePosition()
     }
   }
 
   updatePosition() {
-    this.ticking = false
-
     // actioncontainer
     console.log('distance', distance)
+    const right = window.innerWidth - document.querySelector('main').getBoundingClientRect().right
     if (document.documentElement.scrollTop > distance) {
       this.containerActionsTarget.classList.add('stayFixed')
       this.containerActionsTarget.parentElement.style.height = `${actionsHeight}px`
-      this.containerActionsTarget.style.transform = `translateY(${
-        document.documentElement.scrollTop - distance
-      }px)`
+      this.containerActionsTarget.style.right = `calc(${right}px + 0.75em)`
     } else {
       this.containerActionsTarget.classList.remove('stayFixed')
       this.containerActionsTarget.parentElement.style.height = ''
