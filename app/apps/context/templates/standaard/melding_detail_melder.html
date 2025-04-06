@@ -5,8 +5,9 @@
     <div class="container__details">
         <h2>Melder</h2>
         {% if melding.signalen_voor_melding|length > 1 %}
-            <div class="has-background--white">
-                <div class="display--flex--md">
+            <div>
+                <div class="container__tabs">
+                    <h3 class="h5">Samengevoegde melding</h3>
                     <ul class="list-tabs">
                         {% for signaal in melding.signalen_voor_melding %}
                             <li>
@@ -26,7 +27,7 @@
                         {% for signaal in melding.signalen_voor_melding %}
                             <div class="tab-content" data-index="{{ forloop.counter }}">
                                 <div class="display--flex--md">
-                                    <ul class="list-clean incident-meta-list">
+                                    <ul class="incident-meta-list">
                                         {% if signaal.melder.naam %}
                                             <li>
                                                 <p class="text--person">

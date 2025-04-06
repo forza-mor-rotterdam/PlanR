@@ -25,10 +25,6 @@
         .list__mutations {
             margin-top: 0;
         }
-
-        .alert {
-            font-size: inherit;
-        }
     }
 }
 
@@ -79,7 +75,7 @@
         width: 100%;
         background-color: transparent;
         @media (min-width: map-get($grid-breakpoints, md)) {
-            position: absolute;
+            position: fixed;
             top: 0;
             display: flex;
             justify-content: flex-end;
@@ -258,8 +254,10 @@
 }
 
 .incident-meta-list {
+    list-style-type: none;
+    margin: 0;
     font-size: 0.778rem;
-    padding: 0.75rem 0 0;
+    padding: 0 0.75rem 0.75rem;
 
     li {
         margin-bottom: 1rem;

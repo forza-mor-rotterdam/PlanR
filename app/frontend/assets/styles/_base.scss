@@ -493,7 +493,8 @@ ul {
         li {
             position: relative;
             padding-left: 30px;
-            :before {
+
+            &::before {
                 content: url("../icons/person.svg");
                 position: absolute;
                 top: calc(50% - 10px);
@@ -584,6 +585,7 @@ dl {
         dd {
             flex: 1 1 60%;
             max-width: 60%;
+            word-break: break-word;
         }
         dt {
             flex: 1 1 40%;

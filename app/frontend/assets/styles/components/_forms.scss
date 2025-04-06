@@ -582,6 +582,10 @@ input.form-radio-input {
         overflow: visible;
     }
 
+    .file-upload {
+        max-width: map-get($container-max-widths, sm);
+    }
+
     .btn {
         margin-right: 16px;
     }
