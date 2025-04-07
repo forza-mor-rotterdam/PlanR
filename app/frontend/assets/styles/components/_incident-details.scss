@@ -66,41 +66,30 @@
         }
     }
 
-    .wrapper {
+    .wrapper--actions {
         padding: 1em 0.75em;
         transform: translateX(0.75em);
     }
 
     &.stayFixed {
-        width: 100%;
+        width: auto;
         background-color: transparent;
         @media (min-width: map-get($grid-breakpoints, md)) {
             position: fixed;
             top: 0;
             display: flex;
             justify-content: flex-end;
-            // transform: translateX(83px);
 
-            .wrapper {
-                width: auto;
-                // transform: translateX(0);
+            .wrapper--actions {
+                width: 100%;
                 background-color: $white;
+                transform: none;
                 border-bottom: 1px solid $gray-tint04;
                 transition-property: background-color, border-color;
-                transition-duration: $transition-duration-default;
+                transition-duration: $transition-duration-default/2;
                 transition-timing-function: $transition-ease-default;
-
-                // @media (min-width: 2000px) {
-                //     transform: translateX(1.5em);
-                // }
             }
         }
-    }
-
-    .nav--small & {
-        // @media (min-width: map-get($grid-breakpoints, md)) {
-        //     transform: translateX(0);
-        // }
     }
 }
 

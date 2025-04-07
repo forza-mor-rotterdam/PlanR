@@ -209,7 +209,7 @@ export default class extends Controller {
     if (document.documentElement.scrollTop > distance) {
       this.containerActionsTarget.classList.add('stayFixed')
       this.containerActionsTarget.parentElement.style.height = `${actionsHeight}px`
-      this.containerActionsTarget.style.right = `calc(${right}px + 0.75em)`
+      this.containerActionsTarget.style.right = `calc(${right}px + 1.5em)`
     } else {
       this.containerActionsTarget.classList.remove('stayFixed')
       this.containerActionsTarget.parentElement.style.height = ''
