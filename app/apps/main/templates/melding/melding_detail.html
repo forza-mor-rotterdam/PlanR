@@ -85,6 +85,7 @@
                                     </div>
                                 </div>
                             </div>
+                            {% include "melding/detail/taken.html" %}
                             {% include taken_template %}
                             {% include "melding/melding_detail_locaties_lichtmasten.html" with locaties=type_locaties melding=melding lichtmasten=locaties.lichtmasten only %}
                             <div class="grid-container grid-container--half">

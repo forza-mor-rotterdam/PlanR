@@ -1,0 +1,108 @@
+{% load to_datetime from date_tags %}
+{% load gebruikersnaam gebruikersinitialen get_gebruiker_object_middels_email from gebruikers_tags %}
+<section class="section--separated" data-testid="detailTaken">
+    <div class="container__details">
+        <h2>Taken</h2>
+        <div class="container__taken">
+            <div class="taken--header">
+                <div>Taak</div>
+                <div>Aangemaakt</div>
+                <div>Uitgevoerd</div>
+                <div>Opmerking</div>
+                <div>Status</div>
+                <div>Opties</div>
+            </div>
+            {% for taak in taken.alle_taken %}
+                {% with eerste_taakgebeurtenis=taak.taakgebeurtenissen_voor_taakopdracht|last laatste_taakgebeurtenis=taak.taakgebeurtenissen_voor_taakopdracht|first %}
+                    <details class="container__taak">
+                        <summary>
+                            <div class="description">
+                                <p>{{ taak.titel }}</p>
+                                <small>{{ taak.verantwoordelijke_afdeling.naam }}</small>
+                            </div>
+                            <div>
+                                <span class="help-text">{{ eerste_taakgebeurtenis.aangemaakt_op|to_datetime|date:"d-m-Y, H:i" }}</span>
+                            </div>
+                            <div>
+                                <span class="help-text">
+                                    {% if taak.afgesloten_op %}{{ laatste_taakgebeurtenis.aangemaakt_op|to_datetime|date:"d-m-Y, H:i" }}{% endif %}
+                                </span>
+                            </div>
+                            <div>
+                                <span class="help-text">
+                                    {% if laatste_taakgebeurtenis.omschrijving_intern %}{{ laatste_taakgebeurtenis.omschrijving_intern }}{% endif %}
+                                </span>
+                            </div>
+                            <div>
+                                {% if taak.verwijderd_op %}
+                                    Verwijderd
+                                {% else %}
+                                    {{ taak.status.naam|capfirst }}
+                                {% endif %}
+                            </div>
+                            <div>opties</div>
+                        </summary>
+                        <div class="container__taak--content">
+                            <div class="container__content">
+                                <h3>Opmerking</h3>
+                                <div class="content">
+                                    <ul class="list-clean">
+                                        <li>
+                                            <span class="initials">LV</span>
+                                            <div class="message">
+                                                <h4>Luuk Veerman</h4>
+                                                <p>Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat</p>
+                                                <small>empty</small>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="container__content">
+                                <h3>Acties</h3>
+                                <div class="content">
+                                    <ul class="list-clean">
+                                        {% for taakgebeurtenis in taak.taakgebeurtenissen_voor_taakopdracht %}
+                                            <li>
+                                                <span class="initials">{{ taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email|gebruikersinitialen }}</span>
+                                                <div class="message">
+                                                    <h4>{{ taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email|gebruikersnaam }}</h4>
+                                                    <p>
+                                                        {% if forloop.last %}
+                                                            Taak aangemaakt
+                                                        {% elif taakgebeurtenis.verwijderd_op %}
+                                                            Verwijderd
+                                                        {% else %}
+                                                            {{ taakgebeurtenis.taakstatus.naam|capfirst }}
+                                                        {% endif %}
+                                                    </p>
+                                                    <small>{{ taakgebeurtenis.aangemaakt_op|to_datetime|date:"d-m-Y, H:i" }}</small>
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="container__content">
+                                <h3>Informatie uitvoerder</h3>
+                            </div>
+                        </div>
+                    </details>
+                {% endwith %}
+            {% endfor %}
+            <div class="container__aanmaken">
+                <span class="help-text">Er zijn nog geen taken toegevoegd</span>
+                <button class="btn btn-tertiary btn-icon">
+                    <svg width="24"
+                         height="24"
+                         viewBox="0 0 32 32"
+                         fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#ffffff"></path>
+                    </svg>
+                    Taken toevoegen
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
