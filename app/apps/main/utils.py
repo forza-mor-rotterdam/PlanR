@@ -323,6 +323,7 @@ def melding_taken(melding):
     aantal_niet_opgeloste_taken = len(niet_opgeloste_taken)
 
     return {
+        "alle_taken": taakopdrachten_voor_melding,
         "actieve_taken": actieve_taken,
         "open_taken": open_taken,
         "aantal_actieve_taken": aantal_actieve_taken,

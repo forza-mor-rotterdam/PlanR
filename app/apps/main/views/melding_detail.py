@@ -78,6 +78,7 @@ class MeldingDetailViewMixin(ContextMixin):
             {
                 "melding": melding,
                 "locaties": melding_locaties(melding),
+                "taken": melding_taken(melding),
                 "gebruiker_context": gebruiker_context,
             }
         )
@@ -201,6 +202,11 @@ class MeldingDetailTaaktypeViewMixin(MeldingDetailViewMixin):
         taakr_taaktypes = taakr_service.get_taaktypes()
         afdelingen = taakr_service.get_afdelingen()
 
+        taakr_taaktypes_via_taakapplicatie_taaktype_url = {
+            taakr_taaktype["_links"]["taakapplicatie_taaktype_url"]: taakr_taaktype
+            for taakr_taaktype in taakr_taaktypes
+        }
+
         afdeling_middels_afdeling_url = {
             afdeling.get("_links", {}).get("self"): afdeling for afdeling in afdelingen
         }
@@ -252,6 +258,28 @@ class MeldingDetailTaaktypeViewMixin(MeldingDetailViewMixin):
                 },
             )
 
+        if context.get("taken"):
+            alle_taken = [
+                taak | taakr_taaktypes_via_taakapplicatie_taaktype_url[taak["taaktype"]]
+                for taak in context.get("taken", {}).get("alle_taken")
+            ]
+            alle_taken = [
+                taak
+                | {
+                    "verantwoordelijke_afdeling": afdeling_middels_afdeling_url[
+                        taak["verantwoordelijke_afdeling"]
+                    ]
+                    if taak["verantwoordelijke_afdeling"]
+                    else None,
+                    "afdelingen": [
+                        afdeling_middels_afdeling_url[afdeling]
+                        for afdeling in taak["afdelingen"]
+                    ],
+                }
+                for taak in alle_taken
+            ]
+            context["taken"]["alle_taken"] = alle_taken
+
         context.update(
             {
                 "afdelingen_met_taakr_taaktypes_niet_ingebruik": afdelingen_met_taakr_taaktypes_niet_ingebruik,
@@ -302,6 +330,18 @@ class MeldingDetail(
                 "meldingen_index": meldingen_index,
             }
         )
+        return context
+
+
+class MeldingDetailTaken(
+    MeldingDetailTaaktypeViewMixin, PermissionRequiredMixin, TemplateView
+):
+    template_name = "melding/detail/taken.html"
+    permission_required = "authorisatie.melding_bekijken"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
         return context
 
 
