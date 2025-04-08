@@ -36,7 +36,8 @@
     border: 1px solid transparent;
     box-sizing: border-box;
     text-align: right;
-    // transition: transform $transition-duration-default ease-out;
+    transform: translateX(0.75em);
+
     p {
         margin-bottom: 0.5rem;
         max-width: none;
@@ -68,29 +69,30 @@
 
     .wrapper--actions {
         padding: 1em 0.75em;
-        transform: translateX(0.75em);
     }
 
     &.stayFixed {
         width: auto;
         background-color: transparent;
+        padding-top: 15px;
         @media (min-width: map-get($grid-breakpoints, md)) {
             position: fixed;
             top: 0;
             display: flex;
             justify-content: flex-end;
+            background-color: $white;
+            transition-property: background-color, border-color;
+            transition-duration: $transition-duration-default;
+            transition-timing-function: $transition-ease-default;
 
+            .container__meldingnavigatie,
+            .wrapper--actions {
+                box-sizing: border-box;
+            }
             .wrapper--actions {
                 width: 100%;
-                background-color: $white;
                 border-bottom: 1px solid $gray-tint04;
-                transition-property: background-color, border-color;
-                transition-duration: $transition-duration-default/2;
-                transition-timing-function: $transition-ease-default;
             }
-        }
-        @media (min-width: 2000px) {
-            transform: none;
         }
     }
 }

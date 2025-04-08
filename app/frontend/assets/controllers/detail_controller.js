@@ -206,10 +206,10 @@ export default class extends Controller {
     // actioncontainer
     console.log('distance', distance)
     const right = window.innerWidth - document.querySelector('main').getBoundingClientRect().right
-    if (document.documentElement.scrollTop > distance) {
+    if (document.documentElement.scrollTop > distance - 15) {
       this.containerActionsTarget.classList.add('stayFixed')
       this.containerActionsTarget.parentElement.style.height = `${actionsHeight}px`
-      this.containerActionsTarget.style.right = `calc(${right}px + 1.5em)`
+      this.containerActionsTarget.style.right = `calc(${right}px)`
     } else {
       this.containerActionsTarget.classList.remove('stayFixed')
       this.containerActionsTarget.parentElement.style.height = ''

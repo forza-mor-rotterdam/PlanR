@@ -49,6 +49,11 @@
     border-collapse: separate;
     border-spacing: 0;
 
+    thead {
+        position: relative;
+        z-index: 5;
+    }
+
     .container__thumbnail {
         background-color: $gray-tint01;
         background-size: cover;
