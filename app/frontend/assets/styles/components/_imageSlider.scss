@@ -30,7 +30,8 @@
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
-    width: 100%;
+    width: calc(100% + 2px);
+    transform: translateX(-1px);
     -webkit-overflow-scrolling: touch;
     cursor: zoom-in;
 
@@ -45,6 +46,8 @@
         background-color: $gray-tint02;
         scroll-snap-align: center;
         display: flex;
+        box-sizing: border-box;
+        margin: 0 1px;
 
         .image {
             width: 100%;

@@ -83,12 +83,14 @@
             .wrapper--actions {
                 width: 100%;
                 background-color: $white;
-                transform: none;
                 border-bottom: 1px solid $gray-tint04;
                 transition-property: background-color, border-color;
                 transition-duration: $transition-duration-default/2;
                 transition-timing-function: $transition-ease-default;
             }
+        }
+        @media (min-width: 2000px) {
+            transform: none;
         }
     }
 }
@@ -199,7 +201,11 @@
         }
 
         span.melding-navigatie {
-            background-color: $gray-tint04;
+            svg {
+                path {
+                    fill: $gray-400;
+                }
+            }
         }
 
         .melding-navigatie {
@@ -219,7 +225,8 @@
                     fill: $gray-tint11;
                 }
             }
-
+        }
+        a.melding-navigatie {
             &:hover,
             &:focus {
                 background-color: $blue-200;
