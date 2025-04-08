@@ -29,7 +29,7 @@ from apps.main.views import (
     publiceer_topic,
     root,
     sidesheet_actueel,
-    taak_annuleren,
+    taak_verwijderen,
 )
 from apps.release_notes.views import (
     ReleaseNoteDetailView,
@@ -81,12 +81,12 @@ urlpatterns = [
     path("health/", include("health_check.urls")),
     path("healthz/", healthz, name="healthz"),
     path(
-        "part/melding/<uuid:id>/afhandelen/",
+        "melding/<uuid:id>/afhandelen/",
         melding_afhandelen,
         name="melding_afhandelen",
     ),
     path(
-        "part/melding/<uuid:id>/annuleren/",
+        "melding/<uuid:id>/annuleren/",
         melding_annuleren,
         name="melding_annuleren",
     ),
@@ -121,17 +121,17 @@ urlpatterns = [
         name="taken_aanmaken_stream",
     ),
     path(
-        "part/melding/<uuid:melding_uuid>/taak-annuleren/",
-        taak_annuleren,
-        name="taak_annuleren",
+        "melding/<uuid:melding_uuid>/taak-verwijderen/",
+        taak_verwijderen,
+        name="taak_verwijderen",
     ),
     path(
-        "melding/<uuid:melding_uuid>/taak-annuleren/<uuid:taakopdracht_uuid>/",
-        taak_annuleren,
-        name="taak_annuleren",
+        "melding/<uuid:melding_uuid>/taak-verwijderen/<uuid:taakopdracht_uuid>/",
+        taak_verwijderen,
+        name="taak_verwijderen_taakopdracht",
     ),
     path(
-        "part/melding/<uuid:id>/informatie-toevoegen/",
+        "melding/<uuid:id>/informatie-toevoegen/",
         informatie_toevoegen,
         name="informatie_toevoegen",
     ),
@@ -197,7 +197,7 @@ urlpatterns = [
     ),
     ### Locatie
     path(
-        "part/melding/<uuid:id>/locatie_aanpassen/",
+        "melding/<uuid:id>/locatie_aanpassen/",
         locatie_aanpassen,
         name="locatie_aanpassen",
     ),

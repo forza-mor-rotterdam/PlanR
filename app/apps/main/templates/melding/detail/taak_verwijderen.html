@@ -3,28 +3,31 @@
 {% load json_encode from json_tags %}
 <turbo-stream target="modal_header_title" action="update">
 <template>
-    Verwijder taak
+    Taak Verwijderen
 </template>
 </turbo-stream>
 <turbo-stream target="modal_body" action="update">
 <template>
-    <form action="{% url 'taak_verwijderen' melding.uuid %}"
-          method="post"
-          class="form--horizontal"
-          data-controller=""
-          data-turbo-frame="_top"
-          enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.taaktype|render_rotterdam_formulier }}
-        <div class="form-control__with-helptext">{{ form.bericht|render_rotterdam_formulier }}</div>
-        <div class="form-row btn-row">
-            <button type="reset" class="btn btn-tertiary" data-action="modal#closeModal">
-                <span>Annuleren</span>
-            </button>
-            <button type="submit" class="btn btn-action">
-                <span>Verwijder taak</span>
-            </button>
-        </div>
-    </form>
+    {% if form.taakopdracht %}
+        <form action="{% url 'taak_verwijderen' melding.uuid %}"
+              method="post"
+              class="form--horizontal"
+              data-turbo-frame="_top"
+              enctype="multipart/form-data">
+            {% csrf_token %}
+            <div data-controller="select2Modal">{{ form.taakopdracht|render_rotterdam_formulier }}</div>
+            <div class="form-control__with-helptext">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
+            <div class="form-row btn-row">
+                <button type="reset" class="btn btn-tertiary" data-action="modal#closeModal">
+                    <span>Annuleren</span>
+                </button>
+                <button type="submit" class="btn btn-action">
+                    <span>Taak verwijderen</span>
+                </button>
+            </div>
+        </form>
+    {% else %}
+        Alle taken zijn afgerond
+    {% endif %}
 </template>
 </turbo-stream>

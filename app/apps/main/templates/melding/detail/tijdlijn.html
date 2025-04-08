@@ -56,6 +56,8 @@
                                                 {{ taakopdracht.titel }}
                                                 {% if row_data.mg.taakgebeurtenis.gebeurtenis_type == "gedeeld" %}
                                                     : gedeeld
+                                                {% elif row_data.mg.taakgebeurtenis.verwijderd_op %}
+                                                    : verwijderd
                                                 {% elif row_data.mg.taakgebeurtenis.taakstatus.naam != "nieuw" %}
                                                     :
                                                     {% if row_data.mg.taakgebeurtenis.taakstatus.naam == "voltooid" or row_data.mg.taakgebeurtenis.taakstatus.naam == "voltooid_met_feedback" %}
@@ -92,7 +94,7 @@
                                                         {{ row_data.mg.taakgebeurtenis.aangemaakt_op|to_datetime }}
                                                     </dd>
                                                     {% include "melding/gebruiker_modal_link.html" with gebruiker=row_data.mg.taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
-                                                {% elif row_data.mg.taakgebeurtenis.taakstatus.naam|lower != "nieuw" %}
+                                                {% elif row_data.mg.taakgebeurtenis.taakstatus.naam|lower != "nieuw" and not row_data.mg.taakgebeurtenis.verwijderd_op %}
                                                     {% if row_data.mg.taakgebeurtenis.aangemaakt_op %}
                                                         <dt>Taak afgehandeld</dt>
                                                         <dd>
@@ -104,7 +106,13 @@
                                                     <dd>
                                                         {% if row_data.mg.taakgebeurtenis.resolutie %}{{ row_data.mg.taakgebeurtenis.resolutie|vertaal }}{% endif %}
                                                     </dd>
-                                                {% else %}
+                                                {% elif row_data.mg.taakgebeurtenis.verwijderd_op %}
+                                                    <dt>Taak verwijderd</dt>
+                                                    <dd>
+                                                        {{ row_data.mg.taakgebeurtenis.verwijderd_op|to_datetime }}
+                                                    </dd>
+                                                    {% include "melding/gebruiker_modal_link.html" with gebruiker=row_data.mg.taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
+                                                {% elif row_data.mg.taakgebeurtenis.taakstatus.naam|lower == "nieuw" %}
                                                     {% if row_data.mg.taakgebeurtenis.aangemaakt_op %}
                                                         <dt>Taak aangemaakt</dt>
                                                         <dd>

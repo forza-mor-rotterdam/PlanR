@@ -410,7 +410,7 @@ class TaakAfrondenForm(forms.Form):
             )
 
 
-class TaakAnnulerenForm(forms.Form):
+class TaakVerwijderenForm(forms.Form):
     def __init__(self, *args, **kwargs):
         taakopdracht_opties = kwargs.pop("taakopdracht_opties", None)
         super().__init__(*args, **kwargs)

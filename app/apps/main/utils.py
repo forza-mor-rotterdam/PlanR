@@ -107,7 +107,7 @@ def melding_naar_tijdlijn(melding: dict):
             and taakgebeurtenis.get("taakstatus")
             and taakgebeurtenis.get("taakstatus", {}).get("naam")
             in {"voltooid", "voltooid_met_feedback"}
-        )
+        ) or taakgebeurtenis.get("verwijderd_op")
         taakstatus_event = (
             taakgebeurtenis
             and taakgebeurtenis.get("taakstatus")
@@ -304,7 +304,7 @@ def melding_taken(melding):
     open_taken = [
         taakopdracht
         for taakopdracht in taakopdrachten_voor_melding
-        if not taakopdracht.get("resolutie")
+        if not taakopdracht.get("resolutie") and not taakopdracht.get("verwijderd_op")
     ]
     opgeloste_taken = [
         taakopdracht

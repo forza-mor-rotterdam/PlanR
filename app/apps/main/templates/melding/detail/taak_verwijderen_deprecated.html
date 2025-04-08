@@ -1,0 +1,30 @@
+{% load rotterdam_formulier_html %}
+{% load vind_in_dict from querystring_tags %}
+{% load json_encode from json_tags %}
+<turbo-stream target="modal_header_title" action="update">
+<template>
+    Verwijder taak
+</template>
+</turbo-stream>
+<turbo-stream target="modal_body" action="update">
+<template>
+    <form action="{% url 'taak_verwijderen' melding.uuid %}"
+          method="post"
+          class="form--horizontal"
+          data-controller=""
+          data-turbo-frame="_top"
+          enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.taaktype|render_rotterdam_formulier }}
+        <div class="form-control__with-helptext">{{ form.bericht|render_rotterdam_formulier }}</div>
+        <div class="form-row btn-row">
+            <button type="reset" class="btn btn-tertiary" data-action="modal#closeModal">
+                <span>Annuleren</span>
+            </button>
+            <button type="submit" class="btn btn-action">
+                <span>Verwijder taak</span>
+            </button>
+        </div>
+    </form>
+</template>
+</turbo-stream>

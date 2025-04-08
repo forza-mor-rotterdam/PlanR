@@ -11,7 +11,7 @@ from apps.main.forms import (
     MeldingHervattenForm,
     MeldingPauzerenForm,
     MeldingSpoedForm,
-    TaakAnnulerenForm,
+    TaakVerwijderenForm,
     TakenAanmakenForm,
 )
 from apps.main.messages import (
@@ -33,8 +33,8 @@ from apps.main.messages import (
     MELDING_PAUZEREN_SUCCESS,
     MELDING_URGENTIE_AANPASSEN_ERROR,
     MELDING_URGENTIE_AANPASSEN_SUCCESS,
-    TAAK_ANNULEREN_ERROR,
-    TAAK_ANNULEREN_SUCCESS,
+    TAAK_VERWIJDEREN_ERROR,
+    TAAK_VERWIJDEREN_SUCCESS,
 )
 from apps.main.services import MORCoreService, TaakRService
 from apps.main.utils import (
@@ -666,8 +666,8 @@ class TakenAanmakenStreamView(TakenAanmakenView):
 
 
 @login_required
-@permission_required("authorisatie.taak_annuleren", raise_exception=True)
-def taak_annuleren(request, melding_uuid, taakopdracht_uuid=None):
+@permission_required("authorisatie.taak_verwijderen", raise_exception=True)
+def taak_verwijderen(request, melding_uuid, taakopdracht_uuid=None):
     mor_core_service = MORCoreService()
 
     melding = mor_core_service.get_melding(melding_uuid)
@@ -693,10 +693,11 @@ def taak_annuleren(request, melding_uuid, taakopdracht_uuid=None):
         if (taakopdracht_uuid and taakopdracht.get("uuid") == str(taakopdracht_uuid))
         or not taakopdracht_uuid
     ]
-
-    form = TaakAnnulerenForm(taakopdracht_opties=taakopdracht_opties)
+    form = TaakVerwijderenForm(taakopdracht_opties=taakopdracht_opties)
     if request.POST:
-        form = TaakAnnulerenForm(request.POST, taakopdracht_opties=taakopdracht_opties)
+        form = TaakVerwijderenForm(
+            request.POST, taakopdracht_opties=taakopdracht_opties
+        )
         if form.is_valid():
             response = mor_core_service.taakopdracht_verwijderen(
                 taakopdracht_url=taakopdracht_urls.get(
@@ -705,13 +706,13 @@ def taak_annuleren(request, melding_uuid, taakopdracht_uuid=None):
                 gebruiker=request.user.email,
             )
             if isinstance(response, dict) and response.get("error"):
-                messages.error(request=request, message=TAAK_ANNULEREN_ERROR)
+                messages.error(request=request, message=TAAK_VERWIJDEREN_ERROR)
             else:
-                messages.success(request=request, message=TAAK_ANNULEREN_SUCCESS)
+                messages.success(request=request, message=TAAK_VERWIJDEREN_SUCCESS)
             return redirect("melding_detail", id=melding_uuid)
     return render(
         request,
-        "melding/detail/taak_annuleren.html",
+        "melding/detail/taak_verwijderen.html",
         {
             "form": form,
             "melding": melding,
