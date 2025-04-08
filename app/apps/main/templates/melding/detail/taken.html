@@ -1,4 +1,4 @@
-{% load to_datetime from date_tags %}
+{% load to_datetime naturalday_with_time_or_timesince from date_tags %}
 {% load gebruikersnaam gebruikersinitialen get_gebruiker_object_middels_email from gebruikers_tags %}
 {% load humanize %}
 <section class="section--separated" data-testid="detailTaken">
@@ -77,7 +77,7 @@
                                                             {{ taakgebeurtenis.taakstatus.naam|capfirst }}
                                                         {% endif %}
                                                     </p>
-                                                    <small>{{ taakgebeurtenis.aangemaakt_op|to_datetime|naturalday }} {{ taakgebeurtenis.aangemaakt_op|to_datetime|date:"H:i" }}</small>
+                                                    <small>{{ taakgebeurtenis.aangemaakt_op|to_datetime|naturalday_with_time_or_timesince }}</small>
                                                 </div>
                                             </li>
                                         {% endfor %}

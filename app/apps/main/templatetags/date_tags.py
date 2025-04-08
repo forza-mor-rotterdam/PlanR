@@ -1,6 +1,9 @@
 from datetime import datetime, timedelta
 
 from django import template
+from django.contrib.humanize.templatetags.humanize import naturalday
+from django.utils import timezone
+from django.utils.timesince import timesince
 from utils.datetime import stringdatetime_naar_datetime
 
 register = template.Library()
@@ -11,6 +14,20 @@ def to_datetime(value):
     if not value:
         return
     return stringdatetime_naar_datetime(value)
+
+
+@register.filter
+def naturalday_with_time_or_timesince(value):
+    if not value:
+        return ""
+    if not isinstance(value, datetime):
+        return ""
+    if (timezone.now() - value).total_seconds() > 60 * 60 * 12:
+        return f"{naturalday(value)}, {datetime.strftime(value, '%H:%M')}"
+    try:
+        return f"{timesince(value)} geleden"
+    except (ValueError, TypeError):
+        return ""
 
 
 @register.simple_tag
