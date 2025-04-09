@@ -127,7 +127,17 @@ urlpatterns = [
         name="taak_afronden",
     ),
     path(
+        "melding/<uuid:melding_uuid>/taak-afronden/<uuid:taakopdracht_uuid>/",
+        taak_afronden,
+        name="taak_afronden",
+    ),
+    path(
         "part/melding/<uuid:melding_uuid>/taak-annuleren/",
+        taak_annuleren,
+        name="taak_annuleren",
+    ),
+    path(
+        "melding/<uuid:melding_uuid>/taak-annuleren/<uuid:taakopdracht_uuid>/",
         taak_annuleren,
         name="taak_annuleren",
     ),

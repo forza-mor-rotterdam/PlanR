@@ -1,6 +1,13 @@
 {% load to_datetime naturalday_with_time_or_timesince from date_tags %}
 {% load gebruikersnaam gebruikersinitialen get_gebruiker_object_middels_email from gebruikers_tags %}
 {% load humanize %}
+{% load mor_core_url from main_tags %}
+
+{% if view.is_stream %}
+<turbo-stream target="melding_detail_taken" action="update">
+    <template>
+{% endif %}
+
 <section class="section--separated" data-testid="detailTaken">
     <div class="container__details">
         <h2>Taken</h2>
@@ -34,7 +41,7 @@
                                     {% if laatste_taakgebeurtenis.omschrijving_intern %}{{ laatste_taakgebeurtenis.omschrijving_intern }}{% endif %}
                                 </span>
                             </div>
-                            <div>
+                            <div class="{% if not taak.taak_url %}bezig-met-aanmaken{% endif %}">
                                 {% if taak.verwijderd_op %}
                                     Verwijderd
                                 {% else %}
@@ -44,16 +51,37 @@
                             <div>opties</div>
                         </summary>
                         <div class="container__taak--content">
+                            {% if not taak.afgesloten_op and not taak.verwijderd_op %}
+                                <button type="button"
+                                        class="btn btn-icon btn-textlink"
+                                        data-action="modal#openModal"
+                                        data-modal-action-param="{% url 'taak_afronden' melding.uuid taak.uuid %}">
+                                    Taak afronden
+                                </button>
+                                <button type="button"
+                                        class="btn btn-icon btn-textlink"
+                                        data-action="modal#openModal"
+                                        data-modal-action-param="{% url 'taak_annuleren' melding.uuid taak.uuid %}">
+                                    Taak annuleren
+                                </button>
+                            {% endif %}
                             <div class="container__content">
-                                <h3>Opmerking</h3>
+                                <h3>Opmerking midoffice</h3>
                                 <div class="content">
                                     <ul class="list-clean">
                                         <li>
-                                            <span class="initials">LV</span>
+                                            <span class="initials">{{ eerste_taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email|gebruikersinitialen }}</span>
                                             <div class="message">
-                                                <h4>Luuk Veerman</h4>
-                                                <p>Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat</p>
-                                                <small>empty</small>
+                                                <h4>{{ eerste_taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email|gebruikersnaam }}</h4>
+                                                <p>
+                                                    Omschrijving intern:
+                                                    {% if eerste_taakgebeurtenis.omschrijving_intern %}
+                                                        {{ eerste_taakgebeurtenis.omschrijving_intern }}
+                                                    {% else %}
+                                                        -
+                                                    {% endif %}
+                                                </p>
+                                                <small>{{ eerste_taakgebeurtenis.aangemaakt_op|to_datetime|naturalday_with_time_or_timesince }}</small>
                                             </div>
                                         </li>
                                     </ul>
@@ -84,9 +112,40 @@
                                     </ul>
                                 </div>
                             </div>
-                            <div class="container__content">
-                                <h3>Informatie uitvoerder</h3>
-                            </div>
+                            {% if taak.afgesloten_op and not taak.verwijderd_op %}
+                                <div class="container__content">
+                                    <h3>Informatie uitvoerder</h3>
+                                    <p>Door: {{ laatste_taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email|gebruikersnaam }}</p>
+                                    <p>Resolutie: {{ taak.resolutie }}</p>
+                                    <p>
+                                        Omschrijving intern:
+                                        {% if laatste_taakgebeurtenis.omschrijving_intern %}
+                                            {{ laatste_taakgebeurtenis.omschrijving_intern }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </p>
+                                    {% if laatste_taakgebeurtenis.bijlagen %}
+                                        <ul>
+                                            {% for bijlage in laatste_taakgebeurtenis.bijlagen %}
+                                                <li>
+                                                    <img width="100"
+                                                            height="100"
+                                                            src="{{ bijlage.afbeelding_verkleind_relative_url|mor_core_url }}" />
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <p>Er zijn geen finish foto's mee gestuurd bij het afronden van de taak</p>
+                                    {% endif %}
+                                    <small>{{ laatste_taakgebeurtenis.aangemaakt_op|to_datetime|naturalday_with_time_or_timesince }}</small>
+                                </div>
+                            {% elif taak.verwijderd_op %}
+                                <div class="container__content">
+                                    <h3>Verwijderd door midoffice</h3>
+                                    <p>Verwijderd op: {{ taak.verwijderd_op|to_datetime|naturalday_with_time_or_timesince }}</p>
+                                </div>
+                            {% endif %}
                         </div>
                     </details>
                 {% endwith %}
@@ -95,10 +154,10 @@
                 <span class="help-text">Er zijn nog geen taken toegevoegd</span>
                 <button class="btn btn-tertiary btn-icon">
                     <svg width="24"
-                         height="24"
-                         viewBox="0 0 32 32"
-                         fill="none"
-                         xmlns="http://www.w3.org/2000/svg">
+                            height="24"
+                            viewBox="0 0 32 32"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#ffffff"></path>
                     </svg>
                     Taken toevoegen
@@ -107,3 +166,8 @@
         </div>
     </div>
 </section>
+
+{% if view.is_stream %}
+    </template>
+</turbo-stream>
+{% endif %}
