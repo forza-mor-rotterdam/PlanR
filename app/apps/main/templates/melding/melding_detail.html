@@ -33,7 +33,6 @@
         {% context_template "melding_detail_titel.html" as titel_template %}
         {% context_template "melding_detail_melder.html" as melder_template %}
         {% context_template "melding_detail_acties.html" as acties_template %}
-        {% context_template "melding_detail_taken.html" as taken_template %}
         {% get_bijlagen melding as bijlagen %}
         {% with signalen=melding.signalen_voor_melding %}
             <div data-controller="detail"
@@ -86,10 +85,9 @@
                                 </div>
                             </div>
                             {% include "melding/detail/taken.html" %}
-                            {% include taken_template %}
                             {% include "melding/melding_detail_locaties_lichtmasten.html" with locaties=type_locaties melding=melding lichtmasten=locaties.lichtmasten only %}
                             <div class="grid-container grid-container--half">
-                                <div class="grid-item no-margin">
+                                <div class="grid-item">
                                     <section class="section--separated" data-testid="detailMelding">
                                         <div class="container__details melding">
                                             <h2>Meldingdetails</h2>
@@ -313,16 +311,16 @@
                                     {% include melder_template %}
                                     <div class="border-green print-only"></div>
                                 </div>
-                                <div class="grid-item aside no-margin">
-                                    {% if bijlagen|length > 0 %}
-                                        <section class="section--separated">
-                                            <div class="container__details" data-detail-target="imageSliderWidth">
-                                                <h2>Foto's</h2>
+                                <div class="grid-item aside">
+                                    <section class="section--separated">
+                                        <div class="container__details" data-detail-target="imageSliderWidth">
+                                            <h2>Foto's</h2>
+                                            {% if bijlagen|length > 0 %}
                                                 {% include "melding/detail/bijlagen.html" with bijlagen=bijlagen only %}
-                                            </div>
-                                        </section>
-                                    {% endif %}
-                                    {% if melding.signalen_voor_melding|length > 1 %}
+                                            {% endif %}
+                                        </div>
+                                    </section>
+                                    {% if melding.signalen_voor_melding|length > 0 %}
                                         <div class="alert alert--info">
                                             <span>
                                                 <svg width="24"

@@ -401,8 +401,11 @@ class TaakAfrondenForm(forms.Form):
                         "class": "select2",
                         "data-select2Modal-target": "targetField",
                     }
-                ),
+                )
+                if len(taakopdracht_opties) > 1
+                else forms.HiddenInput(),
                 choices=taakopdracht_opties,
+                initial=taakopdracht_opties[0][0],
                 required=True,
             )
 
@@ -420,8 +423,11 @@ class TaakAnnulerenForm(forms.Form):
                         "class": "select2",
                         "data-select2Modal-target": "targetField",
                     }
-                ),
+                )
+                if len(taakopdracht_opties) > 1
+                else forms.HiddenInput(),
                 choices=taakopdracht_opties,
+                initial=taakopdracht_opties[0][0],
                 required=True,
             )
             self.fields["omschrijving_intern"] = forms.CharField(
