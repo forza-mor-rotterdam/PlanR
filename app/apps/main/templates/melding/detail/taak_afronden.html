@@ -9,13 +9,14 @@
 <turbo-stream target="modal_body" action="update">
 <template>
     {% if form.taakopdracht %}
-        <form action="{% url 'taak_afronden' melding.uuid %}"
+        <form action="{% if taakopdracht %}{% url 'taak_afronden' melding.uuid taakopdracht.uuid %}{% else %}{% url 'taak_afronden' melding.uuid %}{% endif %}"
               method="post"
               class="form--horizontal"
               data-controller=""
               data-turbo-frame="_top"
               enctype="multipart/form-data">
             {% csrf_token %}
+            {% if taakopdracht %}<h2>{{ taakopdracht.titel }}</h2>{% endif %}
             <div data-controller="select2Modal">{{ form.taakopdracht|render_rotterdam_formulier }}</div>
             {{ form.resolutie|render_rotterdam_formulier }}
             <div data-controller="bijlagen">{{ form.bijlagen|render_rotterdam_formulier }}</div>
