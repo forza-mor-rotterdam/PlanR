@@ -1,12 +1,9 @@
 .list__mutations {
     @include list-clean;
     > li {
-        margin: 0 calc(-1 * (map-get($container-margin, md)));
-        padding: 0 map-get($container-margin, md);
+        margin: 0;
+        padding: 0;
         position: relative;
-        // &:nth-child(even) {
-        //     background-color: $gray-tint02;
-        // }
 
         p {
             margin: 8px 0 0;
@@ -92,7 +89,6 @@
             }
 
             &::before {
-                // display: none;
                 right: 0;
                 left: auto;
                 top: calc(50% - 8px);
