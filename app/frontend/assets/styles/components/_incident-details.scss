@@ -75,7 +75,6 @@
         width: auto;
         background-color: transparent;
         padding-top: 15px;
-        transform: translateX(0);
 
         @media (min-width: map-get($grid-breakpoints, md)) {
             position: fixed;
