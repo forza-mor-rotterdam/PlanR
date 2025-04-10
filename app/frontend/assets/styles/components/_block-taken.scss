@@ -34,6 +34,7 @@
     .container__taak {
         background-color: $white;
         margin-bottom: 0.25em;
+        position: relative;
 
         summary {
             padding: 0.75rem 1rem;
@@ -43,6 +44,29 @@
                 right: 16px;
             }
         }
+
+        .container__uitklapper {
+            > span {
+                display: inline-block;
+                padding: 0.25rem 2em 0.25rem 0.25rem;
+            }
+
+            .legenda {
+                left: -15px;
+                button {
+                    font-weight: 400;
+                    background-color: transparent;
+                    text-align: left;
+                    padding: 0;
+                    min-height: 0;
+                }
+            }
+
+            &:hover {
+                z-index: 20000;
+            }
+        }
+
         .description {
             font-weight: 700;
             padding-right: 2rem;
@@ -67,6 +91,10 @@
                 border-bottom: 1px solid $blue-200;
             }
         }
+
+        // &:has(.container__uitklapper:hover) {
+        //     z-index: 10000;
+        // }
     }
 
     .container__aanmaken {
@@ -88,8 +116,12 @@
         .btn {
             flex: 0 1 auto;
             width: auto;
-            padding: 0 0.5em;
+            padding: 0 1em;
             margin-bottom: 0;
+
+            svg {
+                vertical-align: bottom;
+            }
         }
 
         @media (min-width: map-get($grid-breakpoints, md)) {
@@ -159,6 +191,18 @@
                     }
                 }
             }
+        }
+    }
+
+    .container__thumbs {
+        ul {
+            li {
+                cursor: auto;
+                margin: 0;
+            }
+        }
+        .container__image {
+            opacity: 1;
         }
     }
 
