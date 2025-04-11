@@ -42,13 +42,22 @@
                                 </span>
                             </div>
                             <div class="{% if not taak.taak_url %}bezig-met-aanmaken{% endif %}">
-                                <span class="tag tag--qualification tag--{{ taak.status.naam }}">
-                                    {% if taak.verwijderd_op %}
-                                        Verwijderd
-                                    {% else %}
-                                        {{ taak.status.naam|capfirst }}
-                                    {% endif %}
-                                </span>
+                                {% if not taak.taak_url %}
+                                    <div class="status--busy">
+                                        <div class="spinner"></div>
+                                        <div>
+                                            <span>Taak wordt doorgezet naar taakapplicatie</span>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <span class="tag tag--qualification tag--{{ taak.status.naam }}">
+                                        {% if taak.verwijderd_op %}
+                                            Verwijderd
+                                        {% else %}
+                                            {{ taak.status.naam|capfirst }}
+                                        {% endif %}
+                                    </span>
+                                {% endif %}
                             </div>
                             <div>
                                 {% if not taak.afgesloten_op and not taak.verwijderd_op %}
