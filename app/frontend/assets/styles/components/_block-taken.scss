@@ -1,5 +1,5 @@
 .container__taken {
-    font-size: 0.778em;
+    font-size: 0.778rem;
     .taken--header,
     .container__taak > summary {
         display: grid;
@@ -46,6 +46,7 @@
         }
 
         .container__uitklapper {
+            z-index: 800;
             > span {
                 display: inline-block;
                 padding: 0.25rem 2em 0.25rem 0.25rem;
@@ -63,7 +64,7 @@
             }
 
             &:hover {
-                z-index: 20000;
+                z-index: 900;
             }
         }
 
