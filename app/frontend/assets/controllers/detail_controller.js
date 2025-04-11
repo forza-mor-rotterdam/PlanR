@@ -210,7 +210,6 @@ export default class extends Controller {
     this.ticking = false
 
     // actioncontainer
-    console.log('distance', distance)
     if (document.documentElement.scrollTop > distance) {
       this.containerActionsTarget.classList.add('stayFixed')
       this.containerActionsTarget.parentElement.style.height = `${actionsHeight}px`
