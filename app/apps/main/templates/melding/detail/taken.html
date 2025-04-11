@@ -42,11 +42,13 @@
                                 </span>
                             </div>
                             <div class="{% if not taak.taak_url %}bezig-met-aanmaken{% endif %}">
-                                {% if taak.verwijderd_op %}
-                                    Verwijderd
-                                {% else %}
-                                    {{ taak.status.naam|capfirst }}
-                                {% endif %}
+                                <span class="tag tag--qualification tag--{{ taak.status.naam }}">
+                                    {% if taak.verwijderd_op %}
+                                        Verwijderd
+                                    {% else %}
+                                        {{ taak.status.naam|capfirst }}
+                                    {% endif %}
+                                </span>
                             </div>
                             <div>
                                 {% if not taak.afgesloten_op and not taak.verwijderd_op %}
@@ -127,15 +129,13 @@
                             {% if taak.afgesloten_op and not taak.verwijderd_op %}
                                 <div class="container__content">
                                     <h3>Informatie uitvoerder</h3>
-                                    <p>Door: {{ laatste_taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email|gebruikersnaam }}</p>
-                                    <p>Resolutie: {{ taak.resolutie }}</p>
-                                    <p>
-                                        Omschrijving intern:
-                                        {% if laatste_taakgebeurtenis.omschrijving_intern %}
-                                            {{ laatste_taakgebeurtenis.omschrijving_intern }}
-                                        {% else %}
-                                            -
-                                        {% endif %}
+                                    <p>Resolutie: {{ taak.resolutie }}<br>
+                                    Omschrijving intern:
+                                    {% if laatste_taakgebeurtenis.omschrijving_intern %}
+                                        {{ laatste_taakgebeurtenis.omschrijving_intern }}
+                                    {% else %}
+                                        Er is geen opmerking toegevoegd
+                                    {% endif %}
                                     </p>
                                     {% if laatste_taakgebeurtenis.bijlagen %}
                                         <div class="container__thumbs">
