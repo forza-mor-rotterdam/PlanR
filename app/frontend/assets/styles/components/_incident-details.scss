@@ -170,6 +170,26 @@
         padding: 0 16px 0 40px;
         border-top: 0;
     }
+
+    .has-background--white {
+        position: relative;
+    }
+
+    .btn-icon {
+        position: absolute;
+        top: 1em;
+        right: 1em;
+        font-size: 0.778rem;
+        color: $black;
+        width: auto;
+
+        svg {
+            width: 14px;
+            height: 14px;
+            margin-right: 0;
+            vertical-align: bottom;
+        }
+    }
 }
 
 .container__meldingnavigatie {

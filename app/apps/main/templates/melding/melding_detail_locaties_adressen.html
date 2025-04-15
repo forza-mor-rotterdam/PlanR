@@ -1,3 +1,11 @@
+<button type="button"
+        class="btn btn-icon btn-textlink"
+        data-action="modal#openModal"
+        data-modal-css-class-param="modal-dialog--wide"
+        data-modal-action-param="/part/melding/ffc824cb-9d5a-4028-90bd-38c9748e2a8d/locatie_aanpassen/">
+    {% include "icons/edit2.svg" %}
+    <span>Locatie wijzigen</span>
+</button>
 {% for locatie in locaties %}
     {% if forloop.first %}
         {% if melding.locaties_voor_melding|length > 1 %}<h4>Huidige locatie</h4>{% endif %}
