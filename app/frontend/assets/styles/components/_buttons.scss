@@ -398,6 +398,21 @@ textarea {
             vertical-align: sub;
             margin-right: 5px;
         }
+
+        &:has(span) {
+            text-decoration: none;
+            span {
+                padding: 0;
+                border-bottom: 1px solid currentColor;
+                transition: border-color $transition-duration-default $transition-ease-default;
+            }
+        }
+
+        &:hover {
+            span {
+                border-bottom-color: transparent;
+            }
+        }
     }
 
     &:not(:disabled):not(.btn-state--active):not(.btn-state--disabled) {
