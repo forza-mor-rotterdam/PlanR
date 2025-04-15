@@ -54,7 +54,11 @@
                                         {% if taak.verwijderd_op %}
                                             Verwijderd
                                         {% else %}
-                                            {{ taak.status.naam|capfirst }}
+                                            {% if taak.status.naam == 'nieuw'%}
+                                                Openstaand
+                                            {% else %}
+                                                {{ taak.status.naam|capfirst }}
+                                            {% endif %}
                                         {% endif %}
                                     </span>
                                 {% endif %}
