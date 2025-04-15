@@ -70,10 +70,10 @@
 .tag {
     display: inline-block;
     padding: 0.25rem 0.5rem;
-    border-radius: 12px;
+    border-radius: 15px;
     position: relative;
     &--qualification {
-        padding: 0.37rem 0.6rem 0.37rem 1.35rem;
+        padding: 0.37rem 0.65rem 0.37rem 1.4rem;
         background-color: $blue-200;
 
         &::before {
@@ -84,7 +84,7 @@
             border-radius: 100%;
             background-color: $blue-900;
             top: 50%;
-            left: 9px;
+            left: 10px;
             transform: translateY(-50%);
         }
     }
