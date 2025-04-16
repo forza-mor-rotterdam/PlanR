@@ -11,6 +11,7 @@ export default class extends Controller {
     'header',
     'body',
     'footer',
+    'kaartLarge',
   ]
 
   connect() {
@@ -31,7 +32,14 @@ export default class extends Controller {
       })
     })
     this.params = null
+    requestAnimationFrame(() => {
+      this.detailController = this.application.getControllerForElementAndIdentifier(
+        document.querySelector('[data-controller~="detail"]'),
+        'detail'
+      )
+    })
   }
+
   openModal(e) {
     e.preventDefault()
     this.abortController = new AbortController()
@@ -41,6 +49,10 @@ export default class extends Controller {
     }
     const templateClone = this.getCloneModalTemplate()
     this.modalTarget.appendChild(templateClone)
+
+    if (this.params.showMap) {
+      this.showMapLarge()
+    }
   }
   fetchModalContent(action) {
     fetch(action, { signal: this.abortController.signal })
@@ -99,6 +111,9 @@ export default class extends Controller {
   closeModal() {
     this.abortController.abort()
     this.dialogTarget.classList.remove('fade-in')
+    if (this.params.showMap) {
+      this.hideMapLarge()
+    }
     setTimeout(() => {
       document.body.classList.remove('show-modal')
       document.body.style.paddingRight = ``
@@ -112,6 +127,23 @@ export default class extends Controller {
   }
   disconnect() {
     this.observer.disconnect()
+  }
+
+  showMapLarge() {
+    setTimeout(() => {
+      this.mapElement = this.detailController.getMapElement()
+      this.kaartLargeTarget.appendChild(this.mapElement)
+    }, 100)
+    setTimeout(() => {
+      this.detailController.getMapInstance().invalidateSize()
+    }, 200)
+  }
+
+  hideMapLarge() {
+    document.querySelector('[data-detail-target="kaartDefault"]').appendChild(this.mapElement)
+    setTimeout(() => {
+      this.detailController.getMapInstance().invalidateSize()
+    }, 100)
   }
 
   elementContentHeight(elem) {
