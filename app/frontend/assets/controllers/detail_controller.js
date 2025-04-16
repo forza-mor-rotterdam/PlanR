@@ -13,7 +13,7 @@ export default class extends Controller {
     afbeeldingen: String,
     urlPrefix: String,
   }
-  static targets = ['turboActionModal', 'btnToTop', 'containerActions', 'lichtmast']
+  static targets = ['turboActionModal', 'btnToTop', 'containerActions', 'lichtmast', 'kaartDefault']
 
   initialize() {
     this.coordinates = []
@@ -124,6 +124,15 @@ export default class extends Controller {
       this.checkScrollPosition()
     })
   }
+
+  getMapElement() {
+    return this.kaartDefaultTarget.querySelector('#incidentMap')
+  }
+
+  getMapInstance() {
+    return this.map
+  }
+
   fitMarkers() {
     const bounds = new L.LatLngBounds(this.coordinates)
     this.map.fitBounds(bounds)

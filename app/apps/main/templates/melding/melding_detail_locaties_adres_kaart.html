@@ -43,11 +43,16 @@
     </div>
 </div>
 <div class="container__map">
-    <div class="map"
-         id="incidentMap"
-         data-action="touchstart->detail#onTwoFingerDrag touchend->detail#onTwoFingerDrag">
-        <div class="map__overlay">
-            <span>Gebruik twee vingers om de kaart te verplaatsen</span>
+    <div data-detail-target="kaartDefault">
+        <div class="map"
+             id="incidentMap"
+             data-action="touchstart->detail#onTwoFingerDrag touchend->detail#onTwoFingerDrag">
+            <div class="map__overlay">
+                <span>Gebruik twee vingers om de kaart te verplaatsen</span>
+            </div>
         </div>
     </div>
+    <button data-action="click->modal#openModal" data-modal-content-param='
+        {% include "melding/detail/kaart_modal_content.html" %}
+        ' data-modal-css-class-param="modal-dialog--full" data-modal-show-map-param="true">Vergroot de kaart</button>
 </div>

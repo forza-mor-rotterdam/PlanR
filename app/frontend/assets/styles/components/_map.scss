@@ -260,6 +260,17 @@ button.btn-on-map {
     }
 }
 
+dialog {
+    .container__kaart {
+        height: 100%;
+
+        .map,
+        .leaflet-container {
+            height: 100%;
+        }
+    }
+}
+
 @media (min-width: map-get($grid-breakpoints, lg)) {
     .container__list {
         .container__map {
