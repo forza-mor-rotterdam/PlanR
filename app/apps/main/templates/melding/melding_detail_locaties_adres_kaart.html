@@ -52,7 +52,9 @@
             </div>
         </div>
     </div>
-    <button data-action="click->modal#openModal" data-modal-content-param='
+    <button data-action="click->modal#openModal" class="btn btn-textlink" data-modal-content-param='
         {% include "melding/detail/kaart_modal_content.html" %}
-        ' data-modal-css-class-param="modal-dialog--full" data-modal-show-map-param="true">Vergroot de kaart</button>
+        ' data-modal-css-class-param="modal-dialog--full" data-modal-show-map-param="true" aria-label="Vergroot de kaart">
+        {% include "icons/expand.svg" %}
+    </button>
 </div>

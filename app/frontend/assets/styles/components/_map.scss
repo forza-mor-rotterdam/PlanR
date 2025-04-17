@@ -13,6 +13,7 @@
     padding-bottom: 50%;
     flex: 4 1 auto;
     margin-bottom: $container-padding-x;
+    position: relative;
 
     .map {
         height: 0;
@@ -35,9 +36,9 @@
             z-index: 9999;
             pointer-events: none;
             opacity: 0;
-            background: rgba(0, 0, 0, 0);
+            background-color: rgba(0, 0, 0, 0);
             transition:
-                background 0.25s,
+                background-color 0.25s,
                 opacity 0.25s;
             transition-delay: 0.25s;
         }
@@ -49,8 +50,24 @@
                 padding: $alert-padding-x;
                 height: auto;
                 opacity: 1;
-                background: rgba(0, 0, 0, 0.5);
+                background-color: rgba(0, 0, 0, 0.5);
             }
+        }
+    }
+    .btn-textlink {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        z-index: 400;
+        width: auto;
+        cursor: zoom-in !important;
+        background-color: $white;
+        border-radius: 4px;
+        width: 38px;
+        height: 38px;
+
+        svg {
+            vertical-align: middle;
         }
     }
 
