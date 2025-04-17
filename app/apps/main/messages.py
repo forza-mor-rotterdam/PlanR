@@ -15,6 +15,7 @@ class FallbackDeduplicatedStorage(FallbackStorage):
 
 MELDING_LIJST_OPHALEN_ERROR = "Er ging iets mis met het ophalen van meldingen"
 MELDING_OPHALEN_ERROR = "Er ging iets mis met het ophalen van de melding"
+MELDING_NIET_GEVONDEN_ERROR = "De melding is niet gevonden"
 MELDING_ANNULEREN_ERROR = "Er ging iets mis met het annuleren van de melding"
 MELDING_ANNULEREN_SUCCESS = "De melding is geannuleerd"
 MELDING_INFORMATIE_TOEVOEGEN_ERROR = (

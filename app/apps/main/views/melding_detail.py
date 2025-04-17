@@ -30,6 +30,7 @@ from apps.main.messages import (
     MELDING_INFORMATIE_TOEVOEGEN_SUCCESS,
     MELDING_LOCATIE_AANPASSEN_ERROR,
     MELDING_LOCATIE_AANPASSEN_SUCCESS,
+    MELDING_NIET_GEVONDEN_ERROR,
     MELDING_OPHALEN_ERROR,
     MELDING_PAUZEREN_ERROR,
     MELDING_PAUZEREN_SUCCESS,
@@ -68,12 +69,16 @@ class MeldingDetailViewMixin(ContextMixin):
         mor_core_service = MORCoreService()
         gebruiker_context = get_gebruiker_context(self.request.user)
         melding = mor_core_service.get_melding(self.kwargs.get("id"))
+
         if isinstance(melding, dict) and melding.get("error"):
-            messages.error(request=self.request, message=MELDING_OPHALEN_ERROR)
-            return render(
-                self.request,
-                "melding/melding_actie_form.html",
-            )
+            status_code = melding.get("error", {}).get("status_code")
+            if status_code == 404:
+                messages.error(
+                    request=self.request, message=MELDING_NIET_GEVONDEN_ERROR
+                )
+            else:
+                messages.error(request=self.request, message=MELDING_OPHALEN_ERROR)
+            melding = {}
         context.update(
             {
                 "melding": melding,
@@ -194,6 +199,9 @@ class MeldingDetailTaaktypeViewMixin(MeldingDetailViewMixin):
         melding = context["melding"]
         gebruiker_context = context["gebruiker_context"]
 
+        if not melding:
+            return context
+
         taakopdrachten_voor_melding = melding.get("taakopdrachten_voor_melding", [])
         melding_onderwerp_urls = set(melding.get("onderwerpen", []))
 
@@ -269,6 +277,10 @@ class MeldingDetail(
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        melding = context["melding"]
+        if not melding:
+            return context
 
         if (
             self.request.GET.get("melding_ids")
