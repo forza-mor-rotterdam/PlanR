@@ -228,7 +228,6 @@ export default class extends Controller {
       // Voorkom verspringen door padding toe te voegen
       content.style.overflow = 'hidden'
       content.style.paddingRight = `${scrollbarWidth}px`
-      console.log('scrollbarWidth', scrollbarWidth)
     } else {
       // Herstel originele instellingen
       content.style.overflow = ''
@@ -261,6 +260,7 @@ export default class extends Controller {
       gemeentenaam: 'gemeente',
       wijknaam: 'wijknaam',
       buurtnaam: 'buurtnaam',
+      type: 'type',
     }
 
     const locatie = {}
@@ -378,12 +378,19 @@ export default class extends Controller {
       elem.dataset.value = elem.textContent
     })
   }
+  stringGeoPOINTToCoordinates(strPoint) {
+    const arr = strPoint.replace('POINT', '').replace(/[()]/g, '').split(' ')
+    return [arr[1].trim(), arr[0].trim()]
+  }
   async updateAddressDetails(coordinates) {
     const pdokUrl = 'https://api.pdok.nl/bzk/locatieserver/search/v3_1/reverse'
+    let results
     const query = {
       lat: coordinates[0],
       lon: coordinates[1],
       rows: 50,
+      fq: ['gemeentecode:0599'],
+      type: ['adres', 'weg'],
       fl: [
         'id',
         'straatnaam',
@@ -396,22 +403,67 @@ export default class extends Controller {
         'wijknaam',
         'buurtnaam',
         'afstand',
+        'bron',
+        'type',
+        'centroide_ll',
       ],
     }
-
     try {
-      const response = await fetch(`${pdokUrl}?${new URLSearchParams(query)}`)
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`)
-      }
-      this.geometrie = {
-        type: 'Point',
-        coordinates: [coordinates[1], coordinates[0]],
-      }
-      const data = await response.json()
-      this.updateAdresResultList(this.prepareResponseData(data.response.docs))
-      this.submitButtonTarget.disabled = !this.dataHasChanged()
-      this.initial = false
+      const data = await fetch(`${pdokUrl}?${new URLSearchParams(query)}`).then((res) => res.json())
+
+      const locationsWithoutNWBOnlyBron = data.response.docs.filter(
+        (location) => location.bron !== 'NWB'
+      )
+
+      const locationsWithWegUrl = locationsWithoutNWBOnlyBron.map((location) => {
+        const queryTmpl = {
+          type: ['buurt'],
+          rows: 1,
+          fq: ['gemeentecode:0599'],
+          fl: ['wijknaam', 'buurtnaam'],
+        }
+        if (location.type === 'weg') {
+          const coordinates = this.stringGeoPOINTToCoordinates(location.centroide_ll)
+          const queryCopy = structuredClone(queryTmpl)
+          queryCopy.lat = coordinates[0]
+          queryCopy.lon = coordinates[1]
+          location.buurtUrl = `${pdokUrl}?${new URLSearchParams(queryCopy)}`
+        }
+        return location
+      })
+
+      const locations = locationsWithWegUrl.map((location) => {
+        if (location.buurtUrl) {
+          location.fetch = fetch(location.buurtUrl)
+        }
+        return location
+      })
+
+      const responses = await Promise.all(
+        locations.filter((location) => !!location.fetch).map((location) => location.fetch)
+      )
+      const filteredResponses = responses.filter((res) => !!res)
+      results = await Promise.all(
+        filteredResponses.map(async (response) => {
+          const data = await response.json()
+          return {
+            url: response.url,
+            data: data.response.docs.find((d) => d),
+          }
+        })
+      )
+      const resultsByUrl = results.reduce((total, result) => {
+        total[result.url] = result.data
+        return total
+      }, {})
+      locations.map((location) => {
+        if (location.buurtUrl) {
+          const data = resultsByUrl[location.buurtUrl]
+          location.buurtnaam = data?.buurtnaam
+          location.wijknaam = data?.wijknaam
+        }
+      })
+      this.updateAdresResultList(this.prepareResponseData(locations))
     } catch (error) {
       console.error('Error fetching address details:', error.message)
     }
