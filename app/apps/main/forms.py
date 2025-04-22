@@ -671,7 +671,7 @@ class LocatieAanpassenForm(forms.Form):
                 "data-locatieaanpassenformulier-target": "huisnummer",
             }
         ),
-        required=True,
+        required=False,
     )
     huisletter = forms.CharField(
         widget=forms.HiddenInput(

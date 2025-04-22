@@ -463,7 +463,13 @@ export default class extends Controller {
           location.wijknaam = data?.wijknaam
         }
       })
+      this.geometrie = {
+        type: 'Point',
+        coordinates: [coordinates[1], coordinates[0]],
+      }
       this.updateAdresResultList(this.prepareResponseData(locations))
+      this.submitButtonTarget.disabled = !this.dataHasChanged()
+      this.initial = false
     } catch (error) {
       console.error('Error fetching address details:', error.message)
     }
