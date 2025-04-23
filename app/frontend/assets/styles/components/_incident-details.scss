@@ -66,6 +66,11 @@
         }
     }
 
+    .container__meldingnavigatie,
+    .wrapper--actions {
+        box-sizing: border-box;
+    }
+
     .wrapper--actions {
         padding: 1em 0.75em;
     }
@@ -74,6 +79,7 @@
         width: auto;
         background-color: transparent;
         padding-top: 15px;
+        transform: translateX(0);
 
         @media (min-width: map-get($grid-breakpoints, md)) {
             position: fixed;
@@ -85,10 +91,6 @@
             transition-duration: $transition-duration-default;
             transition-timing-function: $transition-ease-default;
 
-            .container__meldingnavigatie,
-            .wrapper--actions {
-                box-sizing: border-box;
-            }
             .wrapper--actions {
                 width: 100%;
                 border-bottom: 1px solid $gray-tint04;

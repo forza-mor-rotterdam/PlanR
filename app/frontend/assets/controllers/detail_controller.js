@@ -4,7 +4,8 @@ import L from 'leaflet'
 
 let detailScrollY = 0,
   distance = 0,
-  actionsHeight = 0
+  actionsHeight = 0,
+  actionsWidth = 0
 
 export default class extends Controller {
   static values = {
@@ -119,6 +120,7 @@ export default class extends Controller {
     this.tabIndex = Number(this.urlParams.get('tabIndex'))
     this.selectTab(this.tabIndex || 1)
     actionsHeight = this.containerActionsTarget.offsetHeight
+    actionsWidth = this.containerActionsTarget.offsetWidth
     this.updatePosition = this.updatePosition.bind(this)
     window.addEventListener('scroll', () => {
       this.checkScrollPosition()
@@ -204,16 +206,21 @@ export default class extends Controller {
 
   updatePosition() {
     // actioncontainer
-    console.log('distance', distance)
-    const right = window.innerWidth - document.querySelector('main').getBoundingClientRect().right
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
+    const right =
+      window.innerWidth -
+      document.querySelector('main').getBoundingClientRect().right -
+      scrollbarWidth
     if (document.documentElement.scrollTop > distance - 15) {
       this.containerActionsTarget.classList.add('stayFixed')
       this.containerActionsTarget.parentElement.style.height = `${actionsHeight}px`
-      this.containerActionsTarget.style.right = `calc(${right}px)`
+      this.containerActionsTarget.style.maxWidth = `${actionsWidth}px`
+      this.containerActionsTarget.style.right = `${right}px`
     } else {
       this.containerActionsTarget.classList.remove('stayFixed')
       this.containerActionsTarget.parentElement.style.height = ''
-      this.containerActionsTarget.style.transform = ``
+      this.containerActionsTarget.style.maxWidth = ''
+      this.containerActionsTarget.style.right = ``
     }
   }
   scrollToTop(e) {
