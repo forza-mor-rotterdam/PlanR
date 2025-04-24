@@ -5,47 +5,47 @@
 {% block target %}melding_detail_acties{% endblock target %}
 <!-- djlint:on -->
 {% block content %}
-    <p>
-        {% if perms.authorisatie.taak_aanmaken and taakr_taaktypes_niet_ingebruik_met_afdelingen and melding.status.naam != 'afgehandeld' and melding.status.naam != 'geannuleerd' and melding.status.naam != "pauze" and melding.status.naam != "wachten_melder" %}
-            <button type="button"
-                    class="btn btn-{% if melding.status.naam == 'controle' %}tertiary{% else %}action{% endif %}"
-                    data-action="modal#openModal"
-                    data-modal-action-param="{% url 'taken_aanmaken' melding.uuid %}"
-                    data-modal-css-class-param="modal-dialog--wide modal--multistep-form">
-                <span>Taken aanmaken</span>
-            </button>
-        {% endif %}
-        {% if perms.authorisatie.melding_hervatten and melding.status.naam == "pauze" or melding.status.naam == "wachten_melder" %}
-            <button type="button"
-                    class="btn btn-action"
-                    data-action="modal#openModal"
-                    data-modal-action-param="{% url 'melding_hervatten' melding.uuid %}">
-                <span>Hervatten</span>
-            </button>
-        {% endif %}
-        {% if perms.authorisatie.melding_afhandelen and not melding.afgesloten_op %}
-            <button type="button"
-                    class="btn btn-{% if melding.status.naam == 'controle' %}action{% else %}tertiary{% endif %}"
-                    data-action="modal#openModal"
-                    data-modal-action-param="{% url 'melding_afhandelen' melding.uuid %}">
-                <span>Melding afhandelen</span>
-            </button>
-        {% endif %}
-        {% comment %} and (melding.status.naam == "afgehandeld" or melding.status.naam != "geannuleerd") {% endcomment %}
-        {% if perms.authorisatie.melding_heropenen and melding.afgesloten_op %}
-            <button type="button"
-                    class="btn btn-tertiary"
-                    data-action="modal#openModal"
-                    data-modal-action-param="{% url 'melding_heropenen' melding.uuid %}">
-                <span>Melding heropenen</span>
-            </button>
-        {% endif %}
-    </p>
-    <ul class="list-links padding--bottom">
+    <div class="wrapper--actions">
+        <p>
+            {% if perms.authorisatie.taak_aanmaken and taakr_taaktypes_niet_ingebruik_met_afdelingen and melding.status.naam != 'afgehandeld' and melding.status.naam != 'geannuleerd' and melding.status.naam != "pauze" and melding.status.naam != "wachten_melder" %}
+                <button type="button"
+                        class="btn btn-{% if melding.status.naam == 'controle' %}tertiary{% else %}action{% endif %}"
+                        data-action="modal#openModal"
+                        data-modal-action-param="{% url 'taken_aanmaken' melding.uuid %}"
+                        data-modal-css-class-param="modal-dialog--wide modal--multistep-form">
+                    <span>Taken aanmaken</span>
+                </button>
+            {% endif %}
+            {% if perms.authorisatie.melding_hervatten and melding.status.naam == "pauze" or melding.status.naam == "wachten_melder" %}
+                <button type="button"
+                        class="btn btn-action"
+                        data-action="modal#openModal"
+                        data-modal-action-param="{% url 'melding_hervatten' melding.uuid %}">
+                    <span>Hervatten</span>
+                </button>
+            {% endif %}
+            {% if perms.authorisatie.melding_afhandelen and not melding.afgesloten_op %}
+                <button type="button"
+                        class="btn btn-{% if melding.status.naam == 'controle' %}action{% else %}tertiary{% endif %}"
+                        data-action="modal#openModal"
+                        data-modal-action-param="{% url 'melding_afhandelen' melding.uuid %}">
+                    <span>Melding afhandelen</span>
+                </button>
+            {% endif %}
+            {% comment %} and (melding.status.naam == "afgehandeld" or melding.status.naam != "geannuleerd") {% endcomment %}
+            {% if perms.authorisatie.melding_heropenen and melding.afgesloten_op %}
+                <button type="button"
+                        class="btn btn-tertiary"
+                        data-action="modal#openModal"
+                        data-modal-action-param="{% url 'melding_heropenen' melding.uuid %}">
+                    <span>Melding heropenen</span>
+                </button>
+            {% endif %}
+        </p>
         {% melding_taken melding as taak_info %}
         {% if taak_info.open_taken %}
-            {% if perms.authorisatie.taak_afronden %}
-                <li>
+            <p>
+                {% if perms.authorisatie.taak_afronden %}
                     <button type="button"
                             class="btn btn-icon btn-textlink"
                             data-action="modal#openModal"
@@ -59,10 +59,8 @@
                         </svg>
                         Taak afronden
                     </button>
-                </li>
-            {% endif %}
-            {% if perms.authorisatie.taak_annuleren %}
-                <li>
+                {% endif %}
+                {% if perms.authorisatie.taak_annuleren %}
                     <button type="button"
                             class="btn btn-icon btn-textlink"
                             data-action="modal#openModal"
@@ -76,12 +74,12 @@
                         </svg>
                         Taak annuleren
                     </button>
-                </li>
-            {% endif %}
+                {% endif %}
+            </p>
         {% endif %}
         {% if not melding.afgesloten_op %}
-            {% if perms.authorisatie.melding_annuleren and melding.status.naam != "pauze" and melding.status.naam != "wachten_melder" %}
-                <li>
+            <p>
+                {% if perms.authorisatie.melding_annuleren and melding.status.naam != "pauze" and melding.status.naam != "wachten_melder" %}
                     <button type="button"
                             class="btn btn-icon btn-textlink"
                             data-action="modal#openModal"
@@ -95,10 +93,8 @@
                         </svg>
                         Melding annuleren
                     </button>
-                </li>
-            {% endif %}
-            {% if perms.authorisatie.melding_pauzeren and melding.status.naam != "pauze" and melding.status.naam != "wachten_melder" %}
-                <li>
+                {% endif %}
+                {% if perms.authorisatie.melding_pauzeren and melding.status.naam != "pauze" and melding.status.naam != "wachten_melder" %}
                     <button type="button"
                             class="btn btn-icon btn-textlink"
                             data-action="modal#openModal"
@@ -113,10 +109,8 @@
                         </svg>
                         Melding pauzeren
                     </button>
-                </li>
-            {% endif %}
-            {% if perms.authorisatie.locatie_aanpassen and locaties.adressen %}
-                <li>
+                {% endif %}
+                {% if perms.authorisatie.locatie_aanpassen and locaties.adressen %}
                     <button type="button"
                             class="btn btn-icon btn-textlink"
                             data-action="modal#openModal"
@@ -131,32 +125,32 @@
                         </svg>
                         Locatie aanpassen
                     </button>
-                </li>
-            {% endif %}
+                {% endif %}
+            </p>
         {% endif %}
-    </ul>
-    {% if perms.authorisatie.melding_spoed_veranderen and melding.status.naam != 'afgehandeld' and melding.status.naam != 'geannuleerd' %}
-        <div>
-            <button type="button"
-                    class="btn btn-icon btn-checkbox{% if melding.urgentie >= 0.5 %} checked{% endif %}"
-                    data-action="modal#openModal"
-                    data-modal-action-param="{% url 'melding_spoed_veranderen' melding.uuid %}">
-                <input type="checkbox"
-                       class="form-check-input"
-                       id="cb__spoed"
-                       {% if melding.urgentie >= 0.5 %}checked{% endif %} />
-                <label for="cb__spoed">Met spoed oppakken</label>
-                <svg width="32"
-                     height="32"
-                     viewBox="0 0 32 32"
-                     fill="none"
-                     xmlns="http://www.w3.org/2000/svg">
-                    <g id="BadgeAlert">
-                    <path id="Union" fill-rule="evenodd" clip-rule="evenodd" d="M16.0001 6.21875L26.6516 26.0002L5.34849 26.0002L16.0001 6.21875ZM14.2391 5.27055C14.9943 3.86815 17.0059 3.86815 17.761 5.27055L28.4126 25.052C29.13 26.3845 28.165 28.0002 26.6516 28.0002H5.34849C3.83514 28.0002 2.87007 26.3845 3.58755 25.052L14.2391 5.27055ZM15.0001 12.0002H17.0001V20.0002H15.0001V12.0002ZM15.0001 24.0002V22.0002H17.0001V24.0002H15.0001Z" fill="#404B4F">
-                    </path>
-                    </g>
-                </svg>
-            </button>
-        </div>
-    {% endif %}
+        {% if perms.authorisatie.melding_spoed_veranderen and melding.status.naam != 'afgehandeld' and melding.status.naam != 'geannuleerd' %}
+            <div class="margin-top">
+                <button type="button"
+                        class="btn btn-icon btn-checkbox{% if melding.urgentie >= 0.5 %} checked{% endif %}"
+                        data-action="modal#openModal"
+                        data-modal-action-param="{% url 'melding_spoed_veranderen' melding.uuid %}">
+                    <input type="checkbox"
+                           class="form-check-input"
+                           id="cb__spoed"
+                           {% if melding.urgentie >= 0.5 %}checked{% endif %} />
+                    <label for="cb__spoed">Met spoed oppakken</label>
+                    <svg width="32"
+                         height="32"
+                         viewBox="0 0 32 32"
+                         fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <g id="BadgeAlert">
+                        <path id="Union" fill-rule="evenodd" clip-rule="evenodd" d="M16.0001 6.21875L26.6516 26.0002L5.34849 26.0002L16.0001 6.21875ZM14.2391 5.27055C14.9943 3.86815 17.0059 3.86815 17.761 5.27055L28.4126 25.052C29.13 26.3845 28.165 28.0002 26.6516 28.0002H5.34849C3.83514 28.0002 2.87007 26.3845 3.58755 25.052L14.2391 5.27055ZM15.0001 12.0002H17.0001V20.0002H15.0001V12.0002ZM15.0001 24.0002V22.0002H17.0001V24.0002H15.0001Z" fill="#404B4F">
+                        </path>
+                        </g>
+                    </svg>
+                </button>
+            </div>
+        {% endif %}
+    </div>
 {% endblock content %}

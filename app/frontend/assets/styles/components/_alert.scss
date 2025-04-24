@@ -5,7 +5,12 @@
     border: 1px solid transparent;
     border-radius: 0;
     display: flex;
-    font-size: 1em;
+    font-size: 0.875rem;
+
+    > span {
+        display: flex;
+        align-items: center;
+    }
 
     svg {
         padding-right: $input-padding-x;

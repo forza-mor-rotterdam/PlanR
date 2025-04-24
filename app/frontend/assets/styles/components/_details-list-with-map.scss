@@ -39,6 +39,12 @@
                     }
                 }
 
+                small {
+                    font-size: 0.778rem;
+                    padding-bottom: 1em;
+                    display: block;
+                }
+
                 dt,
                 dd {
                     font-weight: 400;
@@ -62,7 +68,7 @@
 
     .container__map {
         .map {
-            padding-bottom: 75%;
+            padding-bottom: 50%;
         }
     }
 }

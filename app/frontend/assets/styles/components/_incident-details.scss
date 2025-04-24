@@ -1,15 +1,14 @@
 .page__detail {
     padding: 2rem 0 5em;
     h1 {
-        margin-bottom: 0;
+        margin: 0;
         + span {
             font-size: 0.875em;
         }
     }
 
     .aside {
-        font-size: 0.875em;
-
+        position: relative;
         .btn {
             text-align: left;
             width: auto;
@@ -19,15 +18,12 @@
 
             &-textlink {
                 text-decoration: $link-decoration;
+                margin: 0 0 0 0.75em;
             }
         }
 
         .list__mutations {
             margin-top: 0;
-        }
-
-        .alert {
-            font-size: inherit;
         }
     }
 }
@@ -35,12 +31,15 @@
 .container__actions {
     background-color: $blue-100;
     width: 100%;
-    padding: 0 1em 1em;
+    max-width: 2000px;
     z-index: 1000;
-    border: 1px solid transparent;
     box-sizing: border-box;
+    text-align: right;
+    transform: translateX(0.75em);
+
     p {
         margin-bottom: 0.5rem;
+        max-width: none;
     }
     p:not(:first-of-type) {
         margin-top: 0.5rem;
@@ -48,6 +47,12 @@
 
     .alert {
         display: flex;
+    }
+
+    .btn {
+        &:last-child {
+            margin-right: 0;
+        }
     }
 
     .btn-checkbox {
@@ -61,20 +66,35 @@
         }
     }
 
+    .container__meldingnavigatie,
+    .wrapper--actions {
+        box-sizing: border-box;
+    }
+
+    .wrapper--actions {
+        padding: 1em 0.75em;
+    }
+
     &.stayFixed {
-        width: 27%;
+        width: auto;
+        background-color: transparent;
+        padding-top: 15px;
+        transform: translateX(0);
+
         @media (min-width: map-get($grid-breakpoints, md)) {
             position: fixed;
             top: 0;
-            // right: 20px;
+            display: flex;
+            justify-content: flex-end;
             background-color: $white;
-            border: 1px solid $gray-tint04;
             transition-property: background-color, border-color;
             transition-duration: $transition-duration-default;
             transition-timing-function: $transition-ease-default;
-        }
-        @media (min-width: map-get($grid-breakpoints, xl)) {
-            width: 100%;
+
+            .wrapper--actions {
+                width: 100%;
+                border-bottom: 1px solid $gray-tint04;
+            }
         }
     }
 }
@@ -83,7 +103,8 @@
     > *:first-child {
         margin-top: 0;
     }
-    h1 {
+    h1,
+    h4 {
         margin-top: 0;
     }
     h2 {
@@ -91,7 +112,8 @@
         display: flex;
         align-items: center;
         padding-bottom: 1rem;
-        border-bottom: 1px solid $gray-tint04;
+        color: $green-tint01;
+        font-size: calc(1rem + 0.25vw);
 
         svg {
             margin-right: 8px;
@@ -103,6 +125,10 @@
         &:first-child {
             margin-top: 0;
         }
+    }
+
+    h4 {
+        font-size: 1rem;
     }
     p {
         margin-top: 0;
@@ -132,10 +158,11 @@
         label {
             display: inline-block;
             margin-bottom: 0.5rem;
+            font-size: 0.875rem;
         }
         input[type="checkbox"] {
             @include form-check-input();
-            vertical-align: sub;
+            vertical-align: middle;
         }
     }
 
@@ -146,9 +173,6 @@
 }
 
 .container__meldingnavigatie {
-    position: absolute;
-    top: -35px;
-    left: 1em;
     display: flex;
     justify-content: flex-end;
     gap: 8px;
@@ -162,11 +186,12 @@
 
     span {
         white-space: nowrap;
-        line-height: 60px;
+        line-height: 36px;
         align-self: flex-start;
+        flex: 0;
     }
     .container__buttons {
-        width: 108px;
+        width: 80px;
         position: relative;
         > turbo-frame {
             width: auto;
@@ -180,27 +205,35 @@
         }
 
         span.melding-navigatie {
-            background-color: $gray-tint04;
-            border-color: $gray-tint04;
+            svg {
+                path {
+                    fill: $gray-400;
+                }
+            }
         }
 
         .melding-navigatie {
             display: inline-block;
-            width: 48px;
-            height: 48px;
-            border: 1px solid $gray-tint08;
+            width: 36px;
+            height: 36px;
             background-color: transparent;
             position: relative;
 
             svg {
                 position: absolute;
-                top: calc(50% - 12px);
-                left: 12px;
-                width: 24px;
-                height: 24px;
+                top: calc(50% - 10px);
+                left: 7px;
+                width: 20px;
+                height: 20px;
                 path {
                     fill: $gray-tint11;
                 }
+            }
+        }
+        a.melding-navigatie {
+            &:hover,
+            &:focus {
+                background-color: $blue-200;
             }
         }
     }
@@ -221,6 +254,11 @@
 }
 
 .incident-meta-list {
+    list-style-type: none;
+    margin: 0;
+    font-size: 0.778rem;
+    padding: 0 0.75rem 0.75rem;
+
     li {
         margin-bottom: 1rem;
         > *:last-child {
@@ -229,7 +267,7 @@
     }
 }
 
-.section--seperated {
+.section--separated {
     .full-width {
         margin: 0 (-(map-get($container-margin, md)));
     }
@@ -277,6 +315,9 @@
         > span {
             margin-left: $input-padding-y;
             svg {
+                width: 20px;
+                height: 20px;
+                vertical-align: middle;
                 path {
                     fill: $green-tint01;
                 }

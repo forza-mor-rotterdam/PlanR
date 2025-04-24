@@ -1,8 +1,21 @@
+.container__tabs {
+    display: flex;
+    background-color: $white;
+    padding: 1rem;
+
+    h3 {
+        flex: 0 0 40%;
+        padding-top: 7px;
+        margin-bottom: 0;
+        border-bottom: 1px solid $blue-200;
+    }
+}
 .list-tabs {
     @include list-clean();
     margin: 0;
     padding: 0 $input-padding-y;
-    background-color: $gray-tint02;
+    background-color: $white;
+    border-bottom: 1px solid $blue-200;
 
     li {
         display: inline;
@@ -11,25 +24,33 @@
         display: inline-block;
         width: auto;
         background-color: transparent;
-        font-size: 0.875em;
+        font-size: 0.778em;
         font-weight: normal;
-        padding: 12px 4px;
-        color: $gray-tint11;
+        padding: 10px 4px;
+        min-height: 32px;
+        line-height: 14px;
+        color: $gray-800;
 
         &.active {
-            border-bottom: 4px solid $green-tint01;
+            color: $green-900;
+            font-weight: 700;
         }
     }
 }
 
 .container__tab-content {
     padding: 0 $input-padding-y;
-    background-color: $gray-tint02;
+    background-color: white;
     width: 100%;
     box-sizing: border-box;
 
     .tab-content {
         display: none;
+
+        dl {
+            margin: 0;
+            padding: 0 0.75rem 0.75rem;
+        }
 
         &.active {
             display: block;

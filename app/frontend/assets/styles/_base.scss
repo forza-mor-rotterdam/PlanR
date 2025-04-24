@@ -62,6 +62,7 @@ html {
         main {
             padding: 1em 0.75em 0;
             margin-bottom: 5em;
+            box-sizing: border-box;
             max-width: 2000px;
             margin: 0 auto;
         }
@@ -143,7 +144,9 @@ main {
     gap: 32px;
 
     + .grid-container {
-        margin-top: 32px;
+        .grid-item:not(:empty) {
+            margin-top: 32px;
+        }
     }
 
     @media (min-width: map-get($grid-breakpoints, md)) {
@@ -326,6 +329,7 @@ a,
 
     &.link--back {
         @include has-icon();
+        height: 36px;
         padding-left: 10px;
         font-size: 0.875em;
         font-weight: 700;
@@ -438,6 +442,14 @@ p {
     padding: 0;
 }
 
+dl,
+ul {
+    .has-background--white & {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+}
+
 ul {
     &.list-clean,
     &.form-check-input {
@@ -481,7 +493,8 @@ ul {
         li {
             position: relative;
             padding-left: 30px;
-            :before {
+
+            &::before {
                 content: url("../icons/person.svg");
                 position: absolute;
                 top: calc(50% - 10px);
@@ -552,6 +565,7 @@ li {
 }
 
 dl {
+    font-size: 0.875rem;
     dt {
         font-weight: 700;
     }
@@ -571,6 +585,7 @@ dl {
         dd {
             flex: 1 1 60%;
             max-width: 60%;
+            word-break: break-word;
         }
         dt {
             flex: 1 1 40%;
@@ -598,14 +613,14 @@ dl {
 
 // SECTIONS
 section {
-    &.section--seperated {
+    &.section--separated {
         padding: 1em 0 0.75em;
 
         &__no-border-bottom {
             border-bottom: 0;
         }
     }
-    &.section--seperated--l {
+    &.section--separated--l {
         padding: 1em 0 4em;
         border-bottom: 1px solid #a6a6a6;
 
@@ -670,6 +685,11 @@ body.no-js {
 }
 
 // HELPER-CLASSES
+
+.has-background--white {
+    padding: 1em;
+    background-color: $white;
+}
 .keyboard-focus {
     outline: 2px solid blue !important;
 }

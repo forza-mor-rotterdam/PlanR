@@ -1,54 +1,50 @@
 {% load vind_in_dict from querystring_tags %}
-<li>
-    <div class="display--flex--md">
-        <ul class="list-clean">
-            <li>
-                <h3 class="h5">Begraafplaats</h3>
-                <p>
-                    {% if melding.locaties_voor_melding.0.begraafplaats %}
-                        {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices melding.locaties_voor_melding.0.begraafplaats as signaal_begraafplaats_naam %}
-                        {% if signaal_begraafplaats_naam == melding.locaties_voor_melding.0.begraafplaats %}
-                            {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices melding.locaties_voor_melding.0.begraafplaats %}
-                        {% else %}
-                            {{ signaal_begraafplaats_naam }}
-                        {% endif %}
+<div>
+    <dl>
+        <div>
+            <dt>Begraafplaats</dt>
+            <dd>
+                {% if melding.locaties_voor_melding.0.begraafplaats %}
+                    {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices melding.locaties_voor_melding.0.begraafplaats as signaal_begraafplaats_naam %}
+                    {% if signaal_begraafplaats_naam == melding.locaties_voor_melding.0.begraafplaats %}
+                        {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices melding.locaties_voor_melding.0.begraafplaats %}
                     {% else %}
-                        -
+                        {{ signaal_begraafplaats_naam }}
                     {% endif %}
-                </p>
-            </li>
-            <li>
-                <h3 class="h5">Naam overledene</h3>
-                <p>
-                    {% if melding.signalen_voor_melding.0.meta.naam_overledene %}
-                        {{ melding.signalen_voor_melding.0.meta.naam_overledene }}
-                    {% else %}
-                        -
-                    {% endif %}
-                </p>
-            </li>
-        </ul>
-        <ul class="list-clean">
-            <li>
-                <h3 class="h5">Vak</h3>
-                <p>
-                    {% if locatie.vak %}
-                        {{ locatie.vak }}
-                    {% else %}
-                        n.v.t.
-                    {% endif %}
-                </p>
-            </li>
-            <li>
-                <h3 class="h5">Grafnummer</h3>
-                <p>
-                    {% if locatie.grafnummer %}
-                        {{ locatie.grafnummer }}
-                    {% else %}
-                        n.v.t.
-                    {% endif %}
-                </p>
-            </li>
-        </ul>
-    </div>
-</li>
+                {% else %}
+                    -
+                {% endif %}
+            </dd>
+        </div>
+        <div>
+            <dt>Naam overledene</dt>
+            <dd>
+                {% if melding.signalen_voor_melding.0.meta.naam_overledene %}
+                    {{ melding.signalen_voor_melding.0.meta.naam_overledene }}
+                {% else %}
+                    -
+                {% endif %}
+            </dd>
+        </div>
+        <div>
+            <dt>Vak</dt>
+            <dd>
+                {% if locatie.vak %}
+                    {{ locatie.vak }}
+                {% else %}
+                    n.v.t.
+                {% endif %}
+            </dd>
+        </div>
+        <div>
+            <dt>Grafnummer</dt>
+            <dd>
+                {% if locatie.grafnummer %}
+                    {{ locatie.grafnummer }}
+                {% else %}
+                    n.v.t.
+                {% endif %}
+            </dd>
+        </div>
+    </dl>
+</div>

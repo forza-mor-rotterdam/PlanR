@@ -4,7 +4,8 @@ import L from 'leaflet'
 
 let detailScrollY = 0,
   distance = 0,
-  actionsHeight = 0
+  actionsHeight = 0,
+  actionsWidth = 0
 
 export default class extends Controller {
   static values = {
@@ -119,13 +120,11 @@ export default class extends Controller {
     this.tabIndex = Number(this.urlParams.get('tabIndex'))
     this.selectTab(this.tabIndex || 1)
     actionsHeight = this.containerActionsTarget.offsetHeight
-    window.addEventListener(
-      'scroll',
-      function () {
-        this.checkScrollPosition()
-      }.bind(this),
-      false
-    )
+    actionsWidth = this.containerActionsTarget.offsetWidth
+    this.updatePosition = this.updatePosition.bind(this)
+    window.addEventListener('scroll', () => {
+      this.checkScrollPosition()
+    })
   }
   fitMarkers() {
     const bounds = new L.LatLngBounds(this.coordinates)
@@ -201,15 +200,27 @@ export default class extends Controller {
       } else {
         this.btnToTopTarget.classList.remove('show')
       }
-      // actioncontainer
-      if (document.documentElement.scrollTop > distance) {
-        this.containerActionsTarget.classList.add('stayFixed')
+      this.updatePosition()
+    }
+  }
 
-        this.containerActionsTarget.nextElementSibling.style.marginTop = `${actionsHeight}px`
-      } else {
-        this.containerActionsTarget.classList.remove('stayFixed')
-        this.containerActionsTarget.nextElementSibling.style.marginTop = 0
-      }
+  updatePosition() {
+    // actioncontainer
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
+    const right =
+      window.innerWidth -
+      document.querySelector('main').getBoundingClientRect().right -
+      scrollbarWidth
+    if (document.documentElement.scrollTop > distance - 15) {
+      this.containerActionsTarget.classList.add('stayFixed')
+      this.containerActionsTarget.parentElement.style.height = `${actionsHeight}px`
+      this.containerActionsTarget.style.maxWidth = `${actionsWidth}px`
+      this.containerActionsTarget.style.right = `${right}px`
+    } else {
+      this.containerActionsTarget.classList.remove('stayFixed')
+      this.containerActionsTarget.parentElement.style.height = ''
+      this.containerActionsTarget.style.maxWidth = ''
+      this.containerActionsTarget.style.right = ``
     }
   }
   scrollToTop(e) {
