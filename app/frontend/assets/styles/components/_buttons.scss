@@ -393,13 +393,6 @@ textarea {
         }
     }
 
-    &.btn-icon {
-        svg {
-            vertical-align: sub;
-            margin-right: 5px;
-        }
-    }
-
     &:not(:disabled):not(.btn-state--active):not(.btn-state--disabled) {
         cursor: pointer;
     }
@@ -481,6 +474,29 @@ textarea {
         &:hover {
             background-color: $gray-100;
             outline-width: 0 !important;
+        }
+    }
+}
+
+.link--back,
+.btn.btn-icon {
+    svg {
+        vertical-align: sub;
+        margin-right: 5px;
+    }
+
+    &:has(span) {
+        text-decoration: none !important;
+        span {
+            padding: 0;
+            box-shadow: inset 0 -0.07em 0 0 currentColor;
+            transition: box-shadow $transition-duration-default $transition-ease-default;
+        }
+    }
+
+    &:hover {
+        span {
+            box-shadow: inset 0 -0.07em 0 0 transparent;
         }
     }
 }

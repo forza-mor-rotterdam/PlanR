@@ -9,7 +9,7 @@
         </h2>
         <div class="has-background--white">
             {% include "melding/melding_detail_locaties_graven.html" with melding=melding locaties=locaties.graven only %}
-            {% include "melding/melding_detail_locaties_adressen.html" with melding=melding locaties=locaties.adressen only %}
+            {% include "melding/melding_detail_locaties_adressen.html" with melding=melding locaties=locaties.adressen perms=perms only %}
         </div>
     </div>
 </section>

@@ -21,7 +21,7 @@
                      xmlns="http://www.w3.org/2000/svg">
                     <path d="M9.15173 1.73256L7.73753 0.318359L1.44704 6.60885L1.4142 6.576L0 7.9902L1.4115 9.4017L1.37867 9.43453L7.67186 15.7277L9.08606 14.3135L3.7726 9.00006H24.0098V7.00006H3.88423L9.15173 1.73256Z" fill="#404B4F" />
                 </svg>
-                Beheer
+                <span>Beheer</span>
             </a>
         </div>
         <div class="container__flex">
@@ -69,7 +69,7 @@
                         <td data-row-search-target="searchable">{{ object.tekst|truncate_text:200 }}</td>
                         <td>
                             <a href="{% url 'standaard_externe_omschrijving_aanpassen' object.pk %}"
-                               aria-label="Aanpassen">{% include "icons/edit.svg" %}</a>
+                               aria-label="Aanpassen">{% include "icons/edit2.svg" %}</a>
                         </td>
                         <td>
                             <a href="{% url 'standaard_externe_omschrijving_verwijderen' object.pk %}"
