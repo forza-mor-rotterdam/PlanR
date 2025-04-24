@@ -66,6 +66,10 @@
                     text-align: left;
                     padding: 0;
                     min-height: 0;
+                    svg {
+                        vertical-align: sub;
+                        margin-right: 5px;
+                    }
                 }
             }
 

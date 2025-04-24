@@ -70,7 +70,7 @@
                                     <div class="legenda">
                                         {% if perms.authorisatie.taak_afronden %}
                                             <button type="button"
-                                                    class="btn btn-icon"
+                                                    class="btn"
                                                     data-action="modal#openModal"
                                                     data-modal-action-param="{% url 'taak_afronden' melding.uuid taak.uuid %}">
                                                 {% include "icons/checkmark-square.svg" %}
@@ -79,7 +79,7 @@
                                         {% endif %}
                                         {% if perms.authorisatie.taak_annuleren %}
                                             <button type="button"
-                                                    class="btn btn-icon"
+                                                    class="btn"
                                                     data-action="modal#openModal"
                                                     data-modal-action-param="{% url 'taak_annuleren' melding.uuid taak.uuid %}">
                                                 {% include "icons/bin.svg" %}
