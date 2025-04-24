@@ -83,6 +83,7 @@ class MeldingDetailViewMixin(ContextMixin):
             {
                 "melding": melding,
                 "locaties": melding_locaties(melding),
+                "taken": melding_taken(melding),
                 "gebruiker_context": gebruiker_context,
             }
         )
@@ -209,6 +210,11 @@ class MeldingDetailTaaktypeViewMixin(MeldingDetailViewMixin):
         taakr_taaktypes = taakr_service.get_taaktypes()
         afdelingen = taakr_service.get_afdelingen()
 
+        taakr_taaktypes_via_taakapplicatie_taaktype_url = {
+            taakr_taaktype["_links"]["taakapplicatie_taaktype_url"]: taakr_taaktype
+            for taakr_taaktype in taakr_taaktypes
+        }
+
         afdeling_middels_afdeling_url = {
             afdeling.get("_links", {}).get("self"): afdeling for afdeling in afdelingen
         }
@@ -259,6 +265,29 @@ class MeldingDetailTaaktypeViewMixin(MeldingDetailViewMixin):
                     "taakr_taaktypes": taakr_taaktypes_voor_onderwerpen,
                 },
             )
+
+        if context.get("taken"):
+            alle_taken = context.get("taken", {}).get("alle_taken")
+            alle_taken = [
+                taakr_taaktypes_via_taakapplicatie_taaktype_url[taak["taaktype"]] | taak
+                for taak in alle_taken
+            ]
+            alle_taken = [
+                {
+                    "verantwoordelijke_afdeling": afdeling_middels_afdeling_url[
+                        taak["verantwoordelijke_afdeling"]
+                    ]
+                    if taak["verantwoordelijke_afdeling"]
+                    else None,
+                    "afdelingen": [
+                        afdeling_middels_afdeling_url[afdeling]
+                        for afdeling in taak["afdelingen"]
+                    ],
+                }
+                | taak
+                for taak in alle_taken
+            ]
+            context["taken"]["alle_taken"] = alle_taken
 
         context.update(
             {
@@ -643,7 +672,7 @@ class TakenAanmakenStreamView(TakenAanmakenView):
 
 @login_required
 @permission_required("authorisatie.taak_afronden", raise_exception=True)
-def taak_afronden(request, melding_uuid):
+def taak_afronden(request, melding_uuid, taakopdracht_uuid=None):
     mor_core_service = MORCoreService()
     melding = mor_core_service.get_melding(melding_uuid)
     if isinstance(melding, dict) and melding.get("error"):
@@ -658,9 +687,15 @@ def taak_afronden(request, melding_uuid):
         taakopdracht.get("uuid"): taakopdracht.get("_links", {}).get("self")
         for taakopdracht in open_taakopdrachten
     }
+    taakopdracht = (
+        [to for to in open_taakopdrachten if to["uuid"] == str(taakopdracht_uuid)]
+        or [{}]
+    )[0]
     taakopdracht_opties = [
         (taakopdracht.get("uuid"), taakopdracht.get("titel"))
         for taakopdracht in open_taakopdrachten
+        if (taakopdracht_uuid and taakopdracht.get("uuid") == str(taakopdracht_uuid))
+        or not taakopdracht_uuid
     ]
     form = TaakAfrondenForm(taakopdracht_opties=taakopdracht_opties)
     if request.POST:
@@ -694,14 +729,16 @@ def taak_afronden(request, melding_uuid):
         {
             "form": form,
             "melding": melding,
+            "taakopdracht": taakopdracht,
         },
     )
 
 
 @login_required
 @permission_required("authorisatie.taak_annuleren", raise_exception=True)
-def taak_annuleren(request, melding_uuid):
+def taak_annuleren(request, melding_uuid, taakopdracht_uuid=None):
     mor_core_service = MORCoreService()
+
     melding = mor_core_service.get_melding(melding_uuid)
     if isinstance(melding, dict) and melding.get("error"):
         messages.error(request=request, message=MELDING_OPHALEN_ERROR)
@@ -715,10 +752,17 @@ def taak_annuleren(request, melding_uuid):
         taakopdracht.get("uuid"): taakopdracht.get("_links", {}).get("self")
         for taakopdracht in open_taakopdrachten
     }
+    taakopdracht = (
+        [to for to in open_taakopdrachten if to["uuid"] == str(taakopdracht_uuid)]
+        or [{}]
+    )[0]
     taakopdracht_opties = [
         (taakopdracht.get("uuid"), taakopdracht.get("titel"))
         for taakopdracht in open_taakopdrachten
+        if (taakopdracht_uuid and taakopdracht.get("uuid") == str(taakopdracht_uuid))
+        or not taakopdracht_uuid
     ]
+
     form = TaakAnnulerenForm(taakopdracht_opties=taakopdracht_opties)
     if request.POST:
         form = TaakAnnulerenForm(request.POST, taakopdracht_opties=taakopdracht_opties)
@@ -744,6 +788,7 @@ def taak_annuleren(request, melding_uuid):
         {
             "form": form,
             "melding": melding,
+            "taakopdracht": taakopdracht,
         },
     )
 

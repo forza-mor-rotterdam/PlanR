@@ -1,0 +1,210 @@
+{% load to_datetime naturalday_with_time_or_timesince from date_tags %}
+{% load gebruikersnaam gebruikersinitialen get_gebruiker_object_middels_email from gebruikers_tags %}
+{% load humanize %}
+{% load mor_core_url from main_tags %}
+
+{% if view.is_stream %}
+<turbo-stream target="melding_detail_taken" action="update">
+    <template>
+{% endif %}
+
+<section class="section--separated" data-testid="detailTaken">
+    <div class="container__details">
+        <h2>Taken</h2>
+        <div class="container__taken">
+            <div class="taken--header">
+                <div>Taak</div>
+                <div>Aangemaakt</div>
+                <div>Uitgevoerd</div>
+                <div>Opmerking</div>
+                <div>Status</div>
+                <div>Opties</div>
+            </div>
+            {% for taak in taken.alle_taken %}
+                {% with eerste_taakgebeurtenis=taak.taakgebeurtenissen_voor_taakopdracht|last laatste_taakgebeurtenis=taak.taakgebeurtenissen_voor_taakopdracht|first %}
+                    <details class="container__taak">
+                        <summary>
+                            <div class="description">
+                                <p>{{ taak.titel }}</p>
+                                <small>{{ taak.verantwoordelijke_afdeling.naam }}</small>
+                            </div>
+                            <div>
+                                <span class="help-text">{{ eerste_taakgebeurtenis.aangemaakt_op|to_datetime|date:"d-m-Y, H:i" }}</span>
+                            </div>
+                            <div>
+                                <span class="help-text">
+                                    {% if taak.afgesloten_op %}{{ laatste_taakgebeurtenis.aangemaakt_op|to_datetime|date:"d-m-Y, H:i" }}{% endif %}
+                                </span>
+                            </div>
+                            <div>
+                                <span class="help-text">
+                                    {% if laatste_taakgebeurtenis.omschrijving_intern %}{{ laatste_taakgebeurtenis.omschrijving_intern }}{% endif %}
+                                </span>
+                            </div>
+                            <div class="{% if not taak.taak_url %}bezig-met-aanmaken{% endif %}">
+                                {% if not taak.taak_url %}
+                                    <div class="status--busy">
+                                        <div class="spinner"></div>
+                                        <div>
+                                            <span>Taak wordt doorgezet naar taakapplicatie</span>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <span class="tag tag--qualification tag--{{ taak.status.naam }}">
+                                        {% if taak.verwijderd_op %}
+                                            Verwijderd
+                                        {% else %}
+                                            {% if taak.status.naam == 'nieuw'%}
+                                                Openstaand
+                                            {% else %}
+                                                {{ taak.status.naam|capfirst }}
+                                            {% endif %}
+                                        {% endif %}
+                                    </span>
+                                {% endif %}
+                            </div>
+                            <div>
+                                {% if not taak.afgesloten_op and not taak.verwijderd_op %}
+                                <div class="container__uitklapper">
+                                    <span>...</span>
+                                    <div class="legenda">
+                                        {% if perms.authorisatie.taak_afronden %}
+                                            <button type="button"
+                                                    class="btn btn-icon"
+                                                    data-action="modal#openModal"
+                                                    data-modal-action-param="{% url 'taak_afronden' melding.uuid taak.uuid %}">
+                                                {% include "icons/checkmark-square.svg" %}
+                                                Taak afronden
+                                            </button>
+                                        {% endif %}
+                                        {% if perms.authorisatie.taak_annuleren %}
+                                            <button type="button"
+                                                    class="btn btn-icon"
+                                                    data-action="modal#openModal"
+                                                    data-modal-action-param="{% url 'taak_annuleren' melding.uuid taak.uuid %}">
+                                                {% include "icons/bin.svg" %}
+                                                Taak annuleren
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </summary>
+                        <div class="container__taak--content">
+                            <div class="container__content">
+                                <h3>Opmerking midoffice</h3>
+                                <div class="content">
+                                    <ul class="list-clean">
+                                        <li>
+                                            <span class="initials">{{ eerste_taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email|gebruikersinitialen }}</span>
+                                            <div class="message">
+                                                <h4>{{ eerste_taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email|gebruikersnaam }}</h4>
+                                                <p>
+                                                    Omschrijving intern:
+                                                    {% if eerste_taakgebeurtenis.omschrijving_intern %}
+                                                        {{ eerste_taakgebeurtenis.omschrijving_intern }}
+                                                    {% else %}
+                                                        -
+                                                    {% endif %}
+                                                </p>
+                                                <small>{{ eerste_taakgebeurtenis.aangemaakt_op|to_datetime|naturalday_with_time_or_timesince }}</small>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="container__content">
+                                <h3>Acties</h3>
+                                <div class="content">
+                                    <ul class="list-clean">
+                                        {% for taakgebeurtenis in taak.taakgebeurtenissen_voor_taakopdracht %}
+                                            <li>
+                                                <span class="initials">{{ taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email|gebruikersinitialen }}</span>
+                                                <div class="message">
+                                                    <h4>{{ taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email|gebruikersnaam }}</h4>
+                                                    <p>
+                                                        {% if forloop.last %}
+                                                            Taak aangemaakt
+                                                        {% elif taakgebeurtenis.verwijderd_op %}
+                                                            Verwijderd
+                                                        {% else %}
+                                                            {{ taakgebeurtenis.taakstatus.naam|capfirst }}
+                                                        {% endif %}
+                                                    </p>
+                                                    <small>{{ taakgebeurtenis.aangemaakt_op|to_datetime|naturalday_with_time_or_timesince }}</small>
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                            {% if taak.afgesloten_op and not taak.verwijderd_op %}
+                                <div class="container__content">
+                                    <h3>Informatie uitvoerder</h3>
+                                    <p>Resolutie: {{ taak.resolutie }}<br>
+                                    Omschrijving intern:
+                                    {% if laatste_taakgebeurtenis.omschrijving_intern %}
+                                        {{ laatste_taakgebeurtenis.omschrijving_intern }}
+                                    {% else %}
+                                        Er is geen opmerking toegevoegd
+                                    {% endif %}
+                                    </p>
+                                    {% if laatste_taakgebeurtenis.bijlagen %}
+                                        <div class="container__thumbs">
+                                            <ul>
+                                                {% for bijlage in laatste_taakgebeurtenis.bijlagen %}
+                                                <li>
+                                                    <div class="container__image">
+                                                        <div class="image"
+                                                            style="{{ bijlage.afbeelding_verkleind_relative_url|mor_core_url }}">
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    {% else %}
+                                        <p>Er zijn geen finish foto's mee gestuurd bij het afronden van de taak</p>
+                                    {% endif %}
+                                    <small>{{ laatste_taakgebeurtenis.aangemaakt_op|to_datetime|naturalday_with_time_or_timesince }}</small>
+                                </div>
+                            {% elif taak.verwijderd_op %}
+                                <div class="container__content">
+                                    <h3>Verwijderd door midoffice</h3>
+                                    <p>Verwijderd op: {{ taak.verwijderd_op|to_datetime|naturalday_with_time_or_timesince }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </details>
+                {% endwith %}
+            {% endfor %}
+            <div class="container__aanmaken">
+            {% if taken.alle_taken|length == 0 %}
+                <span class="help-text">Er zijn nog geen taken aangemaakt</span>
+                {% endif %}
+                {% if perms.authorisatie.taak_aanmaken and taakr_taaktypes_niet_ingebruik_met_afdelingen and melding.status.naam != 'afgehandeld' and melding.status.naam != 'geannuleerd' %}
+                    <button class="btn btn-tertiary btn-icon"
+                            data-action="modal#openModal"
+                            data-modal-action-param="{% url 'taken_aanmaken' melding.uuid %}"
+                            data-modal-css-class-param="modal-dialog--wide modal--multistep-form"
+                    >
+                        <svg width="24"
+                                height="24"
+                                viewBox="0 0 32 32"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#ffffff"></path>
+                        </svg>
+                        Taken aanmaken
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if view.is_stream %}
+    </template>
+</turbo-stream>
+{% endif %}
