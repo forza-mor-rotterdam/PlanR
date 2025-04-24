@@ -16,6 +16,13 @@
                 <h2 class="h5">Verantwoordelijke afdeling</h2>
                 <p>{{ taaktype.verantwoordelijke_afdeling }}</p>
             {% endif %}
+            {% if taaktype.doorlooptijd %}
+                <h2 class="h5">Doorlooptijd</h2>
+                <p>
+                    <span data-controller="dagen-uren" data-value="{{ taaktype.doorlooptijd }}"></span>
+                    {% if taaktype.doorlooptijd_alleen_werkdagen %}, alleen op werkdagen{% endif %}
+                </p>
+            {% endif %}
             {% if taaktype.waarom_wel|length > 0 %}
                 <h2 class="label--positive">Wanneer wel</h2>
                 <div class="container__slider-horizontal {% if taaktype.waarom_wel|length < 2 %}single-item{% endif %}">
