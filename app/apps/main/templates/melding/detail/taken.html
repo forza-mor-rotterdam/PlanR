@@ -182,23 +182,23 @@
             <div class="container__aanmaken">
             {% if taken.alle_taken|length == 0 %}
                 <span class="help-text">Er zijn nog geen taken aangemaakt</span>
-                {% endif %}
-                {% if perms.authorisatie.taak_aanmaken and taakr_taaktypes_niet_ingebruik_met_afdelingen and melding.status.naam != 'afgehandeld' and melding.status.naam != 'geannuleerd' %}
-                    <button class="btn btn-tertiary btn-icon"
-                            data-action="modal#openModal"
-                            data-modal-action-param="{% url 'taken_aanmaken' melding.uuid %}"
-                            data-modal-css-class-param="modal-dialog--wide modal--multistep-form"
-                    >
-                        <svg width="24"
-                                height="24"
-                                viewBox="0 0 32 32"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#ffffff"></path>
-                        </svg>
-                        Taken aanmaken
-                    </button>
-                {% endif %}
+            {% endif %}
+            {% if perms.authorisatie.taak_aanmaken and taakr_taaktypes_niet_ingebruik_met_afdelingen and melding.status.naam != 'afgehandeld' and melding.status.naam != 'geannuleerd' %}
+                <button class="btn btn-tertiary"
+                        data-action="modal#openModal"
+                        data-modal-action-param="{% url 'taken_aanmaken' melding.uuid %}"
+                        data-modal-css-class-param="modal-dialog--wide modal--multistep-form"
+                >
+                    <svg width="24"
+                            height="24"
+                            viewBox="0 0 32 32"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#ffffff"></path>
+                    </svg>
+                    Taken aanmaken
+                </button>
+            {% endif %}
             </div>
         </div>
     </div>
