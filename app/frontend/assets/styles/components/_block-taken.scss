@@ -85,16 +85,23 @@
             small {
                 font-size: 0.667rem;
             }
+
+            button {
+                display: inline;
+            }
         }
         .description p,
         .help-text {
             display: block;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
             margin-bottom: 0;
             line-height: 1.25;
             font-size: 0.875rem;
+        }
+
+        .help-text {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
 
         &[open] {
@@ -194,6 +201,7 @@
                         font-size: 0.778rem;
                         margin-bottom: 0;
                         line-height: 1rem;
+                        word-break: break-word;
                     }
 
                     small {

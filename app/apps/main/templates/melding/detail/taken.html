@@ -12,20 +12,29 @@
     <div class="container__details">
         <h2>Taken</h2>
         <div class="container__taken">
-            <div class="taken--header">
-                <div>Taak</div>
-                <div>Aangemaakt</div>
-                <div>Uitgevoerd</div>
-                <div>Opmerking</div>
-                <div>Status</div>
-                <div>Opties</div>
-            </div>
+            {% if taken.alle_taken|length != 0 %}
+                <div class="taken--header">
+                    <div>Taak</div>
+                    <div>Aangemaakt</div>
+                    <div>Uitgevoerd</div>
+                    <div>Opmerking</div>
+                    <div>Status</div>
+                    <div>Opties</div>
+                </div>
+            {% endif %}
             {% for taak in taken.alle_taken %}
                 {% with eerste_taakgebeurtenis=taak.taakgebeurtenissen_voor_taakopdracht|last laatste_taakgebeurtenis=taak.taakgebeurtenissen_voor_taakopdracht|first %}
                     <details class="container__taak">
                         <summary>
                             <div class="description">
-                                <p>{{ taak.titel }}</p>
+                                <p>
+                                    {{ taak.titel }}
+                                    <button class="btn btn-textlink btn-info"
+                                            data-action="infosheet#openInfosheet"
+                                            data-infosheet-action-param="{% url 'taaktype_taakr' %}?taakapplicatie-taaktype-url={{ taakr_taaktype_links.taakapplicatie_taaktype_url }}">
+                                        {% include "icons/info-filled.svg" %}
+                                    </button>
+                                </p>
                                 <small>{{ taak.verantwoordelijke_afdeling.naam }}</small>
                             </div>
                             <div>
@@ -92,7 +101,6 @@
                                             <div class="message">
                                                 <h4>{{ eerste_taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email|gebruikersnaam }}</h4>
                                                 <p>
-                                                    Omschrijving intern:
                                                     {% if eerste_taakgebeurtenis.omschrijving_intern %}
                                                         {{ eerste_taakgebeurtenis.omschrijving_intern }}
                                                     {% else %}
@@ -134,7 +142,6 @@
                                 <div class="container__content">
                                     <h3>Informatie uitvoerder</h3>
                                     <p>Resolutie: {{ taak.resolutie }}<br>
-                                    Omschrijving intern:
                                     {% if laatste_taakgebeurtenis.omschrijving_intern %}
                                         {{ laatste_taakgebeurtenis.omschrijving_intern }}
                                     {% else %}

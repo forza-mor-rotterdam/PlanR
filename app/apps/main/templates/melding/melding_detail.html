@@ -315,12 +315,12 @@
                                     </div>
                                     <div class="grid-item aside">
                                         <section class="section--separated">
-                                            <div class="container__details" data-detail-target="imageSliderWidth">
-                                                <h2>Foto's</h2>
-                                                {% if bijlagen|length > 0 %}
+                                            {% if bijlagen|length > 0 %}
+                                                <div class="container__details" data-detail-target="imageSliderWidth">
+                                                    <h2>Foto's</h2>
                                                     {% include "melding/detail/bijlagen.html" with bijlagen=bijlagen only %}
-                                                {% endif %}
-                                            </div>
+                                                </div>
+                                            {% endif %}
                                         </section>
                                         {% if melding.signalen_voor_melding|length > 1 %}
                                             <div class="alert alert--info">
