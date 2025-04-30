@@ -68,22 +68,13 @@
                                 <div class="container__uitklapper">
                                     <span>...</span>
                                     <div class="legenda">
-                                        {% if perms.authorisatie.taak_afronden %}
+                                        {% if perms.authorisatie.taak_verwijderen %}
                                             <button type="button"
                                                     class="btn"
                                                     data-action="modal#openModal"
-                                                    data-modal-action-param="{% url 'taak_afronden' melding.uuid taak.uuid %}">
-                                                {% include "icons/checkmark-square.svg" %}
-                                                Taak afronden
-                                            </button>
-                                        {% endif %}
-                                        {% if perms.authorisatie.taak_annuleren %}
-                                            <button type="button"
-                                                    class="btn"
-                                                    data-action="modal#openModal"
-                                                    data-modal-action-param="{% url 'taak_annuleren' melding.uuid taak.uuid %}">
+                                                    data-modal-action-param="{% url 'taak_verwijderen' melding.uuid taak.uuid %}">
                                                 {% include "icons/bin.svg" %}
-                                                Taak annuleren
+                                                Taak verwijderen
                                             </button>
                                         {% endif %}
                                     </div>
