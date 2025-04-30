@@ -2,8 +2,6 @@ import logging
 
 from apps.context.utils import get_gebruiker_context
 from apps.main.forms import (
-    TAAK_RESOLUTIE_GEANNULEERD,
-    TAAK_STATUS_VOLTOOID,
     InformatieToevoegenForm,
     LocatieAanpassenForm,
     MeldingAanmakenForm,
@@ -13,8 +11,7 @@ from apps.main.forms import (
     MeldingHervattenForm,
     MeldingPauzerenForm,
     MeldingSpoedForm,
-    TaakAfrondenForm,
-    TaakAnnulerenForm,
+    TaakVerwijderenForm,
     TakenAanmakenForm,
 )
 from apps.main.messages import (
@@ -36,10 +33,8 @@ from apps.main.messages import (
     MELDING_PAUZEREN_SUCCESS,
     MELDING_URGENTIE_AANPASSEN_ERROR,
     MELDING_URGENTIE_AANPASSEN_SUCCESS,
-    TAAK_AFRONDEN_ERROR,
-    TAAK_AFRONDEN_SUCCESS,
-    TAAK_ANNULEREN_ERROR,
-    TAAK_ANNULEREN_SUCCESS,
+    TAAK_VERWIJDEREN_ERROR,
+    TAAK_VERWIJDEREN_SUCCESS,
 )
 from apps.main.services import MORCoreService, TaakRService
 from apps.main.utils import (
@@ -107,7 +102,7 @@ class MeldingDetailTaaktypeViewMixin(MeldingDetailViewMixin):
                 list(
                     to["taaktype"]
                     for to in taakopdrachten_voor_melding
-                    if not to["resolutie"]
+                    if not to["resolutie"] and not to["verwijderd_op"]
                 )
             )
         ]
@@ -671,72 +666,8 @@ class TakenAanmakenStreamView(TakenAanmakenView):
 
 
 @login_required
-@permission_required("authorisatie.taak_afronden", raise_exception=True)
-def taak_afronden(request, melding_uuid, taakopdracht_uuid=None):
-    mor_core_service = MORCoreService()
-    melding = mor_core_service.get_melding(melding_uuid)
-    if isinstance(melding, dict) and melding.get("error"):
-        messages.error(request=request, message=MELDING_OPHALEN_ERROR)
-        return render(
-            request,
-            "melding/melding_actie_form.html",
-        )
-
-    open_taakopdrachten = melding_taken(melding).get("open_taken")
-    taakopdracht_urls = {
-        taakopdracht.get("uuid"): taakopdracht.get("_links", {}).get("self")
-        for taakopdracht in open_taakopdrachten
-    }
-    taakopdracht = (
-        [to for to in open_taakopdrachten if to["uuid"] == str(taakopdracht_uuid)]
-        or [{}]
-    )[0]
-    taakopdracht_opties = [
-        (taakopdracht.get("uuid"), taakopdracht.get("titel"))
-        for taakopdracht in open_taakopdrachten
-        if (taakopdracht_uuid and taakopdracht.get("uuid") == str(taakopdracht_uuid))
-        or not taakopdracht_uuid
-    ]
-    form = TaakAfrondenForm(taakopdracht_opties=taakopdracht_opties)
-    if request.POST:
-        form = TaakAfrondenForm(request.POST, taakopdracht_opties=taakopdracht_opties)
-
-        if form.is_valid():
-            bijlagen = request.FILES.getlist("bijlagen", [])
-            bijlagen_base64 = []
-            for f in bijlagen:
-                file_name = default_storage.save(f.name, f)
-                bijlagen_base64.append({"bestand": to_base64(file_name)})
-            response = mor_core_service.taak_status_aanpassen(
-                taakopdracht_url=taakopdracht_urls.get(
-                    form.cleaned_data.get("taakopdracht")
-                ),
-                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
-                bijlagen=bijlagen_base64,
-                gebruiker=request.user.email,
-                status=TAAK_STATUS_VOLTOOID,
-                resolutie=form.cleaned_data.get("resolutie"),
-            )
-            if isinstance(response, dict) and response.get("error"):
-                messages.error(request=request, message=TAAK_AFRONDEN_ERROR)
-            else:
-                messages.success(request=request, message=TAAK_AFRONDEN_SUCCESS)
-            return redirect("melding_detail", id=melding_uuid)
-
-    return render(
-        request,
-        "melding/detail/taak_afronden.html",
-        {
-            "form": form,
-            "melding": melding,
-            "taakopdracht": taakopdracht,
-        },
-    )
-
-
-@login_required
-@permission_required("authorisatie.taak_annuleren", raise_exception=True)
-def taak_annuleren(request, melding_uuid, taakopdracht_uuid=None):
+@permission_required("authorisatie.taak_verwijderen", raise_exception=True)
+def taak_verwijderen(request, melding_uuid, taakopdracht_uuid=None):
     mor_core_service = MORCoreService()
 
     melding = mor_core_service.get_melding(melding_uuid)
@@ -762,29 +693,26 @@ def taak_annuleren(request, melding_uuid, taakopdracht_uuid=None):
         if (taakopdracht_uuid and taakopdracht.get("uuid") == str(taakopdracht_uuid))
         or not taakopdracht_uuid
     ]
-
-    form = TaakAnnulerenForm(taakopdracht_opties=taakopdracht_opties)
+    form = TaakVerwijderenForm(taakopdracht_opties=taakopdracht_opties)
     if request.POST:
-        form = TaakAnnulerenForm(request.POST, taakopdracht_opties=taakopdracht_opties)
+        form = TaakVerwijderenForm(
+            request.POST, taakopdracht_opties=taakopdracht_opties
+        )
         if form.is_valid():
-            response = mor_core_service.taak_status_aanpassen(
+            response = mor_core_service.taakopdracht_verwijderen(
                 taakopdracht_url=taakopdracht_urls.get(
                     form.cleaned_data.get("taakopdracht")
                 ),
-                status=TAAK_STATUS_VOLTOOID,
-                resolutie=TAAK_RESOLUTIE_GEANNULEERD,
-                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
                 gebruiker=request.user.email,
-                bijlagen=[],
             )
             if isinstance(response, dict) and response.get("error"):
-                messages.error(request=request, message=TAAK_ANNULEREN_ERROR)
+                messages.error(request=request, message=TAAK_VERWIJDEREN_ERROR)
             else:
-                messages.success(request=request, message=TAAK_ANNULEREN_SUCCESS)
+                messages.success(request=request, message=TAAK_VERWIJDEREN_SUCCESS)
             return redirect("melding_detail", id=melding_uuid)
     return render(
         request,
-        "melding/detail/taak_annuleren.html",
+        "melding/detail/taak_verwijderen.html",
         {
             "form": form,
             "melding": melding,
