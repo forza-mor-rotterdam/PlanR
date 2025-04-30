@@ -113,7 +113,7 @@ class AdresKolom(StandaardKolom):
     _key = "adres"
     _kolom_hoofd = "Ter hoogte van"
     _td_standaard_classes = "nowrap"
-    _ordering_value = "locaties_voor_melding__straatnaam"
+    _ordering_value = "straatnaam"
 
     def td_label(self):
         default = "-"
@@ -139,7 +139,7 @@ class AdresBuurtWijkKolom(StandaardKolom):
     _key = "adres_buurt_wijk"
     _kolom_hoofd = "Ter hoogte van"
     _td_standaard_classes = "nowrap"
-    _ordering_value = "locaties_voor_melding__straatnaam"
+    _ordering_value = "straatnaam"
 
     def td_label(self):
         default = "-"
@@ -240,6 +240,7 @@ class OnderwerpKolom(StandaardKolom):
     _key = "onderwerp"
     _kolom_hoofd = "Onderwerp"
     _kolom_inhoud = "melding.onderwerpen"
+    # _ordering_value = "onderwerp"
 
     def td_label(self):
         default = "-"
