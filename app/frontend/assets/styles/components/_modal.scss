@@ -119,9 +119,15 @@ body.show-modal--first-filter {
 
             .btn-close {
                 background-color: $white;
+                border: 1px solid transparent;
                 border-radius: 4px;
                 right: 12px;
                 top: 12px;
+
+                &:focus {
+                    background-color: $gray-200;
+                    border-color: $gray-400;
+                }
             }
         }
     }
