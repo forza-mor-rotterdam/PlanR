@@ -15,6 +15,8 @@
             {% if taaktype.verantwoordelijke_afdeling %}
                 <h2 class="h5">Verantwoordelijke afdeling</h2>
                 <p>{{ taaktype.verantwoordelijke_afdeling }}</p>
+            {% else %}
+                <p>Nog niet ingevuld</p>
             {% endif %}
             {% if taaktype.doorlooptijd %}
                 <h2 class="h5">Doorlooptijd</h2>
