@@ -351,6 +351,16 @@ export default class extends Controller {
     const currentAddressClass = (address) => (address.current ? ' current-address ' : '')
     const checked = (address) => (address.selected ? 'checked' : '')
     this.adresResultListTarget.innerHTML = ''
+
+    if (!addressList.length) {
+      let div = document.createElement('div')
+      let resultHTML =
+        `<li>` + `<span>Er zijn geen adressen gevonden binnen de gemeente</span>` + `</li>`
+      div.innerHTML = resultHTML.trim()
+      this.adresResultListTarget.append(div.firstChild)
+      return
+    }
+
     addressList.map((address) => {
       let resultHTML =
         `<li data-locatieaanpassenformulier-target="address" class="new-address ${currentAddressClass(
@@ -468,7 +478,7 @@ export default class extends Controller {
         coordinates: [coordinates[1], coordinates[0]],
       }
       this.updateAdresResultList(this.prepareResponseData(locations))
-      this.submitButtonTarget.disabled = !this.dataHasChanged()
+      this.submitButtonTarget.disabled = !this.dataHasChanged() || !locations.length
       this.initial = false
     } catch (error) {
       console.error('Error fetching address details:', error.message)
