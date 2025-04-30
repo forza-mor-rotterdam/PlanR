@@ -3,7 +3,7 @@
             class="btn btn-icon btn-textlink"
             data-action="modal#openModal"
             data-modal-css-class-param="modal-dialog--wide"
-            data-modal-action-param="/part/melding/ffc824cb-9d5a-4028-90bd-38c9748e2a8d/locatie_aanpassen/">
+            data-modal-action-param="{% url 'locatie_aanpassen' melding.uuid %}">
         {% include "icons/edit2.svg" %}
         <span>Locatie wijzigen</span>
     </button>
