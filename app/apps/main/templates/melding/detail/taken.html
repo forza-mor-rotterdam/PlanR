@@ -29,11 +29,6 @@
                             <div class="description">
                                 <p>
                                     {{ taak.titel }}
-                                    <button class="btn btn-textlink btn-info"
-                                            data-action="infosheet#openInfosheet"
-                                            data-infosheet-action-param="{% url 'taaktype_taakr' %}?taakapplicatie-taaktype-url={{ taakr_taaktype_links.taakapplicatie_taaktype_url }}">
-                                        {% include "icons/info-filled.svg" %}
-                                    </button>
                                 </p>
                                 <small>{{ taak.verantwoordelijke_afdeling.naam }}</small>
                             </div>
@@ -155,7 +150,7 @@
                                                 <li>
                                                     <div class="container__image">
                                                         <div class="image"
-                                                            style="{{ bijlage.afbeelding_verkleind_relative_url|mor_core_url }}">
+                                                            style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url|mor_core_url }}')">
                                                         </div>
                                                     </div>
                                                 </li>
