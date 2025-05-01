@@ -51,12 +51,12 @@
                                     {% if laatste_taakgebeurtenis.omschrijving_intern %}{{ laatste_taakgebeurtenis.omschrijving_intern }}{% endif %}
                                 </span>
                             </div>
-                            <div class="{% if not taak.taak_url %}bezig-met-aanmaken{% endif %}">
+                            <div class="" data-detail-target="taakStatusContainer">
                                 {% if not taak.taak_url %}
                                     <div class="status--busy">
                                         <div class="spinner"></div>
                                         <div>
-                                            <span>Taak wordt doorgezet naar taakapplicatie</span>
+                                            <span>Taak wordt doorgezet naar taakapplicatie.</span>
                                         </div>
                                     </div>
                                 {% else %}

@@ -281,4 +281,14 @@
             border-radius: 12px;
         }
     }
+
+    .status--stopped {
+        .spinner {
+            display: none;
+        }
+
+        span {
+            font-size: 0.667rem;
+        }
+    }
 }
