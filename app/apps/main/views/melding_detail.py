@@ -264,7 +264,10 @@ class MeldingDetailTaaktypeViewMixin(MeldingDetailViewMixin):
         if context.get("taken"):
             alle_taken = context.get("taken", {}).get("alle_taken")
             alle_taken = [
-                taakr_taaktypes_via_taakapplicatie_taaktype_url[taak["taaktype"]] | taak
+                taakr_taaktypes_via_taakapplicatie_taaktype_url.get(
+                    taak["taaktype"], {}
+                )
+                | taak
                 for taak in alle_taken
             ]
             alle_taken = [
@@ -272,11 +275,11 @@ class MeldingDetailTaaktypeViewMixin(MeldingDetailViewMixin):
                     "verantwoordelijke_afdeling": afdeling_middels_afdeling_url[
                         taak["verantwoordelijke_afdeling"]
                     ]
-                    if taak["verantwoordelijke_afdeling"]
+                    if taak.get("verantwoordelijke_afdeling")
                     else None,
                     "afdelingen": [
                         afdeling_middels_afdeling_url[afdeling]
-                        for afdeling in taak["afdelingen"]
+                        for afdeling in taak.get("afdelingen", [])
                     ],
                 }
                 | taak

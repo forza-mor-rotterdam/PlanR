@@ -32,7 +32,7 @@
                                     {{ taak.titel }}
                                     <button class="btn btn-textlink btn-info"
                                             data-action="infosheet#openInfosheet"
-                                            data-infosheet-action-param="{% url 'taaktype_taakr' %}?taakapplicatie-taaktype-url={{ taakr_taaktype_links.taakapplicatie_taaktype_url }}">
+                                            data-infosheet-action-param="{% url 'taaktype_taakr' %}?taakapplicatie-taaktype-url={{ taak.taaktype }}">
                                         {% include "icons/info.svg" %}
                                     </button>
                                 </p>
