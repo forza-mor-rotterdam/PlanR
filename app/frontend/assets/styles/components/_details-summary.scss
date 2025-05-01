@@ -44,6 +44,8 @@ details {
             position: absolute;
             top: calc(50% - 10px);
             left: 16px;
+            scale: 1 1;
+            transition: scale $transition-duration-default $transition-ease-default;
         }
 
         .cta--summary {
@@ -56,7 +58,7 @@ details {
     &[open] {
         > summary {
             &::before {
-                transform: rotate(180deg);
+                scale: 1 -1;
                 transform-origin: center;
             }
 
