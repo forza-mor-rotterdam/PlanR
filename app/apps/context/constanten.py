@@ -2,7 +2,6 @@ import string
 
 from apps.main.constanten import BEGRAAFPLAATSEN, VERTALINGEN
 from apps.main.services import MORCoreService, render_onderwerp
-from apps.main.utils import melding_locaties
 from django.http import QueryDict
 from django.template.loader import get_template
 from django.urls import reverse
@@ -139,7 +138,7 @@ class AdresBuurtWijkKolom(StandaardKolom):
     _key = "adres_buurt_wijk"
     _kolom_hoofd = "Ter hoogte van"
     _td_standaard_classes = "nowrap"
-    _ordering_value = "straatnaam"
+    _ordering_value = "locatie__straatnaam"
 
     def td_label(self):
         default = "-"
@@ -147,9 +146,8 @@ class AdresBuurtWijkKolom(StandaardKolom):
         if melding := string_based_lookup(
             self.context, locatie_key, not_found_value={}
         ):
-            locaties = melding_locaties(melding)["adressen"]
-            if locaties:
-                locatie = locaties[0]
+            locatie = melding.get("locatie")
+            if locatie:
                 straatnaam = locatie.get("straatnaam", "")
                 huisnummer = (
                     f' {locatie.get("huisnummer")}' if locatie.get("huisnummer") else ""
