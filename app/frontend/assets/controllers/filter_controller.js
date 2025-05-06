@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus'
+import debounce from 'debounce'
 
 let targetElementInView = null
 let focusElement = null
@@ -12,7 +13,9 @@ export default class extends Controller {
     'toggleSearchProfileContainer',
     'toggleSearchProfielContext',
   ]
-
+  initialize() {
+    this.submit = debounce(this.submit.bind(this), 400)
+  }
   connect() {
     let self = this
     const previousFocusElement = document.getElementById(focusElement?.getAttribute('id'))
@@ -47,16 +50,17 @@ export default class extends Controller {
   }
 
   onClearSearch() {
-    this.element.requestSubmit()
+    if (!this.searchProfielContextTarget.value.length) {
+      this.submit()
+    }
   }
 
   onChangeFilter(e) {
     focusElement = e.target
-    clearTimeout(this.searchTimeout)
     if (focusElement.name == 'q') {
       return
     } else {
-      this.element.requestSubmit()
+      this.submit()
     }
   }
   onToggleSearchProfielContext(e) {
@@ -126,5 +130,8 @@ export default class extends Controller {
         elemContainer.classList.remove(self.showClass)
       }
     })
+  }
+  submit() {
+    this.element.requestSubmit()
   }
 }
