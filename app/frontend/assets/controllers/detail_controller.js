@@ -14,7 +14,14 @@ export default class extends Controller {
     afbeeldingen: String,
     urlPrefix: String,
   }
-  static targets = ['turboActionModal', 'btnToTop', 'containerActions', 'lichtmast', 'kaartDefault']
+  static targets = [
+    'turboActionModal',
+    'btnToTop',
+    'containerActions',
+    'lichtmast',
+    'kaartDefault',
+    'taakStatusContainer',
+  ]
 
   initialize() {
     this.coordinates = []
@@ -232,6 +239,17 @@ export default class extends Controller {
       this.containerActionsTarget.style.right = ``
     }
   }
+
+  taakStatusContainerTargetConnected(element) {
+    const target = element.querySelector('.status--busy')
+    if (target) {
+      setTimeout(() => {
+        target.classList.remove('status--busy')
+        target.classList.add('status--stopped')
+      }, 10000)
+    }
+  }
+
   scrollToTop(e) {
     e.target.blur()
     window.scrollTo({
