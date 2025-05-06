@@ -279,11 +279,14 @@ button.btn-on-map {
 
 dialog {
     .container__kaart {
-        height: 100%;
+        // height: 100%;
+        padding-bottom: 0;
+        margin-bottom: 0;
 
         .map,
         .leaflet-container {
-            height: 100%;
+            height: 99.8%;
+            padding-bottom: 0;
         }
     }
 }
