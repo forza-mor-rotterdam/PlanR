@@ -77,6 +77,9 @@ export default class extends Controller {
     }
 
     this.dialogTarget.showModal()
+    if (this.params.showMap) {
+      document.querySelector('#modal_close_button').blur()
+    }
 
     this.dialogTarget.addEventListener('cancel', (e) => {
       e.preventDefault()
@@ -137,6 +140,7 @@ export default class extends Controller {
     }, 100)
     setTimeout(() => {
       this.detailController.getMapInstance().invalidateSize()
+      document.querySelector('#modal_close_button').focus()
     }, 200)
   }
 
