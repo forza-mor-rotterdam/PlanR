@@ -65,10 +65,17 @@
             padding-bottom: 75%;
             display: block;
             margin: auto;
-            background-size: contain;
-            background-position: 50% 50%;
-            background-repeat: no-repeat;
             position: relative;
+
+            img {
+                position: absolute;
+                top: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                height: 100%;
+                width: auto;
+                object-fit: contain;
+            }
 
             .tag--in-image {
                 display: inline-block;
