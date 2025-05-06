@@ -303,12 +303,6 @@ class MeldingDetail(
     permission_required = "authorisatie.melding_bekijken"
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        melding = context["melding"]
-        if not melding:
-            return context
-
         if (
             self.request.GET.get("melding_ids")
             and self.request.GET.get("offset")
@@ -321,7 +315,12 @@ class MeldingDetail(
             self.request.session["melding_count"] = int(
                 self.request.GET.get("melding_count")
             )
-            return redirect(reverse("melding_detail", args=[self.kwargs.get("id")]))
+            return {}
+
+        context = super().get_context_data(**kwargs)
+        melding = context["melding"]
+        if not melding:
+            return context
 
         try:
             index = self.request.session.get("pagina_melding_ids", []).index(
@@ -342,6 +341,12 @@ class MeldingDetail(
             }
         )
         return context
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        if not context.get("meldingen_index"):
+            return redirect(reverse("melding_detail", args=[self.kwargs.get("id")]))
+        return self.render_to_response(context)
 
 
 @login_required
