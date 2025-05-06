@@ -302,12 +302,16 @@ class MeldingDetail(
     template_name = "melding/melding_detail.html"
     permission_required = "authorisatie.melding_bekijken"
 
-    def get_context_data(self, **kwargs):
-        if (
+    def request_next_data(self):
+        return (
             self.request.GET.get("melding_ids")
             and self.request.GET.get("offset")
             and self.request.GET.get("melding_count")
-        ):
+        )
+
+    def get_context_data(self, **kwargs):
+        next_data = self.request_next_data()
+        if next_data:
             self.request.session["pagina_melding_ids"] = self.request.GET.get(
                 "melding_ids"
             ).split(",")
@@ -344,7 +348,7 @@ class MeldingDetail(
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        if not context.get("meldingen_index"):
+        if not context.get("meldingen_index") and self.request_next_data():
             return redirect(reverse("melding_detail", args=[self.kwargs.get("id")]))
         return self.render_to_response(context)
 
