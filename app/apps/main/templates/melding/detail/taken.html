@@ -184,7 +184,7 @@
             {% endfor %}
             <div class="container__aanmaken {% if taken.alle_taken|length == 0 %}bgc-white{% endif %}">
             {% if taken.alle_taken|length == 0 %}
-                <span class="help-text">Er zijn nog geen taken aangemaakt</span>
+                <span class="help-text">Er zijn nog geen taken aangemaakt <small>{{ melding.status.naam }}</small></span>
             {% endif %}
             {% if perms.authorisatie.taak_aanmaken and taakr_taaktypes_niet_ingebruik_met_afdelingen and melding.status.naam != 'afgehandeld' and melding.status.naam != 'geannuleerd' %}
                 <button class="btn btn-tertiary"
