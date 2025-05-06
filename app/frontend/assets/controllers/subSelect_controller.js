@@ -1,9 +1,11 @@
 import { Controller } from '@hotwired/stimulus'
+import debounce from 'debounce'
 
 export default class extends Controller {
   static targets = ['groupCheckbox', 'subCheckbox', 'selectedCount']
 
   initialize() {
+    this.submit = debounce(this.submit.bind(this), 400)
     const checkboxCount = this.subCheckboxTargets.length
     const checkboxSelectedCount = this.subCheckboxTargets.filter(
       (checkbox) => checkbox.checked
@@ -27,7 +29,7 @@ export default class extends Controller {
     this.subCheckboxTargets.map((checkbox) => {
       checkbox.checked = this.groupCheckboxTarget.checked
     })
-    this.element.closest('form').submit()
+    this.submit()
   }
   toggleGroupElements(e) {
     let self = this
@@ -37,5 +39,8 @@ export default class extends Controller {
     } else if (self.filterController) {
       self.filterController.removeFromFoldoutStates([e.params.foldoutId])
     }
+  }
+  submit() {
+    this.element.closest('form').submit()
   }
 }

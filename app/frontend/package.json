@@ -54,6 +54,7 @@
     },
     "dependencies": {
         "@stimulus-components/chartjs": "^6.0.0",
+        "debounce": "^2.2.0",
         "jquery": "^3.7.1",
         "leaflet": "^1.9.4",
         "select2": "^4.1.0-rc.0",
