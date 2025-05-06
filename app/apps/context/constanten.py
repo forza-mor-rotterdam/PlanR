@@ -207,8 +207,8 @@ class MeldingIdKolom(StandaardKolom):
 class BegraafplaatsKolom(StandaardKolom):
     _key = "begraafplaats"
     _kolom_hoofd = "Begraafplaats"
-    _kolom_inhoud = "melding.locaties_voor_melding.0.begraafplaats"
-    _ordering_value = "locaties_voor_melding__begraafplaats"
+    _kolom_inhoud = "melding.locatie.begraafplaats"
+    _ordering_value = "locatie__begraafplaats"
     _td_standaard_classes = "nowrap"
 
     def td_label(self):
@@ -223,15 +223,15 @@ class BegraafplaatsKolom(StandaardKolom):
 class GrafnummerKolom(StandaardKolom):
     _key = "grafnummer"
     _kolom_hoofd = "Grafnummer"
-    _kolom_inhoud = "melding.locaties_voor_melding.0.grafnummer"
-    _ordering_value = "locaties_voor_melding__grafnummer"
+    _kolom_inhoud = "melding.locatie.grafnummer"
+    _ordering_value = "locatie__grafnummer"
 
 
 class VakKolom(StandaardKolom):
     _key = "vak"
     _kolom_hoofd = "Vak"
-    _kolom_inhoud = "melding.locaties_voor_melding.0.vak"
-    _ordering_value = "locaties_voor_melding__vak"
+    _kolom_inhoud = "melding.locatie.vak"
+    _ordering_value = "locatie__vak"
 
 
 class OnderwerpKolom(StandaardKolom):
