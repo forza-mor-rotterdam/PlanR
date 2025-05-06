@@ -3,7 +3,7 @@ import { Controller } from '@hotwired/stimulus'
 const SWIPE_TRESHOLD = 100
 let scrollPositionForDialog = 0
 export default class extends Controller {
-  static targets = ['infosheet', 'scrollHandle', 'infosheetTurboframe']
+  static targets = ['infosheet', 'scrollHandle', 'infosheetTurboframe', 'toplevelContainer']
 
   scrollHandleTargetConnected(element) {
     this.startX = 0
@@ -70,6 +70,8 @@ export default class extends Controller {
       scrollPositionForDialog = window.scrollY
       this.infosheetTurboframeTarget.setAttribute('src', e.params.action)
       this.infosheetTarget.showModal()
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
+      this.toplevelContainerTarget.style.paddingRight = `${scrollbarWidth}px`
       document.body.style.top = `-${scrollPositionForDialog}px`
       document.body.style.position = 'fixed'
       this.infosheetTarget.addEventListener('click', (event) => {
@@ -93,6 +95,7 @@ export default class extends Controller {
           document.body.style.top = ''
           window.scrollTo({ top: scrollPositionForDialog, left: 0, behavior: 'instant' })
           this.infosheetTarget.classList.remove('closing')
+          this.toplevelContainerTarget.style.paddingRight = ``
         }, 500)
       }
     }

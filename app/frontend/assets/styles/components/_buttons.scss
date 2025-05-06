@@ -297,7 +297,7 @@ textarea {
         min-height: 0;
         line-height: inherit;
         color: $primary;
-        font-weight: 300;
+        font-weight: 400;
         font-size: inherit;
         white-space: nowrap;
     }
@@ -339,7 +339,7 @@ textarea {
         }
 
         svg {
-            vertical-align: sub;
+            vertical-align: text-bottom;
         }
     }
 

@@ -2,6 +2,7 @@
 {% load gebruikersnaam gebruikersinitialen get_gebruiker_object_middels_email from gebruikers_tags %}
 {% load humanize %}
 {% load mor_core_url from main_tags %}
+{% load get from melding_tags %}
 
 {% if view.is_stream %}
 <turbo-stream target="melding_detail_taken" action="update">
@@ -12,20 +13,29 @@
     <div class="container__details">
         <h2>Taken</h2>
         <div class="container__taken">
-            <div class="taken--header">
-                <div>Taak</div>
-                <div>Aangemaakt</div>
-                <div>Uitgevoerd</div>
-                <div>Opmerking</div>
-                <div>Status</div>
-                <div>Opties</div>
-            </div>
+            {% if taken.alle_taken|length != 0 %}
+                <div class="taken--header">
+                    <div>Taak</div>
+                    <div>Aangemaakt</div>
+                    <div>Uitgevoerd</div>
+                    <div>Opmerking</div>
+                    <div>Status</div>
+                    <div>Opties</div>
+                </div>
+            {% endif %}
             {% for taak in taken.alle_taken %}
-                {% with eerste_taakgebeurtenis=taak.taakgebeurtenissen_voor_taakopdracht|last laatste_taakgebeurtenis=taak.taakgebeurtenissen_voor_taakopdracht|first %}
+                {% with eerste_taakgebeurtenis=taak.taakgebeurtenissen_voor_taakopdracht|last laatste_taakgebeurtenis=taak.taakgebeurtenissen_voor_taakopdracht|first taakr_taaktype_links=taak|get:"_links" %}
                     <details class="container__taak">
                         <summary>
                             <div class="description">
-                                <p>{{ taak.titel }}</p>
+                                <p>
+                                    {{ taak.titel }}
+                                    <button class="btn btn-textlink btn-info"
+                                            data-action="infosheet#openInfosheet"
+                                            data-infosheet-action-param="{% url 'taaktype_taakr' %}?taakapplicatie-taaktype-url={{ taak.taaktype }}">
+                                        {% include "icons/info.svg" %}
+                                    </button>
+                                </p>
                                 <small>{{ taak.verantwoordelijke_afdeling.naam }}</small>
                             </div>
                             <div>
@@ -41,12 +51,16 @@
                                     {% if laatste_taakgebeurtenis.omschrijving_intern %}{{ laatste_taakgebeurtenis.omschrijving_intern }}{% endif %}
                                 </span>
                             </div>
-                            <div class="{% if not taak.taak_url %}bezig-met-aanmaken{% endif %}">
+                            <div class="" data-detail-target="taakStatusContainer">
                                 {% if not taak.taak_url %}
                                     <div class="status--busy">
-                                        <div class="spinner"></div>
+                                        <div class="spinner">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M22.125 12C22.125 14.6853 21.0583 17.2607 19.1595 19.1595C17.2607 21.0583 14.6853 22.125 12 22.125C9.31468 22.125 6.73935 21.0583 4.84054 19.1595C2.94174 17.2607 1.875 14.6853 1.875 12C1.875 8.01375 4.19344 4.37437 7.78125 2.72812C7.91606 2.6624 8.06266 2.62429 8.21242 2.61605C8.36217 2.60781 8.51206 2.62959 8.65328 2.68012C8.79449 2.73065 8.92417 2.80891 9.0347 2.91029C9.14523 3.01167 9.23437 3.13413 9.29688 3.27047C9.35939 3.4068 9.39401 3.55426 9.3987 3.70417C9.40339 3.85408 9.37806 4.00341 9.32419 4.14339C9.27033 4.28336 9.18902 4.41116 9.08504 4.51925C8.98107 4.62734 8.85653 4.71355 8.71875 4.77281C5.92875 6.05344 4.125 8.89031 4.125 12C4.125 14.0886 4.95468 16.0916 6.43153 17.5685C7.90838 19.0453 9.91142 19.875 12 19.875C14.0886 19.875 16.0916 19.0453 17.5685 17.5685C19.0453 16.0916 19.875 14.0886 19.875 12C19.875 8.89031 18.0713 6.05344 15.2812 4.77281C15.1435 4.71355 15.0189 4.62734 14.915 4.51925C14.811 4.41116 14.7297 4.28336 14.6758 4.14339C14.6219 4.00341 14.5966 3.85408 14.6013 3.70417C14.606 3.55426 14.6406 3.4068 14.7031 3.27047C14.7656 3.13413 14.8548 3.01167 14.9653 2.91029C15.0758 2.80891 15.2055 2.73065 15.3467 2.68012C15.4879 2.62959 15.6378 2.60781 15.7876 2.61605C15.9373 2.62429 16.0839 2.6624 16.2188 2.72812C19.8066 4.37437 22.125 8.01375 22.125 12Z" fill="#7F838A"/>
+                                            </svg>
+                                        </div>
                                         <div>
-                                            <span>Taak wordt doorgezet naar taakapplicatie</span>
+                                            <span>Taak wordt doorgezet naar taakapplicatie.</span>
                                         </div>
                                     </div>
                                 {% else %}
@@ -66,7 +80,7 @@
                             <div>
                                 {% if not taak.afgesloten_op and not taak.verwijderd_op %}
                                 <div class="container__uitklapper">
-                                    <span>...</span>
+                                    <span>{% include "icons/dots.svg" %}</span>
                                     <div class="legenda">
                                         {% if perms.authorisatie.taak_verwijderen %}
                                             <button type="button"
@@ -92,7 +106,6 @@
                                             <div class="message">
                                                 <h4>{{ eerste_taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email|gebruikersnaam }}</h4>
                                                 <p>
-                                                    Omschrijving intern:
                                                     {% if eerste_taakgebeurtenis.omschrijving_intern %}
                                                         {{ eerste_taakgebeurtenis.omschrijving_intern }}
                                                     {% else %}
@@ -134,7 +147,6 @@
                                 <div class="container__content">
                                     <h3>Informatie uitvoerder</h3>
                                     <p>Resolutie: {{ taak.resolutie }}<br>
-                                    Omschrijving intern:
                                     {% if laatste_taakgebeurtenis.omschrijving_intern %}
                                         {{ laatste_taakgebeurtenis.omschrijving_intern }}
                                     {% else %}
@@ -148,7 +160,7 @@
                                                 <li>
                                                     <div class="container__image">
                                                         <div class="image"
-                                                            style="{{ bijlage.afbeelding_verkleind_relative_url|mor_core_url }}">
+                                                            style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url|mor_core_url }}')">
                                                         </div>
                                                     </div>
                                                 </li>
@@ -170,7 +182,7 @@
                     </details>
                 {% endwith %}
             {% endfor %}
-            <div class="container__aanmaken">
+            <div class="container__aanmaken {% if taken.alle_taken|length == 0 %}bgc-white{% endif %}">
             {% if taken.alle_taken|length == 0 %}
                 <span class="help-text">Er zijn nog geen taken aangemaakt</span>
             {% endif %}
