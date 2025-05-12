@@ -24,7 +24,7 @@
                 </div>
             {% endif %}
             {% for taak in taken.alle_taken %}
-                {% with eerste_taakgebeurtenis=taak.taakgebeurtenissen_voor_taakopdracht|last laatste_taakgebeurtenis=taak.taakgebeurtenissen_voor_taakopdracht|first taakr_taaktype_links=taak|get:"_links" %}
+                {% with eerste_taakgebeurtenis=taak.taakgebeurtenissen_voor_taakopdracht|last laatste_taakgebeurtenis=taak.taakgebeurtenissen_voor_taakopdracht|first taak_links=taak|get:"_links" %}
                     <details class="container__taak">
                         <summary>
                             <div class="description">
@@ -170,6 +170,22 @@
                                     <h3>Verwijderd door midoffice</h3>
                                     <p>Verwijderd op: {{ taak.verwijderd_op|to_datetime|naturalday_with_time_or_timesince }}</p>
                                 </div>
+                            {% endif %}
+                            {% if perms.authorisatie.beheer_bekijken %}
+                            <div class="container__content">
+                                <dl>
+                                    <dt>Taakopdracht uuid</dt>
+                                    <dd>{{ taak.uuid }}</dd>
+                                    <dt>Taakopdracht url</dt>
+                                    <dd>{{ taak_links.self }}</dd>
+                                    <dt>Taakapplicatie url</dt>
+                                    <dd>{{ taak.taak_url }}</dd>
+                                    <dt>Taakapplicatie taaktype url</dt>
+                                    <dd>{{ taak.taaktype }}</dd>
+                                    <dt>TaakR taaktype url</dt>
+                                    <dd>{{ taak.taakr_taaktype }}</dd>
+                                </dl>
+                            </div>
                             {% endif %}
                         </div>
                     </details>
