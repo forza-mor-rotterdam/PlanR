@@ -525,6 +525,7 @@ def melding_pauzeren(request, id):
         for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
         if taakopdracht.get("status", {}).get("naam")
         not in {"voltooid", "voltooid_met_feedback"}
+        and not taakopdracht.get("verwijderd_op")
     ]
     if request.POST:
         form = MeldingPauzerenForm(request.POST)
