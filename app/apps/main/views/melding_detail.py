@@ -268,6 +268,13 @@ class MeldingDetailTaaktypeViewMixin(MeldingDetailViewMixin):
                     taak["taaktype"], {}
                 )
                 | taak
+                | {
+                    "taakr_taaktype": taakr_taaktypes_via_taakapplicatie_taaktype_url.get(
+                        taak["taaktype"], {}
+                    )
+                    .get("_links", {})
+                    .get("self")
+                }
                 for taak in alle_taken
             ]
             alle_taken = [
