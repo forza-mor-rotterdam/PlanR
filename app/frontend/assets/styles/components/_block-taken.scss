@@ -100,15 +100,11 @@
         .description p,
         .help-text {
             display: block;
-            margin-bottom: 0;
-            line-height: 1.25;
-            font-size: 0.875rem;
-        }
-
-        .help-text {
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
+            font-size: 0.875rem;
+            margin-bottom: 0;
         }
 
         &[open] {
@@ -191,6 +187,10 @@
 
         .content {
             padding-right: 1rem;
+
+            ul {
+                margin-bottom: 0;
+            }
 
             li {
                 display: flex;
