@@ -146,7 +146,7 @@ class AdresBuurtWijkKolom(StandaardKolom):
         if melding := string_based_lookup(
             self.context, locatie_key, not_found_value={}
         ):
-            locatie = melding.get("locatie")
+            locatie = melding.get("referentie_locatie")
             if locatie:
                 straatnaam = locatie.get("straatnaam", "")
                 huisnummer = (
@@ -207,8 +207,8 @@ class MeldingIdKolom(StandaardKolom):
 class BegraafplaatsKolom(StandaardKolom):
     _key = "begraafplaats"
     _kolom_hoofd = "Begraafplaats"
-    _kolom_inhoud = "melding.locatie.begraafplaats"
-    _ordering_value = "locatie__begraafplaats"
+    _kolom_inhoud = "melding.referentie_locatie.begraafplaats"
+    _ordering_value = "referentie_locatie__begraafplaats"
     _td_standaard_classes = "nowrap"
 
     def td_label(self):
@@ -223,15 +223,15 @@ class BegraafplaatsKolom(StandaardKolom):
 class GrafnummerKolom(StandaardKolom):
     _key = "grafnummer"
     _kolom_hoofd = "Grafnummer"
-    _kolom_inhoud = "melding.locatie.grafnummer"
-    _ordering_value = "locatie__grafnummer"
+    _kolom_inhoud = "melding.referentie_locatie.grafnummer"
+    _ordering_value = "referentie_locatie__grafnummer"
 
 
 class VakKolom(StandaardKolom):
     _key = "vak"
     _kolom_hoofd = "Vak"
-    _kolom_inhoud = "melding.locatie.vak"
-    _ordering_value = "locatie__vak"
+    _kolom_inhoud = "melding.referentie_locatie.vak"
+    _ordering_value = "referentie_locatie__vak"
 
 
 class OnderwerpKolom(StandaardKolom):

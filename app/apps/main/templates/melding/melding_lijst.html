@@ -91,9 +91,9 @@
                             <tr data-action="click->overview#navigate"
                                 data-overview-targeturl-param="{% url 'melding_detail' melding.uuid %}">
                                 <td width="80">
-                                    {% if melding.bijlage %}
+                                    {% if melding.thumbnail_afbeelding %}
                                         <div class="container__thumbnail"
-                                             style="background-image: url('{{ melding.bijlage.afbeelding_verkleind_relative_url|mor_core_url }}')">
+                                             style="background-image: url('{{ melding.thumbnail_afbeelding.afbeelding_verkleind_relative_url|mor_core_url }}')">
                                         </div>
                                     {% else %}
                                         <div class="background-image"></div>
