@@ -2,7 +2,7 @@
 {% load gebruikersnaam gebruikersinitialen get_gebruiker_object_middels_email from gebruikers_tags %}
 {% load humanize %}
 {% load mor_core_url from main_tags %}
-{% load get taak_status_tekst from melding_tags %}
+{% load get taak_status_tekst taak_status_css_class from melding_tags %}
 
 {% if view.is_stream %}
 <turbo-stream target="melding_detail_taken" action="update">
@@ -52,7 +52,7 @@
                                 </span>
                             </div>
                             <div class="" data-detail-target="taakStatusContainer">
-                                <span class="tag tag--qualification tag--{{ taak|taak_status_tekst|slugify }}">
+                                <span class="tag tag--qualification tag--{{ taak|taak_status_css_class }}">
                                     {{ taak|taak_status_tekst }}
                                 </span>
                             </div>

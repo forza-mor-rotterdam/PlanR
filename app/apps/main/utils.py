@@ -6,6 +6,7 @@ from re import sub
 from apps.main.services import MercureService
 from django.core.files.storage import default_storage
 from django.http import QueryDict
+from utils.case_conversions import to_kebab
 
 logger = logging.getLogger(__name__)
 
@@ -291,7 +292,7 @@ def publiceer_topic_met_subscriptions(topic, alle_subscriptions=None):
     mercure_service.publish(topic, subscriptions)
 
 
-def taak_status_tekst(taak):
+def taak_status_tekst(taak, css_class=False):
     # MOR-Core taakopdracht statussen/resoluties
     NIEUW = "nieuw"
     VOLTOOID = "voltooid"
@@ -318,13 +319,19 @@ def taak_status_tekst(taak):
     huidige_status_naam = taak.get("status", {}).get("naam")
 
     if taak["verwijderd_op"]:
-        return "Verwijderd"
+        return "Verwijderd" if not css_class else "verwijderd"
 
     if huidige_status_naam in voltooid_statussen:
-        return taak_resoluties.get(
-            taak["resolutie"], taak.get("resolutie", NIET_OPGELOST)
+        return (
+            taak_resoluties.get(taak["resolutie"], taak.get("resolutie", NIET_OPGELOST))
+            if not css_class
+            else to_kebab(taak.get("resolutie", NIET_OPGELOST))
         )
-    return taak_statussen.get(huidige_status_naam, huidige_status_naam)
+    return (
+        taak_statussen.get(huidige_status_naam, huidige_status_naam)
+        if not css_class
+        else to_kebab(huidige_status_naam)
+    )
 
 
 def melding_taken(melding):

@@ -133,3 +133,8 @@ def get(d, k):
 @register.filter(name="taak_status_tekst")
 def taak_status_tekst(taak):
     return base_taak_status_tekst(taak)
+
+
+@register.filter(name="taak_status_css_class")
+def taak_status_css_class(taak):
+    return base_taak_status_tekst(taak, css_class=True)
