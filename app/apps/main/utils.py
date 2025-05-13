@@ -291,6 +291,42 @@ def publiceer_topic_met_subscriptions(topic, alle_subscriptions=None):
     mercure_service.publish(topic, subscriptions)
 
 
+def taak_status_tekst(taak):
+    # MOR-Core taakopdracht statussen/resoluties
+    NIEUW = "nieuw"
+    VOLTOOID = "voltooid"
+    VOLTOOID_MET_FEEDBACK = "voltooid_met_feedback"
+    OPGELOST = "opgelost"
+    NIET_OPGELOST = "niet_opgelost"
+    GEANNULEERD = "geannuleerd"
+    NIET_GEVONDEN = "niet_gevonden"
+    voltooid_statussen = [VOLTOOID, VOLTOOID_MET_FEEDBACK]
+
+    # vertalingen van MOR-Core taakopdracht statussen
+    taak_statussen = {
+        NIEUW: "Openstaand",
+        VOLTOOID: "Voltooid",
+        VOLTOOID_MET_FEEDBACK: "Voltooid met feedback",
+    }
+    # vertalingen van MOR-Core taakopdracht resoluties
+    taak_resoluties = {
+        OPGELOST: "Opgelost",
+        NIET_OPGELOST: "Niet opgelost",
+        GEANNULEERD: "Geannuleerd",
+        NIET_GEVONDEN: "Niets aangetroffen",
+    }
+    huidige_status_naam = taak.get("status", {}).get("naam")
+
+    if taak["verwijderd_op"]:
+        return "Verwijderd"
+
+    if huidige_status_naam in voltooid_statussen:
+        return taak_resoluties.get(
+            taak["resolutie"], taak.get("resolutie", NIET_OPGELOST)
+        )
+    return taak_statussen.get(huidige_status_naam, huidige_status_naam)
+
+
 def melding_taken(melding):
     taakopdrachten_voor_melding = [
         taakopdracht for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
@@ -300,6 +336,7 @@ def melding_taken(melding):
         for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
         if taakopdracht.get("status", {}).get("naam")
         not in {"voltooid", "voltooid_met_feedback"}
+        and not taakopdracht.get("verwijderd_op")
     ]
     open_taken = [
         taakopdracht

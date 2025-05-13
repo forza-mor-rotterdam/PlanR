@@ -1,6 +1,7 @@
 from apps.main.services import render_onderwerp as render_onderwerp_service
 from apps.main.utils import melding_naar_tijdlijn as base_melding_naar_tijdlijn
 from apps.main.utils import melding_taken as base_melding_taken
+from apps.main.utils import taak_status_tekst as base_taak_status_tekst
 from django import template
 from django.utils.safestring import mark_safe
 
@@ -127,3 +128,8 @@ def melding_naar_tijdlijn(melding):
 @register.filter(name="get")
 def get(d, k):
     return d.get(k, None)
+
+
+@register.filter(name="taak_status_tekst")
+def taak_status_tekst(taak):
+    return base_taak_status_tekst(taak)

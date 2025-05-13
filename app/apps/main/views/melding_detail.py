@@ -293,6 +293,9 @@ class MeldingDetailTaaktypeViewMixin(MeldingDetailViewMixin):
                 for taak in alle_taken
             ]
             context["taken"]["alle_taken"] = alle_taken
+            context["taken"]["niet_verwijderde_taken"] = [
+                taak for taak in alle_taken if not taak["verwijderd_op"]
+            ]
 
         context.update(
             {
