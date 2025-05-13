@@ -2,7 +2,7 @@
 {% load gebruikersnaam gebruikersinitialen get_gebruiker_object_middels_email from gebruikers_tags %}
 {% load humanize %}
 {% load mor_core_url from main_tags %}
-{% load get from melding_tags %}
+{% load get taak_status_tekst taak_status_css_class from melding_tags %}
 
 {% if view.is_stream %}
 <turbo-stream target="melding_detail_taken" action="update">
@@ -13,7 +13,7 @@
     <div class="container__details">
         <h2>Taken</h2>
         <div class="container__taken">
-            {% if taken.alle_taken|length != 0 %}
+            {% if taken.niet_verwijderde_taken|length != 0 %}
                 <div class="taken--header">
                     <div>Taak</div>
                     <div>Aangemaakt</div>
@@ -23,7 +23,7 @@
                     <div>Opties</div>
                 </div>
             {% endif %}
-            {% for taak in taken.alle_taken %}
+            {% for taak in taken.niet_verwijderde_taken %}
                 {% with eerste_taakgebeurtenis=taak.taakgebeurtenissen_voor_taakopdracht|last laatste_taakgebeurtenis=taak.taakgebeurtenissen_voor_taakopdracht|first taak_links=taak|get:"_links" %}
                     <details class="container__taak">
                         <summary>
@@ -52,23 +52,9 @@
                                 </span>
                             </div>
                             <div class="" data-detail-target="taakStatusContainer">
-                                {% if not taak.taak_url %}
-                                    <span class="tag tag--qualification tag--nieuw">
-                                        Openstaand
-                                    </span>
-                                {% else %}
-                                    <span class="tag tag--qualification tag--{{ taak.status.naam }}">
-                                        {% if taak.verwijderd_op %}
-                                            Verwijderd
-                                        {% else %}
-                                            {% if taak.status.naam == 'nieuw'%}
-                                                Openstaand
-                                            {% else %}
-                                                {{ taak.status.naam|capfirst }}
-                                            {% endif %}
-                                        {% endif %}
-                                    </span>
-                                {% endif %}
+                                <span class="tag tag--qualification tag--{{ taak|taak_status_css_class }}">
+                                    {{ taak|taak_status_tekst }}
+                                </span>
                             </div>
                             <div>
                                 {% if not taak.afgesloten_op and not taak.verwijderd_op %}
@@ -171,35 +157,46 @@
                                     <p>Verwijderd op: {{ taak.verwijderd_op|to_datetime|naturalday_with_time_or_timesince }}</p>
                                 </div>
                             {% endif %}
-                            {% if perms.authorisatie.beheer_bekijken %}
-                            <div class="container__content">
+                        </div>
+                        {% if perms.authorisatie.beheer_bekijken %}
+                            <div class="container__content container__content_extra">
+                                <h3>Extra informatie</h3>
                                 <dl>
-                                    <dt>Taakopdracht uuid</dt>
-                                    <dd>{{ taak.uuid }}</dd>
-                                    <dt>Taakopdracht url</dt>
-                                    <dd>{{ taak_links.self }}</dd>
-                                    <dt>Taakapplicatie url</dt>
-                                    <dd>{{ taak.taak_url }}</dd>
-                                    <dt>Taakapplicatie taaktype url</dt>
-                                    <dd>{{ taak.taaktype }}</dd>
-                                    <dt>TaakR taaktype url</dt>
-                                    <dd>{{ taak.taakr_taaktype }}</dd>
+                                    <div>
+                                        <dt>Taakopdracht uuid</dt>
+                                        <dd>{{ taak.uuid }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt>Taakopdracht url</dt>
+                                        <dd>{{ taak_links.self }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt>Taakapplicatie url</dt>
+                                        <dd>{{ taak.taak_url }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt>Taakapplicatie taaktype url</dt>
+                                        <dd>{{ taak.taaktype }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt>TaakR taaktype url</dt>
+                                        <dd>{{ taak.taakr_taaktype }}</dd>
+                                    </div>
                                 </dl>
                             </div>
                             {% endif %}
-                        </div>
                     </details>
                 {% endwith %}
             {% endfor %}
-            <div class="container__aanmaken {% if taken.alle_taken|length == 0 %}bgc-white{% endif %}">
-            {% if taken.alle_taken|length == 0 %}
+            <div class="container__aanmaken {% if taken.niet_verwijderde_taken|length == 0 %}bgc-white{% endif %}">
+            {% if taken.niet_verwijderde_taken|length == 0 %}
                 {% if melding.status.naam == 'afgehandeld' %}
                     <span class="help-text padding--top padding--bottom">Er zijn geen taken aangemaakt</span>
                 {% else %}
                     <span class="help-text">Er zijn nog geen taken aangemaakt</small></span>
                 {% endif %}
             {% endif %}
-            {% if perms.authorisatie.taak_aanmaken and taakr_taaktypes_niet_ingebruik_met_afdelingen and melding.status.naam != 'afgehandeld' and melding.status.naam != 'geannuleerd' %}
+            {% if perms.authorisatie.taak_aanmaken and taakr_taaktypes_niet_ingebruik_met_afdelingen and melding.status.naam != 'afgehandeld' and melding.status.naam != 'geannuleerd' and melding.status.naam != "pauze" and melding.status.naam != "wachten_melder" %}
                 <button class="btn btn-tertiary"
                         data-action="modal#openModal"
                         data-modal-action-param="{% url 'taken_aanmaken' melding.uuid %}"
