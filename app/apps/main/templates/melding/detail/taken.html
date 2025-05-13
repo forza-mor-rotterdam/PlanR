@@ -157,23 +157,34 @@
                                     <p>Verwijderd op: {{ taak.verwijderd_op|to_datetime|naturalday_with_time_or_timesince }}</p>
                                 </div>
                             {% endif %}
-                            {% if perms.authorisatie.beheer_bekijken %}
-                            <div class="container__content">
+                        </div>
+                        {% if perms.authorisatie.beheer_bekijken %}
+                            <div class="container__content container__content_extra">
+                                <h3>Extra informatie</h3>
                                 <dl>
-                                    <dt>Taakopdracht uuid</dt>
-                                    <dd>{{ taak.uuid }}</dd>
-                                    <dt>Taakopdracht url</dt>
-                                    <dd>{{ taak_links.self }}</dd>
-                                    <dt>Taakapplicatie url</dt>
-                                    <dd>{{ taak.taak_url }}</dd>
-                                    <dt>Taakapplicatie taaktype url</dt>
-                                    <dd>{{ taak.taaktype }}</dd>
-                                    <dt>TaakR taaktype url</dt>
-                                    <dd>{{ taak.taakr_taaktype }}</dd>
+                                    <div>
+                                        <dt>Taakopdracht uuid</dt>
+                                        <dd>{{ taak.uuid }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt>Taakopdracht url</dt>
+                                        <dd>{{ taak_links.self }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt>Taakapplicatie url</dt>
+                                        <dd>{{ taak.taak_url }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt>Taakapplicatie taaktype url</dt>
+                                        <dd>{{ taak.taaktype }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt>TaakR taaktype url</dt>
+                                        <dd>{{ taak.taakr_taaktype }}</dd>
+                                    </div>
                                 </dl>
                             </div>
                             {% endif %}
-                        </div>
                     </details>
                 {% endwith %}
             {% endfor %}

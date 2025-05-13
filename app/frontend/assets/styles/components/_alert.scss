@@ -73,7 +73,7 @@
     border-radius: 15px;
     position: relative;
     &--qualification {
-        padding: 0.37rem 0.65rem 0.37rem 1.4rem;
+        padding: 0.37rem 0.75rem 0.37rem 1.5rem;
         background-color: $blue-200;
 
         &::before {
@@ -89,11 +89,22 @@
         }
     }
 
-    &--voltooid {
+    &--voltooid,
+    &--opgelost {
         background-color: $green-200;
 
         &::before {
             background-color: $green-900;
+        }
+    }
+
+    &--geannuleerd,
+    &--niet_opgelost,
+    &--niet_gevonden {
+        background-color: $gray-200;
+
+        &::before {
+            background-color: $gray-800;
         }
     }
 }

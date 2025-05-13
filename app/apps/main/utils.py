@@ -311,7 +311,7 @@ def taak_status_tekst(taak, css_class=False):
     }
     # vertalingen van MOR-Core taakopdracht resoluties
     taak_resoluties = {
-        OPGELOST: "Opgelost",
+        OPGELOST: "Voltooid",
         NIET_OPGELOST: "Niet opgelost",
         GEANNULEERD: "Geannuleerd",
         NIET_GEVONDEN: "Niets aangetroffen",
