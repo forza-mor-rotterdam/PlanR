@@ -55,6 +55,9 @@
                             position: relative;
                             width: 100%;
                             max-width: 100%;
+                            transform: none;
+                            left: 0;
+                            top: 0;
                         }
                         > span {
                             position: absolute;
