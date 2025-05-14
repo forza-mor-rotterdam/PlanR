@@ -99,8 +99,8 @@
     }
 
     &--geannuleerd,
-    &--niet_opgelost,
-    &--niet_gevonden {
+    &--niet-opgelost,
+    &--niet-gevonden {
         background-color: $gray-200;
 
         &::before {
