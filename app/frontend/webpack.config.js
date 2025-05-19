@@ -11,7 +11,9 @@ const StylelintPlugin = require('stylelint-webpack-plugin')
 require('dotenv').config({ path: '../../.env.local' })
 
 const devMode = process.env.NODE_ENV !== 'production'
-const git_sha = process.env.GITHUB_SHA
+// const git_sha = process.env.GITHUB_SHA
+
+const git_sha = process.env.npm_config_git_sha || 'local_version'
 
 class CustomPlugin {
   constructor(name, port = 9000, stage = 'afterEmit') {
@@ -146,6 +148,7 @@ module.exports = (env, argv) => {
   if (argv.nodeEnv === 'development') {
     config.plugins.push(new CustomPlugin('Reloader', process.env.DEV_SOCKET_PORT, 'done'))
   }
+  config.plugins.push(new webpack.DefinePlugin({ __GIT_SHA__: JSON.stringify(git_sha) }))
 
   return config
 }

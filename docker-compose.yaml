@@ -16,7 +16,10 @@ services:
     env_file:
       - .env.local
   planr_app:
-    build: ./app
+    build: &build-definition
+      context: ./app
+      args:
+          GIT_SHA: local_version
     env_file:
       - .env.local
     volumes:
@@ -63,7 +66,7 @@ services:
       - planr_network
 
   app_celery_worker:
-    build: ./app
+    build: *build-definition
     command: "celery -A config worker -l info"
     depends_on:
       database:
@@ -79,7 +82,7 @@ services:
       - mor_bridge_network
 
   app_celery_beat:
-    build: ./app
+    build: *build-definition
     command: "celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
     depends_on:
       database:
