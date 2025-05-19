@@ -33,7 +33,7 @@ if ! python manage.py createsuperuser --noinput; then
 fi
 
 echo "Force reload after release..."
-if ! python manage.py force_reload_after_release --noinput; then
+if ! python manage.py force_reload_after_release; then
     echo "Force reload after release failed."
 fi
 
