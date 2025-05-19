@@ -12,4 +12,7 @@
             Melding {{ melding.id }}
         {% endif %}
     {% endwith %}
+    {% if melding.urgentie >= 0.5 %}
+        <span class="tag tag--qualification tag--spoed">Spoed</span>
+    {% endif %}
 </h1>

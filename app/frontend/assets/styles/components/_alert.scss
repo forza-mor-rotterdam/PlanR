@@ -89,6 +89,23 @@
         }
     }
 
+    &--spoed {
+        padding-left: 0.75rem;
+        background-color: $red-900;
+        color: $white;
+        font-size: 0.778rem;
+        font-weight: 700;
+
+        &::before {
+            display: none;
+        }
+
+        h1 & {
+            vertical-align: middle;
+            transform: translateY(-0.2vw);
+        }
+    }
+
     &--voltooid,
     &--opgelost {
         background-color: $green-200;
