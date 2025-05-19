@@ -1,7 +1,7 @@
 import { Controller } from '@hotwired/stimulus'
 export default class extends Controller {
   initialize() {
-    console.log('Force reload is working!!!')
+    console.log('Force reload is working???')
     if (this.getBrowser().includes('safari') && !navigator.userAgent.includes('Chrome')) {
       document.body.classList.add('css--safari')
     }
