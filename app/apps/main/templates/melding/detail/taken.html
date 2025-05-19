@@ -58,20 +58,20 @@
                             </div>
                             <div>
                                 {% if not taak.afgesloten_op and not taak.verwijderd_op %}
-                                <div class="container__uitklapper">
-                                    <span>{% include "icons/dots.svg" %}</span>
-                                    <div class="legenda">
-                                        {% if perms.authorisatie.taak_verwijderen %}
-                                            <button type="button"
-                                                    class="btn"
-                                                    data-action="modal#openModal"
-                                                    data-modal-action-param="{% url 'taak_verwijderen' melding.uuid taak.uuid %}">
-                                                {% include "icons/bin.svg" %}
-                                                Taak verwijderen
-                                            </button>
-                                        {% endif %}
-                                    </div>
-                                </div>
+                                    {% if perms.authorisatie.taak_verwijderen %}
+                                        <div class="container__uitklapper">
+                                            <span>{% include "icons/dots.svg" %}</span>
+                                            <div class="legenda">
+                                                    <button type="button"
+                                                            class="btn"
+                                                            data-action="modal#openModal"
+                                                            data-modal-action-param="{% url 'taak_verwijderen' melding.uuid taak.uuid %}">
+                                                        {% include "icons/bin.svg" %}
+                                                        Taak verwijderen
+                                                    </button>
+                                            </div>
+                                        </div>
+                                    {% endif %}
                                 {% endif %}
                             </div>
                         </summary>
