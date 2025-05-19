@@ -1,5 +1,6 @@
 {% load render_bundle from webpack_loader %}
 {% load webpack_static from webpack_loader %}
+{% load render_turbo_reload_tag from gebruikers_tags %}
 <!DOCTYPE html>
 <html lang="nl">
     <head>
@@ -46,7 +47,7 @@
                   crossorigin="" />
             <link href=" https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css "
                   rel="stylesheet">
-            {% render_bundle 'app' 'css' %}
+            {% render_bundle 'app' 'css' attrs='data-turbo-track="reload"' %}
         {% endblock stylesheets %}
         {% if DEBUG and LIVE_UPDATE %}
             <script>
@@ -69,10 +70,11 @@
         {% block javascripts %}
             <script src=" https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js "></script>
             <script src=" https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js "></script>
-            {% render_bundle 'app' 'js' %}
+            {% render_bundle 'app' 'js' attrs='data-turbo-track="reload"' %}
         {% endblock javascripts %}
         <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin="">
         </script>
+        {% render_turbo_reload_tag %}
     </head>
     <body class="{% block body_class %}{% endblock body_class %}"
           data-controller=" notificaties--manager notificaties--toast-manager focus-trap modal infosheet "

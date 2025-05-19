@@ -2,6 +2,7 @@ from apps.main.services import MORCoreService
 from django import template
 from django.contrib.auth import get_user_model
 from django.core.validators import validate_email
+from django.utils.safestring import mark_safe
 from utils.diversen import gebruikersinitialen as gebruikersinitialen_basis
 from utils.diversen import gebruikersnaam as gebruikersnaam_basis
 
@@ -72,3 +73,11 @@ def get_gebruiker_object_middels_email(value):
             gebruiker["full_name"] = full_name or gebruiker["email"]
 
     return gebruiker
+
+
+@register.simple_tag(takes_context=True)
+def render_turbo_reload_tag(context):
+    if "force_reload" not in context["request"].session:
+        return ""
+    del context["request"].session["force_reload"]
+    return mark_safe('<meta name="turbo-visit-control" content="reload">')

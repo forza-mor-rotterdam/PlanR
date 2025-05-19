@@ -32,6 +32,11 @@ if ! python manage.py createsuperuser --noinput; then
     echo "Superuser creation failed or already exists."
 fi
 
+echo "Force reload after release..."
+if ! python manage.py force_reload_after_release --noinput; then
+    echo "Force reload after release failed."
+fi
+
 # Log a message indicating the script has completed
 echo "Docker entrypoint script has completed."
 
