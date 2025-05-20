@@ -1,4 +1,5 @@
 {% load vind_in_dict from querystring_tags %}
+{% load vertaal from vertaal_tags %}
 <h1>
     {% with hoogste_gewicht_locatie=locaties.adressen|first %}
         {% if hoogste_gewicht_locatie.straatnaam %}
@@ -12,6 +13,13 @@
             Melding {{ melding.id }}
         {% endif %}
     {% endwith %}
+    {% if melding.status %}
+        <span class="tag tag--qualification {% if melding.status.naam == 'afgehandeld' %}tag--voltooid{% elif melding.status.naam == 'controle' %}tag--controle{% elif melding.status.naam == 'in_behandeling' %}tag--voltooid{% elif melding.status.naam == 'geannuleerd' %}tag--geannuleerd{% endif %}">{{ melding.status.naam|vertaal }}
+            {% if melding.status.naam == 'afgehandeld' or melding.status.naam == 'geannuleerd' %}
+                ({{ melding.resolutie }})
+            {% endif %}
+        </span>
+    {% endif %}
     {% if melding.urgentie >= 0.5 %}
         <span class="tag tag--qualification tag--spoed">Spoed</span>
     {% endif %}
