@@ -36,6 +36,7 @@
     box-sizing: border-box;
     text-align: right;
     transform: translateX(0.75em);
+    position: relative;
 
     p {
         margin-bottom: 0.5rem;
@@ -73,6 +74,54 @@
 
     .wrapper--actions {
         padding: 1em 0.75em;
+
+        .container__uitklapper {
+            width: 48px;
+            height: 48px;
+            display: inline-block;
+            cursor: pointer;
+            margin-right: 12px;
+
+            > span {
+                display: block;
+                text-align: center;
+                height: 100%;
+
+                svg {
+                    height: 100%;
+                }
+
+                &:hover {
+                    background: $gray-200;
+                }
+            }
+        }
+        .legenda {
+            padding: 4px;
+            top: 40px;
+
+            .btn {
+                background: transparent;
+                font-weight: 400;
+                font-size: 0.778rem;
+                padding: 6px 8px;
+                margin: 0;
+                min-height: 0;
+                width: 100%;
+
+                &:hover {
+                    background-color: $gray-100;
+                }
+            }
+
+            ul {
+                text-align: left;
+
+                li {
+                    margin-bottom: 0;
+                }
+            }
+        }
     }
 
     &.stayFixed {

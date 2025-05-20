@@ -9,7 +9,7 @@ VERTALINGEN = {
     "aangemaakt": "Aangemaakt",
     "gewijzigd": "Gewijzigd",
     "verwijderd": "Verwijderd",
-    "in_behandeling": "In behandeling",
+    "in_behandeling": "In uitvoering",
     "openstaand": "Openstaand",
     "controle": "Controle",
     "afgehandeld": "Afgehandeld",
