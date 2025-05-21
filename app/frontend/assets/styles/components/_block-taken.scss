@@ -8,6 +8,13 @@
             minmax(0, 1fr);
         align-items: center;
 
+        &.hide-last-column {
+            grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(
+                    0,
+                    1fr
+                );
+        }
+
         > div {
             padding: 0.5em;
         }

@@ -14,19 +14,21 @@
         <h2>Taken</h2>
         <div class="container__taken">
             {% if taken.niet_verwijderde_taken|length != 0 %}
-                <div class="taken--header">
+                <div class="taken--header {% if not perms.authorisatie.taak_verwijderen %}hide-last-column{% endif %}">
                     <div>Taak</div>
                     <div>Aangemaakt</div>
                     <div>Uitgevoerd</div>
                     <div>Opmerking</div>
                     <div>Status</div>
-                    <div>Opties</div>
+                    {% if perms.authorisatie.taak_verwijderen %}
+                        <div>Opties</div>
+                    {% endif %}
                 </div>
             {% endif %}
             {% for taak in taken.niet_verwijderde_taken %}
                 {% with eerste_taakgebeurtenis=taak.taakgebeurtenissen_voor_taakopdracht|last laatste_taakgebeurtenis=taak.taakgebeurtenissen_voor_taakopdracht|first taak_links=taak|get:"_links" %}
                     <details class="container__taak">
-                        <summary>
+                        <summary class="{% if not perms.authorisatie.taak_verwijderen %}hide-last-column{% endif %}">
                             <div class="description">
                                 <p>
                                     {{ taak.titel }}
@@ -56,24 +58,24 @@
                                     {{ taak|taak_status_tekst }}
                                 </span>
                             </div>
+                            {% if perms.authorisatie.taak_verwijderen %}
                             <div>
                                 {% if not taak.afgesloten_op and not taak.verwijderd_op %}
-                                    {% if perms.authorisatie.taak_verwijderen %}
-                                        <div class="container__uitklapper">
-                                            <span>{% include "icons/dots.svg" %}</span>
-                                            <div class="legenda">
-                                                    <button type="button"
-                                                            class="btn"
-                                                            data-action="modal#openModal"
-                                                            data-modal-action-param="{% url 'taak_verwijderen' melding.uuid taak.uuid %}">
-                                                        {% include "icons/bin.svg" %}
-                                                        Taak verwijderen
-                                                    </button>
-                                            </div>
+                                    <div class="container__uitklapper">
+                                        <span>{% include "icons/dots.svg" %}</span>
+                                        <div class="legenda">
+                                                <button type="button"
+                                                        class="btn"
+                                                        data-action="modal#openModal"
+                                                        data-modal-action-param="{% url 'taak_verwijderen' melding.uuid taak.uuid %}">
+                                                    {% include "icons/bin.svg" %}
+                                                    Taak verwijderen
+                                                </button>
                                         </div>
-                                    {% endif %}
+                                    </div>
                                 {% endif %}
                             </div>
+                            {% endif %}
                         </summary>
                         <div class="container__taak--content">
                             <div class="container__content">
