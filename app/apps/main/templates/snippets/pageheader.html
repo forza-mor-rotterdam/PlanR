@@ -2,7 +2,12 @@
 {% load gebruikersnaam gebruikersinitialen from gebruikers_tags %}
 <div class="bar bar--top" data-controller="topbar">
     <div class="container__heading">
-        {% if pageTitle %}<h1 class="pagetitle h2">{{ pageTitle }}</h1>{% endif %}
+        <h1>
+            <a href="{% url 'root' %}">
+                <span class="green">Plan</span>R</span>
+            </a>
+        </h1>
+        {% if pageTitle %}<h2 class="pagetitle h2">{{ pageTitle }}</h2>{% endif %}
     </div>
     {% if request.user.is_authenticated %}
         <div class="container__user">

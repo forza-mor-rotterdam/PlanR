@@ -1,8 +1,11 @@
 .list-nav--primary,
 .list-nav--secondary {
-    @include list-clean();
-    padding-left: 0.6em;
-    padding-right: 0.6em;
+    list-style-type: none;
+    padding: 0 0.6em;
+}
+
+.list-nav--primary {
+    margin-top: 70px;
 }
 
 .list-nav--secondary {
@@ -66,16 +69,7 @@
     overflow: hidden;
     z-index: 25;
     background-color: $blue-100;
-    h1 {
-        font-size: 1.2em;
-        white-space: nowrap;
-        padding-left: 0.9em;
 
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-    }
     .btn,
     .menu-toggle {
         color: $black;

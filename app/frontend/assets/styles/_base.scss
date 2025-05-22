@@ -48,16 +48,20 @@ html {
 
     .container__main {
         margin-left: 227px;
+        padding-top: 60px;
         flex: 1;
         transition: margin-left $transition-duration-default $transition-ease-default;
 
-        > .bar {
+        > .bar--top {
             border-bottom: 1px solid $green-400;
-            min-height: 67px;
-            width: 100%;
-            background-color: transparent;
-            position: relative;
+            height: 60px;
+            width: 100vw;
+            background-color: $blue-100;
+            position: fixed;
+            top: 0;
+            left: 0;
             z-index: 30;
+            box-sizing: border-box;
         }
         main {
             padding: 1em 0.75em 0;
