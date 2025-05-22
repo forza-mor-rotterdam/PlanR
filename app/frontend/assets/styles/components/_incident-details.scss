@@ -1,5 +1,5 @@
 .page__detail {
-    padding: 2rem 0 5em;
+    padding: 0 0 5em;
     h1 {
         margin: 0;
         + span {
@@ -29,13 +29,7 @@
 }
 
 .container__actions {
-    background-color: $blue-100;
-    width: 100%;
-    max-width: 2000px;
-    z-index: 1000;
-    box-sizing: border-box;
     text-align: right;
-    transform: translateX(0.75em);
     position: relative;
 
     p {
@@ -73,7 +67,8 @@
     }
 
     .wrapper--actions {
-        padding: 1em 0.75em;
+        padding: 1em 0 0;
+        margin-top: 10px;
 
         .container__uitklapper {
             width: 48px;
@@ -123,28 +118,29 @@
             }
         }
     }
+}
 
-    &.stayFixed {
-        width: auto;
-        background-color: transparent;
-        padding-top: 15px;
-        transform: translateX(0);
+.stayfixed {
+    background-color: $blue-100;
+    padding-top: 15px;
+    margin-top: -15px;
+    width: calc(100% - 257px);
+    transition: width $transition-duration-default $transition-ease-default;
 
-        @media (min-width: map-get($grid-breakpoints, md)) {
-            position: fixed;
-            top: 0;
-            display: flex;
-            justify-content: flex-end;
-            background-color: $white;
-            transition-property: background-color, border-color;
-            transition-duration: $transition-duration-default;
-            transition-timing-function: $transition-ease-default;
+    @media (min-width: map-get($grid-breakpoints, md)) {
+        position: fixed;
+        top: 75px;
+        z-index: 25;
+        justify-content: flex-end;
+        background-color: $blue-100;
 
-            .wrapper--actions {
-                width: 100%;
-                border-bottom: 1px solid $gray-tint04;
-            }
+        .wrapper--actions {
+            width: 100%;
         }
+    }
+
+    .nav--small & {
+        width: calc(100% - 90px);
     }
 }
 
@@ -249,6 +245,9 @@
     justify-content: flex-end;
     gap: 8px;
     min-width: 182px;
+    position: absolute;
+    top: calc(-100% + 4px);
+    right: 100px;
 
     span,
     a {

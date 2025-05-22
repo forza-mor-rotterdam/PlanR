@@ -45,7 +45,7 @@
                     {% if melding.uuid %}
                         <div class="page__detail">
                             <div id="id_maincontent">
-                                <div class="grid-container grid-container--half">
+                                <div class="grid-container grid-container--half stayfixed" data-detail-target="containerActions">
                                     <div class="grid-item">
                                         <a href="{% url 'melding_lijst' %}"
                                         data-turbo-action='advance'
