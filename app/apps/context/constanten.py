@@ -2,6 +2,7 @@ import string
 
 from apps.main.constanten import BEGRAAFPLAATSEN, VERTALINGEN
 from apps.main.services import MORCoreService, render_onderwerp
+from apps.main.utils import melding_taken
 from django.http import QueryDict
 from django.template.loader import get_template
 from django.urls import reverse
@@ -285,29 +286,16 @@ class StatusKolom(StandaardKolom):
             "in_behandeling": "darkblue",
             "geannuleerd": "red",
         }
-        taakopdrachten_voor_melding = [
-            taak
-            for taak in string_based_lookup(
-                self.context, "melding.taakopdrachten_voor_melding", not_found_value=[]
-            )
-            if taak.get("status", {}).get("naam", "")
-            not in [
-                "voltooid",
-                "niet_voltooid",
-                "voltooid_met_feedback",
-            ]
-        ]
+        melding = string_based_lookup(self.context, "melding", not_found_value={})
+        taken = melding_taken(melding)
 
-        taakopdrachten_voor_melding = (
-            f"({len(taakopdrachten_voor_melding)})"
-            if taakopdrachten_voor_melding
-            else ""
-        )
+        actieve_taken = taken["actieve_taken"]
+        actieve_taken_tekst = f"({len(actieve_taken)})" if actieve_taken else ""
         status_naam = escape(
             string_based_lookup(self.context, self._kolom_inhoud, not_found_value="")
         )
         return mark_safe(
-            f'<span class="display--flex--center badge badge--{colors.get(status_naam, "lightblue")}">{VERTALINGEN.get(status_naam, status_naam)}{taakopdrachten_voor_melding}</span>'
+            f'<span class="display--flex--center badge badge--{colors.get(status_naam, "lightblue")}">{VERTALINGEN.get(status_naam, status_naam)}{actieve_taken_tekst}</span>'
         )
 
 
