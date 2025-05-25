@@ -15,6 +15,7 @@ class FallbackDeduplicatedStorage(FallbackStorage):
 
 MELDING_LIJST_OPHALEN_ERROR = "Er ging iets mis met het ophalen van meldingen"
 MELDING_OPHALEN_ERROR = "Er ging iets mis met het ophalen van de melding"
+MELDING_NIET_GEVONDEN_ERROR = "De melding is niet gevonden"
 MELDING_ANNULEREN_ERROR = "Er ging iets mis met het annuleren van de melding"
 MELDING_ANNULEREN_SUCCESS = "De melding is geannuleerd"
 MELDING_INFORMATIE_TOEVOEGEN_ERROR = (
@@ -38,5 +39,5 @@ TAAK_AANMAKEN_ERROR = "Er ging iets mis met het aanmaken van de taak"
 TAAK_AANMAKEN_SUCCESS = "De taak is aangemaakt"
 TAAK_AFRONDEN_ERROR = "Er ging iets mis met het afronden van de taak"
 TAAK_AFRONDEN_SUCCESS = "De taak is afgerond"
-TAAK_ANNULEREN_ERROR = "Er ging iets mis met het annuleren van de taak"
-TAAK_ANNULEREN_SUCCESS = "De taak is geannuleerd"
+TAAK_VERWIJDEREN_ERROR = "Er ging iets mis met het verwijderen van de taak"
+TAAK_VERWIJDEREN_SUCCESS = "De taak is verwijderd"

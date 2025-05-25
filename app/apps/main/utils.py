@@ -6,6 +6,7 @@ from re import sub
 from apps.main.services import MercureService
 from django.core.files.storage import default_storage
 from django.http import QueryDict
+from utils.case_conversions import to_kebab
 
 logger = logging.getLogger(__name__)
 
@@ -107,7 +108,7 @@ def melding_naar_tijdlijn(melding: dict):
             and taakgebeurtenis.get("taakstatus")
             and taakgebeurtenis.get("taakstatus", {}).get("naam")
             in {"voltooid", "voltooid_met_feedback"}
-        )
+        ) or taakgebeurtenis.get("verwijderd_op")
         taakstatus_event = (
             taakgebeurtenis
             and taakgebeurtenis.get("taakstatus")
@@ -291,6 +292,48 @@ def publiceer_topic_met_subscriptions(topic, alle_subscriptions=None):
     mercure_service.publish(topic, subscriptions)
 
 
+def taak_status_tekst(taak, css_class=False):
+    # MOR-Core taakopdracht statussen/resoluties
+    NIEUW = "nieuw"
+    VOLTOOID = "voltooid"
+    VOLTOOID_MET_FEEDBACK = "voltooid_met_feedback"
+    OPGELOST = "opgelost"
+    NIET_OPGELOST = "niet_opgelost"
+    GEANNULEERD = "geannuleerd"
+    NIET_GEVONDEN = "niet_gevonden"
+    voltooid_statussen = [VOLTOOID, VOLTOOID_MET_FEEDBACK]
+
+    # vertalingen van MOR-Core taakopdracht statussen
+    taak_statussen = {
+        NIEUW: "Openstaand",
+        VOLTOOID: "Voltooid",
+        VOLTOOID_MET_FEEDBACK: "Voltooid met feedback",
+    }
+    # vertalingen van MOR-Core taakopdracht resoluties
+    taak_resoluties = {
+        OPGELOST: "Voltooid",
+        NIET_OPGELOST: "Niet opgelost",
+        GEANNULEERD: "Geannuleerd",
+        NIET_GEVONDEN: "Niets aangetroffen",
+    }
+    huidige_status_naam = taak.get("status", {}).get("naam")
+
+    if taak["verwijderd_op"]:
+        return "Verwijderd" if not css_class else "verwijderd"
+
+    if huidige_status_naam in voltooid_statussen:
+        return (
+            taak_resoluties.get(taak["resolutie"], taak.get("resolutie", NIET_OPGELOST))
+            if not css_class
+            else to_kebab(taak.get("resolutie", NIET_OPGELOST))
+        )
+    return (
+        taak_statussen.get(huidige_status_naam, huidige_status_naam)
+        if not css_class
+        else to_kebab(huidige_status_naam)
+    )
+
+
 def melding_taken(melding):
     taakopdrachten_voor_melding = [
         taakopdracht for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
@@ -300,11 +343,12 @@ def melding_taken(melding):
         for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
         if taakopdracht.get("status", {}).get("naam")
         not in {"voltooid", "voltooid_met_feedback"}
+        and not taakopdracht.get("verwijderd_op")
     ]
     open_taken = [
         taakopdracht
         for taakopdracht in taakopdrachten_voor_melding
-        if not taakopdracht.get("resolutie")
+        if not taakopdracht.get("resolutie") and not taakopdracht.get("verwijderd_op")
     ]
     opgeloste_taken = [
         taakopdracht
@@ -323,6 +367,7 @@ def melding_taken(melding):
     aantal_niet_opgeloste_taken = len(niet_opgeloste_taken)
 
     return {
+        "alle_taken": taakopdrachten_voor_melding,
         "actieve_taken": actieve_taken,
         "open_taken": open_taken,
         "aantal_actieve_taken": aantal_actieve_taken,

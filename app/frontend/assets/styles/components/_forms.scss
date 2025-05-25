@@ -998,6 +998,10 @@ form.taken-aanmaken {
                 font-weight: 400;
                 word-break: break-word;
             }
+
+            .btn-info {
+                transform: translateY(-2px);
+            }
         }
 
         input {
@@ -1165,7 +1169,7 @@ form.taken-aanmaken {
             li {
                 display: flex;
                 flex: 0 1 47%;
-                justify-content: space-between;
+                justify-content: flex-start;
                 min-width: 47%;
                 margin: 0 0 0.5rem;
                 padding-left: 0;
@@ -1181,9 +1185,6 @@ form.taken-aanmaken {
                 button {
                     display: flex;
                     margin-left: 5px;
-                    svg {
-                        transform: translateY(2px);
-                    }
                 }
             }
         }

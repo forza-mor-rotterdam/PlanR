@@ -4,8 +4,10 @@ FROM node:18-bullseye AS node_step
 WORKDIR /srv/web/
 COPY ./frontend /srv/web/
 
+ARG GIT_SHA
+
 RUN npm install \
-    && npm run build
+    && npm run build --git_sha=$GIT_SHA
 
 # Stage 2: Final image with Python and front-end assets
 FROM python:3.10.10-slim-bullseye

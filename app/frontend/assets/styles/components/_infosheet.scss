@@ -61,9 +61,12 @@ dialog.infosheet {
         top: 25px;
         right: 10px;
         padding: 5px;
-        &:focus {
+        background-color: transparent;
+
+        &:focus,
+        &:hover {
             outline: none !important;
-            background-color: #f4f4f5;
+            background-color: $gray-100;
         }
     }
 

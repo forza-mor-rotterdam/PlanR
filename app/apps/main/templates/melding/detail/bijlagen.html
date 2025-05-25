@@ -15,7 +15,8 @@
                         tabindex="0"
                         data-image-slider-target="image"
                         data-image-uuid="{{ bijlage.uuid }}">
-                        <div class="image" style="background-image: url('{{ bijlage.afbeelding_relative_url|mor_core_url }}')" data-action="click->modal#openModal" data-modal-content-param='
+                        <div class="image">
+                            <img src="{{ bijlage.afbeelding_relative_url|mor_core_url }}" data-action="click->modal#openModal" data-modal-content-param='
                             {% include "melding/detail/bijlagen_modal_content.html" with bijlage=bijlage only %}
                             ' data-modal-css-class-param="modal-dialog--full">
                             {% if bijlage.oorsprong != "melder" %}
@@ -50,5 +51,5 @@
             </div>
         {% endif %}
     </div>
-    {% include "icons/expand.svg" %}
+    <span>{% include "icons/expand.svg" %}</span>
 </section>

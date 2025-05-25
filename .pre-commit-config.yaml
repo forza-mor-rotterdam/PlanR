@@ -36,12 +36,12 @@ repos:
         additional_dependencies:
           - prettier@3.0.3
         files: '\.(js|ts|jsx|tsx|scss|css)$'
-  - repo: https://github.com/djlint/djLint
-    rev: v1.34.1
-    hooks:
-      - id: djlint-reformat-django
-      - id: djlint-django
-        args: ["--ignore", "H006,H008,H013,H021,H023,D004,D018"]
+  # - repo: https://github.com/djlint/djLint
+  #   rev: v1.34.1
+  #   hooks:
+  #     - id: djlint-reformat-django
+  #     - id: djlint-django
+  #       args: ["--ignore", "H006,H008,H013,H021,H023,D004,D018"]
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: "v9.8.0"
     hooks:

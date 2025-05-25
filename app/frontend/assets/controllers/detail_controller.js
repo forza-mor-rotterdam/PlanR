@@ -14,7 +14,14 @@ export default class extends Controller {
     afbeeldingen: String,
     urlPrefix: String,
   }
-  static targets = ['turboActionModal', 'btnToTop', 'containerActions', 'lichtmast']
+  static targets = [
+    'turboActionModal',
+    'btnToTop',
+    'containerActions',
+    'lichtmast',
+    'kaartDefault',
+    'taakStatusContainer',
+  ]
 
   initialize() {
     this.coordinates = []
@@ -126,6 +133,15 @@ export default class extends Controller {
       this.checkScrollPosition()
     })
   }
+
+  getMapElement() {
+    return this.kaartDefaultTarget.querySelector('#incidentMap')
+  }
+
+  getMapInstance() {
+    return this.map
+  }
+
   fitMarkers() {
     const bounds = new L.LatLngBounds(this.coordinates)
     this.map.fitBounds(bounds)
@@ -223,6 +239,17 @@ export default class extends Controller {
       this.containerActionsTarget.style.right = ``
     }
   }
+
+  taakStatusContainerTargetConnected(element) {
+    const target = element.querySelector('.status--busy')
+    if (target) {
+      setTimeout(() => {
+        target.classList.remove('status--busy')
+        target.classList.add('status--stopped')
+      }, 10000)
+    }
+  }
+
   scrollToTop(e) {
     e.target.blur()
     window.scrollTo({

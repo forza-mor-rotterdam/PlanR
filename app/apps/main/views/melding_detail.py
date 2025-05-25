@@ -2,8 +2,6 @@ import logging
 
 from apps.context.utils import get_gebruiker_context
 from apps.main.forms import (
-    TAAK_RESOLUTIE_GEANNULEERD,
-    TAAK_STATUS_VOLTOOID,
     InformatieToevoegenForm,
     LocatieAanpassenForm,
     MeldingAanmakenForm,
@@ -13,8 +11,7 @@ from apps.main.forms import (
     MeldingHervattenForm,
     MeldingPauzerenForm,
     MeldingSpoedForm,
-    TaakAfrondenForm,
-    TaakAnnulerenForm,
+    TaakVerwijderenForm,
     TakenAanmakenForm,
 )
 from apps.main.messages import (
@@ -30,15 +27,14 @@ from apps.main.messages import (
     MELDING_INFORMATIE_TOEVOEGEN_SUCCESS,
     MELDING_LOCATIE_AANPASSEN_ERROR,
     MELDING_LOCATIE_AANPASSEN_SUCCESS,
+    MELDING_NIET_GEVONDEN_ERROR,
     MELDING_OPHALEN_ERROR,
     MELDING_PAUZEREN_ERROR,
     MELDING_PAUZEREN_SUCCESS,
     MELDING_URGENTIE_AANPASSEN_ERROR,
     MELDING_URGENTIE_AANPASSEN_SUCCESS,
-    TAAK_AFRONDEN_ERROR,
-    TAAK_AFRONDEN_SUCCESS,
-    TAAK_ANNULEREN_ERROR,
-    TAAK_ANNULEREN_SUCCESS,
+    TAAK_VERWIJDEREN_ERROR,
+    TAAK_VERWIJDEREN_SUCCESS,
 )
 from apps.main.services import MORCoreService, TaakRService
 from apps.main.utils import (
@@ -68,16 +64,21 @@ class MeldingDetailViewMixin(ContextMixin):
         mor_core_service = MORCoreService()
         gebruiker_context = get_gebruiker_context(self.request.user)
         melding = mor_core_service.get_melding(self.kwargs.get("id"))
+
         if isinstance(melding, dict) and melding.get("error"):
-            messages.error(request=self.request, message=MELDING_OPHALEN_ERROR)
-            return render(
-                self.request,
-                "melding/melding_actie_form.html",
-            )
+            status_code = melding.get("error", {}).get("status_code")
+            if status_code == 404:
+                messages.error(
+                    request=self.request, message=MELDING_NIET_GEVONDEN_ERROR
+                )
+            else:
+                messages.error(request=self.request, message=MELDING_OPHALEN_ERROR)
+            melding = {}
         context.update(
             {
                 "melding": melding,
                 "locaties": melding_locaties(melding),
+                "taken": melding_taken(melding),
                 "gebruiker_context": gebruiker_context,
             }
         )
@@ -101,7 +102,7 @@ class MeldingDetailTaaktypeViewMixin(MeldingDetailViewMixin):
                 list(
                     to["taaktype"]
                     for to in taakopdrachten_voor_melding
-                    if not to["resolutie"]
+                    if not to["resolutie"] and not to["verwijderd_op"]
                 )
             )
         ]
@@ -194,12 +195,20 @@ class MeldingDetailTaaktypeViewMixin(MeldingDetailViewMixin):
         melding = context["melding"]
         gebruiker_context = context["gebruiker_context"]
 
+        if not melding:
+            return context
+
         taakopdrachten_voor_melding = melding.get("taakopdrachten_voor_melding", [])
         melding_onderwerp_urls = set(melding.get("onderwerpen", []))
 
         taakr_service = TaakRService()
         taakr_taaktypes = taakr_service.get_taaktypes()
         afdelingen = taakr_service.get_afdelingen()
+
+        taakr_taaktypes_via_taakapplicatie_taaktype_url = {
+            taakr_taaktype["_links"]["taakapplicatie_taaktype_url"]: taakr_taaktype
+            for taakr_taaktype in taakr_taaktypes
+        }
 
         afdeling_middels_afdeling_url = {
             afdeling.get("_links", {}).get("self"): afdeling for afdeling in afdelingen
@@ -252,6 +261,42 @@ class MeldingDetailTaaktypeViewMixin(MeldingDetailViewMixin):
                 },
             )
 
+        if context.get("taken"):
+            alle_taken = context.get("taken", {}).get("alle_taken")
+            alle_taken = [
+                taakr_taaktypes_via_taakapplicatie_taaktype_url.get(
+                    taak["taaktype"], {}
+                )
+                | taak
+                | {
+                    "taakr_taaktype": taakr_taaktypes_via_taakapplicatie_taaktype_url.get(
+                        taak["taaktype"], {}
+                    )
+                    .get("_links", {})
+                    .get("self")
+                }
+                for taak in alle_taken
+            ]
+            alle_taken = [
+                {
+                    "verantwoordelijke_afdeling": afdeling_middels_afdeling_url[
+                        taak["verantwoordelijke_afdeling"]
+                    ]
+                    if taak.get("verantwoordelijke_afdeling")
+                    else None,
+                    "afdelingen": [
+                        afdeling_middels_afdeling_url[afdeling]
+                        for afdeling in taak.get("afdelingen", [])
+                    ],
+                }
+                | taak
+                for taak in alle_taken
+            ]
+            context["taken"]["alle_taken"] = alle_taken
+            context["taken"]["niet_verwijderde_taken"] = [
+                taak for taak in alle_taken if not taak["verwijderd_op"]
+            ]
+
         context.update(
             {
                 "afdelingen_met_taakr_taaktypes_niet_ingebruik": afdelingen_met_taakr_taaktypes_niet_ingebruik,
@@ -267,14 +312,16 @@ class MeldingDetail(
     template_name = "melding/melding_detail.html"
     permission_required = "authorisatie.melding_bekijken"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        if (
+    def request_next_data(self):
+        return (
             self.request.GET.get("melding_ids")
             and self.request.GET.get("offset")
             and self.request.GET.get("melding_count")
-        ):
+        )
+
+    def get_context_data(self, **kwargs):
+        next_data = self.request_next_data()
+        if next_data:
             self.request.session["pagina_melding_ids"] = self.request.GET.get(
                 "melding_ids"
             ).split(",")
@@ -282,7 +329,12 @@ class MeldingDetail(
             self.request.session["melding_count"] = int(
                 self.request.GET.get("melding_count")
             )
-            return redirect(reverse("melding_detail", args=[self.kwargs.get("id")]))
+            return {}
+
+        context = super().get_context_data(**kwargs)
+        melding = context["melding"]
+        if not melding:
+            return context
 
         try:
             index = self.request.session.get("pagina_melding_ids", []).index(
@@ -303,6 +355,12 @@ class MeldingDetail(
             }
         )
         return context
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        if not context.get("meldingen_index") and self.request_next_data():
+            return redirect(reverse("melding_detail", args=[self.kwargs.get("id")]))
+        return self.render_to_response(context)
 
 
 @login_required
@@ -477,6 +535,7 @@ def melding_pauzeren(request, id):
         for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
         if taakopdracht.get("status", {}).get("naam")
         not in {"voltooid", "voltooid_met_feedback"}
+        and not taakopdracht.get("verwijderd_op")
     ]
     if request.POST:
         form = MeldingPauzerenForm(request.POST)
@@ -630,9 +689,10 @@ class TakenAanmakenStreamView(TakenAanmakenView):
 
 
 @login_required
-@permission_required("authorisatie.taak_afronden", raise_exception=True)
-def taak_afronden(request, melding_uuid):
+@permission_required("authorisatie.taak_verwijderen", raise_exception=True)
+def taak_verwijderen(request, melding_uuid, taakopdracht_uuid=None):
     mor_core_service = MORCoreService()
+
     melding = mor_core_service.get_melding(melding_uuid)
     if isinstance(melding, dict) and melding.get("error"):
         messages.error(request=request, message=MELDING_OPHALEN_ERROR)
@@ -646,92 +706,40 @@ def taak_afronden(request, melding_uuid):
         taakopdracht.get("uuid"): taakopdracht.get("_links", {}).get("self")
         for taakopdracht in open_taakopdrachten
     }
+    taakopdracht = (
+        [to for to in open_taakopdrachten if to["uuid"] == str(taakopdracht_uuid)]
+        or [{}]
+    )[0]
     taakopdracht_opties = [
         (taakopdracht.get("uuid"), taakopdracht.get("titel"))
         for taakopdracht in open_taakopdrachten
+        if (taakopdracht_uuid and taakopdracht.get("uuid") == str(taakopdracht_uuid))
+        or not taakopdracht_uuid
     ]
-    form = TaakAfrondenForm(taakopdracht_opties=taakopdracht_opties)
+    form = TaakVerwijderenForm(taakopdracht_opties=taakopdracht_opties)
     if request.POST:
-        form = TaakAfrondenForm(request.POST, taakopdracht_opties=taakopdracht_opties)
-
-        if form.is_valid():
-            bijlagen = request.FILES.getlist("bijlagen", [])
-            bijlagen_base64 = []
-            for f in bijlagen:
-                file_name = default_storage.save(f.name, f)
-                bijlagen_base64.append({"bestand": to_base64(file_name)})
-            response = mor_core_service.taak_status_aanpassen(
-                taakopdracht_url=taakopdracht_urls.get(
-                    form.cleaned_data.get("taakopdracht")
-                ),
-                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
-                bijlagen=bijlagen_base64,
-                gebruiker=request.user.email,
-                status=TAAK_STATUS_VOLTOOID,
-                resolutie=form.cleaned_data.get("resolutie"),
-            )
-            if isinstance(response, dict) and response.get("error"):
-                messages.error(request=request, message=TAAK_AFRONDEN_ERROR)
-            else:
-                messages.success(request=request, message=TAAK_AFRONDEN_SUCCESS)
-            return redirect("melding_detail", id=melding_uuid)
-
-    return render(
-        request,
-        "melding/detail/taak_afronden.html",
-        {
-            "form": form,
-            "melding": melding,
-        },
-    )
-
-
-@login_required
-@permission_required("authorisatie.taak_annuleren", raise_exception=True)
-def taak_annuleren(request, melding_uuid):
-    mor_core_service = MORCoreService()
-    melding = mor_core_service.get_melding(melding_uuid)
-    if isinstance(melding, dict) and melding.get("error"):
-        messages.error(request=request, message=MELDING_OPHALEN_ERROR)
-        return render(
-            request,
-            "melding/melding_actie_form.html",
+        form = TaakVerwijderenForm(
+            request.POST, taakopdracht_opties=taakopdracht_opties
         )
-
-    open_taakopdrachten = melding_taken(melding).get("open_taken")
-    taakopdracht_urls = {
-        taakopdracht.get("uuid"): taakopdracht.get("_links", {}).get("self")
-        for taakopdracht in open_taakopdrachten
-    }
-    taakopdracht_opties = [
-        (taakopdracht.get("uuid"), taakopdracht.get("titel"))
-        for taakopdracht in open_taakopdrachten
-    ]
-    form = TaakAnnulerenForm(taakopdracht_opties=taakopdracht_opties)
-    if request.POST:
-        form = TaakAnnulerenForm(request.POST, taakopdracht_opties=taakopdracht_opties)
         if form.is_valid():
-            response = mor_core_service.taak_status_aanpassen(
+            response = mor_core_service.taakopdracht_verwijderen(
                 taakopdracht_url=taakopdracht_urls.get(
                     form.cleaned_data.get("taakopdracht")
                 ),
-                status=TAAK_STATUS_VOLTOOID,
-                resolutie=TAAK_RESOLUTIE_GEANNULEERD,
-                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
                 gebruiker=request.user.email,
-                bijlagen=[],
             )
             if isinstance(response, dict) and response.get("error"):
-                messages.error(request=request, message=TAAK_ANNULEREN_ERROR)
+                messages.error(request=request, message=TAAK_VERWIJDEREN_ERROR)
             else:
-                messages.success(request=request, message=TAAK_ANNULEREN_SUCCESS)
+                messages.success(request=request, message=TAAK_VERWIJDEREN_SUCCESS)
             return redirect("melding_detail", id=melding_uuid)
     return render(
         request,
-        "melding/detail/taak_annuleren.html",
+        "melding/detail/taak_verwijderen.html",
         {
             "form": form,
             "melding": melding,
+            "taakopdracht": taakopdracht,
         },
     )
 

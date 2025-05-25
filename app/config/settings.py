@@ -38,10 +38,14 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 USE_TZ = True
 TIME_ZONE = "Europe/Amsterdam"
-USE_L10N = True
+USE_L10N = False
 USE_I18N = True
 LANGUAGE_CODE = "nl-NL"
 LANGUAGES = [("nl", "Dutch")]
+DATE_FORMAT = "d-m-Y"
+SHORT_DATE_FORMAT = "d-m-Y"
+SHORT_DATETIME_FORMAT = "d-m-Y, H:i"
+DATETIME_FORMAT = "d-m-Y, H:i"
 
 DEFAULT_ALLOWED_HOSTS = ".forzamor.nl,localhost,127.0.0.1,.mor.local"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", DEFAULT_ALLOWED_HOSTS).split(",")

@@ -401,13 +401,16 @@ class TaakAfrondenForm(forms.Form):
                         "class": "select2",
                         "data-select2Modal-target": "targetField",
                     }
-                ),
+                )
+                if len(taakopdracht_opties) > 1
+                else forms.HiddenInput(),
                 choices=taakopdracht_opties,
+                initial=taakopdracht_opties[0][0],
                 required=True,
             )
 
 
-class TaakAnnulerenForm(forms.Form):
+class TaakVerwijderenForm(forms.Form):
     def __init__(self, *args, **kwargs):
         taakopdracht_opties = kwargs.pop("taakopdracht_opties", None)
         super().__init__(*args, **kwargs)
@@ -420,8 +423,11 @@ class TaakAnnulerenForm(forms.Form):
                         "class": "select2",
                         "data-select2Modal-target": "targetField",
                     }
-                ),
+                )
+                if len(taakopdracht_opties) > 1
+                else forms.HiddenInput(),
                 choices=taakopdracht_opties,
+                initial=taakopdracht_opties[0][0],
                 required=True,
             )
             self.fields["omschrijving_intern"] = forms.CharField(
@@ -671,7 +677,7 @@ class LocatieAanpassenForm(forms.Form):
                 "data-locatieaanpassenformulier-target": "huisnummer",
             }
         ),
-        required=True,
+        required=False,
     )
     huisletter = forms.CharField(
         widget=forms.HiddenInput(

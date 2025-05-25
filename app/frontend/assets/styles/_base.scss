@@ -687,7 +687,7 @@ body.no-js {
 // HELPER-CLASSES
 
 .has-background--white {
-    padding: 1em;
+    padding: 1rem;
     background-color: $white;
 }
 .keyboard-focus {
@@ -796,6 +796,9 @@ body.no-js {
 }
 .padding--bottom {
     padding-bottom: 1em !important;
+}
+.padding--top {
+    padding-top: 1em !important;
 }
 
 .padding--left {

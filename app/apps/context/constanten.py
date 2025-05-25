@@ -2,7 +2,7 @@ import string
 
 from apps.main.constanten import BEGRAAFPLAATSEN, VERTALINGEN
 from apps.main.services import MORCoreService, render_onderwerp
-from apps.main.utils import melding_locaties
+from apps.main.utils import melding_taken
 from django.http import QueryDict
 from django.template.loader import get_template
 from django.urls import reverse
@@ -113,7 +113,7 @@ class AdresKolom(StandaardKolom):
     _key = "adres"
     _kolom_hoofd = "Ter hoogte van"
     _td_standaard_classes = "nowrap"
-    _ordering_value = "locaties_voor_melding__straatnaam"
+    _ordering_value = "straatnaam"
 
     def td_label(self):
         default = "-"
@@ -139,7 +139,7 @@ class AdresBuurtWijkKolom(StandaardKolom):
     _key = "adres_buurt_wijk"
     _kolom_hoofd = "Ter hoogte van"
     _td_standaard_classes = "nowrap"
-    _ordering_value = "locaties_voor_melding__straatnaam"
+    _ordering_value = "locatie__straatnaam"
 
     def td_label(self):
         default = "-"
@@ -147,9 +147,8 @@ class AdresBuurtWijkKolom(StandaardKolom):
         if melding := string_based_lookup(
             self.context, locatie_key, not_found_value={}
         ):
-            locaties = melding_locaties(melding)["adressen"]
-            if locaties:
-                locatie = locaties[0]
+            locatie = melding.get("referentie_locatie")
+            if locatie:
                 straatnaam = locatie.get("straatnaam", "")
                 huisnummer = (
                     f' {locatie.get("huisnummer")}' if locatie.get("huisnummer") else ""
@@ -209,8 +208,8 @@ class MeldingIdKolom(StandaardKolom):
 class BegraafplaatsKolom(StandaardKolom):
     _key = "begraafplaats"
     _kolom_hoofd = "Begraafplaats"
-    _kolom_inhoud = "melding.locaties_voor_melding.0.begraafplaats"
-    _ordering_value = "locaties_voor_melding__begraafplaats"
+    _kolom_inhoud = "melding.referentie_locatie.begraafplaats"
+    _ordering_value = "referentie_locatie__begraafplaats"
     _td_standaard_classes = "nowrap"
 
     def td_label(self):
@@ -225,21 +224,22 @@ class BegraafplaatsKolom(StandaardKolom):
 class GrafnummerKolom(StandaardKolom):
     _key = "grafnummer"
     _kolom_hoofd = "Grafnummer"
-    _kolom_inhoud = "melding.locaties_voor_melding.0.grafnummer"
-    _ordering_value = "locaties_voor_melding__grafnummer"
+    _kolom_inhoud = "melding.referentie_locatie.grafnummer"
+    _ordering_value = "referentie_locatie__grafnummer"
 
 
 class VakKolom(StandaardKolom):
     _key = "vak"
     _kolom_hoofd = "Vak"
-    _kolom_inhoud = "melding.locaties_voor_melding.0.vak"
-    _ordering_value = "locaties_voor_melding__vak"
+    _kolom_inhoud = "melding.referentie_locatie.vak"
+    _ordering_value = "referentie_locatie__vak"
 
 
 class OnderwerpKolom(StandaardKolom):
     _key = "onderwerp"
     _kolom_hoofd = "Onderwerp"
     _kolom_inhoud = "melding.onderwerpen"
+    # _ordering_value = "onderwerp"
 
     def td_label(self):
         default = "-"
@@ -286,29 +286,16 @@ class StatusKolom(StandaardKolom):
             "in_behandeling": "darkblue",
             "geannuleerd": "red",
         }
-        taakopdrachten_voor_melding = [
-            taak
-            for taak in string_based_lookup(
-                self.context, "melding.taakopdrachten_voor_melding", not_found_value=[]
-            )
-            if taak.get("status", {}).get("naam", "")
-            not in [
-                "voltooid",
-                "niet_voltooid",
-                "voltooid_met_feedback",
-            ]
-        ]
+        melding = string_based_lookup(self.context, "melding", not_found_value={})
+        taken = melding_taken(melding)
 
-        taakopdrachten_voor_melding = (
-            f"({len(taakopdrachten_voor_melding)})"
-            if taakopdrachten_voor_melding
-            else ""
-        )
+        actieve_taken = taken["actieve_taken"]
+        actieve_taken_tekst = f"({len(actieve_taken)})" if actieve_taken else ""
         status_naam = escape(
             string_based_lookup(self.context, self._kolom_inhoud, not_found_value="")
         )
         return mark_safe(
-            f'<span class="display--flex--center badge badge--{colors.get(status_naam, "lightblue")}">{VERTALINGEN.get(status_naam, status_naam)}{taakopdrachten_voor_melding}</span>'
+            f'<span class="display--flex--center badge badge--{colors.get(status_naam, "lightblue")}">{VERTALINGEN.get(status_naam, status_naam)}{actieve_taken_tekst}</span>'
         )
 
 

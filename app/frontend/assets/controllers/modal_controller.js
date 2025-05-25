@@ -11,6 +11,8 @@ export default class extends Controller {
     'header',
     'body',
     'footer',
+    'kaartLarge',
+    'toplevelContainer',
   ]
 
   connect() {
@@ -31,7 +33,14 @@ export default class extends Controller {
       })
     })
     this.params = null
+    requestAnimationFrame(() => {
+      this.detailController = this.application.getControllerForElementAndIdentifier(
+        document.querySelector('[data-controller~="detail"]'),
+        'detail'
+      )
+    })
   }
+
   openModal(e) {
     e.preventDefault()
     this.abortController = new AbortController()
@@ -41,6 +50,10 @@ export default class extends Controller {
     }
     const templateClone = this.getCloneModalTemplate()
     this.modalTarget.appendChild(templateClone)
+
+    if (this.params.showMap) {
+      this.showMapLarge()
+    }
   }
   fetchModalContent(action) {
     fetch(action, { signal: this.abortController.signal })
@@ -53,7 +66,7 @@ export default class extends Controller {
   contentTargetConnected() {
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
     document.body.classList.add('show-modal')
-    document.body.style.paddingRight = `${scrollbarWidth}px`
+    this.toplevelContainerTarget.style.paddingRight = `${scrollbarWidth}px`
     console.log('CLONE')
     if (this.params.action) {
       this.fetchModalContent(this.params.action)
@@ -64,6 +77,9 @@ export default class extends Controller {
     }
 
     this.dialogTarget.showModal()
+    if (this.params.showMap) {
+      document.querySelector('#modal_close_button').blur()
+    }
 
     this.dialogTarget.addEventListener('cancel', (e) => {
       e.preventDefault()
@@ -99,9 +115,12 @@ export default class extends Controller {
   closeModal() {
     this.abortController.abort()
     this.dialogTarget.classList.remove('fade-in')
+    if (this.params.showMap) {
+      this.hideMapLarge()
+    }
     setTimeout(() => {
       document.body.classList.remove('show-modal')
-      document.body.style.paddingRight = ``
+      this.toplevelContainerTarget.style.paddingRight = ``
       if (this.hasDialogTarget) {
         this.dialogTarget.remove()
       }
@@ -112,6 +131,24 @@ export default class extends Controller {
   }
   disconnect() {
     this.observer.disconnect()
+  }
+
+  showMapLarge() {
+    setTimeout(() => {
+      this.mapElement = this.detailController.getMapElement()
+      this.kaartLargeTarget.appendChild(this.mapElement)
+    }, 100)
+    setTimeout(() => {
+      this.detailController.getMapInstance().invalidateSize()
+      document.querySelector('#modal_close_button').focus()
+    }, 200)
+  }
+
+  hideMapLarge() {
+    document.querySelector('[data-detail-target="kaartDefault"]').appendChild(this.mapElement)
+    setTimeout(() => {
+      this.detailController.getMapInstance().invalidateSize()
+    }, 100)
   }
 
   elementContentHeight(elem) {

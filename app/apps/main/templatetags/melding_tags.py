@@ -1,6 +1,7 @@
 from apps.main.services import render_onderwerp as render_onderwerp_service
 from apps.main.utils import melding_naar_tijdlijn as base_melding_naar_tijdlijn
 from apps.main.utils import melding_taken as base_melding_taken
+from apps.main.utils import taak_status_tekst as base_taak_status_tekst
 from django import template
 from django.utils.safestring import mark_safe
 
@@ -54,53 +55,47 @@ def get_selected_ordering_option(options):
 def get_bijlagen(melding):
     melding_bijlagen = [
         {
-            **bijlage,
-            "aangemaakt_op": melding.get("aangemaakt_op"),
             "oorsprong": "melder",
             "label": "Foto van melder",
             "bron_signaal_id": None,
             "bron_id": None,
         }
+        | bijlage
         for bijlage in melding.get("bijlagen", [])
     ]
     signaal_bijlagen = [
         {
-            **bijlage,
             "signaal": signaal,
-            "aangemaakt_op": signaal.get("aangemaakt_op"),
             "oorsprong": "melder",
             "label": "Foto van melder",
             "bron_signaal_id": signaal["bron_signaal_id"],
             "bron_id": signaal["bron_id"],
         }
+        | bijlage
         for signaal in melding.get("signalen_voor_melding", [])
         for bijlage in signaal.get("bijlagen", [])
     ]
     meldinggebeurtenis_bijlagen = [
         {
-            **bijlage,
             "meldinggebeurtenis": meldinggebeurtenis,
-            "aangemaakt_op": meldinggebeurtenis.get("aangemaakt_op"),
             "oorsprong": "midoffice",
             "label": f"Midoffice({meldinggebeurtenis.get('gebruiker')})",
             "bron_signaal_id": None,
             "bron_id": None,
         }
+        | bijlage
         for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
         for bijlage in meldinggebeurtenis.get("bijlagen", [])
     ]
     taakgebeurtenis_bijlagen = [
         {
-            **bijlage,
             "taakgebeurtenis": meldinggebeurtenis.get("taakgebeurtenis", {}),
-            "aangemaakt_op": meldinggebeurtenis.get("taakgebeurtenis", {}).get(
-                "aangemaakt_op"
-            ),
             "oorsprong": "medewerker",
             "label": f"Medewerker({meldinggebeurtenis.get('taakgebeurtenis', {}).get('gebruiker')})",
             "bron_signaal_id": None,
             "bron_id": None,
         }
+        | bijlage
         for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
         for bijlage in (
             meldinggebeurtenis.get("taakgebeurtenis", {}).get("bijlagen", [])
@@ -133,3 +128,13 @@ def melding_naar_tijdlijn(melding):
 @register.filter(name="get")
 def get(d, k):
     return d.get(k, None)
+
+
+@register.filter(name="taak_status_tekst")
+def taak_status_tekst(taak):
+    return base_taak_status_tekst(taak)
+
+
+@register.filter(name="taak_status_css_class")
+def taak_status_css_class(taak):
+    return base_taak_status_tekst(taak, css_class=True)
