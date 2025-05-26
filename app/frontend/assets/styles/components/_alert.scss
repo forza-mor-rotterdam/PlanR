@@ -80,6 +80,10 @@
     h1 & {
         vertical-align: middle;
         transform: translateY(-0.2vw);
+
+        &:first-of-type {
+            margin-left: 6px;
+        }
     }
 
     &--qualification {

@@ -22,8 +22,9 @@ export default class extends Controller {
   ]
 
   containerActionsTargetConnected() {
+    document.body.querySelector('.bar--top').style.backgroundColor = 'transparent'
     if (window.innerWidth > 767) {
-      actionsHeight = this.containerActionsTarget.offsetHeight
+      actionsHeight = this.containerActionsTarget.offsetHeight - 90
       this.containerActionsTarget.parentNode.style.paddingTop = `${actionsHeight}px`
     }
   }
@@ -135,6 +136,10 @@ export default class extends Controller {
     window.addEventListener('scroll', () => {
       this.checkScrollPosition()
     })
+  }
+
+  disconnect() {
+    document.body.querySelector('.bar--top').style.backgroundColor = ''
   }
 
   getMapElement() {
