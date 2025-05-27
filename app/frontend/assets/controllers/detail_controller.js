@@ -22,8 +22,8 @@ export default class extends Controller {
   ]
 
   containerActionsTargetConnected() {
-    document.body.querySelector('.bar--top').style.backgroundColor = 'transparent'
     if (window.innerWidth > 767) {
+      document.body.querySelector('.bar--top').style.backgroundColor = 'transparent'
       actionsHeight = this.containerActionsTarget.offsetHeight - 90
       this.containerActionsTarget.parentNode.style.paddingTop = `${actionsHeight}px`
     }
