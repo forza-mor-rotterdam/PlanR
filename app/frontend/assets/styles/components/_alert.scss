@@ -70,11 +70,27 @@
 .tag {
     display: inline-block;
     padding: 0.25rem 0.5rem;
-    border-radius: 15px;
+    border-radius: 4px;
     position: relative;
+
+    .container__taak & {
+        border-radius: 15px;
+    }
+
+    h1 & {
+        vertical-align: middle;
+        transform: translateY(-0.2vw);
+
+        &:first-of-type {
+            margin-left: 6px;
+        }
+    }
+
     &--qualification {
         padding: 0.37rem 0.75rem 0.37rem 1.5rem;
         background-color: $blue-200;
+        font-size: 0.778rem;
+        font-weight: 400;
 
         &::before {
             content: "";
@@ -86,6 +102,17 @@
             top: 50%;
             left: 10px;
             transform: translateY(-50%);
+        }
+    }
+
+    &--spoed {
+        padding-left: 0.75rem;
+        background-color: $red-900;
+        color: $white;
+        font-weight: 700;
+
+        &::before {
+            display: none;
         }
     }
 
@@ -105,6 +132,14 @@
 
         &::before {
             background-color: $gray-800;
+        }
+    }
+
+    &--controle {
+        background-color: $purple-200;
+
+        &::before {
+            background-color: $purple-800;
         }
     }
 }

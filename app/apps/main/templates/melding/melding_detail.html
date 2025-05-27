@@ -45,7 +45,7 @@
                     {% if melding.uuid %}
                         <div class="page__detail">
                             <div id="id_maincontent">
-                                <div class="grid-container grid-container--half">
+                                <div class="grid-container grid-container--half stayfixed" data-detail-target="containerActions">
                                     <div class="grid-item">
                                         <a href="{% url 'melding_lijst' %}"
                                         data-turbo-action='advance'
@@ -61,9 +61,6 @@
                                         </a>
                                         {% include "melding/melding_gebruiker_actief.html" %}
                                         {% include titel_template %}
-                                        <div id="melding_detail_header_status">
-                                            {% include "melding/detail/header_status.html" with melding=melding disable_stream=True only %}
-                                        </div>
                                     </div>
                                     <div class="grid-item aside">
                                         <div class="container__actions" data-detail-target="containerActions">

@@ -4,9 +4,7 @@ import L from 'leaflet'
 
 let detailScrollY = 0,
   distance = 0,
-  actionsHeight = 0,
-  actionsWidth = 0
-
+  actionsHeight = 0
 export default class extends Controller {
   static values = {
     signalen: String,
@@ -22,6 +20,14 @@ export default class extends Controller {
     'kaartDefault',
     'taakStatusContainer',
   ]
+
+  containerActionsTargetConnected() {
+    if (window.innerWidth > 767) {
+      document.body.querySelector('.bar--top').style.backgroundColor = 'transparent'
+      actionsHeight = this.containerActionsTarget.offsetHeight - 90
+      this.containerActionsTarget.parentNode.style.paddingTop = `${actionsHeight}px`
+    }
+  }
 
   initialize() {
     this.coordinates = []
@@ -127,11 +133,13 @@ export default class extends Controller {
     this.tabIndex = Number(this.urlParams.get('tabIndex'))
     this.selectTab(this.tabIndex || 1)
     actionsHeight = this.containerActionsTarget.offsetHeight
-    actionsWidth = this.containerActionsTarget.offsetWidth
-    this.updatePosition = this.updatePosition.bind(this)
     window.addEventListener('scroll', () => {
       this.checkScrollPosition()
     })
+  }
+
+  disconnect() {
+    document.body.querySelector('.bar--top').style.backgroundColor = ''
   }
 
   getMapElement() {
@@ -216,27 +224,6 @@ export default class extends Controller {
       } else {
         this.btnToTopTarget.classList.remove('show')
       }
-      this.updatePosition()
-    }
-  }
-
-  updatePosition() {
-    // actioncontainer
-    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
-    const right =
-      window.innerWidth -
-      document.querySelector('main').getBoundingClientRect().right -
-      scrollbarWidth
-    if (document.documentElement.scrollTop > distance - 15) {
-      this.containerActionsTarget.classList.add('stayFixed')
-      this.containerActionsTarget.parentElement.style.height = `${actionsHeight}px`
-      this.containerActionsTarget.style.maxWidth = `${actionsWidth}px`
-      this.containerActionsTarget.style.right = `${right}px`
-    } else {
-      this.containerActionsTarget.classList.remove('stayFixed')
-      this.containerActionsTarget.parentElement.style.height = ''
-      this.containerActionsTarget.style.maxWidth = ''
-      this.containerActionsTarget.style.right = ``
     }
   }
 

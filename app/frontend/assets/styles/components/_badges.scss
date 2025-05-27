@@ -46,15 +46,11 @@
 .container--env {
     position: fixed;
     top: 0;
-    left: 227px;
+    left: 103px;
     width: 100%;
     pointer-events: none;
     z-index: 200;
     transition: left $transition-duration-default $transition-ease-default;
-
-    .nav--small & {
-        left: 60px;
-    }
 
     .badge {
         height: 48px;

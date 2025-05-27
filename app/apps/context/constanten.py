@@ -411,10 +411,10 @@ class StatusFilter(StandaardFilter):
     def opties(self):
         return [
             ["afgehandeld", {"label": "Afgehandeld"}],
-            ["controle", {"label": "Controle"}],
+            ["controle", {"label": "Te controleren"}],
             ["geannuleerd", {"label": "Geannuleerd"}],
             ["pauze", {"label": "Gepauzeerd"}],
-            ["in_behandeling", {"label": "In behandeling"}],
+            ["in_behandeling", {"label": "In uitvoering"}],
             ["openstaand", {"label": "Openstaand"}],
             ["wachten_melder", {"label": "Wachten op melder"}],
         ]
