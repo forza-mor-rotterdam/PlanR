@@ -11,7 +11,7 @@ VERTALINGEN = {
     "verwijderd": "Verwijderd",
     "in_behandeling": "In uitvoering",
     "openstaand": "Openstaand",
-    "controle": "Controle",
+    "controle": "Te controleren",
     "afgehandeld": "Afgehandeld",
     "geannuleerd": "Geannuleerd",
     "nieuw": "Nieuw",

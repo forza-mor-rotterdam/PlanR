@@ -75,6 +75,12 @@
 
     .container__taak & {
         border-radius: 15px;
+
+        &--qualification {
+            &::before {
+                border-radius: 100%;
+            }
+        }
     }
 
     h1 & {
@@ -87,7 +93,7 @@
     }
 
     &--qualification {
-        padding: 0.37rem 0.75rem 0.37rem 1.5rem;
+        padding: 0.37rem 10px 0.37rem 22px;
         background-color: $blue-200;
         font-size: 0.778rem;
         font-weight: 400;
@@ -97,7 +103,7 @@
             position: absolute;
             width: 8px;
             height: 8px;
-            border-radius: 100%;
+            border-radius: 2px;
             background-color: $blue-900;
             top: 50%;
             left: 10px;
@@ -116,7 +122,6 @@
         }
     }
 
-    &--voltooid,
     &--opgelost {
         background-color: $green-200;
 
@@ -125,6 +130,7 @@
         }
     }
 
+    &--voltooid,
     &--geannuleerd,
     &--niet-opgelost,
     &--niet-gevonden {

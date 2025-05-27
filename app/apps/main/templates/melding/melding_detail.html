@@ -45,8 +45,8 @@
                     {% if melding.uuid %}
                         <div class="page__detail">
                             <div id="id_maincontent">
-                                <div class="grid-container grid-container--half stayfixed" data-detail-target="containerActions">
-                                    <div class="grid-item">
+                                <div class="container__header stayfixed" data-detail-target="containerActions">
+                                    <div class="item">
                                         <a href="{% url 'melding_lijst' %}"
                                         data-turbo-action='advance'
                                         class="link--back">
@@ -62,7 +62,7 @@
                                         {% include "melding/melding_gebruiker_actief.html" %}
                                         {% include titel_template %}
                                     </div>
-                                    <div class="grid-item aside">
+                                    <div class="item aside">
                                         <div class="container__actions" data-detail-target="containerActions">
                                             <div class="wrapper">
                                                 <div class="container__meldingnavigatie">

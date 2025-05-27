@@ -75,6 +75,7 @@
             display: inline-block;
             cursor: pointer;
             margin-right: 12px;
+            position: relative;
 
             > span {
                 display: block;
@@ -115,10 +116,25 @@
                     margin-bottom: 0;
                 }
             }
+
+            &:popover-open {
+                display: block;
+                inset: auto;
+            }
         }
     }
 }
 
+.container__header {
+    @media (min-width: map-get($grid-breakpoints, md)) {
+        display: flex;
+        justify-content: space-between;
+
+        > .item {
+            flex: 1 1 auto;
+        }
+    }
+}
 .stayfixed {
     background-color: $blue-100;
     padding-top: 15px;
@@ -135,6 +151,8 @@
         justify-content: flex-end;
         background-color: $blue-100;
         width: calc(100% - 257px);
+        transform: translateX(-15px);
+        padding-left: 16px;
 
         .wrapper--actions {
             width: 100%;
@@ -214,6 +232,20 @@
             @include form-check-input();
             vertical-align: middle;
         }
+
+        .container__uitklapper {
+            z-index: 20;
+        }
+        .container__map {
+            .wrapper__map {
+                position: relative;
+                z-index: 5;
+            }
+
+            button {
+                z-index: 6;
+            }
+        }
     }
 
     summary {
@@ -242,7 +274,6 @@
     }
 }
 
-// TODO Meldingnavigatie valt achter de topbar
 .container__meldingnavigatie {
     display: flex;
     justify-content: flex-end;
@@ -250,7 +281,7 @@
     min-width: 182px;
     @media (min-width: map-get($grid-breakpoints, md)) {
         position: fixed;
-        top: 14px;
+        top: 28px;
         right: 140px;
     }
 
@@ -456,6 +487,7 @@
     }
 
     &:hover,
+    &:focus,
     &:focus-within {
         .legenda {
             display: block;
