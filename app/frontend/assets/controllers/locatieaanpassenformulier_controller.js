@@ -374,7 +374,7 @@ export default class extends Controller {
           address.stringified
         }' />` +
         `<label for="id_${address.id}">` +
-        `<span>${address.verbose}</span>` +
+        `<span>${address.verbose}, ${address.plaatsnaam}</span>` +
         `<small class="distance">` +
         `${Math.round(address.afstand)} meter vanaf huidige locatie` +
         `</small>` +

@@ -37,5 +37,15 @@
                 {% endif %}
             </dd>
         </div>
+        <div>
+            <dt>Plaatsnaam</dt>
+            <dd>
+                {% if locatie.plaatsnaam %}
+                    {{ locatie.plaatsnaam }}
+                {% else %}
+                    onbekend
+                {% endif %}
+            </dd>
+        </div>
     </dl>
 </div>
