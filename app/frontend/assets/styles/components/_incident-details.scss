@@ -153,6 +153,7 @@
         width: calc(100% - 257px);
         transform: translateX(-15px);
         padding-left: 16px;
+        max-width: calc(2000px - 1.5em);
 
         .wrapper--actions {
             width: 100%;
