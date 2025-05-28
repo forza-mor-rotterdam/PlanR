@@ -290,9 +290,7 @@ export default class extends Controller {
     return (
       `<span data-locatieaanpassenformulier-target="searchable" class="address">
       ${address.straatnaam} ${address.huisnummer}` +
-      `${cleanValue(address.huisletter)} ${cleanValue(address.toevoeging)} ${cleanValue(
-        address.gemeente
-      )}</span>` +
+      `${cleanValue(address.huisletter)} ${cleanValue(address.toevoeging)}</span>` +
       (address.current ? `<small class="active">&nbsp;(Huidig adres)</small>` : ``) +
       `<br><span data-locatieaanpassenformulier-target="searchable" class="area">${address.buurtnaam} ${address.wijknaam}</span>`
     )
