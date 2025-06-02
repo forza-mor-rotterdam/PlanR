@@ -14,7 +14,7 @@
             {% endif %}
         {% endif %}
         {% if melding.status %}
-            <span class="tag tag--qualification {% if melding.status.naam == 'afgehandeld' %}tag--voltooid{% elif melding.status.naam == 'controle' %}tag--controle{% elif melding.status.naam == 'in_behandeling' %}tag--voltooid{% elif melding.status.naam == 'geannuleerd' %}tag--geannuleerd{% endif %}">{{ melding.status.naam|vertaal }}
+            <span class="tag tag--qualification {% if melding.status.naam == 'afgehandeld' %}tag--voltooid{% elif melding.status.naam == 'controle' %}tag--controle{% elif melding.status.naam == 'in_behandeling' %}tag--voltooid{% elif melding.status.naam == 'geannuleerd' or melding.status.naam == 'wachten_melder' or melding.status.naam == 'pauze' %}tag--geannuleerd{% endif %}">{{ melding.status.naam|vertaal }}
                 {% if melding.status.naam == 'afgehandeld' or melding.status.naam == 'geannuleerd' %}
                     ({{ melding.resolutie }})
                 {% endif %}
