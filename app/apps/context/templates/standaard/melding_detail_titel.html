@@ -18,7 +18,7 @@
                 {% endif %}
             {% endwith %}
             {% if melding.status %}
-                <span class="tag tag--qualification {% if melding.status.naam == 'afgehandeld' %}tag--voltooid{% elif melding.status.naam == 'controle' %}tag--controle{% elif melding.status.naam == 'in_behandeling' %}tag--voltooid{% elif melding.status.naam == 'geannuleerd' or melding.status.naam == 'wachten_melder' or melding.status.naam == 'pauze' %}tag--geannuleerd{% endif %}">
+                <span class="tag tag--qualification {% if melding.status.naam == 'afgehandeld' %}tag--opgelost{% elif melding.status.naam == 'controle' %}tag--controle{% elif melding.status.naam == 'in_behandeling' %}tag--opgelost{% elif melding.status.naam == 'geannuleerd' or melding.status.naam == 'wachten_melder' or melding.status.naam == 'pauze' %}tag--geannuleerd{% endif %}">
                     {{ melding.status.naam|vertaal }}
                 </span>
             {% endif %}
