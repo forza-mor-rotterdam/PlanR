@@ -2,7 +2,7 @@
 {% load gebruikersnaam gebruikersinitialen get_gebruiker_object_middels_email from gebruikers_tags %}
 {% load humanize %}
 {% load mor_core_url from main_tags %}
-{% load get taak_status_tekst taak_status_css_class from melding_tags %}
+{% load get taak_status_tekst taak_status_css_class api_url_to_user_url from melding_tags %}
 
 {% if view.is_stream %}
 <turbo-stream target="melding_detail_taken" action="update">
@@ -173,16 +173,24 @@
                                         <dd>{{ taak_links.self }}</dd>
                                     </div>
                                     <div>
-                                        <dt>Taakapplicatie url</dt>
+                                        <dt>Taakapplicatie api url</dt>
                                         <dd>{{ taak.taak_url }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt>Taakapplicatie url</dt>
+                                        <dd><a href="{{ taak.taak_url|api_url_to_user_url }}">{{ taak.taak_url|api_url_to_user_url }}</a></dd>
                                     </div>
                                     <div>
                                         <dt>Taakapplicatie taaktype url</dt>
                                         <dd>{{ taak.taaktype }}</dd>
                                     </div>
                                     <div>
-                                        <dt>TaakR taaktype url</dt>
+                                        <dt>TaakR taaktype api url</dt>
                                         <dd>{{ taak.taakr_taaktype }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt>TaakR taaktype url</dt>
+                                        <dd><a href="{{ taak.taakr_taaktype|api_url_to_user_url }}">{{ taak.taakr_taaktype }}</a></dd>
                                     </div>
                                 </dl>
                             </div>
