@@ -94,10 +94,27 @@
 
         .description {
             font-weight: 700;
-            padding-right: 2rem;
 
             small {
                 font-size: 0.667rem;
+            }
+
+            .wrapper {
+                display: flex;
+                padding-right: 10px;
+
+                button {
+                    opacity: 0;
+                    pointer-events: none;
+                    transition: opacity $transition-duration-default $transition-ease-default;
+                }
+
+                &:hover {
+                    button {
+                        opacity: 1;
+                        pointer-events: all;
+                    }
+                }
             }
 
             button {
@@ -110,8 +127,12 @@
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
-            font-size: 0.875rem;
+            font-size: 0.778rem;
             margin-bottom: 0;
+        }
+
+        .description p {
+            font-size: 0.889rem;
         }
 
         &[open] {
@@ -173,6 +194,7 @@
     }
     .container__content {
         padding: 1rem 0.5rem;
+        background-color: $white;
 
         &:first-child {
             padding-left: 0;
@@ -224,11 +246,10 @@
                     line-height: 1rem;
                     word-break: break-word;
                 }
-
-                small {
-                    color: $gray-800;
-                    font-size: 0.667rem;
-                }
+            }
+            small {
+                color: $gray-800;
+                font-size: 0.667rem;
             }
         }
     }

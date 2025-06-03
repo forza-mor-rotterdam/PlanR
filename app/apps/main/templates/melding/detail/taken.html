@@ -30,14 +30,16 @@
                     <details class="container__taak">
                         <summary class="{% if not perms.authorisatie.taak_verwijderen %}hide-last-column{% endif %}">
                             <div class="description">
-                                <p>
-                                    {{ taak.titel }}
+                                <div class="wrapper">
+                                    <p>
+                                        {{ taak.titel }}
+                                    </p>
                                     <button class="btn btn-textlink btn-info"
                                             data-action="infosheet#openInfosheet"
                                             data-infosheet-action-param="{% url 'taaktype_taakr' %}?taakapplicatie-taaktype-url={{ taak.taaktype }}">
                                         {% include "icons/info.svg" %}
                                     </button>
-                                </p>
+                                </div>
                                 <small>{{ taak.verantwoordelijke_afdeling.naam }}</small>
                             </div>
                             <div>
@@ -86,14 +88,12 @@
                                             <span class="initials">{{ eerste_taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email|gebruikersinitialen }}</span>
                                             <div class="message">
                                                 <h4>{{ eerste_taakgebeurtenis.gebruiker|get_gebruiker_object_middels_email|gebruikersnaam }}</h4>
-                                                <p>
-                                                    {% if eerste_taakgebeurtenis.omschrijving_intern %}
-                                                        {{ eerste_taakgebeurtenis.omschrijving_intern }}
-                                                    {% else %}
-                                                        -
-                                                    {% endif %}
-                                                </p>
-                                                <small>{{ eerste_taakgebeurtenis.aangemaakt_op|to_datetime|naturalday_with_time_or_timesince }}</small>
+                                                {% if eerste_taakgebeurtenis.omschrijving_intern %}
+                                                    <p>{{ eerste_taakgebeurtenis.omschrijving_intern }}</p>
+                                                    <small>{{ eerste_taakgebeurtenis.aangemaakt_op|to_datetime|naturalday_with_time_or_timesince }}</small>
+                                                {% else %}
+                                                    <p class="help-text">Er is nog geen opmerking toegevoegd</p>
+                                                {% endif %}
                                             </div>
                                         </li>
                                     </ul>
@@ -127,31 +127,33 @@
                             {% if taak.afgesloten_op and not taak.verwijderd_op %}
                                 <div class="container__content">
                                     <h3>Informatie uitvoerder</h3>
-                                    <p>Resolutie: {{ taak.resolutie }}<br>
-                                    {% if laatste_taakgebeurtenis.omschrijving_intern %}
-                                        {{ laatste_taakgebeurtenis.omschrijving_intern }}
-                                    {% else %}
-                                        Er is geen opmerking toegevoegd
-                                    {% endif %}
-                                    </p>
-                                    {% if laatste_taakgebeurtenis.bijlagen %}
-                                        <div class="container__thumbs">
-                                            <ul>
-                                                {% for bijlage in laatste_taakgebeurtenis.bijlagen %}
-                                                <li>
-                                                    <div class="container__image">
-                                                        <div class="image"
-                                                            style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url|mor_core_url }}')">
+                                    <div class="content">
+                                        <p>Resolutie: {{ taak.resolutie }}<br>
+                                        {% if laatste_taakgebeurtenis.omschrijving_intern %}
+                                            {{ laatste_taakgebeurtenis.omschrijving_intern }}
+                                        {% else %}
+                                            Er is geen opmerking toegevoegd
+                                        {% endif %}
+                                        </p>
+                                        {% if laatste_taakgebeurtenis.bijlagen %}
+                                            <div class="container__thumbs">
+                                                <ul>
+                                                    {% for bijlage in laatste_taakgebeurtenis.bijlagen %}
+                                                    <li>
+                                                        <div class="container__image">
+                                                            <div class="image"
+                                                                style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url|mor_core_url }}')">
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </li>
-                                                {% endfor %}
-                                            </ul>
-                                        </div>
-                                    {% else %}
-                                        <p>Er zijn geen finish foto's mee gestuurd bij het afronden van de taak</p>
-                                    {% endif %}
-                                    <small>{{ laatste_taakgebeurtenis.aangemaakt_op|to_datetime|naturalday_with_time_or_timesince }}</small>
+                                                    </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        {% else %}
+                                            <p>Er zijn geen finish foto's mee gestuurd bij het afronden van de taak</p>
+                                        {% endif %}
+                                        <small>{{ laatste_taakgebeurtenis.aangemaakt_op|to_datetime|naturalday_with_time_or_timesince }}</small>
+                                    </div>
                                 </div>
                             {% elif taak.verwijderd_op %}
                                 <div class="container__content">
