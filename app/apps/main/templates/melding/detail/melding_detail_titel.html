@@ -43,32 +43,6 @@
             <span class="tag tag--qualification tag--spoed">Spoed</span>
         {% endif %}
     </h1>
-{% comment %}
-        <h1>
-            {% with hoogste_gewicht_locatie=locaties.adressen|first %}
-                {% if hoogste_gewicht_locatie.straatnaam %}
-                    {{ hoogste_gewicht_locatie.straatnaam }}
-                    {% spaceless %}
-                        {% if hoogste_gewicht_locatie.huisnummer %}<span>{{ hoogste_gewicht_locatie.huisnummer }}</span>{% endif %}
-                        {% if hoogste_gewicht_locatie.huisletter %}<span>{{ hoogste_gewicht_locatie.huisletter }}</span>{% endif %}
-                    {% endspaceless %}
-                    {% if hoogste_gewicht_locatie.toevoeging %}<span>{{ hoogste_gewicht_locatie.toevoeging }}</span>{% endif %}
-                {% else %}
-                    Melding {{ melding.id }}
-                {% endif %}
-            {% endwith %}
-            {% if melding.status %}
-                <span class="tag tag--qualification {% if melding.status.naam == 'afgehandeld' %}tag--opgelost{% elif melding.status.naam == 'controle' %}tag--controle{% elif melding.status.naam == 'in_behandeling' %}tag--opgelost{% elif melding.status.naam == 'geannuleerd' or melding.status.naam == 'wachten_melder' or melding.status.naam == 'pauze' %}tag--geannuleerd{% endif %}">
-                    {{ melding.status.naam|vertaal }}
-                </span>
-            {% endif %}
-            {% if melding.urgentie >= 0.5 %}
-                <span class="tag tag--qualification tag--spoed">Spoed</span>
-            {% endif %}
-            {% if request.user.profiel.context.template == "benc" %}
-                B & C
-            {% endif %}
-        </h1> {% endcomment %}
 {% if view.is_stream %}
     </template>
 </turbo-stream>

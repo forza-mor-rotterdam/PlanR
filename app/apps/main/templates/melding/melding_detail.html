@@ -40,6 +40,7 @@
                     data-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
                     data-detail-url-prefix-value="{{ MOR_CORE_URL_PREFIX }}"
                     data-detail-signalen-value="{{ melding.signalen_voor_melding|json_encode }}"
+                    data-action="detailHeaderChange@window->detail#setHeaderHeight"
                     class="detail-content-wrapper">
                     <div class="border-green print-only"></div>
                     {% if melding.uuid %}

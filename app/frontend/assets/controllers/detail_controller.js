@@ -21,12 +21,16 @@ export default class extends Controller {
     'taakStatusContainer',
   ]
 
-  containerActionsTargetConnected() {
+  containerActionsTargetConnected(inputHeight = 0) {
     if (window.innerWidth > 767) {
       document.body.querySelector('.bar--top').style.backgroundColor = 'transparent'
-      actionsHeight = this.containerActionsTarget.offsetHeight - 90
+      actionsHeight = inputHeight || this.containerActionsTarget.offsetHeight - 90
       this.containerActionsTarget.parentNode.style.paddingTop = `${actionsHeight}px`
     }
+  }
+
+  setHeaderHeight(event) {
+    this.containerActionsTargetConnected(event.detail.height)
   }
 
   initialize() {
