@@ -278,7 +278,8 @@ class MeldingDetailTaaktypeViewMixin(MeldingDetailViewMixin):
                 for taak in alle_taken
             ]
             alle_taken = [
-                {
+                taak
+                | {
                     "verantwoordelijke_afdeling": afdeling_middels_afdeling_url[
                         taak["verantwoordelijke_afdeling"]
                     ]
@@ -289,7 +290,6 @@ class MeldingDetailTaaktypeViewMixin(MeldingDetailViewMixin):
                         for afdeling in taak.get("afdelingen", [])
                     ],
                 }
-                | taak
                 for taak in alle_taken
             ]
             context["taken"]["alle_taken"] = alle_taken
