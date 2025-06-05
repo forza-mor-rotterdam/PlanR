@@ -248,7 +248,7 @@
                 }
             }
             small {
-                color: $gray-800;
+                color: $gray-600;
                 font-size: 0.667rem;
             }
         }
@@ -335,6 +335,19 @@
 
         span {
             font-size: 0.667rem;
+        }
+    }
+
+    .isTouchDevice & {
+        .container__taak {
+            .description {
+                .wrapper {
+                    button {
+                        opacity: 1;
+                        pointer-events: all;
+                    }
+                }
+            }
         }
     }
 }
