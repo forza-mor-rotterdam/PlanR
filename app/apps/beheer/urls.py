@@ -13,6 +13,10 @@ from apps.authorisatie.views import (
     RechtengroepVerwijderenView,
 )
 from apps.beheer.views import (
+    SpecificatieAanmakenView,
+    SpecificatieAanpassenView,
+    SpecificatieLijstView,
+    SpecificatieVerwijderenView,
     StandaardExterneOmschrijvingAanmakenView,
     StandaardExterneOmschrijvingAanpassenView,
     StandaardExterneOmschrijvingLijstView,
@@ -121,6 +125,26 @@ urlpatterns = [
         "standaardtekst/<int:pk>/verwijderen/",
         StandaardExterneOmschrijvingVerwijderenView.as_view(),
         name="standaard_externe_omschrijving_verwijderen",
+    ),
+    path(
+        "specificatie/",
+        SpecificatieLijstView.as_view(),
+        name="specificatie_lijst",
+    ),
+    path(
+        "specificatie/aanmaken/",
+        SpecificatieAanmakenView.as_view(),
+        name="specificatie_aanmaken",
+    ),
+    path(
+        "specificatie/<uuid:uuid>/aanpassen/",
+        SpecificatieAanpassenView.as_view(),
+        name="specificatie_aanpassen",
+    ),
+    path(
+        "specificatie/<uuid:uuid>/verwijderen/",
+        SpecificatieVerwijderenView.as_view(),
+        name="specificatie_verwijderen",
     ),
     path(
         "release-notes/",

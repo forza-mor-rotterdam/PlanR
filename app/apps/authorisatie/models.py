@@ -184,6 +184,26 @@ class StandaardExterneOmschrijvingVerwijderenPermissie(BasisPermissie):
     codenaam = "standaard_externe_omschrijving_verwijderen"
 
 
+class SpecificatieLijstBekijkenPermissie(BasisPermissie):
+    naam = "Specificatie lijst bekijken"
+    codenaam = "specificatie_lijst_bekijken"
+
+
+class SpecificatieAanmakenPermissie(BasisPermissie):
+    naam = "Specificatie aanmaken"
+    codenaam = "specificatie_aanmaken"
+
+
+class SpecificatieAanpassenPermissie(BasisPermissie):
+    naam = "Specificatie aanpassen"
+    codenaam = "specificatie_aanpassen"
+
+
+class SpecificatieVerwijderenPermissie(BasisPermissie):
+    naam = "Specificatie verwijderen"
+    codenaam = "specificatie_verwijderen"
+
+
 # Rechten voor Locatie
 class LocatieAanpassenPermissie(BasisPermissie):
     naam = "Locatie aanpassen"
@@ -257,6 +277,10 @@ gebruikersgroep_permissies = (
     StandaardExterneOmschrijvingBekijkenPermissie,
     StandaardExterneOmschrijvingAanpassenPermissie,
     StandaardExterneOmschrijvingVerwijderenPermissie,
+    SpecificatieLijstBekijkenPermissie,
+    SpecificatieAanmakenPermissie,
+    SpecificatieAanpassenPermissie,
+    SpecificatieVerwijderenPermissie,
     LocatieAanpassenPermissie,
     ReleaseNoteLijstBekijkenPermissie,
     ReleaseNoteAanmakenPermissie,
