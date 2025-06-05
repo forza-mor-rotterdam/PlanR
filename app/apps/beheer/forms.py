@@ -1,7 +1,9 @@
 import logging
 
 from apps.main.models import StandaardExterneOmschrijving
+from apps.main.services import MORCoreService
 from django import forms
+from django.core.exceptions import ValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -56,3 +58,31 @@ class StandaardExterneOmschrijvingSearchForm(forms.Form):
         required=False,
         widget=forms.TextInput(attrs={"placeholder": "Zoek standaard tekst"}),
     )
+
+
+class SpecificatieForm(forms.Form):
+    naam = forms.CharField(
+        label="Naam",
+        required=True,
+    )
+
+    def clean_naam(self):
+        data = self.cleaned_data["naam"]
+        zoek_resultaten = (
+            MORCoreService()
+            .specificatie_lijst(
+                params={
+                    "naam": data,
+                    "limit": 1,
+                },
+                force_cache=True,
+                cache_timeout=3600,
+            )
+            .get("results", [])
+        )
+        print(zoek_resultaten)
+        if zoek_resultaten:
+            raise ValidationError(
+                f"Deze naam bestaat al{', maar is verwijderd' if zoek_resultaten[0].get('verwijderd_op') else ''}"
+            )
+        return data
