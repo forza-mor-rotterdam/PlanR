@@ -98,6 +98,7 @@
             small {
                 font-size: 0.778rem;
                 font-weight: 400;
+                word-break: break-word;
             }
 
             .wrapper {
@@ -246,6 +247,9 @@
                     margin-bottom: 0;
                     line-height: 1rem;
                     word-break: break-word;
+                }
+                .help-text {
+                    white-space: normal;
                 }
             }
             small {
