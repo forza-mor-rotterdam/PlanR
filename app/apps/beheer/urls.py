@@ -13,6 +13,10 @@ from apps.authorisatie.views import (
     RechtengroepVerwijderenView,
 )
 from apps.beheer.views import (
+    MeldingAfhandelredenAanmakenView,
+    MeldingAfhandelredenAanpassenView,
+    MeldingAfhandelredenLijstView,
+    MeldingAfhandelredenVerwijderenView,
     SpecificatieAanmakenView,
     SpecificatieAanpassenView,
     SpecificatieLijstView,
@@ -125,6 +129,26 @@ urlpatterns = [
         "standaardtekst/<int:pk>/verwijderen/",
         StandaardExterneOmschrijvingVerwijderenView.as_view(),
         name="standaard_externe_omschrijving_verwijderen",
+    ),
+    path(
+        "melding-afhandelreden/",
+        MeldingAfhandelredenLijstView.as_view(),
+        name="melding_afhandelreden_lijst",
+    ),
+    path(
+        "melding-afhandelreden/aanmaken/",
+        MeldingAfhandelredenAanmakenView.as_view(),
+        name="melding_afhandelreden_aanmaken",
+    ),
+    path(
+        "melding-afhandelreden/<int:pk>/aanpassen/",
+        MeldingAfhandelredenAanpassenView.as_view(),
+        name="melding_afhandelreden_aanpassen",
+    ),
+    path(
+        "melding-afhandelreden/<int:pk>/verwijderen/",
+        MeldingAfhandelredenVerwijderenView.as_view(),
+        name="melding_afhandelreden_verwijderen",
     ),
     path(
         "specificatie/",

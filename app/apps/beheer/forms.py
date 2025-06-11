@@ -1,6 +1,12 @@
 import logging
 
-from apps.main.models import StandaardExterneOmschrijving
+from apps.main.models import (
+    STATUS_NIET_OPGELOST_REDENEN_CHOICES,
+    STATUS_NIET_OPGELOST_REDENEN_TITEL,
+    ZICHTBAARHEID_CHOICES,
+    MeldingAfhandelreden,
+    StandaardExterneOmschrijving,
+)
 from apps.main.services import MORCoreService
 from django import forms
 from django.core.exceptions import ValidationError
@@ -8,13 +14,14 @@ from django.core.exceptions import ValidationError
 logger = logging.getLogger(__name__)
 
 
-class StandaardExterneOmschrijvingAanpassenForm(forms.ModelForm):
+class StandaardExterneOmschrijvingForm(forms.ModelForm):
     titel = forms.CharField(
         label="Afhandelreden",
         help_text="Deze tekst wordt gebruikt om de juiste standaard tekst te selecteren.",
         widget=forms.TextInput(
             attrs={
                 "data-externeomschrijvingformulier-target": "externeOmschrijvingTitel",
+                "data-action": "externeomschrijvingformulier#onChangeHandler",
                 "name": "titel",
             }
         ),
@@ -26,30 +33,177 @@ class StandaardExterneOmschrijvingAanpassenForm(forms.ModelForm):
                 "cols": 38,
                 "style": "resize: none;",
                 "data-externeomschrijvingformulier-target": "externeOmschrijvingTekst",
-                "data-action": "externeomschrijvingformulier#onChangeExterneOmschrijvingTekst",
+                "data-action": "externeomschrijvingformulier#onChangeHandler",
                 "name": "tekst",
             }
         ),
         label="Bericht naar melder",
         max_length=1000,
     )
+    zichtbaarheid = forms.ChoiceField(
+        widget=forms.RadioSelect(
+            attrs={
+                "class": "list--form-radio-input",
+                "data-externeomschrijvingformulier-target": "zichtbaarheidField",
+                "data-action": "externeomschrijvingformulier#onChangeHandler",
+            }
+        ),
+        choices=ZICHTBAARHEID_CHOICES,
+    )
+    reden = forms.ModelChoiceField(
+        queryset=MeldingAfhandelreden.objects.all(),
+        widget=forms.RadioSelect(
+            attrs={
+                "class": "list--form-radio-input",
+                "data-externeomschrijvingformulier-target": "nietOpgelostRedenField",
+                "data-action": "externeomschrijvingformulier#onChangeHandler",
+            }
+        ),
+        required=False,
+    )
+    specificatie_opties = forms.ChoiceField(
+        widget=forms.RadioSelect(
+            attrs={
+                "class": "list--form-radio-input",
+                # "class": "form-check-input",
+                "data-action": "externeomschrijvingformulier#onChangeHandler",
+                "data-externeomschrijvingformulier-target": "nietOpgelostSpecificatieOptiesField",
+            }
+        ),
+        required=False,
+    )
+
+    def clean_specificatie_opties(self):
+        data = self.cleaned_data["specificatie_opties"]
+        print("specificatie_opties")
+        print(data)
+        print(bool(data))
+        if data:
+            return [data]
+        return []
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        specificatie_lijst = (
+            MORCoreService()
+            .specificatie_lijst(
+                params={
+                    "limit": 100,
+                },
+                force_cache=True,
+                cache_timeout=3600,
+            )
+            .get("results", [])
+        )
+        self.fields["specificatie_opties"].choices = [
+            (
+                specificatie.get("_links", {}).get("self", "-"),
+                specificatie.get("naam", "-"),
+            )
+            for specificatie in specificatie_lijst
+        ]
 
     class Meta:
         model = StandaardExterneOmschrijving
-        fields = ["titel", "tekst"]
+        fields = [
+            "titel",
+            "tekst",
+            "zichtbaarheid",
+            "reden",
+            "specificatie_opties",
+        ]
 
 
-class StandaardExterneOmschrijvingAanmakenForm(
-    StandaardExterneOmschrijvingAanpassenForm
-):
+class MeldingAfhandelredenForm(forms.ModelForm):
+    reden = forms.ChoiceField(
+        widget=forms.RadioSelect(
+            attrs={
+                "class": "list--form-radio-input",
+                "data-beheer--melding-afhandelreden-target": "reden",
+            }
+        ),
+        required=False,
+        choices=STATUS_NIET_OPGELOST_REDENEN_CHOICES,
+    )
+    specificatie_opties = forms.MultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple(
+            attrs={
+                "class": "form-check-input",
+                "classList": "list--form-check-input list--form-check-input--full-width",
+                "data-beheer--melding-afhandelreden-target": "specificatieOpties",
+            }
+        ),
+        required=False,
+    )
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # self.fields[
-        #     "titel"
-        # ].help_text = "Geef een titel op voor de standaard tekst."
-        # self.fields[
-        #     "tekst"
-        # ].help_text = "Geef een standaard tekst op van maximaal 2000 tekens. Deze tekst kan bij het afhandelen van een melding aangepast worden."
+        specificatie_lijst = (
+            MORCoreService()
+            .specificatie_lijst(
+                params={
+                    "limit": 100,
+                },
+                force_cache=True,
+                cache_timeout=3600,
+            )
+            .get("results", [])
+        )
+
+        melding_afhandelredenen = MeldingAfhandelreden.objects.all()
+        if self.instance.id:
+            melding_afhandelredenen = melding_afhandelredenen.exclude(
+                id=self.instance.id,
+            )
+        gebruikte_specificatie_urls = list(
+            set(
+                [
+                    url
+                    for url_list in melding_afhandelredenen.filter(
+                        specificatie_opties__isnull=False
+                    ).values_list("specificatie_opties", flat=True)
+                    for url in url_list
+                ]
+            )
+        )
+        gebruikte_redenen = list(
+            melding_afhandelredenen.values_list("reden", flat=True)
+        )
+        specificatie_opties = [
+            (
+                specificatie.get("_links", {}).get("self", "-"),
+                specificatie.get("naam", "-"),
+            )
+            for specificatie in specificatie_lijst
+        ]
+        specificatie_choices = [
+            (specificatie[0], specificatie[1])
+            for specificatie in specificatie_opties
+            if specificatie[0] not in gebruikte_specificatie_urls
+        ]
+        if len(specificatie_choices) == 0:
+            self.fields["specificatie_opties"].widget = forms.HiddenInput()
+            self.fields["specificatie_opties"].choices = []
+        else:
+            self.fields["specificatie_opties"].choices = specificatie_choices
+
+        reden_choices = [
+            (choice[0], STATUS_NIET_OPGELOST_REDENEN_TITEL.get(choice[0], choice[0]))
+            for choice in STATUS_NIET_OPGELOST_REDENEN_CHOICES
+            if choice[0] not in gebruikte_redenen
+        ]
+        self.fields["reden"].choices = reden_choices
+        if not self.instance.id:
+            self.fields["reden"].initial = reden_choices[0][0]
+        if len(reden_choices) == 1:
+            self.fields["reden"].widget = forms.HiddenInput()
+
+    class Meta:
+        model = MeldingAfhandelreden
+        fields = [
+            "reden",
+            "specificatie_opties",
+        ]
 
 
 class StandaardExterneOmschrijvingSearchForm(forms.Form):

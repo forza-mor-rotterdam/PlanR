@@ -28,7 +28,7 @@
         {% if object %}
             <h1>Wijzig Specificatie '{{ object.naam }}'</h1>
         {% else %}
-            <h1>Specificatie aanmaken</h1>
+            <h1>Specificatie {% if object %}aanpassen{% else %}aanmaken{% endif %}</h1>
         {% endif %}
         <div class="grid-container grid-container--4-1">
             <div class="grid-item">

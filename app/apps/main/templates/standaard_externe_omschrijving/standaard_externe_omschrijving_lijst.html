@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% load rotterdam_formulier_html %}
 {% load json_encode from json_tags %}
+{% load get from melding_tags %}
+{% load specificatie_naam from specificatie_tags %}
 {% block title %}
     Standaard Tekst | Beheer | PlanR
 {% endblock title %}
@@ -57,16 +59,31 @@
                     <th>ID</th>
                     <th>Titel</th>
                     <th>Tekst</th>
+                    <th>Zichtbaarheid</th>
+                    <th>Niet opgelost reden</th>
+                    <th>Specificatie opties</th>
                     <th></th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
                 {% for object in object_list %}
+                    {% with zichtbaarheid=ZICHTBAARHEID_TITEL|get:object.zichtbaarheid %}
                     <tr data-row-search-target="row">
                         <td data-row-search-target="searchable">{{ object.id }}</td>
                         <td data-row-search-target="searchable">{{ object.titel }}</td>
-                        <td data-row-search-target="searchable">{{ object.tekst|truncate_text:200 }}</td>
+                        <td data-row-search-target="searchable">{{ object.tekst|truncate_text:20 }}</td>
+                        <td data-row-search-target="searchable">{{ zichtbaarheid }}</td>
+                        <td data-row-search-target="searchable">{% if object.reden %}{{ object.reden }}{% else %}-{% endif %}</td>
+                        <td data-row-search-target="searchable">
+                            {% if object.specificatie_opties %}
+                            {% for specificatie_url in object.specificatie_opties %}
+                            {{ specificatie_url|specificatie_naam }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
                         <td>
                             <a href="{% url 'standaard_externe_omschrijving_aanpassen' object.pk %}"
                                aria-label="Aanpassen">{% include "icons/edit2.svg" %}</a>
@@ -77,6 +94,7 @@
                                aria-label="Verwijderen">{% include "icons/bin.svg" %}</a>
                         </td>
                     </tr>
+                    {% endwith %}
                 {% endfor %}
             </tbody>
         </table>

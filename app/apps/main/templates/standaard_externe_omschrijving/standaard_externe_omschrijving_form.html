@@ -2,7 +2,7 @@
 {% load rotterdam_formulier_html %}
 {% load json_encode from json_tags %}
 {% block title %}
-    Wijzig Standaard Tekst | Beheer | PlanR
+    Standaard Tekst {% if object %}Aanpassen{% else %}Aanmaken{% endif %} | Beheer | PlanR
 {% endblock title %}
 {% block header %}
     {% with pageTitle="Standaard teksten" %}
@@ -26,20 +26,30 @@
                 <span>Standaard Teksten</span>
             </a>
         </div>
-        <h1>Wijzig Standaard Tekst</h1>
+        <h1>Standaard Tekst {% if object %}Aanpassen{% else %}Aanmaken{% endif %}</h1>
         <div class="grid-container">
             <div class="grid-item">
                 <form action="."
                       method="post"
                       data-controller="externeomschrijvingformulier"
+                      data-externeomschrijvingformulier-melding-afhandelreden-lijst-value="{{ melding_afhandelreden_lijst|json_encode }}"
                       data-turbo="false"
                       enctype="multipart/form-data"
-                      id="externeOmschrijvingForm"
                       novalidate>
+                    {{ form.non_field_errors }}
                     {% csrf_token %}
                     <fieldset>
                         <div class="form-control__with-helptext js-validation">{{ form.titel|render_rotterdam_formulier }}</div>
                         <div class="form-control__with-helptext js-validation">{{ form.tekst|render_rotterdam_formulier }}</div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-control__with-helptext js-validation">{{ form.zichtbaarheid|render_rotterdam_formulier }}</div>
+                    </fieldset>
+                    <fieldset data-externeomschrijvingformulier-target="nietOpgelostContainer">
+                        <div class="form-control__with-helptext js-validation">{{ form.reden|render_rotterdam_formulier }}</div>
+                    </fieldset>
+                    <fieldset data-externeomschrijvingformulier-target="nietOpgelostSpecificatiesContainer">
+                        <div class="form-control__with-helptext js-validation">{{ form.specificatie_opties|render_rotterdam_formulier }}</div>
                     </fieldset>
                     <div class="form-row container__button">
                         <div class="form-row btn-row">
@@ -50,8 +60,8 @@
                                     data-utils-url-param="{% url 'standaard_externe_omschrijving_lijst' %}">
                                 <span>Annuleren</span>
                             </button>
-                            <button type="submit" class="btn btn-action">
-                                <span>Aanpassen</span>
+                            <button type="submit" class="btn btn-action" data-externeomschrijvingformulier-target="submitButton">
+                                <span>{% if object %}Aanpassen{% else %}Aanmaken{% endif %}</span>
                             </button>
                         </div>
                     </div>

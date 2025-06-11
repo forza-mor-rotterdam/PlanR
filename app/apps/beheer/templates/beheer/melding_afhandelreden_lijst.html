@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 {% load get from melding_tags %}
+{% load specificatie_naam from specificatie_tags %}
 {% block title %}
-    Specificatie overzicht | Beheer | PlanR
+    Melding afhandelredenen overzicht | Beheer | PlanR
 {% endblock title %}
 {% block header %}
-    {% with pageTitle="Rollen" %}
+    {% with pageTitle="Melding afhandelreden" %}
         {% include "snippets/pageheader.html" %}
     {% endwith %}
 {% endblock header %}
@@ -24,8 +25,9 @@
             </a>
         </div>
         <div class="container__flex">
-            <h1>Specificatie overzicht</h1>
-            <a class="btn btn-action" href="{% url 'specificatie_aanmaken' %}">
+            <h1>Overzicht</h1>
+            {% if object_list|length < STATUS_NIET_OPGELOST_REDENEN_CHOICES|length %}
+            <a class="btn btn-action" href="{% url 'melding_afhandelreden_aanmaken' %}">
                 <svg width="24"
                      height="24"
                      viewBox="0 0 32 32"
@@ -33,8 +35,9 @@
                      xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#ffffff"></path>
                 </svg>
-                Nieuwe specificatie
+                Nieuwe afhandelreden
             </a>
+            {% endif %}
         </div>
         <!-- <form>
             <div class="form-row">
@@ -47,32 +50,38 @@
         <table>
             <thead>
                 <tr>
-                    <th>Naam</th>
                     <th>Reden</th>
+                    <th>Specificatie opties</th>
+                    <th>Aantal standaard berichten</th>
                     <th></th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
                 {% for object in object_list %}
-                    {% with specificatie_links=object|get:"_links" %}
+                    {% with reden=STATUS_NIET_OPGELOST_REDENEN_TITEL|get:object.reden %}
                     <tr data-row-search-target="row">
-                        <td data-row-search-target="searchable">{{ object.naam }}</td>
+                        <td data-row-search-target="searchable">{{ reden }}</td>
                         <td>
-                            {% if object.reden %}
-                            <a href="{{ object.reden.aanpassen_url }}">{{ object.reden.reden }}</a>
-                            {% else %}
-                            -
-                            {% endif %}
+                            <ul>
+                                {% for specificatie_url in object.specificatie_opties %}
+                                    <li>
+                                        {{ specificatie_url|specificatie_naam }}{% if not forloop.last %}{% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
                         </td>
                         <td>
-                            <a href="{% url 'specificatie_aanpassen' object.uuid %}" aria-label="Aanpassen">{% include "icons/edit2.svg" %}</a>
+                        {{ object.standaard_externe_omschrijvingen_voor_melding_afhandelreden.count }}
                         </td>
                         <td>
-                            {% if specificatie_links.self not in gebruikte_specificatie_urls %}
-                                <a href="{% url 'specificatie_verwijderen' object.uuid %}"
-                                   onclick="return confirm('Weet je zeker dat je deze specificatie wilt verwijderen?')"
-                                   aria-label="Verwijderen">{% include "icons/bin.svg" %}</a>
+                            <a href="{% url 'melding_afhandelreden_aanpassen' object.id %}" aria-label="Aanpassen">{% include "icons/edit2.svg" %}</a>
+                        </td>
+                        <td>
+                            {% if object.standaard_externe_omschrijvingen_voor_melding_afhandelreden.count <= 0 %}
+                            <a href="{% url 'melding_afhandelreden_verwijderen' object.id %}"
+                               onclick="return confirm('Weet je zeker dat je deze melding afhandelreden wilt verwijderen?')"
+                               aria-label="Verwijderen">{% include "icons/bin.svg" %}</a>
                             {% endif %}
                         </td>
                     </tr>
