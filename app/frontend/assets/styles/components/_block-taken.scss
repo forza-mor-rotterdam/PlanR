@@ -59,7 +59,7 @@
         }
 
         .container__uitklapper {
-            z-index: 800;
+            z-index: 10;
             > span {
                 display: inline-block;
                 padding: 0.25rem 2em 0.25rem 0.25rem;
@@ -88,16 +88,34 @@
             }
 
             &:hover {
-                z-index: 900;
+                z-index: 20;
             }
         }
 
         .description {
             font-weight: 700;
-            padding-right: 2rem;
 
             small {
-                font-size: 0.667rem;
+                font-size: 0.778rem;
+                font-weight: 400;
+            }
+
+            .wrapper {
+                display: flex;
+                padding-right: 10px;
+
+                button {
+                    opacity: 0;
+                    pointer-events: none;
+                    transition: opacity $transition-duration-default $transition-ease-default;
+                }
+
+                &:hover {
+                    button {
+                        opacity: 1;
+                        pointer-events: all;
+                    }
+                }
             }
 
             button {
@@ -110,8 +128,12 @@
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
-            font-size: 0.875rem;
+            font-size: 0.778rem;
             margin-bottom: 0;
+        }
+
+        .description p {
+            font-size: 0.889rem;
         }
 
         &[open] {
@@ -173,6 +195,7 @@
     }
     .container__content {
         padding: 1rem 0.5rem;
+        background-color: $white;
 
         &:first-child {
             padding-left: 0;
@@ -224,11 +247,10 @@
                     line-height: 1rem;
                     word-break: break-word;
                 }
-
-                small {
-                    color: $gray-800;
-                    font-size: 0.667rem;
-                }
+            }
+            small {
+                color: $gray-600;
+                font-size: 0.667rem;
             }
         }
     }
@@ -314,6 +336,19 @@
 
         span {
             font-size: 0.667rem;
+        }
+    }
+
+    .isTouchDevice & {
+        .container__taak {
+            .description {
+                .wrapper {
+                    button {
+                        opacity: 1;
+                        pointer-events: all;
+                    }
+                }
+            }
         }
     }
 }

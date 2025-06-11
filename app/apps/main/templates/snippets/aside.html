@@ -1,11 +1,7 @@
 {% load webpack_static from webpack_loader %}
 <aside class="menu-bar" data-testid="menuBar" data-controller="navigation">
     <div>
-        <h1>
-            <a href="{% url 'root' %}">
-                <span class="green">P</span><span class="nav--wide"><span class="green">lan</span>R</span>
-            </a>
-        </h1>
+
         <ul class="list-nav--primary">
             {% if request.user.is_authenticated %}
                 <li>

@@ -18,6 +18,16 @@
             </dd>
         </div>
         <div>
+            <dt>Buurt</dt>
+            <dd>
+                {% if locatie.buurtnaam %}
+                    {{ locatie.buurtnaam }}
+                {% else %}
+                    onbekend
+                {% endif %}
+            </dd>
+        </div>
+        <div>
             <dt>Wijk</dt>
             <dd>
                 {% if locatie.wijknaam %}
@@ -28,10 +38,10 @@
             </dd>
         </div>
         <div>
-            <dt>Buurt</dt>
+            <dt>Plaatsnaam</dt>
             <dd>
-                {% if locatie.buurtnaam %}
-                    {{ locatie.buurtnaam }}
+                {% if locatie.plaatsnaam %}
+                    {{ locatie.plaatsnaam }}
                 {% else %}
                     onbekend
                 {% endif %}

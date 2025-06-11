@@ -280,22 +280,24 @@ class StatusKolom(StandaardKolom):
     _td_standaard_classes = "nowrap"
 
     def td_inhoud(self):
-        colors = {
-            "afgehandeld": "green",
-            "controle": "yellow",
-            "in_behandeling": "darkblue",
-            "geannuleerd": "red",
+        status = {
+            "afgehandeld": "voltooid",
+            "controle": "controle",
+            "in_behandeling": "opgelost",
+            "geannuleerd": "geannuleerd",
+            "wachten_melder": "geannuleerd",
+            "pauze": "geannuleerd",
         }
         melding = string_based_lookup(self.context, "melding", not_found_value={})
         taken = melding_taken(melding)
 
         actieve_taken = taken["actieve_taken"]
-        actieve_taken_tekst = f"({len(actieve_taken)})" if actieve_taken else ""
+        actieve_taken_tekst = f" ({len(actieve_taken)})" if actieve_taken else ""
         status_naam = escape(
             string_based_lookup(self.context, self._kolom_inhoud, not_found_value="")
         )
         return mark_safe(
-            f'<span class="display--flex--center badge badge--{colors.get(status_naam, "lightblue")}">{VERTALINGEN.get(status_naam, status_naam)}{actieve_taken_tekst}</span>'
+            f'<span class="display--flex--center tag tag--qualification tag--{status.get(status_naam, "")}">{VERTALINGEN.get(status_naam, status_naam)}{actieve_taken_tekst}</span>'
         )
 
 
@@ -411,10 +413,10 @@ class StatusFilter(StandaardFilter):
     def opties(self):
         return [
             ["afgehandeld", {"label": "Afgehandeld"}],
-            ["controle", {"label": "Controle"}],
+            ["controle", {"label": "Te controleren"}],
             ["geannuleerd", {"label": "Geannuleerd"}],
             ["pauze", {"label": "Gepauzeerd"}],
-            ["in_behandeling", {"label": "In behandeling"}],
+            ["in_behandeling", {"label": "In uitvoering"}],
             ["openstaand", {"label": "Openstaand"}],
             ["wachten_melder", {"label": "Wachten op melder"}],
         ]

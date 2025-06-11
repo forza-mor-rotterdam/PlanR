@@ -1,7 +1,7 @@
 {% load context_template from context_tags %}
 {% context_template "melding_detail_acties.html" as acties_template %}
 {% include "melding/detail/taken.html" %}
-{% include "melding/detail/header_status.html" with melding=melding only %}
+{% include "melding/detail/melding_detail_titel.html" %}
 {% include "melding/detail/taken_aanmaken_form.html" with form=form view=view only %}
 {% include "melding/detail/tijdlijn.html" with melding=melding only %}
 {% include acties_template %}

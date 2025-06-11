@@ -40,13 +40,14 @@
                     data-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
                     data-detail-url-prefix-value="{{ MOR_CORE_URL_PREFIX }}"
                     data-detail-signalen-value="{{ melding.signalen_voor_melding|json_encode }}"
+                    data-action="detailHeaderChange@window->detail#setHeaderHeight"
                     class="detail-content-wrapper">
                     <div class="border-green print-only"></div>
                     {% if melding.uuid %}
                         <div class="page__detail">
                             <div id="id_maincontent">
-                                <div class="grid-container grid-container--half">
-                                    <div class="grid-item">
+                                <div class="container__header stayfixed" data-detail-target="containerActions">
+                                    <div class="item">
                                         <a href="{% url 'melding_lijst' %}"
                                         data-turbo-action='advance'
                                         class="link--back">
@@ -60,12 +61,11 @@
                                             Terug
                                         </a>
                                         {% include "melding/melding_gebruiker_actief.html" %}
-                                        {% include titel_template %}
-                                        <div id="melding_detail_header_status">
-                                            {% include "melding/detail/header_status.html" with melding=melding disable_stream=True only %}
+                                        <div id="melding_detail_titel">
+                                             {% include "melding/detail/melding_detail_titel.html" %}
                                         </div>
                                     </div>
-                                    <div class="grid-item aside">
+                                    <div class="item aside">
                                         <div class="container__actions" data-detail-target="containerActions">
                                             <div class="wrapper">
                                                 <div class="container__meldingnavigatie">

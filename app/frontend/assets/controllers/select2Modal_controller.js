@@ -6,8 +6,8 @@ import Select2 from 'select2'
 export default class extends Controller {
   static targets = ['targetField']
 
-  connect() {
-    $(this.targetFieldTarget).select2({
+  targetFieldTargetconnected(target) {
+    $(target).select2({
       dropdownParent: $('#dialogGeneral'),
     })
   }

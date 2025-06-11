@@ -138,3 +138,12 @@ def taak_status_tekst(taak):
 @register.filter(name="taak_status_css_class")
 def taak_status_css_class(taak):
     return base_taak_status_tekst(taak, css_class=True)
+
+
+@register.filter(name="api_url_to_user_url")
+def api_url_to_user_url(api_url):
+    if not isinstance(api_url, str):
+        return api_url
+    api_base_path = "/api/v1/"
+    user_base_path = "/"
+    return api_url.replace(api_base_path, user_base_path)

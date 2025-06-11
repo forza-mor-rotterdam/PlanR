@@ -105,6 +105,12 @@ export default class extends Controller {
       } else {
         this.element.style.display = 'none'
       }
+      this.element.dispatchEvent(
+        new CustomEvent('detailHeaderChange', {
+          bubbles: true,
+          detail: { heigth: self.gebruikerLijstTarget.closest('section').offsetHeight },
+        })
+      )
     }
   }
 

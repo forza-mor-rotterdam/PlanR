@@ -5,6 +5,10 @@ export default class extends Controller {
       document.body.classList.add('css--safari')
     }
 
+    if ('ontouchstart' in window) {
+      document.body.classList.add('isTouchDevice')
+    }
+
     this.sessionTimerTurboFrame = document.getElementById('tf_session_timer')
     this.toastTurboFrame = document.getElementById('tf_toast_lijst')
     this.notificationsTurboFrameReloadTimeout = null
