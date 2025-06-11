@@ -8,7 +8,7 @@
 <div class="wrapper--actions">
     {% if not melding.afgesloten_op %}
     <div class="container__uitklapper">
-        <span>{% include "icons/dots.svg" %}</span>
+        <span data-testid="melding_handelingen_uitklapper">{% include "icons/dots.svg" %}</span>
         <div class="legenda">
             {% melding_taken melding as taak_info %}
                 <ul class="list-clean">
