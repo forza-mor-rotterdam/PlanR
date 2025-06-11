@@ -120,8 +120,7 @@
     }
 
     .section--imageslider & {
-        height: 98px;
-        // max-width: 0;
+        height: 79px;
 
         ul {
             position: absolute;
@@ -143,7 +142,7 @@
             height: 100%;
             display: block;
             margin: auto;
-            background-size: contain;
+            background-size: cover;
             background-position: 50% 50%;
             background-repeat: no-repeat;
         }
