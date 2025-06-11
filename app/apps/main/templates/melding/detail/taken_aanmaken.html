@@ -205,7 +205,14 @@
                     <div>
                         <h3>Taak</h3>
                         <strong data-omschrijving></strong>
-                        <p data-toelichting="..."></p>
+                        <p>
+                            <span data-toelichting=""></span>
+                            <button class="btn btn-textlink btn-info"
+                                    data-action="infosheet#openInfosheet"
+                                    data-infosheet-action-param="{% url 'taaktype_taakr' %}?taakapplicatie-taaktype-url=">
+                                {% include "icons/info.svg" %}
+                            </button>
+                        </p>
                         <h3>Afdeling(en)</h3>
                         <span data-afdelingen></span>
                     </div>
@@ -215,7 +222,8 @@
                                   maxlength="5000"
                                   rows="4"
                                   id="id_form-0-bericht"
-                                  data-action="taken-aanmaken--manager#taaktypeBerichtHandler"></textarea>
+                                  data-action="taken-aanmaken--manager#taaktypeBerichtHandler"
+                                  placeholder="Type om een bericht toe te voegen..."></textarea>
                         <p class="help-text">De opmerking wordt met de uitvoerder gedeeld.</p>
                         <input type="hidden"
                                name="form-0-titel"

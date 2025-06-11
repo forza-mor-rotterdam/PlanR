@@ -913,7 +913,7 @@ input.readonly {
     gap: 0.5rem;
     li {
         flex: 0 0 auto;
-        padding: 1em 0.8em;
+        padding: 0.6em 0.8em;
         background-color: $white;
         font-size: 0.777rem;
 
@@ -1185,6 +1185,17 @@ form.taken-aanmaken {
                 button {
                     display: flex;
                     margin-left: 5px;
+                    padding-top: 3px;
+                    opacity: 0;
+                    pointer-events: none;
+                    transition: opacity $transition-duration-default $transition-ease-default;
+                }
+
+                &:hover {
+                    button {
+                        opacity: 1;
+                        pointer-events: all;
+                    }
                 }
             }
         }
@@ -1288,6 +1299,7 @@ form.taken-aanmaken {
                 width: calc(100% - 8px);
                 border: 1px solid $blue-200;
                 resize: none;
+                padding: 0.75rem;
             }
         }
 
@@ -1295,6 +1307,23 @@ form.taken-aanmaken {
             display: flex;
             gap: 2em;
             padding: 1rem 0.889rem;
+            p {
+                max-width: 20rem;
+                padding-right: 2rem;
+                display: flex;
+
+                span {
+                    display: -webkit-box;
+                    -webkit-box-orient: vertical;
+                    -webkit-line-clamp: 3;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                button {
+                    align-self: flex-end;
+                }
+            }
 
             > div:first-child {
                 flex: 1 1 60%;
@@ -1313,6 +1342,19 @@ form.taken-aanmaken {
     label {
         &:has(input:disabled) {
             color: $text-muted;
+        }
+    }
+
+    .isTouchDevice & {
+        .input-labels {
+            .list--level2 {
+                li {
+                    button {
+                        opacity: 1;
+                        pointer-events: all;
+                    }
+                }
+            }
         }
     }
 }
