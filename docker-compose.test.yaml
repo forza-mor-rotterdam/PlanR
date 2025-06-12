@@ -13,6 +13,9 @@ services:
         condition: service_started
     networks:
       - planr_network
+    volumes:
+      - ./media:/media
+      - ./app:/app
 
 
   redis:
