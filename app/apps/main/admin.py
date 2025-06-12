@@ -12,7 +12,10 @@ from django_celery_results.models import TaskResult
 
 
 class MeldingAfhandelredenAdmin(admin.ModelAdmin):
-    ...
+    list_display = [
+        "reden",
+        "specificatie_opties",
+    ]
 
 
 class StandaardExterneOmschrijvingAdmin(admin.ModelAdmin):

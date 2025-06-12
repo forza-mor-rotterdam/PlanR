@@ -1,6 +1,7 @@
 import logging
 
 from apps.main.models import (
+    SPECIFICATIE_CACHE_TIMEOUT,
     STATUS_NIET_OPGELOST_REDENEN_CHOICES,
     STATUS_NIET_OPGELOST_REDENEN_TITEL,
     ZICHTBAARHEID_CHOICES,
@@ -75,9 +76,6 @@ class StandaardExterneOmschrijvingForm(forms.ModelForm):
 
     def clean_specificatie_opties(self):
         data = self.cleaned_data["specificatie_opties"]
-        print("specificatie_opties")
-        print(data)
-        print(bool(data))
         if data:
             return [data]
         return []
@@ -89,15 +87,16 @@ class StandaardExterneOmschrijvingForm(forms.ModelForm):
             .specificatie_lijst(
                 params={
                     "limit": 100,
+                    "is_verwijderd": False,
                 },
                 force_cache=True,
-                cache_timeout=3600,
+                cache_timeout=SPECIFICATIE_CACHE_TIMEOUT,
             )
             .get("results", [])
         )
         self.fields["specificatie_opties"].choices = [
             (
-                specificatie.get("_links", {}).get("self", "-"),
+                specificatie.get("_links", {}).get("self", {}).get("href", "-"),
                 specificatie.get("naam", "-"),
             )
             for specificatie in specificatie_lijst
@@ -125,6 +124,17 @@ class MeldingAfhandelredenForm(forms.ModelForm):
         required=False,
         choices=STATUS_NIET_OPGELOST_REDENEN_CHOICES,
     )
+    toelichting = forms.CharField(
+        widget=forms.Textarea(
+            attrs={
+                "rows": 5,
+                "cols": 38,
+                "style": "resize: none;",
+            }
+        ),
+        required=False,
+        max_length=250,
+    )
     specificatie_opties = forms.MultipleChoiceField(
         widget=forms.CheckboxSelectMultiple(
             attrs={
@@ -143,9 +153,10 @@ class MeldingAfhandelredenForm(forms.ModelForm):
             .specificatie_lijst(
                 params={
                     "limit": 100,
+                    "is_verwijderd": False,
                 },
                 force_cache=True,
-                cache_timeout=3600,
+                cache_timeout=SPECIFICATIE_CACHE_TIMEOUT,
             )
             .get("results", [])
         )
@@ -171,7 +182,7 @@ class MeldingAfhandelredenForm(forms.ModelForm):
         )
         specificatie_opties = [
             (
-                specificatie.get("_links", {}).get("self", "-"),
+                specificatie.get("_links", {}).get("self", {}).get("href", "-"),
                 specificatie.get("naam", "-"),
             )
             for specificatie in specificatie_lijst
@@ -202,6 +213,7 @@ class MeldingAfhandelredenForm(forms.ModelForm):
         model = MeldingAfhandelreden
         fields = [
             "reden",
+            "toelichting",
             "specificatie_opties",
         ]
 
@@ -230,11 +242,10 @@ class SpecificatieForm(forms.Form):
                     "limit": 1,
                 },
                 force_cache=True,
-                cache_timeout=3600,
+                cache_timeout=SPECIFICATIE_CACHE_TIMEOUT,
             )
             .get("results", [])
         )
-        print(zoek_resultaten)
         if zoek_resultaten:
             raise ValidationError(
                 f"Deze naam bestaat al{', maar is verwijderd' if zoek_resultaten[0].get('verwijderd_op') else ''}"

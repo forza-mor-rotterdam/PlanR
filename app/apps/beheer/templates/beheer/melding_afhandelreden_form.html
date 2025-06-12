@@ -6,7 +6,7 @@
     Melding afhandelreden {% if object %}aanpassen{% else %}aanmaken{% endif %} | Beheer | PlanR
 {% endblock title %}
 {% block header %}
-    {% with pageTitle="Melding afhandelreden" %}
+    {% with pageTitle="Beheer" %}
         {% include "snippets/pageheader.html" %}
     {% endwith %}
 {% endblock header %}
@@ -44,6 +44,7 @@
                     {% csrf_token %}
                     <fieldset>
                         <div class="form-control__with-helptext js-validation">{{ form.reden|render_rotterdam_formulier }}</div>
+                        <div class="form-control__with-helptext js-validation">{{ form.toelichting|render_rotterdam_formulier }}</div>
                     </fieldset>
 
                     {% if standaard_externe_omschrijving_lijst %}

@@ -5,7 +5,7 @@
     Standaard Tekst {% if object %}Aanpassen{% else %}Aanmaken{% endif %} | Beheer | PlanR
 {% endblock title %}
 {% block header %}
-    {% with pageTitle="Standaard teksten" %}
+    {% with pageTitle="Beheer" %}
         {% include "snippets/pageheader.html" %}
     {% endwith %}
 {% endblock header %}
@@ -23,10 +23,10 @@
                      xmlns="http://www.w3.org/2000/svg">
                     <path d="M9.15173 1.73256L7.73753 0.318359L1.44704 6.60885L1.4142 6.576L0 7.9902L1.4115 9.4017L1.37867 9.43453L7.67186 15.7277L9.08606 14.3135L3.7726 9.00006H24.0098V7.00006H3.88423L9.15173 1.73256Z" fill="#404B4F" />
                 </svg>
-                <span>Standaard Teksten</span>
+                <span>Standaard teksten overzicht</span>
             </a>
         </div>
-        <h1>Standaard Tekst {% if object %}Aanpassen{% else %}Aanmaken{% endif %}</h1>
+        <h1>Standaard tekst {% if object %}aanpassen{% else %}aanmaken{% endif %}</h1>
         <div class="grid-container">
             <div class="grid-item">
                 <form action="."

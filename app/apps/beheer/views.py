@@ -19,8 +19,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (
     CreateView,
@@ -65,7 +64,6 @@ class StandaardExterneOmschrijvingLijstView(
         context = super().get_context_data(**kwargs)
         context.update(
             {
-                "STATUS_NIET_OPGELOST_REDENEN_TITEL": STATUS_NIET_OPGELOST_REDENEN_TITEL,
                 "ZICHTBAARHEID_TITEL": ZICHTBAARHEID_TITEL,
             }
         )
@@ -79,7 +77,6 @@ class StandaardExterneOmschrijvingLijstView(
 class StandaardExterneOmschrijvingMixin:
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        print(list(MeldingAfhandelreden.objects.values("reden", "specificatie_opties")))
         context.update(
             {
                 "melding_afhandelreden_lijst": list(
@@ -131,9 +128,6 @@ class StandaardExterneOmschrijvingVerwijderenView(
         response = self.delete(request, *args, **kwargs)
         messages.success(request, f"De standaard tekst '{object.titel}' is verwijderd")
         return response
-
-    # def render_to_response(self, context, **response_kwargs):
-    #     return HttpResponseRedirect(self.get_success_url())
 
 
 class MeldingAfhandelredenLijstView(
@@ -194,7 +188,13 @@ class MeldingAfhandelredenAanmakenView(
     permission_required = "authorisatie.melding_afhandelreden_aanmaken"
     template_name = "beheer/melding_afhandelreden_form.html"
     form_class = MeldingAfhandelredenForm
-    success_message = "De melding afhandelreden '%(reden)s is aangemaakt"
+    success_message = "De melding afhandelreden '%(reden_verbose)s' is aangemaakt"
+
+    def get_success_message(self, cleaned_data):
+        return self.success_message % dict(
+            cleaned_data,
+            reden_verbose=self.object.reden_verbose,
+        )
 
     def get_success_url(self):
         return reverse_lazy("melding_afhandelreden_aanpassen", args=[self.object.id])
@@ -211,7 +211,13 @@ class MeldingAfhandelredenAanpassenView(
     permission_required = "authorisatie.melding_afhandelreden_aanpassen"
     template_name = "beheer/melding_afhandelreden_form.html"
     form_class = MeldingAfhandelredenForm
-    success_message = "De melding afhandelreden '%(reden)s is aangepast"
+    success_message = "De melding afhandelreden '%(reden_verbose)s' is aangepast"
+
+    def get_success_message(self, cleaned_data):
+        return self.success_message % dict(
+            cleaned_data,
+            reden_verbose=self.object.reden_verbose,
+        )
 
     def get_success_url(self):
         reden = self.object
@@ -240,7 +246,7 @@ class MeldingAfhandelredenVerwijderenView(PermissionRequiredMixin, DeleteView):
         object = self.get_object()
         response = self.delete(request, *args, **kwargs)
         messages.success(
-            request, f"De melding afhandelreden '{object.reden}' is verwijderd"
+            request, f"De melding afhandelreden '{object.reden_verbose}' is verwijderd"
         )
         return response
 
@@ -266,11 +272,26 @@ class SpecificatieLijstView(PermissionRequiredMixin, TemplateView):
                 }
             return {}
 
-        specificatie_lijst = (
+        specificatie_lijst = MORCoreService().specificatie_lijst(
+            params={
+                "limit": 100,
+                "is_verwijderd": False,
+            },
+            force_cache=True,
+            cache_timeout=SPECIFICATIE_CACHE_TIMEOUT,
+        )
+        if specificatie_lijst.get("error"):
+            messages.error(
+                self.request, "Er ging iets mis met het ophalen van de specificaties"
+            )
+        specificatie_lijst = specificatie_lijst.get("results", [])
+
+        verwijderde_specificatie_lijst = (
             MORCoreService()
             .specificatie_lijst(
                 params={
                     "limit": 100,
+                    "is_verwijderd": True,
                 },
                 force_cache=True,
                 cache_timeout=SPECIFICATIE_CACHE_TIMEOUT,
@@ -289,20 +310,22 @@ class SpecificatieLijstView(PermissionRequiredMixin, TemplateView):
             )
         )
 
-        specificatie_lijst = [
-            specificatie
-            | {
-                "reden": get_melding_afhandelreden(
-                    specificatie.get("_links", {}).get("self")
-                )
-            }
-            for specificatie in specificatie_lijst
-        ]
-        print("gebruikte_specificatie_urls")
-        print(gebruikte_specificatie_urls)
+        specificatie_lijst = sorted(
+            [
+                specificatie
+                | {
+                    "reden": get_melding_afhandelreden(
+                        specificatie.get("_links", {}).get("self", {}).get("href")
+                    )
+                }
+                for specificatie in specificatie_lijst
+            ],
+            key=lambda o: o.get("naam"),
+        )
         context.update(
             {
                 "object_list": specificatie_lijst,
+                "verwijderde_specificatie_lijst": verwijderde_specificatie_lijst,
                 "gebruikte_specificatie_urls": gebruikte_specificatie_urls,
             }
         )
@@ -316,11 +339,20 @@ class SpecificatieAanmakenView(PermissionRequiredMixin, FormView):
     form_class = SpecificatieForm
 
     def form_valid(self, form):
-        form.cleaned_data.get("naam")
         response = MORCoreService().specificatie_aanmaken(
             naam=form.cleaned_data.get("naam")
         )
-        print(response)
+        if response.get("error"):
+            messages.error(
+                self.request,
+                f"Er ging iets mis met het aanmaken van de specificatie '{form.cleaned_data.get('naam')}'",
+            )
+        else:
+            messages.success(
+                self.request,
+                f"De specificatie '{form.cleaned_data.get('naam')}' is aangemaakt",
+            )
+
         return super().form_valid(form)
 
 
@@ -330,13 +362,23 @@ class SpecificatieAanpassenView(PermissionRequiredMixin, FormView):
     template_name = "beheer/specificatie_form.html"
     form_class = SpecificatieForm
 
-    def get_initial(self):
-        initial = self.initial.copy()
-        self.object = MORCoreService().specificatie_detail(
+    def dispatch(self, request, *args, **kwargs):
+        response = MORCoreService().specificatie_detail(
             specificatie_uuid=self.kwargs.get("uuid"),
             force_cache=True,
             cache_timeout=3600,
         )
+        self.object = None
+        if response.get("error"):
+            messages.error(
+                self.request, "Er ging iets mis met het ophalen van de specificatie"
+            )
+            return redirect(reverse("specificatie_lijst"))
+        self.object = response
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_initial(self):
+        initial = self.initial.copy()
         initial["naam"] = self.object["naam"]
         return initial
 
@@ -355,7 +397,17 @@ class SpecificatieAanpassenView(PermissionRequiredMixin, FormView):
             specificatie_uuid=self.kwargs.get("uuid"),
             naam=form.cleaned_data.get("naam"),
         )
-        print(response)
+        if response.get("error"):
+            messages.error(
+                self.request,
+                f"Er ging iets mis met het aanpassen van de specificatie '{form.cleaned_data.get('naam')}'",
+            )
+        else:
+            messages.success(
+                self.request,
+                f"De specificatie '{form.cleaned_data.get('naam')}' is aangepast",
+            )
+
         return super().form_valid(form)
 
 
@@ -364,14 +416,25 @@ class SpecificatieVerwijderenView(PermissionRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         response_detail = MORCoreService().specificatie_detail(self.kwargs.get("uuid"))
-        response_verwijderen = MORCoreService().specificatie_verwijderen(
-            self.kwargs.get("uuid")
-        )
-        print(response_detail)
-        print(response_verwijderen)
+        MORCoreService().specificatie_verwijderen(self.kwargs.get("uuid"))
+        if response_detail.get("error"):
+            messages.error(self.request, "De specificatie is verwijderd mislukt")
+        else:
+            messages.success(
+                request,
+                f"De specificatie '{response_detail.get('naam')}' is verwijderd",
+            )
+        return redirect(reverse("specificatie_lijst"))
+
+
+class SpecificatieTerughalenView(PermissionRequiredMixin, View):
+    permission_required = "authorisatie.specificatie_terughalen"
+
+    def get(self, request, *args, **kwargs):
+        response_detail = MORCoreService().specificatie_detail(self.kwargs.get("uuid"))
+        MORCoreService().specificatie_terughalen(self.kwargs.get("uuid"))
         messages.success(
-            request, f"De specificatie '{response_detail.get('naam')}' is verwijderd"
+            request,
+            f"De specificatie '{response_detail.get('naam')}' is teruggehaald",
         )
-        return HttpResponse(
-            f"De specificatie '{response_detail.get('naam')}' is verwijderd"
-        )
+        return redirect(reverse("specificatie_lijst"))

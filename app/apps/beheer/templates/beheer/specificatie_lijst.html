@@ -4,7 +4,7 @@
     Specificatie overzicht | Beheer | PlanR
 {% endblock title %}
 {% block header %}
-    {% with pageTitle="Rollen" %}
+    {% with pageTitle="Beheer" %}
         {% include "snippets/pageheader.html" %}
     {% endwith %}
 {% endblock header %}
@@ -66,13 +66,13 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{% url 'specificatie_aanpassen' object.uuid %}" aria-label="Aanpassen">{% include "icons/edit2.svg" %}</a>
+                            <a href="{% url 'specificatie_aanpassen' object.uuid %}" aria-label="Aanpassen" data-turbo="false">{% include "icons/edit2.svg" %}</a>
                         </td>
                         <td>
-                            {% if specificatie_links.self not in gebruikte_specificatie_urls %}
+                            {% if not object.reden %}
                                 <a href="{% url 'specificatie_verwijderen' object.uuid %}"
                                    onclick="return confirm('Weet je zeker dat je deze specificatie wilt verwijderen?')"
-                                   aria-label="Verwijderen">{% include "icons/bin.svg" %}</a>
+                                   aria-label="Verwijderen" data-turbo="false">{% include "icons/bin.svg" %}</a>
                             {% endif %}
                         </td>
                     </tr>
@@ -80,6 +80,39 @@
                 {% endfor %}
             </tbody>
         </table>
+        {% if verwijderde_specificatie_lijst %}
+        <details>
+            <summary>
+                <h4>
+                    Verwijderde specificaties
+                </h4>
+            </summary>
+            <div class="container__table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Naam</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for object in verwijderde_specificatie_lijst %}
+                            {% with specificatie_links=object|get:"_links" %}
+                            <tr data-row-search-target="row">
+                                <td data-row-search-target="searchable">{{ object.naam }}</td>
+                                <td>
+                                    <a href="{% url 'specificatie_terughalen' object.uuid %}"
+                                    aria-label="Terughalen"
+                                    onclick="return confirm('Weet je zeker dat je deze specificatie wil terughalen?')" data-turbo="false">terughalen</a>
+                                </td>
+                            </tr>
+                            {% endwith %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </details>
+        {% endif %}
     </div>
     </turbo-frame>
 {% endblock body %}

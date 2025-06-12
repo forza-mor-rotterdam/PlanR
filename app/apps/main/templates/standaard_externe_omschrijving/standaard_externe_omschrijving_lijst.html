@@ -7,7 +7,7 @@
     Standaard Tekst | Beheer | PlanR
 {% endblock title %}
 {% block header %}
-    {% with pageTitle="Standaard teksten" %}
+    {% with pageTitle="Beheer" %}
         {% include "snippets/pageheader.html" %}
     {% endwith %}
 {% endblock header %}
@@ -52,7 +52,7 @@
                 </div>
             </div>
         </form>
-        <h2>Standaard Teksten</h2>
+        <h2>Standaard teksten</h2>
         <table>
             <thead>
                 <tr>
@@ -74,7 +74,12 @@
                         <td data-row-search-target="searchable">{{ object.titel }}</td>
                         <td data-row-search-target="searchable">{{ object.tekst|truncate_text:20 }}</td>
                         <td data-row-search-target="searchable">{{ zichtbaarheid }}</td>
-                        <td data-row-search-target="searchable">{% if object.reden %}{{ object.reden }}{% else %}-{% endif %}</td>
+                        <td data-row-search-target="searchable">
+                        {% if object.reden %}
+                            {{ object.reden }}
+                        {% else %}
+                            -
+                        {% endif %}</td>
                         <td data-row-search-target="searchable">
                             {% if object.specificatie_opties %}
                             {% for specificatie_url in object.specificatie_opties %}

@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 {% load get from melding_tags %}
+{% load rotterdam_formulier_html %}
 {% load specificatie_naam from specificatie_tags %}
 {% block title %}
     Melding afhandelredenen overzicht | Beheer | PlanR
 {% endblock title %}
 {% block header %}
-    {% with pageTitle="Melding afhandelreden" %}
+    {% with pageTitle="Beheer" %}
         {% include "snippets/pageheader.html" %}
     {% endwith %}
 {% endblock header %}
@@ -25,7 +26,7 @@
             </a>
         </div>
         <div class="container__flex">
-            <h1>Overzicht</h1>
+            <h1>Melding afhandelreden overzicht</h1>
             {% if object_list|length < STATUS_NIET_OPGELOST_REDENEN_CHOICES|length %}
             <a class="btn btn-action" href="{% url 'melding_afhandelreden_aanmaken' %}">
                 <svg width="24"
@@ -51,6 +52,7 @@
             <thead>
                 <tr>
                     <th>Reden</th>
+                    <th>Toelichting</th>
                     <th>Specificatie opties</th>
                     <th>Aantal standaard berichten</th>
                     <th></th>
@@ -62,6 +64,13 @@
                     {% with reden=STATUS_NIET_OPGELOST_REDENEN_TITEL|get:object.reden %}
                     <tr data-row-search-target="row">
                         <td data-row-search-target="searchable">{{ reden }}</td>
+                        <td data-row-search-target="searchable">
+                        {% if object.toelichting %}
+                            {{ object.toelichting|truncate_text:20 }}
+                        {% else %}
+                        -
+                        {% endif %}
+                        </td>
                         <td>
                             <ul>
                                 {% for specificatie_url in object.specificatie_opties %}

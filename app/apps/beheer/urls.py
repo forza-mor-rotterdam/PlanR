@@ -20,6 +20,7 @@ from apps.beheer.views import (
     SpecificatieAanmakenView,
     SpecificatieAanpassenView,
     SpecificatieLijstView,
+    SpecificatieTerughalenView,
     SpecificatieVerwijderenView,
     StandaardExterneOmschrijvingAanmakenView,
     StandaardExterneOmschrijvingAanpassenView,
@@ -169,6 +170,11 @@ urlpatterns = [
         "specificatie/<uuid:uuid>/verwijderen/",
         SpecificatieVerwijderenView.as_view(),
         name="specificatie_verwijderen",
+    ),
+    path(
+        "specificatie/<uuid:uuid>/terughalen/",
+        SpecificatieTerughalenView.as_view(),
+        name="specificatie_terughalen",
     ),
     path(
         "release-notes/",

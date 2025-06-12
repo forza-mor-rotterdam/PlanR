@@ -83,12 +83,21 @@ class MeldingAfhandelreden(BasisModel):
         max_length=50,
         choices=STATUS_NIET_OPGELOST_REDENEN_CHOICES,
     )
+    toelichting = models.CharField(
+        max_length=250,
+        blank=True,
+        null=True,
+    )
     specificatie_opties = ArrayField(
         base_field=models.URLField(),
         default=list,
         blank=True,
         null=True,
     )
+
+    @property
+    def reden_verbose(self):
+        return STATUS_NIET_OPGELOST_REDENEN_TITEL.get(self.reden, self.reden)
 
     def get_standaard_externe_omschrijving_lijst(self):
         if self.specificatie_opties:
@@ -102,7 +111,7 @@ class MeldingAfhandelreden(BasisModel):
         )
 
     def __str__(self):
-        return self.reden
+        return STATUS_NIET_OPGELOST_REDENEN_TITEL.get(self.reden, self.reden)
 
 
 class TaaktypeCategorie(models.Model):
