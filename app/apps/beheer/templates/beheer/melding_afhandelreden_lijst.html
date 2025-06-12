@@ -1,10 +1,9 @@
 {% extends "base.html" %}
-{% load rotterdam_formulier_html %}
-{% load json_encode from json_tags %}
 {% load get from melding_tags %}
+{% load rotterdam_formulier_html %}
 {% load specificatie_naam from specificatie_tags %}
 {% block title %}
-    Standaard Tekst | Beheer | PlanR
+    Melding afhandelredenen overzicht | Beheer | PlanR
 {% endblock title %}
 {% block header %}
     {% with pageTitle="Beheer" %}
@@ -27,9 +26,9 @@
             </a>
         </div>
         <div class="container__flex">
-            <h1>Standaard teksten overzicht</h1>
-            <a class="btn btn-action btn-240"
-               href="{% url 'standaard_externe_omschrijving_aanmaken' %}">
+            <h1>Melding afhandelreden overzicht</h1>
+            {% if object_list|length < STATUS_NIET_OPGELOST_REDENEN_CHOICES|length %}
+            <a class="btn btn-action" href="{% url 'melding_afhandelreden_aanmaken' %}">
                 <svg width="24"
                      height="24"
                      viewBox="0 0 32 32"
@@ -37,66 +36,62 @@
                      xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#ffffff"></path>
                 </svg>
-                Nieuwe Omschrijving
+                Nieuwe afhandelreden
             </a>
+            {% endif %}
         </div>
-        <form>
+        <!-- <form>
             <div class="form-row">
                 <label for="id_zoeken">Zoeken</label>
                 <div>
-                    <input type="text"
-                           id="id_zoeken"
-                           name="zoeken"
-                           class="form-control "
-                           data-action="row-search#search">
+                    <input type="text" id="id_zoeken" name="zoeken" class="form-control " data-action="row-search#search">
                 </div>
             </div>
-        </form>
-        <h2>Standaard teksten</h2>
+        </form> -->
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Titel</th>
-                    <th>Tekst</th>
-                    <th>Zichtbaarheid</th>
-                    <th>Niet opgelost reden</th>
+                    <th>Reden</th>
+                    <th>Toelichting</th>
                     <th>Specificatie opties</th>
+                    <th>Aantal standaard berichten</th>
                     <th></th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
                 {% for object in object_list %}
-                    {% with zichtbaarheid=ZICHTBAARHEID_TITEL|get:object.zichtbaarheid %}
+                    {% with reden=STATUS_NIET_OPGELOST_REDENEN_TITEL|get:object.reden %}
                     <tr data-row-search-target="row">
-                        <td data-row-search-target="searchable">{{ object.id }}</td>
-                        <td data-row-search-target="searchable">{{ object.titel }}</td>
-                        <td data-row-search-target="searchable">{{ object.tekst|truncate_text:20 }}</td>
-                        <td data-row-search-target="searchable">{{ zichtbaarheid }}</td>
+                        <td data-row-search-target="searchable">{{ reden }}</td>
                         <td data-row-search-target="searchable">
-                        {% if object.reden %}
-                            {{ object.reden }}
+                        {% if object.toelichting %}
+                            {{ object.toelichting|truncate_text:20 }}
                         {% else %}
-                            -
-                        {% endif %}</td>
-                        <td data-row-search-target="searchable">
-                            {% if object.specificatie_opties %}
-                            {% for specificatie_url in object.specificatie_opties %}
-                            {{ specificatie_url|specificatie_naam }}{% if not forloop.last %}, {% endif %}
-                            {% endfor %}
-                            {% else %}
-                            -
-                            {% endif %}
+                        -
+                        {% endif %}
                         </td>
                         <td>
-                            <a href="{% url 'standaard_externe_omschrijving_aanpassen' object.pk %}"
-                               aria-label="Aanpassen">{% include "icons/edit2.svg" %}</a>
+                            <ul>
+                                {% for specificatie_url in object.specificatie_opties %}
+                                    <li>
+                                        {{ specificatie_url|specificatie_naam }}{% if not forloop.last %}{% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
                         </td>
                         <td>
-                            <a href="{% url 'standaard_externe_omschrijving_verwijderen' object.pk %}"
-                               onclick="return confirm('Weet je zeker dat je deze standaard tekst wil verwijderen?')"
+                        {{ object.standaard_externe_omschrijvingen_voor_melding_afhandelreden.count }}
+                        </td>
+                        <td>
+                            <a href="{% url 'melding_afhandelreden_aanpassen' object.id %}" aria-label="Aanpassen">{% include "icons/edit2.svg" %}</a>
+                        </td>
+                        <td>
+                            {% if object.standaard_externe_omschrijvingen_voor_melding_afhandelreden.count <= 0 %}
+                            <a href="{% url 'melding_afhandelreden_verwijderen' object.id %}"
+                               onclick="return confirm('Weet je zeker dat je deze melding afhandelreden wilt verwijderen?')"
                                aria-label="Verwijderen">{% include "icons/bin.svg" %}</a>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endwith %}
