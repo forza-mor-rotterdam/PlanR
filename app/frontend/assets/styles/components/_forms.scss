@@ -1243,7 +1243,7 @@ form.taken-aanmaken {
             > div {
                 &:first-child,
                 &:last-child {
-                    flex: 1 1 40%;
+                    flex: 1 0 40%;
                     max-width: 40%;
                 }
                 &:nth-child(2) {
@@ -1281,6 +1281,8 @@ form.taken-aanmaken {
             summary {
                 padding: 1rem 0.889rem;
                 border-bottom: 1px solid $neutral-100;
+                box-sizing: border-box;
+                min-height: 56px;
 
                 &::before {
                     left: auto;
@@ -1358,7 +1360,7 @@ form.taken-aanmaken {
                 flex: 1 1 60%;
             }
             > div:last-child {
-                flex: 1 1 40%;
+                flex: 1 0 40%;
             }
         }
     }
