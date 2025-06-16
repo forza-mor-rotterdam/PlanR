@@ -1,19 +1,35 @@
 import logging
 
 from apps.beheer.forms import (
-    StandaardExterneOmschrijvingAanmakenForm,
-    StandaardExterneOmschrijvingAanpassenForm,
+    MeldingAfhandelredenForm,
+    SpecificatieForm,
+    StandaardExterneOmschrijvingForm,
     StandaardExterneOmschrijvingSearchForm,
 )
-from apps.main.models import StandaardExterneOmschrijving
+from apps.main.models import (
+    SPECIFICATIE_CACHE_TIMEOUT,
+    STATUS_NIET_OPGELOST_REDENEN_CHOICES,
+    STATUS_NIET_OPGELOST_REDENEN_TITEL,
+    ZICHTBAARHEID_TITEL,
+    MeldingAfhandelreden,
+    StandaardExterneOmschrijving,
+)
+from apps.main.services import MORCoreService
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.db.models import Q
-from django.shortcuts import render
-from django.urls import reverse_lazy
-from django.views.generic import CreateView, DeleteView, ListView, UpdateView, View
+from django.shortcuts import redirect, render
+from django.urls import reverse, reverse_lazy
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    FormView,
+    ListView,
+    TemplateView,
+    UpdateView,
+    View,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -44,39 +60,58 @@ class StandaardExterneOmschrijvingLijstView(
         "standaard_externe_omschrijving/standaard_externe_omschrijving_lijst.html"
     )
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(
+            {
+                "ZICHTBAARHEID_TITEL": ZICHTBAARHEID_TITEL,
+            }
+        )
+        return context
+
     def get_queryset(self):
         queryset = super().get_queryset()
-        search = self.request.GET.get("search", "")
-        if search:
-            queryset = queryset.filter(
-                Q(titel__icontains=search) | Q(tekst__icontains=search)
-            )
-        return queryset
+        return queryset.order_by("titel")
+
+
+class StandaardExterneOmschrijvingMixin:
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(
+            {
+                "melding_afhandelreden_lijst": list(
+                    MeldingAfhandelreden.objects.values("id", "specificatie_opties")
+                ),
+            }
+        )
+        return context
 
 
 class StandaardExterneOmschrijvingAanmakenView(
+    StandaardExterneOmschrijvingMixin,
     SuccessMessageMixin,
     StandaardExterneOmschrijvingView,
     PermissionRequiredMixin,
     CreateView,
 ):
-    form_class = StandaardExterneOmschrijvingAanmakenForm
+    form_class = StandaardExterneOmschrijvingForm
     template_name = (
-        "standaard_externe_omschrijving/standaard_externe_omschrijving_aanmaken.html"
+        "standaard_externe_omschrijving/standaard_externe_omschrijving_form.html"
     )
     permission_required = "authorisatie.standaard_externe_omschrijving_aanmaken"
     success_message = "De standaard tekst '%(titel)s' is aangemaakt"
 
 
 class StandaardExterneOmschrijvingAanpassenView(
+    StandaardExterneOmschrijvingMixin,
     SuccessMessageMixin,
     StandaardExterneOmschrijvingView,
     PermissionRequiredMixin,
     UpdateView,
 ):
-    form_class = StandaardExterneOmschrijvingAanpassenForm
+    form_class = StandaardExterneOmschrijvingForm
     template_name = (
-        "standaard_externe_omschrijving/standaard_externe_omschrijving_aanpassen.html"
+        "standaard_externe_omschrijving/standaard_externe_omschrijving_form.html"
     )
     permission_required = "authorisatie.standaard_externe_omschrijving_aanpassen"
     success_message = "De standaard tekst '%(titel)s' is aangepast"
@@ -94,5 +129,312 @@ class StandaardExterneOmschrijvingVerwijderenView(
         messages.success(request, f"De standaard tekst '{object.titel}' is verwijderd")
         return response
 
-    # def render_to_response(self, context, **response_kwargs):
-    #     return HttpResponseRedirect(self.get_success_url())
+
+class MeldingAfhandelredenLijstView(
+    PermissionRequiredMixin,
+    ListView,
+):
+    queryset = MeldingAfhandelreden.objects.order_by("reden")
+    permission_required = "authorisatie.melding_afhandelreden_lijst_bekijken"
+    template_name = "beheer/melding_afhandelreden_lijst.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(
+            {
+                "STATUS_NIET_OPGELOST_REDENEN_TITEL": STATUS_NIET_OPGELOST_REDENEN_TITEL,
+                "STATUS_NIET_OPGELOST_REDENEN_CHOICES": STATUS_NIET_OPGELOST_REDENEN_CHOICES,
+            }
+        )
+        return context
+
+
+class MeldingAfhandelredenMixin:
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        standaard_externe_omschrijving_lijst = [
+            standaard_externe_omschrijving
+            | {
+                "aanpassen_url": reverse(
+                    "standaard_externe_omschrijving_aanpassen",
+                    args=[standaard_externe_omschrijving["id"]],
+                )
+            }
+            for standaard_externe_omschrijving in list(
+                self.object.standaard_externe_omschrijvingen_voor_melding_afhandelreden.values(
+                    "id", "specificatie_opties", "titel"
+                )
+                if self.object
+                else []
+            )
+        ]
+        context.update(
+            {
+                "STATUS_NIET_OPGELOST_REDENEN_TITEL": STATUS_NIET_OPGELOST_REDENEN_TITEL,
+                "standaard_externe_omschrijving_lijst": standaard_externe_omschrijving_lijst,
+            }
+        )
+        return context
+
+
+class MeldingAfhandelredenAanmakenView(
+    MeldingAfhandelredenMixin,
+    SuccessMessageMixin,
+    PermissionRequiredMixin,
+    CreateView,
+):
+    queryset = MeldingAfhandelreden.objects.all()
+    success_url = reverse_lazy("melding_afhandelreden_lijst")
+    permission_required = "authorisatie.melding_afhandelreden_aanmaken"
+    template_name = "beheer/melding_afhandelreden_form.html"
+    form_class = MeldingAfhandelredenForm
+    success_message = "De melding afhandelreden '%(reden_verbose)s' is aangemaakt"
+
+    def get_success_message(self, cleaned_data):
+        return self.success_message % dict(
+            cleaned_data,
+            reden_verbose=self.object.reden_verbose,
+        )
+
+    def get_success_url(self):
+        return reverse_lazy("melding_afhandelreden_aanpassen", args=[self.object.id])
+
+
+class MeldingAfhandelredenAanpassenView(
+    MeldingAfhandelredenMixin,
+    SuccessMessageMixin,
+    PermissionRequiredMixin,
+    UpdateView,
+):
+    queryset = MeldingAfhandelreden.objects.all()
+    success_url = reverse_lazy("melding_afhandelreden_lijst")
+    permission_required = "authorisatie.melding_afhandelreden_aanpassen"
+    template_name = "beheer/melding_afhandelreden_form.html"
+    form_class = MeldingAfhandelredenForm
+    success_message = "De melding afhandelreden '%(reden_verbose)s' is aangepast"
+
+    def get_success_message(self, cleaned_data):
+        return self.success_message % dict(
+            cleaned_data,
+            reden_verbose=self.object.reden_verbose,
+        )
+
+    def get_success_url(self):
+        reden = self.object
+        standaard_externe_omschrijving_lijst = [
+            standaard_externe_omschrijving
+            for standaard_externe_omschrijving in reden.standaard_externe_omschrijvingen_voor_melding_afhandelreden.filter(
+                specificatie_opties__isnull=False,
+            ).exclude(
+                specificatie_opties__contained_by=reden.specificatie_opties
+            )
+        ]
+        for standaard_externe_omschrijving in standaard_externe_omschrijving_lijst:
+            standaard_externe_omschrijving.specificatie_opties = []
+        StandaardExterneOmschrijving.objects.bulk_update(
+            standaard_externe_omschrijving_lijst, ["specificatie_opties"]
+        )
+        return reverse_lazy("melding_afhandelreden_aanpassen", args=[reden.id])
+
+
+class MeldingAfhandelredenVerwijderenView(PermissionRequiredMixin, DeleteView):
+    queryset = MeldingAfhandelreden.objects.all()
+    permission_required = "authorisatie.melding_afhandelreden_verwijderen"
+    success_url = reverse_lazy("melding_afhandelreden_lijst")
+
+    def get(self, request, *args, **kwargs):
+        object = self.get_object()
+        response = self.delete(request, *args, **kwargs)
+        messages.success(
+            request, f"De melding afhandelreden '{object.reden_verbose}' is verwijderd"
+        )
+        return response
+
+
+class SpecificatieLijstView(PermissionRequiredMixin, TemplateView):
+    permission_required = "authorisatie.specificatie_lijst_bekijken"
+    template_name = "beheer/specificatie_lijst.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        def get_melding_afhandelreden(specificatie_url):
+            reden = MeldingAfhandelreden.objects.filter(
+                specificatie_opties__isnull=False,
+                specificatie_opties__contains=[specificatie_url],
+            ).first()
+            if reden:
+                return {
+                    "reden": reden.reden,
+                    "aanpassen_url": reverse_lazy(
+                        "melding_afhandelreden_aanpassen", args=[reden.id]
+                    ),
+                }
+            return {}
+
+        specificatie_lijst = MORCoreService().specificatie_lijst(
+            params={
+                "limit": 100,
+                "is_verwijderd": False,
+            },
+            force_cache=True,
+            cache_timeout=SPECIFICATIE_CACHE_TIMEOUT,
+        )
+        if specificatie_lijst.get("error"):
+            messages.error(
+                self.request, "Er ging iets mis met het ophalen van de specificaties"
+            )
+        specificatie_lijst = specificatie_lijst.get("results", [])
+
+        verwijderde_specificatie_lijst = (
+            MORCoreService()
+            .specificatie_lijst(
+                params={
+                    "limit": 100,
+                    "is_verwijderd": True,
+                },
+                force_cache=True,
+                cache_timeout=SPECIFICATIE_CACHE_TIMEOUT,
+            )
+            .get("results", [])
+        )
+        gebruikte_specificatie_urls = list(
+            set(
+                [
+                    url
+                    for url_list in StandaardExterneOmschrijving.objects.filter(
+                        specificatie_opties__isnull=False
+                    ).values_list("specificatie_opties", flat=True)
+                    for url in url_list
+                ]
+            )
+        )
+
+        specificatie_lijst = sorted(
+            [
+                specificatie
+                | {
+                    "reden": get_melding_afhandelreden(
+                        specificatie.get("_links", {}).get("self", {}).get("href")
+                    )
+                }
+                for specificatie in specificatie_lijst
+            ],
+            key=lambda o: o.get("naam"),
+        )
+        context.update(
+            {
+                "object_list": specificatie_lijst,
+                "verwijderde_specificatie_lijst": verwijderde_specificatie_lijst,
+                "gebruikte_specificatie_urls": gebruikte_specificatie_urls,
+            }
+        )
+        return context
+
+
+class SpecificatieAanmakenView(PermissionRequiredMixin, FormView):
+    success_url = reverse_lazy("specificatie_lijst")
+    permission_required = "authorisatie.specificatie_aanmaken"
+    template_name = "beheer/specificatie_form.html"
+    form_class = SpecificatieForm
+
+    def form_valid(self, form):
+        response = MORCoreService().specificatie_aanmaken(
+            naam=form.cleaned_data.get("naam")
+        )
+        if response.get("error"):
+            messages.error(
+                self.request,
+                f"Er ging iets mis met het aanmaken van de specificatie '{form.cleaned_data.get('naam')}'",
+            )
+        else:
+            messages.success(
+                self.request,
+                f"De specificatie '{form.cleaned_data.get('naam')}' is aangemaakt",
+            )
+
+        return super().form_valid(form)
+
+
+class SpecificatieAanpassenView(PermissionRequiredMixin, FormView):
+    success_url = reverse_lazy("specificatie_lijst")
+    permission_required = "authorisatie.specificatie_aanpassen"
+    template_name = "beheer/specificatie_form.html"
+    form_class = SpecificatieForm
+
+    def dispatch(self, request, *args, **kwargs):
+        response = MORCoreService().specificatie_detail(
+            specificatie_uuid=self.kwargs.get("uuid"),
+            force_cache=True,
+            cache_timeout=3600,
+        )
+        self.object = None
+        if response.get("error"):
+            messages.error(
+                self.request, "Er ging iets mis met het ophalen van de specificatie"
+            )
+            return redirect(reverse("specificatie_lijst"))
+        self.object = response
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_initial(self):
+        initial = self.initial.copy()
+        initial["naam"] = self.object["naam"]
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(
+            {
+                "object": self.object,
+            }
+        )
+        return context
+
+    def form_valid(self, form):
+        form.cleaned_data.get("naam")
+        response = MORCoreService().specificatie_naam_aanpassen(
+            specificatie_uuid=self.kwargs.get("uuid"),
+            naam=form.cleaned_data.get("naam"),
+        )
+        if response.get("error"):
+            messages.error(
+                self.request,
+                f"Er ging iets mis met het aanpassen van de specificatie '{form.cleaned_data.get('naam')}'",
+            )
+        else:
+            messages.success(
+                self.request,
+                f"De specificatie '{form.cleaned_data.get('naam')}' is aangepast",
+            )
+
+        return super().form_valid(form)
+
+
+class SpecificatieVerwijderenView(PermissionRequiredMixin, View):
+    permission_required = "authorisatie.specificatie_verwijderen"
+
+    def get(self, request, *args, **kwargs):
+        response_detail = MORCoreService().specificatie_detail(self.kwargs.get("uuid"))
+        MORCoreService().specificatie_verwijderen(self.kwargs.get("uuid"))
+        if response_detail.get("error"):
+            messages.error(self.request, "De specificatie is verwijderd mislukt")
+        else:
+            messages.success(
+                request,
+                f"De specificatie '{response_detail.get('naam')}' is verwijderd",
+            )
+        return redirect(reverse("specificatie_lijst"))
+
+
+class SpecificatieTerughalenView(PermissionRequiredMixin, View):
+    permission_required = "authorisatie.specificatie_terughalen"
+
+    def get(self, request, *args, **kwargs):
+        response_detail = MORCoreService().specificatie_detail(self.kwargs.get("uuid"))
+        MORCoreService().specificatie_terughalen(self.kwargs.get("uuid"))
+        messages.success(
+            request,
+            f"De specificatie '{response_detail.get('naam')}' is teruggehaald",
+        )
+        return redirect(reverse("specificatie_lijst"))

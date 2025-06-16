@@ -69,6 +69,9 @@ fieldset {
             margin-bottom: 0;
         }
     }
+    &.hide {
+        display: none;
+    }
 }
 
 input,
@@ -331,6 +334,18 @@ textarea {
         flex-wrap: wrap;
         li {
             flex: 1 0 50%;
+        }
+    }
+    &--full-width {
+        @media (min-width: map-get($grid-breakpoints, sm)) {
+            display: flex;
+            flex-wrap: wrap;
+            li {
+                flex: 1 0 100%;
+            }
+        }
+        li > * {
+            flex: 1 1;
         }
     }
 }
