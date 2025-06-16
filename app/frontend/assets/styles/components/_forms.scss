@@ -325,6 +325,11 @@ textarea {
     }
     label {
         font-weight: 400;
+
+        &:has(input:disabled) {
+            color: $text-muted;
+            pointer-events: none;
+        }
     }
 }
 

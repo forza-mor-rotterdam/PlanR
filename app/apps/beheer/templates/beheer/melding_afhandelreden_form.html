@@ -27,15 +27,11 @@
                 <span>Melding afhandelredenen</span>
             </a>
         </div>
-        <h1><span class="h4">Reden</span>
+        <h1 class="h4">Reden
         {% if object %}
-            {% with reden=STATUS_NIET_OPGELOST_REDENEN_TITEL|get:object.reden %}
-            {{ reden }} <span class="h4">aanpassen</span>
-            {% endwith %}
+            aanpassen
         {% else %}
-            {% with reden=STATUS_NIET_OPGELOST_REDENEN_TITEL|get:form.reden.field.initial %}
-            {{ reden }} <span class="h4">aanmaken</span>
-            {% endwith %}
+            aanmaken
         {% endif %}
         </h1>
         <div class="grid-container grid-container--4-1">
