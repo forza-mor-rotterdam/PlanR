@@ -1311,10 +1311,11 @@ form.taken-aanmaken {
                 max-width: none;
                 line-height: 1.25em;
                 font-family: $font-family-sans-serif;
-                width: calc(100% - 8px);
+                width: 100%;
                 border: 1px solid $blue-200;
                 resize: none;
                 padding: 0.75rem;
+                box-sizing: border-box;
             }
         }
 
