@@ -1330,10 +1330,17 @@ form.taken-aanmaken {
             display: flex;
             gap: 2em;
             padding: 1rem 0.889rem;
+            strong {
+                display: block;
+                max-width: 20rem;
+                padding-right: 2rem;
+                word-break: break-word;
+            }
             p {
                 max-width: 20rem;
                 padding-right: 2rem;
                 display: flex;
+                word-break: break-word;
 
                 span {
                     display: -webkit-box;
