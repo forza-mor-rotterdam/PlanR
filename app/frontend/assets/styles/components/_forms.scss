@@ -299,7 +299,7 @@ textarea {
     &:hover:not([disabled]),
     &:focus-visible:not([disabled]) {
         border-color: $neutral-900;
-        box-shadow: 0 0 0 1px $neutral-900;
+        box-shadow: inset 0 0 0 0.5px $neutral-900;
         opacity: 1;
         cursor: pointer;
     }
@@ -1332,28 +1332,32 @@ form.taken-aanmaken {
             padding: 1rem 0.889rem;
             strong {
                 display: block;
-                max-width: 20rem;
-                padding-right: 2rem;
-                word-break: break-word;
-            }
-            p {
-                max-width: 20rem;
+                max-width: 24rem;
                 padding-right: 2rem;
                 display: flex;
                 word-break: break-word;
 
-                span {
-                    display: -webkit-box;
-                    -webkit-box-orient: vertical;
-                    -webkit-line-clamp: 3;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    margin-right: 6px;
-
-                    &:empty {
-                        margin-right: -1px;
+                button {
+                    height: 16px;
+                    span {
+                        font-weight: 400;
+                        font-size: 0.667rem;
+                        display: inline-block;
+                    }
+                    svg {
+                        vertical-align: sub;
                     }
                 }
+            }
+            p {
+                max-width: 20rem;
+                padding-right: 2rem;
+                word-break: break-word;
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 3;
+                overflow: hidden;
+                text-overflow: ellipsis;
 
                 button {
                     align-self: flex-end;

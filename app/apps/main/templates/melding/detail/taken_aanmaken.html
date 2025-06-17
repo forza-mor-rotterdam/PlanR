@@ -204,15 +204,16 @@
                 <div class="container__flex">
                     <div>
                         <h3>Taak</h3>
-                        <strong data-omschrijving></strong>
-                        <p>
-                            <span data-toelichting=""></span>
+                        <strong>
+                            <span data-omschrijving></span>
                             <button class="btn btn-textlink btn-info"
                                     data-action="infosheet#openInfosheet"
                                     data-infosheet-action-param="{% url 'taaktype_taakr' %}?taakapplicatie-taaktype-url=">
                                 {% include "icons/info.svg" %}
+                                <span>Meer info</span>
                             </button>
-                        </p>
+                        </strong>
+                        <p data-toelichting=""></p>
                         <h3>Afdeling(en)</h3>
                         <span data-afdelingen></span>
                     </div>
