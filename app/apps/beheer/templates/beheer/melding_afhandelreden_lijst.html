@@ -52,7 +52,7 @@
             <thead>
                 <tr>
                     <th>Reden</th>
-                    <th>Toelichting</th>
+                    <th style="width: 25vw;">Toelichting</th>
                     <th>Specificatie opties</th>
                     <th>Aantal standaard berichten</th>
                     <th></th>
@@ -66,7 +66,7 @@
                         <td data-row-search-target="searchable">{{ reden }}</td>
                         <td data-row-search-target="searchable">
                         {% if object.toelichting %}
-                            {{ object.toelichting|truncate_text:20 }}
+                            {{ object.toelichting }}
                         {% else %}
                         -
                         {% endif %}
