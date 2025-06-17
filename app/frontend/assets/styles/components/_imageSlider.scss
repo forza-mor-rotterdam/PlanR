@@ -40,6 +40,8 @@
     overflow-x: hidden;
     width: calc(100% + 2px);
     transform: translateX(-1px);
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
     cursor: zoom-in;
     margin-bottom: 1rem;
 
