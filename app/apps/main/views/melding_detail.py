@@ -6,6 +6,7 @@ from apps.main.forms import (
     LocatieAanpassenForm,
     MeldingAanmakenForm,
     MeldingAfhandelenForm,
+    MeldingAfhandelenOldForm,
     MeldingAnnulerenForm,
     MeldingHeropenenForm,
     MeldingHervattenForm,
@@ -36,6 +37,7 @@ from apps.main.messages import (
     TAAK_VERWIJDEREN_ERROR,
     TAAK_VERWIJDEREN_SUCCESS,
 )
+from apps.main.models import MeldingAfhandelreden, StandaardExterneOmschrijving
 from apps.main.services import MORCoreService, TaakRService
 from apps.main.utils import (
     melding_locaties,
@@ -370,6 +372,75 @@ def publiceer_topic(request, id):
     return JsonResponse({})
 
 
+class MeldingAfhandelenView(
+    MeldingDetailViewMixin, StreamViewMixin, PermissionRequiredMixin, FormView
+):
+    permission_required = "authorisatie.melding_afhandelen"
+    template_name = "melding/detail/melding_afhandelen_form.html"
+    form_class = MeldingAfhandelenForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        standaard_externe_omschrijving_lijst = (
+            StandaardExterneOmschrijving.objects.exclude(
+                zichtbaarheid="verbergen"
+            ).values(
+                "id", "titel", "tekst", "zichtbaarheid", "reden", "specificatie_opties"
+            )
+        )
+        melding_afhandelreden_lijst = MeldingAfhandelreden.objects.values(
+            "id", "specificatie_opties"
+        )
+
+        print('len(context["taken"]["niet_opgeloste_taken"])')
+        print(len(context["taken"]["niet_opgeloste_taken"]))
+
+        opgelost = not context["taken"]["niet_opgeloste_taken"]
+        self.initial = {"resolutie": "opgelost" if opgelost else "niet_opgelost"}
+        context.update(
+            {
+                "form": self.get_form(),
+                "standaard_externe_omschrijving_lijst": list(
+                    standaard_externe_omschrijving_lijst
+                ),
+                "melding_afhandelreden_lijst": list(melding_afhandelreden_lijst),
+            }
+        )
+        return context
+
+    def form_invalid(self, form):
+        logger.error("TakenAanmakenStreamView: FORM INVALID")
+        logger.error(form.errors.as_json())
+        return super().form_invalid(form)
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        mor_core_service = MORCoreService()
+        response = mor_core_service.melding_afhandelen(
+            self.kwargs.get("id"),
+            resolutie=form.cleaned_data.get("resolutie"),
+            afhandelreden=form.cleaned_data.get("niet_opgelost_reden").reden,
+            specificatie=form.cleaned_data.get("specificatie"),
+            omschrijving_extern=form.cleaned_data.get("omschrijving_extern"),
+            gebruiker=self.request.user.email,
+        )
+        print(response)
+        if response.get("error"):
+            messages.error(request=self.request, message=MELDING_AFHANDELEN_ERROR)
+        else:
+            messages.success(request=self.request, message=MELDING_AFHANDELEN_SUCCESS)
+        context = self.get_context_data()
+        context.pop("form", None)
+        print(context.keys())
+        print(context.get("melding"))
+        return render(
+            self.request,
+            "melding/detail/melding_afhandelen_success.html",
+            context=context,
+        )
+
+
 @login_required
 @permission_required("authorisatie.melding_afhandelen", raise_exception=True)
 def melding_afhandelen(request, id):
@@ -396,11 +467,11 @@ def melding_afhandelen(request, id):
             or not signaal.get("melder", {}).get("email")
         )
     )
-    form = MeldingAfhandelenForm(
+    form = MeldingAfhandelenOldForm(
         standaard_omschrijving_niet_weergeven=standaard_omschrijving_niet_weergeven
     )
     if request.POST:
-        form = MeldingAfhandelenForm(
+        form = MeldingAfhandelenOldForm(
             request.POST,
             standaard_omschrijving_niet_weergeven=standaard_omschrijving_niet_weergeven,
         )

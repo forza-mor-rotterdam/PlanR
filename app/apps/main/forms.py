@@ -4,11 +4,16 @@ import math
 import uuid
 
 from apps.context.utils import get_gebruiker_context
-from apps.main.models import StandaardExterneOmschrijving
+from apps.main.models import (
+    SPECIFICATIE_CACHE_TIMEOUT,
+    MeldingAfhandelreden,
+    StandaardExterneOmschrijving,
+)
 from apps.main.services import MORCoreService, render_onderwerp
 from apps.main.utils import get_valide_filter_classes, get_valide_kolom_classes
 from django import forms
 from django.core.files.storage import default_storage
+from django.db.models import F, OuterRef, Q, Subquery
 from django.utils import timezone
 from django_select2.forms import Select2Widget
 from utils.rd_convert import rd_to_wgs
@@ -45,6 +50,10 @@ class CheckboxSelectMultiple(forms.CheckboxSelectMultiple):
         option["attrs"].update({"item_count": option_data.get("item_count")})
         option["attrs"].update({"selected": args[3]})
         return option
+
+
+class MeldingAfhandelredenRadioSelect(forms.RadioSelect):
+    template_name = "widgets/melding_afhandelreden_radio_select.html"
 
 
 class MultipleChoiceField(forms.MultipleChoiceField):
@@ -449,6 +458,139 @@ class TaakVerwijderenForm(forms.Form):
 
 
 class MeldingAfhandelenForm(forms.Form):
+    resolutie = forms.ChoiceField(
+        label="Resolutie",
+        widget=forms.RadioSelect(
+            attrs={
+                "class": "list--form-radio-input",
+                "data-meldingbehandelformulier-target": "resolutieField",
+                "data-action": "meldingbehandelformulier#onResolutieChangeHandler",
+            }
+        ),
+        choices=(
+            ("opgelost", "Opgelost"),
+            ("niet_opgelost", "Niet opgelost"),
+        ),
+        required=True,
+        initial="niet_opgelost",
+    )
+    niet_opgelost_reden = forms.ModelChoiceField(
+        label="Reden",
+        widget=MeldingAfhandelredenRadioSelect(
+            attrs={
+                "class": "list--form-radio-input",
+                "data-meldingbehandelformulier-target": "nietOpgelostRedenField",
+                "data-action": "meldingbehandelformulier#onChangeRedenHandler",
+            }
+        ),
+        required=False,
+        queryset=MeldingAfhandelreden.objects.all(),
+    )
+    specificatie = forms.ChoiceField(
+        label="Specificatie",
+        widget=forms.RadioSelect(
+            attrs={
+                "class": "list--form-radio-input",
+                "data-meldingbehandelformulier-target": "specificatieField",
+                "data-action": "meldingbehandelformulier#onChangeHandler",
+            }
+        ),
+        required=False,
+    )
+    standaardtext = forms.ChoiceField(
+        label="Standaardtext",
+        required=False,
+        widget=forms.Select(
+            attrs={
+                "class": "form-control",
+                "data-testid": "testid",
+                "data-meldingbehandelformulier-target": "standardTextChoice",
+                "data-action": "meldingbehandelformulier#onChangeStandardTextChoice",
+            }
+        ),
+        choices=(),
+    )
+    omschrijving_extern = forms.CharField(
+        label="Wijzig tekst",
+        help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "data-testid": "message",
+                "rows": "4",
+                "data-meldingbehandelformulier-target": "externalText",
+                "data-action": "meldingbehandelformulier#onChangeExternalText",
+                "name": "omschrijving_extern",
+                "maxlength": "1000",
+            }
+        ),
+        required=True,
+        max_length=1000,
+    )
+
+    def __init__(self, *args, **kwargs):
+        kwargs.pop("niet_opgelost", None)
+        super().__init__(*args, **kwargs)
+
+        standaard_externe_omschrijving = StandaardExterneOmschrijving.objects.filter(
+            reden=OuterRef("pk")
+        )
+        melding_afhandelredenen = (
+            MeldingAfhandelreden.objects.annotate(
+                standaard_externe_omschrijving_specificatie_opties=Subquery(
+                    standaard_externe_omschrijving.values("specificatie_opties")[:1]
+                )
+            )
+            .filter(
+                Q(
+                    standaard_externe_omschrijving_specificatie_opties__isnull=False,
+                    standaard_externe_omschrijving_specificatie_opties__overlap=F(
+                        "specificatie_opties"
+                    ),
+                    specificatie_opties__isnull=False,
+                )
+                | Q(
+                    specificatie_opties=[],
+                    standaard_externe_omschrijving_specificatie_opties__isnull=False,
+                ),
+            )
+            .distinct()
+        )
+
+        self.fields["niet_opgelost_reden"].queryset = melding_afhandelredenen
+        specificatie_lijst = (
+            MORCoreService()
+            .specificatie_lijst(
+                params={
+                    "limit": 100,
+                    "is_verwijderd": False,
+                },
+                force_cache=True,
+                cache_timeout=SPECIFICATIE_CACHE_TIMEOUT,
+            )
+            .get("results", [])
+        )
+        self.fields["specificatie"].choices = [
+            (
+                specificatie.get("_links", {}).get("self", {}).get("href"),
+                specificatie.get("naam", "-"),
+            )
+            for specificatie in specificatie_lijst
+        ]
+        standaardtext_choices = [
+            (
+                standaard_externe_omschrijving["id"],
+                standaard_externe_omschrijving["titel"],
+            )
+            for standaard_externe_omschrijving in StandaardExterneOmschrijving.objects.values(
+                "id", "titel"
+            )
+        ]
+        standaardtext_choices.insert(0, ("aangepasteTekst", "- Aangepaste tekst -"))
+        self.fields["standaardtext"].choices = standaardtext_choices
+
+
+class MeldingAfhandelenOldForm(forms.Form):
     def __init__(self, *args, **kwargs):
         # Als het om een B&C formulier gaat en er geen terugkoppeling gewenst is en/of er geen email bekend is
         standaard_omschrijving_niet_weergeven = kwargs.pop(
