@@ -41,7 +41,7 @@
                     / {{ melding.resolutie }}
                     / {{ melding.afhandelreden }}
                     / {{ melding.specificatie.naam }}
-                {% else %}
+                {% endif %}
             </span>
         {% endif %}
         {% if melding.urgentie >= 0.5 %}

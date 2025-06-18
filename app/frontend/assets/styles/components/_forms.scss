@@ -331,6 +331,18 @@ textarea {
             color: $text-muted;
             pointer-events: none;
         }
+
+        &:has(input[type="radio"]) {
+            padding-left: calc(1rem + 8px);
+            display: block;
+
+            input[type="radio"] {
+                margin-left: calc(-1rem - 8px);
+            }
+            small {
+                display: block;
+            }
+        }
     }
 }
 

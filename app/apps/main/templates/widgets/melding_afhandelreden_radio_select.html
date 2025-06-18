@@ -14,12 +14,12 @@
                                data-specificatie-urls="{{ option.value.instance.specificatie_opties|json_encode }}"
                                hidelabel>
                         {{ option.label }}
-                    </label>
-                    <small>
                         {% if option.value.instance.toelichting %}
-                        {{ option.value.instance.toelichting }}
+                            <small>
+                                {{ option.value.instance.toelichting }}
+                            </small>
                         {% endif %}
-                    </small>
+                    </label>
                 </li>
             {% endfor %}
         {% endfor %}
