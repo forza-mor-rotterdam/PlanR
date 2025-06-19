@@ -13,6 +13,8 @@ services:
         condition: service_started
     networks:
       - planr_network
+    volumes:
+      - ./app:/app
 
   redis:
     image: redis
