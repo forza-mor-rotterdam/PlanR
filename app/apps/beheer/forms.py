@@ -15,6 +15,20 @@ from django.core.exceptions import ValidationError
 logger = logging.getLogger(__name__)
 
 
+class MeldingAfhandelredenRadioSelect(forms.RadioSelect):
+    def __init__(self, *args, **kwargs):
+        self.extra_data = kwargs.pop("extra_data", [])
+        super().__init__(*args, **kwargs)
+
+    def create_option(
+        self, name, value, label, selected, index, subindex=None, attrs=None
+    ):
+        attrs["disabled"] = self.extra_data.get(value, 0)
+        return super().create_option(
+            name, value, label, selected, index, subindex=subindex, attrs=attrs
+        )
+
+
 class StandaardExterneOmschrijvingForm(forms.ModelForm):
     titel = forms.CharField(
         label="Afhandelreden",
@@ -115,7 +129,7 @@ class StandaardExterneOmschrijvingForm(forms.ModelForm):
 
 class MeldingAfhandelredenForm(forms.ModelForm):
     reden = forms.ChoiceField(
-        widget=forms.RadioSelect(
+        widget=MeldingAfhandelredenRadioSelect(
             attrs={
                 "class": "list--form-radio-input",
                 "data-beheer--melding-afhandelreden-target": "reden",
@@ -199,15 +213,27 @@ class MeldingAfhandelredenForm(forms.ModelForm):
             self.fields["specificatie_opties"].choices = specificatie_choices
 
         reden_choices = [
-            (choice[0], STATUS_NIET_OPGELOST_REDENEN_TITEL.get(choice[0], choice[0]))
+            (
+                choice[0],
+                STATUS_NIET_OPGELOST_REDENEN_TITEL.get(choice[0], choice[0]),
+                choice[0] not in gebruikte_redenen,
+            )
             for choice in STATUS_NIET_OPGELOST_REDENEN_CHOICES
-            if choice[0] not in gebruikte_redenen
         ]
-        self.fields["reden"].choices = reden_choices
-        if not self.instance.id:
-            self.fields["reden"].initial = reden_choices[0][0]
-        if len(reden_choices) == 1:
-            self.fields["reden"].widget = forms.HiddenInput()
+        reden_extra_data = {choice[0]: not choice[2] for choice in reden_choices}
+        reden_choices = [(choice[0], choice[1]) for choice in reden_choices]
+
+        self.fields["reden"] = forms.ChoiceField(
+            widget=MeldingAfhandelredenRadioSelect(
+                attrs={
+                    "class": "list--form-radio-input",
+                    "data-beheer--melding-afhandelreden-target": "reden",
+                },
+                extra_data=reden_extra_data,
+            ),
+            required=False,
+            choices=reden_choices,
+        )
 
     class Meta:
         model = MeldingAfhandelreden
