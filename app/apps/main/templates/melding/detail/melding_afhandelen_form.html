@@ -49,7 +49,7 @@
             {% endif %}
             <form action="{% url 'melding_afhandelen' melding.uuid %}"
                   method="post"
-                  class="form--horizontal"
+                  class=""
                   data-controller="meldingbehandelformulier"
                   data-meldingbehandelformulier-target="meldingBehandelFormulier"
                   data-meldingbehandelformulier-standaard-externe-omschrijving-lijst-value="{{ standaard_externe_omschrijving_lijst|json_encode }}"
@@ -57,24 +57,24 @@
                   novalidate>
                 {% csrf_token %}
 
-                <fieldset data-meldingbehandelformulier-target="resolutieContainer">
-                    <div class="form-control__with-helptext js-validation">{{ form.resolutie|render_rotterdam_formulier }}</div>
+                <fieldset class="fieldset--separated" data-meldingbehandelformulier-target="resolutieContainer">
+                    <div class="form-control__with-helptext js-validation input--separated">{{ form.resolutie|render_rotterdam_formulier }}</div>
                 </fieldset>
 
-                <fieldset data-meldingbehandelformulier-target="redenContainer">
-                    <div class="form-control__with-helptext js-validation">{{ form.niet_opgelost_reden|render_rotterdam_formulier }}</div>
+                <fieldset class="fieldset--separated" data-meldingbehandelformulier-target="redenContainer">
+                    <div class="form-control__with-helptext js-validation input--separated">{{ form.niet_opgelost_reden|render_rotterdam_formulier }}</div>
                 </fieldset>
 
-                <fieldset data-meldingbehandelformulier-target="specificatieContainer">
+                <fieldset class="fieldset--separated" data-meldingbehandelformulier-target="specificatieContainer">
                     <div class="form-control__with-helptext js-validation">{{ form.specificatie|render_rotterdam_formulier }}</div>
                 </fieldset>
 
-                <fieldset data-meldingbehandelformulier-target="standaardtextContainer">
+                <fieldset class="fieldset--separated" data-meldingbehandelformulier-target="standaardtextContainer">
                     <div class="form-control__with-helptext js-validation">{{ form.standaardtext|render_rotterdam_formulier }}</div>
-                    <div class="form-control__with-helptext js-validation">{{ form.omschrijving_extern|render_rotterdam_formulier }}</div>
+                    <div class="form-control__with-helptext js-validation margin-top">{{ form.omschrijving_extern|render_rotterdam_formulier }}</div>
                 </fieldset>
 
-                <div class="form-row btn-row">
+                <div class="form-row btn-row btn-row--horizontal">
                     <button type="reset" class="btn btn-tertiary" data-action="modal#closeModal">
                         <span>Annuleren</span>
                     </button>

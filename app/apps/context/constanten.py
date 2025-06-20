@@ -283,7 +283,7 @@ class StatusKolom(StandaardKolom):
         status = {
             "afgehandeld": "voltooid",
             "controle": "controle",
-            "in_behandeling": "opgelost",
+            "in_behandeling": "in_behandeling",
             "geannuleerd": "geannuleerd",
             "wachten_melder": "geannuleerd",
             "pauze": "geannuleerd",
