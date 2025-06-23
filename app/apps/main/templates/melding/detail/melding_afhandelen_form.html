@@ -12,41 +12,9 @@
 </turbo-stream>
 <turbo-stream target="modal_body" action="update">
 <template>
-    <section class="section--separated" data-testid="detailReporter">
+    <section class="section--separated padding-bottom-0" data-testid="detailReporter">
         <div class="container__details">
-            {% include terugkoppeling_gewenst_template %}
-            {% if taak_info.aantal_actieve_taken > 0 %}
-                <div class="alert alert--warning">
-                    <span>
-                        <svg width="32"
-                             height="32"
-                             viewBox="0 0 32 32"
-                             fill="none"
-                             xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M16.0001 6.21851L26.6516 26L5.34849 26L16.0001 6.21851ZM14.2391 5.2703C14.9943 3.8679 17.0059 3.86791 17.761 5.27031L28.4126 25.0518C29.13 26.3843 28.165 28 26.6516 28H5.34849C3.83514 28 2.87007 26.3842 3.58755 25.0518L14.2391 5.2703ZM15.0001 12H17.0001V20H15.0001V12ZM15.0001 24V22H17.0001V24H15.0001Z" fill="#A65600" />
-                        </svg>
-                    </span>
-                    <div>
-                        Deze melding bevat de volgende openstaande
-                        {% if taak_info.aantal_actieve_taken == 1 %}
-                            taak
-                        {% else %}
-                            taken
-                        {% endif %}
-                        :
-                        <ul>
-                            {% for taak in taak_info.actieve_taken %}<li>{{ taak.titel }}</li>{% endfor %}
-                        </ul>
-                        <span>Als de melding wordt afgehandeld wordt de status van deze
-                            {% if taak_info.aantal_actieve_taken == 1 %}
-                                taak
-                            {% else %}
-                                taken
-                            {% endif %}
-                        aangepast naar ‘Voltooid’.</span>
-                    </div>
-                </div>
-            {% endif %}
+
             <form action="{% url 'melding_afhandelen' melding.uuid %}"
                   method="post"
                   class=""
@@ -57,30 +25,69 @@
                   novalidate>
                 {% csrf_token %}
 
-                <fieldset class="fieldset--separated" data-meldingbehandelformulier-target="resolutieContainer">
-                    <div class="form-control__with-helptext js-validation input--separated">{{ form.resolutie|render_rotterdam_formulier }}</div>
-                </fieldset>
+                <div class="wrapper-sticky-footer">
+                    <div class="flex-content">
+                        {% include terugkoppeling_gewenst_template %}
+                        {% if taak_info.aantal_actieve_taken > 0 %}
+                            <div class="alert alert--warning">
+                                <span>
+                                    <svg width="32"
+                                        height="32"
+                                        viewBox="0 0 32 32"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M16.0001 6.21851L26.6516 26L5.34849 26L16.0001 6.21851ZM14.2391 5.2703C14.9943 3.8679 17.0059 3.86791 17.761 5.27031L28.4126 25.0518C29.13 26.3843 28.165 28 26.6516 28H5.34849C3.83514 28 2.87007 26.3842 3.58755 25.0518L14.2391 5.2703ZM15.0001 12H17.0001V20H15.0001V12ZM15.0001 24V22H17.0001V24H15.0001Z" fill="#A65600" />
+                                    </svg>
+                                </span>
+                                <div>
+                                    Deze melding bevat de volgende openstaande
+                                    {% if taak_info.aantal_actieve_taken == 1 %}
+                                        taak
+                                    {% else %}
+                                        taken
+                                    {% endif %}
+                                    :
+                                    <ul>
+                                        {% for taak in taak_info.actieve_taken %}<li>{{ taak.titel }}</li>{% endfor %}
+                                    </ul>
+                                    <span>Als de melding wordt afgehandeld wordt de status van deze
+                                        {% if taak_info.aantal_actieve_taken == 1 %}
+                                            taak
+                                        {% else %}
+                                            taken
+                                        {% endif %}
+                                    aangepast naar ‘Voltooid’.</span>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <fieldset class="fieldset--separated" data-meldingbehandelformulier-target="resolutieContainer">
+                            <div class="form-control__with-helptext js-validation input--separated">{{ form.resolutie|render_rotterdam_formulier }}</div>
+                        </fieldset>
 
-                <fieldset class="fieldset--separated" data-meldingbehandelformulier-target="redenContainer">
-                    <div class="form-control__with-helptext js-validation input--separated">{{ form.niet_opgelost_reden|render_rotterdam_formulier }}</div>
-                </fieldset>
+                        <fieldset class="fieldset--separated" data-meldingbehandelformulier-target="redenContainer">
+                            <div class="form-control__with-helptext js-validation input--separated">{{ form.niet_opgelost_reden|render_rotterdam_formulier }}</div>
+                        </fieldset>
 
-                <fieldset class="fieldset--separated" data-meldingbehandelformulier-target="specificatieContainer">
-                    <div class="form-control__with-helptext js-validation">{{ form.specificatie|render_rotterdam_formulier }}</div>
-                </fieldset>
+                        <fieldset class="fieldset--separated" data-meldingbehandelformulier-target="specificatieContainer">
+                            <div class="form-control__with-helptext js-validation">{{ form.specificatie|render_rotterdam_formulier }}</div>
+                        </fieldset>
 
-                <fieldset class="fieldset--separated" data-meldingbehandelformulier-target="standaardtextContainer">
-                    <div class="form-control__with-helptext js-validation">{{ form.standaardtext|render_rotterdam_formulier }}</div>
-                    <div class="form-control__with-helptext js-validation margin-top">{{ form.omschrijving_extern|render_rotterdam_formulier }}</div>
-                </fieldset>
-
-                <div class="form-row btn-row btn-row--horizontal">
-                    <button type="reset" class="btn btn-tertiary" data-action="modal#closeModal">
-                        <span>Annuleren</span>
-                    </button>
-                    <button  data-meldingbehandelformulier-target="submitButton" type="submit" class="btn btn-action">
-                        <span>Afhandelen</span>
-                    </button>
+                        <fieldset class="fieldset--separated" data-meldingbehandelformulier-target="standaardtextContainer">
+                            <h2>Bericht aan de melder</h2>
+                            <div class="form-control__with-helptext js-validation">{{ form.standaardtext|render_rotterdam_formulier }}</div>
+                            <div class="form-control__with-helptext js-validation margin-top">{{ form.omschrijving_extern|render_rotterdam_formulier }}</div>
+                        </fieldset>
+                    </div>
+                    <div class="modal-footer modal-footer--sticky">
+                        <div class="form-row btn-row btn-row--horizontal">
+                            <button type="reset" class="btn btn-tertiary" data-action="modal#closeModal">
+                                <span>Annuleren</span>
+                            </button>
+                            <button  data-meldingbehandelformulier-target="submitButton" type="submit" class="btn btn-action-v2">
+                                <span>Versturen</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
