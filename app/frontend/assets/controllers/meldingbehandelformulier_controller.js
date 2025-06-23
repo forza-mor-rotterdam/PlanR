@@ -19,6 +19,7 @@ export default class extends Controller {
     'nietOpgelostRedenField',
     'specificatieField',
     'resolutieField',
+    'contentContainer',
     'resolutieContainer',
     'redenContainer',
     'specificatieContainer',
@@ -55,6 +56,14 @@ export default class extends Controller {
     this.onResolutieChangeHandler()
     this.specificatieUrls = []
     this.update()
+
+    // bepaal de maximale hoogte van de formuliercontent
+    const footerElement = this.element.querySelector('.modal-footer--sticky')
+    const maxHeightDialog = window.innerHeight - 60
+    const heightFooter = parseFloat(getComputedStyle(footerElement).height)
+    const heightTop = this.element.offsetTop
+    const maxHeight = maxHeightDialog - heightTop - heightFooter - 20
+    this.contentContainerTarget.style.maxHeight = `${maxHeight}px`
   }
   onResolutieChangeHandler() {
     if (this.aangepastTekst === '') {
@@ -248,6 +257,8 @@ export default class extends Controller {
         ? 'remove'
         : 'add'
     ]('hide')
+
+    this.contentContainerTarget.scrollTop = this.contentContainerTarget.scrollHeight
 
     const showSubmitButton = this.externalTextTarget.value
     this.submitButtonTarget.disabled = !showSubmitButton

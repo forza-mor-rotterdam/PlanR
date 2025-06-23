@@ -49,6 +49,8 @@ fieldset {
     padding: 0;
     border: 0;
     min-width: 0;
+    // max-height: 1000px;
+    // transition: max-height 2*$transition-duration-default $transition-ease-default;
 
     &.no-margin-bottom {
         > div {

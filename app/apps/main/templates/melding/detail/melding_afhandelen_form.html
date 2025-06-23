@@ -13,8 +13,6 @@
 <turbo-stream target="modal_body" action="update">
 <template>
     <section class="section--separated padding-bottom-0" data-testid="detailReporter">
-        <div class="container__details">
-
             <form action="{% url 'melding_afhandelen' melding.uuid %}"
                   method="post"
                   class=""
@@ -26,7 +24,7 @@
                 {% csrf_token %}
 
                 <div class="wrapper-sticky-footer">
-                    <div class="flex-content">
+                    <div class="flex-content" data-meldingbehandelformulier-target="contentContainer">
                         {% include terugkoppeling_gewenst_template %}
                         {% if taak_info.aantal_actieve_taken > 0 %}
                             <div class="alert alert--warning">
