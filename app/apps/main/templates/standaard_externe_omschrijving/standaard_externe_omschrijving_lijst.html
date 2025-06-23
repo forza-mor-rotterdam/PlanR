@@ -80,13 +80,16 @@
                         {% else %}
                             -
                         {% endif %}</td>
-                        <td data-row-search-target="searchable">
+                        <td>
                             {% if object.specificatie_opties %}
-                            {% for specificatie_url in object.specificatie_opties %}
-                            {{ specificatie_url|specificatie_naam }}{% if not forloop.last %}, {% endif %}
-                            {% endfor %}
-                            {% else %}
-                            -
+                                {% for specificatie_url in object.specificatie_opties %}
+                                {{ specificatie_url|specificatie_naam }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            {% elif not object.reden.specificatie_opties %}
+                                -
+                            {% endif %}
+                            {% if object.reden.specificatie_opties and not object.specificatie_opties %}
+                                <span class="warning-spoed">{% include "icons/warning_triangle_open.svg" %}</span>
                             {% endif %}
                         </td>
                         <td>

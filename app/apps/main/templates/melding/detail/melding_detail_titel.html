@@ -35,8 +35,13 @@
             {% endwith %}
     {% endif %}
         {% if melding.status %}
-            <span class="tag tag--qualification {% if melding.status.naam == 'afgehandeld' %}tag--opgelost{% elif melding.status.naam == 'controle' %}tag--controle{% elif melding.status.naam == 'in_behandeling' %}tag--opgelost{% elif melding.status.naam == 'geannuleerd' or melding.status.naam == 'wachten_melder' or melding.status.naam == 'pauze' %}tag--geannuleerd{% endif %}">
+            <span class="tag tag--qualification {% if melding.status.naam == 'afgehandeld' %}tag--opgelost{% elif melding.status.naam == 'controle' %}tag--controle{% elif melding.status.naam == 'in_behandeling' %}tag--in_behandeling{% elif melding.status.naam == 'geannuleerd' or melding.status.naam == 'wachten_melder' or melding.status.naam == 'pauze' %}tag--geannuleerd{% endif %}">
                 {{ melding.status.naam|vertaal }}
+                {% if melding.status.naam == "afgehandeld" %}
+                    / {{ melding.resolutie }}
+                    {% if melding.afhandelreden %}/ {{ melding.afhandelreden }}{% endif %}
+                    {% if melding.specificatie.naam %}/ {{ melding.specificatie.naam }}{% endif %}
+                {% endif %}
             </span>
         {% endif %}
         {% if melding.urgentie >= 0.5 %}

@@ -1,5 +1,5 @@
 dialog {
-    max-height: calc(100% - 3em);
+    max-height: calc(100% - 60px);
     border-style: none;
     padding: 0;
     align-items: center;
@@ -29,6 +29,31 @@ dialog {
     }
 
     z-index: 2500;
+
+    &:has(.wrapper-sticky-footer) {
+        height: 100%;
+
+        .modal-body {
+            display: flex;
+            flex: 1 0 auto;
+            flex-direction: column;
+            section {
+                display: flex;
+                flex: 1 0 auto;
+                flex-direction: column;
+
+                form {
+                    display: flex;
+                    flex: 1 0 auto;
+                    flex-direction: column;
+
+                    .wrapper-sticky-footer {
+                        flex: 1 0 auto;
+                    }
+                }
+            }
+        }
+    }
 }
 ::backdrop {
     position: relative;
@@ -165,20 +190,33 @@ body.show-modal--first-filter {
         }
     }
 
-    &-footer {
-    }
-
     &-body {
         padding: 0 $container-padding-x $container-padding-x;
+
+        .container__details {
+            h2 {
+                color: $black;
+            }
+        }
     }
 
-    &-footer {
+    &-footer:not(:has(.btn-row--horizontal)) {
         display: flex;
         flex-wrap: wrap;
         flex-shrink: 0;
         align-items: center;
         justify-content: flex-end;
         padding: $alert-padding-x;
+    }
+
+    &-footer--sticky {
+        border-top: 1px solid $blue-200;
+        padding: 1rem 1.5rem 0;
+        margin: 0 -1.5rem;
+
+        button {
+            margin-bottom: 0;
+        }
     }
 
     &-backdrop {
@@ -192,6 +230,24 @@ body.show-modal--first-filter {
         opacity: 0;
         visibility: hidden;
         transition: all 0.5s ease;
+    }
+}
+
+.wrapper-sticky-footer {
+    display: flex;
+    flex-direction: column;
+    // height: 100%;
+
+    .flex-content {
+        flex: 1 1 auto;
+        overflow-y: scroll;
+        scroll-behavior: smooth;
+        // max-height: 1010px;
+    }
+
+    .modal-footer--sticky {
+        flex-shrink: 0;
+        box-sizing: border-box;
     }
 }
 
