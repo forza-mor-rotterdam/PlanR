@@ -702,6 +702,8 @@ class MeldingPauzerenForm(forms.Form):
         widget=forms.RadioSelect(
             attrs={
                 "class": "list--form-radio-input",
+                "data-melding-pauzeren-target": "statusField",
+                "data-action": "melding-pauzeren#onStatusChangeHandler",
             }
         ),
         choices=(
