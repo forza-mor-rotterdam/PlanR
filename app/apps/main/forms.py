@@ -689,6 +689,7 @@ class MeldingHeropenenForm(forms.Form):
                     "rows": "4",
                     "data-controller": "characterCount",
                     "data-action": "characterCount#onChangeText",
+                    "data-melding-heropenen-target": "internalText",
                 }
             ),
             required=True,
