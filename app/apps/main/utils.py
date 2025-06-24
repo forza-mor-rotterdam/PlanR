@@ -375,3 +375,102 @@ def melding_taken(melding):
         "niet_opgeloste_taken": niet_opgeloste_taken,
         "opgeloste_taken": opgeloste_taken,
     }
+
+
+class LogboekItem:
+    MELDING_AANGEMAAKT = "melding_aangemaakt"
+    MELDING_GEANNULEERD = "melding_geannuleerd"
+    MELDING_HEROPEND = "melding_heropend"
+    MELDING_AFGEHANDELD = "melding_afgehandeld"
+    MELDING_GEPAUZEERD = "melding_gepauzeerd"
+    MELDING_HERVAT = "melding_hervat"
+    AFBEELDING_TOEGEVOEGD = "afbeelding_toegevoegd"
+    NOTITIE_TOEGEVOEGD = "notitie_toegevoegd"
+    LOCATIE_AANGEMAAKT = "locatie_aangemaakt"
+    URGENTIE_AANGEPAST = "urgentie_aangepast"
+    SIGNAAL_TOEGEVOEGD = "signaal_toegevoegd"
+    TAAK_AANGEMAAKT = "taak_aangemaakt"
+    TAAK_AFGEHANDELD = "taak_afgehandeld"
+    TAAK_VERWIJDERD = "taak_verwijderd"
+
+    gebeurtenis_types = {
+        MELDING_AANGEMAAKT: "Melding aangemaakt",
+        MELDING_GEANNULEERD: "Melding geannuleerd",
+        MELDING_HEROPEND: "Melding heropend",
+        MELDING_AFGEHANDELD: "Melding afgehandeld",
+        MELDING_GEPAUZEERD: "Melding gepauzeerd",
+        MELDING_HERVAT: "Melding hervat",
+        AFBEELDING_TOEGEVOEGD: "Afbeelding toegevoegd",
+        NOTITIE_TOEGEVOEGD: "Notitie toegevoegd",
+        LOCATIE_AANGEMAAKT: "Locatie aangepast",
+        URGENTIE_AANGEPAST: "Spoed aangepast",
+        SIGNAAL_TOEGEVOEGD: "Melding ontdubbeld",
+        TAAK_AANGEMAAKT: "Taak '%(titel)s' aangemaakt",
+        TAAK_AFGEHANDELD: "Taak '%(titel)s' afgehandeld",
+        TAAK_VERWIJDERD: "Taak '%(titel)s' verwijderd",
+    }
+    _type = None
+
+    def __init__(self, meldinggebeurtenis, taakopdrachten):
+        self._meldinggebeurtenis = meldinggebeurtenis
+        self._taakopdrachten_via_id = {
+            taakopdracht["id"]: taakopdracht for taakopdracht in taakopdrachten
+        }
+        self._resolutie = meldinggebeurtenis["resolutie"]
+        self._bijlagen = meldinggebeurtenis["bijlagen"]
+        self._locatie = meldinggebeurtenis["locatie"]
+        self._urgentie = meldinggebeurtenis["urgentie"]
+        self._signaal = meldinggebeurtenis["signaal"]
+        self._gebeurtenis_type = meldinggebeurtenis["gebeurtenis_type"]
+        self._taakgebeurtenis = meldinggebeurtenis["taakgebeurtenis"]
+
+        self._type = self._set_gebeurtenis_type()
+
+    def _set_gebeurtenis_type(self):
+        if self._resolutie:
+            return self.MELDING_AFGEHANDELD
+        if self._bijlagen:
+            return self.AFBEELDING_TOEGEVOEGD
+        if self._urgentie:
+            return self.URGENTIE_AANGEPAST
+        if self._locatie:
+            return self.LOCATIE_AANGEMAAKT
+        if self._signaal:
+            return self.SIGNAAL_TOEGEVOEGD
+        if self._taakgebeurtenis:
+            taakopdracht = self._get_taakopdracht(self._taakgebeurtenis["taakopdracht"])
+            if taakopdracht["resolutie"]:
+                return self.TAAK_AFGEHANDELD
+            if taakopdracht["verwijderd_op"]:
+                return self.TAAK_VERWIJDERD
+            return self.TAAK_AANGEMAAKT
+
+        return self.TAAK_AANGEMAAKT
+
+    def _get_taakopdracht(self, taakopdracht_id):
+        return self._taakopdrachten_via_id.get(
+            taakopdracht_id,
+            {
+                "titel": "-",
+                "resolutie": None,
+                "verwijderd_op": None,
+            },
+        )
+
+    @property
+    def gebruiker(self):
+        if self._taakgebeurtenis:
+            taakopdracht = self._get_taakopdracht(self._taakgebeurtenis["taakopdracht"])
+            return taakopdracht["gebruiker"]
+        return self._meldinggebeurtenis["gebruiker"]
+
+    @property
+    def titel(self):
+        if self._taakgebeurtenis:
+            taakopdracht = self._get_taakopdracht(self._taakgebeurtenis["taakopdracht"])
+            return self._gebeurtenis_types[self._type] % taakopdracht
+        return self._gebeurtenis_types[self._type]
+
+    @property
+    def icon(self):
+        return f"icons/logboek/{self._type}.svg"
