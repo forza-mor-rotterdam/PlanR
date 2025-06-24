@@ -23,7 +23,7 @@ export default class extends Controller {
     'resolutieContainer',
     'redenContainer',
     'specificatieContainer',
-    'standaardtextContainer',
+    'standaardtekstContainer',
     'submitButton',
   ]
 
@@ -250,7 +250,7 @@ export default class extends Controller {
     this.specificatieContainerTarget.classList[
       nietOpgelost && this.specificatieUrls.length ? 'remove' : 'add'
     ]('hide')
-    this.standaardtextContainerTarget.classList[
+    this.standaardtekstContainerTarget.classList[
       (nietOpgelost && specificatieUrl && this.specificatieUrls.length) ||
       (nietOpgelost && nietOpgelostReden && !this.specificatieUrls.length) ||
       !nietOpgelost

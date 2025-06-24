@@ -497,8 +497,8 @@ class MeldingAfhandelenForm(forms.Form):
         ),
         required=False,
     )
-    standaardtext = forms.ChoiceField(
-        label="Standaardtext",
+    standaardtekst = forms.ChoiceField(
+        label="Standaardtekst",
         required=False,
         widget=forms.Select(
             attrs={
@@ -577,7 +577,7 @@ class MeldingAfhandelenForm(forms.Form):
             )
             for specificatie in specificatie_lijst
         ]
-        standaardtext_choices = [
+        standaardtekst_choices = [
             (
                 standaard_externe_omschrijving["id"],
                 standaard_externe_omschrijving["titel"],
@@ -586,8 +586,8 @@ class MeldingAfhandelenForm(forms.Form):
                 "id", "titel"
             )
         ]
-        standaardtext_choices.insert(0, ("aangepasteTekst", "- Aangepaste tekst -"))
-        self.fields["standaardtext"].choices = standaardtext_choices
+        standaardtekst_choices.insert(0, ("aangepasteTekst", "- Aangepaste tekst -"))
+        self.fields["standaardtekst"].choices = standaardtekst_choices
 
 
 class MeldingAfhandelenOldForm(forms.Form):
