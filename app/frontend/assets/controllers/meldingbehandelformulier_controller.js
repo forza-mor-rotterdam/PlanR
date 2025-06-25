@@ -23,11 +23,17 @@ export default class extends Controller {
     'resolutieContainer',
     'redenContainer',
     'specificatieContainer',
-    'standaardtextContainer',
+    'standaardtekstContainer',
+    'standaardtekstOptionsContainer',
+    'noStandaardtekstOptionsAlert',
+    'alertContainer',
     'submitButton',
   ]
 
   connect() {
+    if (!this.hasNietOpgelostRedenFieldTarget || !this.hasStandardTextChoiceTarget) {
+      return
+    }
     this.standaardExterneOmschrijvingLijst = JSON.parse(this.standaardExterneOmschrijvingLijstValue)
     this.meldingAfhandelredenLijst = JSON.parse(this.meldingAfhandelredenLijstValue)
     if (this.hasExternalTextTarget) {
@@ -45,12 +51,6 @@ export default class extends Controller {
     }
 
     this.aangepasteTekstOption = this.standardTextChoiceTarget.querySelector('option')
-    console.log('this.aangepasteTekstOption')
-    console.log(this.aangepasteTekstOption)
-    // this.aangepasteTekstOption.value = 'aangepasteTekst'
-    // this.aangepasteTekstOption.textContent = '- Aangepaste tekst -'
-    // this.standardTextChoiceTarget.insertBefore(this.aangepasteTekstOption, this.standardTextChoiceTarget.firstChild)
-
     this.heeftAangepastTekst = false
     this.aangepastTekst = ''
     this.onResolutieChangeHandler()
@@ -74,9 +74,6 @@ export default class extends Controller {
     )?.value
     this.standaardExterneOmschrijvingen = this.standaardExterneOmschrijvingLijst.filter(
       (omschrijving) => ['altijd', this.resolutie].includes(omschrijving.zichtbaarheid)
-    )
-    console.log(
-      this.standaardExterneOmschrijvingen.map((omschrijving) => omschrijving.zichtbaarheid)
     )
     this.update()
   }
@@ -109,7 +106,6 @@ export default class extends Controller {
     const standaardExterneOmschrijving = this.standaardExterneOmschrijvingen.find(
       (omschrijving) => omschrijving.id === parseInt(e.target.value)
     )
-    console.log(standaardExterneOmschrijving)
     this.externalTextTarget.value = standaardExterneOmschrijving.tekst
     this.updateCharacterCount(standaardExterneOmschrijving.tekst.length)
   }
@@ -150,25 +146,35 @@ export default class extends Controller {
     const reden = this.meldingAfhandelredenLijst.find(
       (reden) => reden.id === parseInt(nietOpgelostRedenValue)
     )
+    const standaardExterneOmschrijvingLijstAltijdzichtbaar =
+      this.standaardExterneOmschrijvingen.filter(
+        (omschrijving) => omschrijving.zichtbaarheid === 'altijd'
+      )
+    const standaardExterneOmschrijvingLijstReden = this.standaardExterneOmschrijvingen.filter(
+      (omschrijving) => omschrijving.reden === parseInt(nietOpgelostRedenValue)
+    )
     this.specificatieUrls = reden?.specificatie_opties ?? []
     Array.from(
       this.element.querySelectorAll(`input[name='${this.specificatieFieldTarget.name}']`)
     ).map((elem) => {
-      const show = this.specificatieUrls.includes(elem.value)
+      const standaardExterneOmschrijvingLijstRedenSpecificatieUrls =
+        standaardExterneOmschrijvingLijstReden.filter((omschrijving) =>
+          omschrijving.specificatie_opties.includes(elem.value)
+        )
+      console.log(standaardExterneOmschrijvingLijstAltijdzichtbaar)
+      console.log(standaardExterneOmschrijvingLijstRedenSpecificatieUrls)
+      const show = this.specificatieUrls.includes(elem.value) // && (standaardExterneOmschrijvingLijstAltijdzichtbaar.length || standaardExterneOmschrijvingLijstRedenSpecificatieUrls.length)
       elem.disabled = !show
       elem.closest('li').style.display = show ? 'block' : 'none'
     })
   }
   filterStandaardExterneOmschrijvingLijst(specificatieUrl, nietOpgelostReden) {
     const nietOpgelost = this.resolutie === 'niet_opgelost'
-    this.externalTextTarget.value = ''
     this.updateCharacterCount(0)
     const reden = this.meldingAfhandelredenLijst.find(
       (reden) => reden.id === parseInt(nietOpgelostReden)
     )
     this.specificatieUrls = reden?.specificatie_opties ?? []
-    console.log('specificatieUrls')
-    console.log(this.specificatieUrls)
     const standaardExterneOmschrijvingLijst = this.standaardExterneOmschrijvingen.filter(
       (omschrijving) => {
         if (!nietOpgelostReden && nietOpgelost) {
@@ -193,26 +199,33 @@ export default class extends Controller {
       (omschrijving) => omschrijving.id
     )
 
-    console.log('standaardExterneOmschrijvingLijst')
-    console.log(standaardExterneOmschrijvingLijst.map((omschrijving) => omschrijving.titel))
-
     Array.from(this.standardTextChoiceTarget.querySelectorAll('option')).map((elem) => {
       const show = standaardExterneOmschrijvingIdLijst.includes(parseInt(elem.value))
       elem.style.display = show ? 'block' : 'none'
     })
+
+    let externalText = ''
     if (standaardExterneOmschrijvingIdLijst.length) {
-      let externalText = standaardExterneOmschrijvingLijst[0].tekst
-      if (this.heeftAangepastTekst) {
-        this.aangepasteTekstOption.style.display = 'block'
-      }
-      this.externalTextTarget.value = this.heeftAangepastTekst
-        ? this.aangepastTekst
-        : standaardExterneOmschrijvingLijst[0].tekst
-      this.standardTextChoiceTarget.value = this.heeftAangepastTekst
-        ? 'aangepasteTekst'
-        : standaardExterneOmschrijvingIdLijst[0]
-      this.updateCharacterCount(externalText.length)
+      externalText = standaardExterneOmschrijvingLijst[0].tekst
+      this.standardTextChoiceTarget.value = standaardExterneOmschrijvingIdLijst[0]
+      this.standaardtekstOptionsContainerTarget.style.display = 'block'
+      this.noStandaardtekstOptionsAlertTarget.style.display = 'none'
+    } else {
+      this.standaardtekstOptionsContainerTarget.style.display = 'none'
+      this.noStandaardtekstOptionsAlertTarget.style.display = 'block'
     }
+    if (this.heeftAangepastTekst) {
+      this.aangepasteTekstOption.style.display = 'block'
+      this.standardTextChoiceTarget.value = 'aangepasteTekst'
+      externalText = this.aangepastTekst
+    }
+    const standardTextChoicesEnabled = Array.from(
+      this.standardTextChoiceTarget.querySelectorAll('option')
+    ).filter((elem) => elem.style.display === 'block')
+
+    this.standardTextChoiceTarget.disabled = !(standardTextChoicesEnabled.length > 1)
+    this.externalTextTarget.value = externalText
+    this.updateCharacterCount(externalText.length)
   }
   onChangeHandler() {
     if (this.aangepastTekst === '') {
@@ -233,7 +246,6 @@ export default class extends Controller {
       const li = elem.closest('li')
       li.style.display = nietOpgelost ? 'block' : 'none'
       elem.checked = !nietOpgelost ? false : elem.checked
-      console.log(elem.value)
     })
 
     const nietOpgelostReden = this.element.querySelector(
@@ -243,14 +255,13 @@ export default class extends Controller {
     const specificatieUrl = this.element.querySelector(
       `input[name='${this.specificatieFieldTarget.name}']:checked`
     )?.value
-    console.log(specificatieUrl)
     this.filterStandaardExterneOmschrijvingLijst(specificatieUrl, nietOpgelostReden)
 
     this.redenContainerTarget.classList[nietOpgelost ? 'remove' : 'add']('hide')
     this.specificatieContainerTarget.classList[
       nietOpgelost && this.specificatieUrls.length ? 'remove' : 'add'
     ]('hide')
-    this.standaardtextContainerTarget.classList[
+    this.standaardtekstContainerTarget.classList[
       (nietOpgelost && specificatieUrl && this.specificatieUrls.length) ||
       (nietOpgelost && nietOpgelostReden && !this.specificatieUrls.length) ||
       !nietOpgelost

@@ -13,7 +13,6 @@ from apps.main.services import MORCoreService, render_onderwerp
 from apps.main.utils import get_valide_filter_classes, get_valide_kolom_classes
 from django import forms
 from django.core.files.storage import default_storage
-from django.db.models import F, OuterRef, Q, Subquery
 from django.utils import timezone
 from django_select2.forms import Select2Widget
 from utils.rd_convert import rd_to_wgs
@@ -497,8 +496,8 @@ class MeldingAfhandelenForm(forms.Form):
         ),
         required=False,
     )
-    standaardtext = forms.ChoiceField(
-        label="Standaardtext",
+    standaardtekst = forms.ChoiceField(
+        label="Standaardtekst",
         required=False,
         widget=forms.Select(
             attrs={
@@ -532,30 +531,50 @@ class MeldingAfhandelenForm(forms.Form):
         kwargs.pop("niet_opgelost", None)
         super().__init__(*args, **kwargs)
 
-        standaard_externe_omschrijving = StandaardExterneOmschrijving.objects.filter(
-            reden=OuterRef("pk")
-        )
-        melding_afhandelredenen = (
-            MeldingAfhandelreden.objects.annotate(
-                standaard_externe_omschrijving_specificatie_opties=Subquery(
-                    standaard_externe_omschrijving.values("specificatie_opties")[:1]
-                )
+        melding_afhandelredenen = MeldingAfhandelreden.objects.all()
+        if not StandaardExterneOmschrijving.objects.filter(zichtbaarheid="altijd"):
+            standaard_externe_omschrijving_lijst = (
+                StandaardExterneOmschrijving.objects.filter(
+                    reden__isnull=False
+                ).values_list("reden", "specificatie_opties")
             )
-            .filter(
-                Q(
-                    standaard_externe_omschrijving_specificatie_opties__isnull=False,
-                    standaard_externe_omschrijving_specificatie_opties__overlap=F(
-                        "specificatie_opties"
-                    ),
-                    specificatie_opties__isnull=False,
+            standaard_externe_omschrijving_lijst_comb = {
+                seo[0]: list(
+                    set(
+                        [
+                            url
+                            for s in standaard_externe_omschrijving_lijst
+                            for url in s[1]
+                            if s[1] == seo[1]
+                        ]
+                    )
                 )
-                | Q(
-                    specificatie_opties=[],
-                    standaard_externe_omschrijving_specificatie_opties__isnull=False,
-                ),
+                for seo in standaard_externe_omschrijving_lijst
+            }
+            standaard_externe_omschrijving_reden_ids = list(
+                standaard_externe_omschrijving_lijst_comb.keys()
             )
-            .distinct()
-        )
+
+            melding_afhandelredenen_ids = []
+            for melding_afhandelreden in melding_afhandelredenen.filter(
+                id__in=standaard_externe_omschrijving_reden_ids
+            ):
+                standaard_externe_omschrijving_urls = (
+                    standaard_externe_omschrijving_lijst_comb.get(
+                        melding_afhandelreden.id, []
+                    )
+                )
+                if (
+                    melding_afhandelreden.specificatie_opties
+                    and standaard_externe_omschrijving_urls
+                ):
+                    melding_afhandelredenen_ids.append(melding_afhandelreden.id)
+                else:
+                    melding_afhandelredenen_ids.append(melding_afhandelreden.id)
+
+            melding_afhandelredenen = melding_afhandelredenen.filter(
+                id__in=melding_afhandelredenen_ids
+            )
 
         self.fields["niet_opgelost_reden"].queryset = melding_afhandelredenen
         specificatie_lijst = (
@@ -577,7 +596,7 @@ class MeldingAfhandelenForm(forms.Form):
             )
             for specificatie in specificatie_lijst
         ]
-        standaardtext_choices = [
+        standaardtekst_choices = [
             (
                 standaard_externe_omschrijving["id"],
                 standaard_externe_omschrijving["titel"],
@@ -586,8 +605,8 @@ class MeldingAfhandelenForm(forms.Form):
                 "id", "titel"
             )
         ]
-        standaardtext_choices.insert(0, ("aangepasteTekst", "- Aangepaste tekst -"))
-        self.fields["standaardtext"].choices = standaardtext_choices
+        standaardtekst_choices.insert(0, ("aangepasteTekst", "- Aangepaste tekst -"))
+        self.fields["standaardtekst"].choices = standaardtekst_choices
 
 
 class MeldingAfhandelenOldForm(forms.Form):
