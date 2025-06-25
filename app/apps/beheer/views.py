@@ -162,7 +162,7 @@ class MeldingAfhandelredenMixin:
             }
             for standaard_externe_omschrijving in list(
                 self.object.standaard_externe_omschrijvingen_voor_melding_afhandelreden.values(
-                    "id", "specificatie_opties", "titel"
+                    "id", "specificatie_opties", "titel", "reden"
                 )
                 if self.object
                 else []

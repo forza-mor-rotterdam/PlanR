@@ -7,7 +7,6 @@ export default class extends Controller {
   static targets = ['reden', 'specificatieOpties']
 
   connect() {
-    console.log(this.identifier)
     this.standaardExterneOmschrijvingLijst = JSON.parse(this.standaardExterneOmschrijvingLijstValue)
     this.specificatieOptiesTargets
       .filter((elem) => elem.nodeName === 'INPUT')
