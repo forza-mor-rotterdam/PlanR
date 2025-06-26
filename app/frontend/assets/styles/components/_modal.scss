@@ -238,13 +238,11 @@ body.show-modal--first-filter {
 .wrapper-sticky-footer {
     display: flex;
     flex-direction: column;
-    // height: 100%;
 
     .flex-content {
         flex: 1 1 auto;
-        overflow-y: scroll;
+        overflow-y: auto;
         scroll-behavior: smooth;
-        // max-height: 1010px;
     }
 
     .modal-footer--sticky {
@@ -293,7 +291,6 @@ body.show-modal--first-filter {
     .stap1 {
         .stap2 {
             opacity: 0;
-            // transition: all $transition-duration-default $transition-ease-default;
             visibility: hidden;
             display: none;
             transition-behavior: allow-discrete;
@@ -306,7 +303,6 @@ body.show-modal--first-filter {
     .stap2 {
         .stap1 {
             opacity: 0;
-            // transition: all $transition-duration-default $transition-ease-default;
             visibility: hidden;
             display: none;
             transition-behavior: allow-discrete;
