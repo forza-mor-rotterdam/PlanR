@@ -65,7 +65,7 @@ export default class extends Controller {
     const maxHeight = maxHeightDialog - heightTop - heightFooter - 20
     this.contentContainerTarget.style.maxHeight = `${maxHeight}px`
   }
-  onResolutieChangeHandler() {
+  onResolutieChangeHandler(e) {
     if (this.aangepastTekst === '') {
       this.heeftAangepastTekst = false
     }
@@ -76,7 +76,13 @@ export default class extends Controller {
       (omschrijving) => ['altijd', this.resolutie].includes(omschrijving.zichtbaarheid)
     )
     this.update()
+    if (e?.target?.value == 'niet_opgelost') {
+      this.redenContainerTarget.scrollIntoView()
+    } else if (e?.target?.value == 'opgelost') {
+      this.standaardtekstContainerTarget.scrollIntoView()
+    }
   }
+
   onChangeRedenHandler() {
     if (this.aangepastTekst === '') {
       this.heeftAangepastTekst = false
@@ -87,6 +93,8 @@ export default class extends Controller {
       elem.checked = false
     })
     this.update()
+
+    this.specificatieContainerTarget.scrollIntoView()
   }
   onChangeExternalText(e) {
     this.aangepastTekst = e.target.value
@@ -232,6 +240,7 @@ export default class extends Controller {
       this.heeftAangepastTekst = false
     }
     this.update()
+    this.standaardtekstContainerTarget.scrollIntoView()
   }
   update() {
     const nietOpgelost = this.resolutie === 'niet_opgelost'
@@ -269,7 +278,7 @@ export default class extends Controller {
         : 'add'
     ]('hide')
 
-    this.contentContainerTarget.scrollTop = this.contentContainerTarget.scrollHeight
+    // this.contentContainerTarget.scrollTop = this.contentContainerTarget.scrollHeight
 
     const showSubmitButton = this.externalTextTarget.value
     this.submitButtonTarget.disabled = !showSubmitButton
