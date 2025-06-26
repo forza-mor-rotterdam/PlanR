@@ -392,12 +392,7 @@ class MeldingAfhandelenView(
         melding_afhandelreden_lijst = MeldingAfhandelreden.objects.values(
             "id", "specificatie_opties"
         )
-
-        print('len(context["taken"]["niet_opgeloste_taken"])')
-        print(len(context["taken"]["niet_opgeloste_taken"]))
-
-        opgelost = not context["taken"]["niet_opgeloste_taken"]
-        self.initial = {"resolutie": "opgelost" if opgelost else "niet_opgelost"}
+        self.initial = {"resolutie": self.voorlopige_melding_status(context)}
         context.update(
             {
                 "form": self.get_form(),
@@ -407,15 +402,23 @@ class MeldingAfhandelenView(
                 "melding_afhandelreden_lijst": list(melding_afhandelreden_lijst),
             }
         )
+
         return context
 
-    def form_invalid(self, form):
-        logger.error("TakenAanmakenStreamView: FORM INVALID")
-        logger.error(form.errors.as_json())
-        return super().form_invalid(form)
+    def voorlopige_melding_status(self, context):
+        OPGELOST = "opgelost"
+        NIET_OPGELOST = "niet_opgelost"
+        if not context["taken"]["alle_taken"]:
+            return NIET_OPGELOST
+        if not context["taken"]["niet_verwijderde_taken"]:
+            return NIET_OPGELOST
+        if context["taken"]["niet_opgeloste_taken"]:
+            return NIET_OPGELOST
+        if not context["taken"]["open_taken"]:
+            return NIET_OPGELOST
+        return OPGELOST
 
     def form_valid(self, form):
-        print(form.cleaned_data)
         mor_core_service = MORCoreService()
         response = mor_core_service.melding_afhandelen(
             self.kwargs.get("id"),
@@ -425,15 +428,12 @@ class MeldingAfhandelenView(
             omschrijving_extern=form.cleaned_data.get("omschrijving_extern"),
             gebruiker=self.request.user.email,
         )
-        print(response)
         if response.get("error"):
             messages.error(request=self.request, message=MELDING_AFHANDELEN_ERROR)
         else:
             messages.success(request=self.request, message=MELDING_AFHANDELEN_SUCCESS)
         context = self.get_context_data()
         context.pop("form", None)
-        print(context.keys())
-        print(context.get("melding"))
         return render(
             self.request,
             "melding/detail/melding_afhandelen_success.html",

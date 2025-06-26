@@ -343,7 +343,7 @@ def melding_taken(melding):
     ]
     actieve_taken = [
         taakopdracht
-        for taakopdracht in melding.get("taakopdrachten_voor_melding", [])
+        for taakopdracht in taakopdrachten_voor_melding
         if taakopdracht.get("status", {}).get("naam")
         not in {"voltooid", "voltooid_met_feedback"}
         and not taakopdracht.get("verwijderd_op")
