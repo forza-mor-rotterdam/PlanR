@@ -19,6 +19,7 @@ export default class extends Controller {
     'lichtmast',
     'kaartDefault',
     'taakStatusContainer',
+    'logboek',
   ]
 
   containerActionsTargetConnected(inputHeight = 0) {
@@ -314,5 +315,22 @@ export default class extends Controller {
     // form.find(input["type=file"]).value=null
     form.reset()
     e.target.closest('details').open = false
+  }
+
+  openLogboek(e) {
+    console.log('openLogboek')
+    if (this.logboekTarget) {
+      e.preventDefault()
+      this.logboekTarget.classList.add('show')
+    }
+    document.body.classList.add('show-logboek')
+  }
+
+  closeLogboek() {
+    console.log('closeLogboek')
+    if (this.hasLogboekTarget) {
+      this.logboekTarget.classList.remove('show')
+    }
+    document.body.classList.remove('show-logboek')
   }
 }

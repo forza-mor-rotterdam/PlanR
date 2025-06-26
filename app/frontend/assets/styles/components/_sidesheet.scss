@@ -1,5 +1,6 @@
 body.show-sidesheet,
-body.show-sidesheet--dashboardfilter {
+body.show-sidesheet-dashboardfilters,
+body.show-logboek {
     height: 100%;
     overflow-y: hidden;
 }
@@ -18,12 +19,14 @@ body.show-sidesheet--dashboardfilter {
         left: 0;
         backdrop-filter: blur(5px);
 
-        .turboframe-container {
+        .turboframe-container,
+        .tijdlijn-container {
             right: 0;
         }
     }
 
-    .turboframe-container {
+    .turboframe-container,
+    .tijdlijn-container {
         position: absolute;
         top: 0;
         right: -100%;
@@ -122,8 +125,9 @@ body.show-sidesheet {
     }
 }
 
-body.show-sidesheet-dashboardfilters {
-    .sidesheet--dashboardfilter {
+body.show-sidesheet-dashboardfilters,
+body.show-logboek {
+    .sidesheet {
         left: 0;
         backdrop-filter: blur(2px);
 

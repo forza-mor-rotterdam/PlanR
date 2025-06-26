@@ -35,7 +35,7 @@
             {% context_template "melding_detail_acties.html" as acties_template %}
             {% get_bijlagen melding as bijlagen %}
             {% with signalen=melding.signalen_voor_melding %}
-                <div data-controller="detail"
+                <div data-controller="detail sidesheet"
                     data-detail-locaties-value="{{ locaties.adressen|json_encode }}"
                     data-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
                     data-detail-url-prefix-value="{{ MOR_CORE_URL_PREFIX }}"
@@ -341,17 +341,11 @@
                                         {% endif %}
                                         <section class="section--separated">
                                             <div class="container__details">
-                                                <h2>Tijdlijn</h2>
                                                 {% if melding.status.naam != "afgehandeld" and melding.status.naam != "geannuleerd" %}
                                                     <turbo-frame id="informatie_toevoegen" src="{% url 'informatie_toevoegen' melding.uuid %}">
                                                     </turbo-frame>
                                                 {% endif %}
                                             </div>
-                                        </section>
-                                        <section class="section--separated {% if melding.status.naam is 'afgehandeld' or melding.status.naam is not 'geannuleerd' %}no-padding{% endif %}"
-                                                    data-testid="detailTijdlijn"
-                                                    id="melding_detail_tijdlijn">
-                                            {% include "melding/detail/tijdlijn.html" with melding=melding perms=perms disable_stream=True only %}
                                         </section>
                                     </div>
                                 </div>
@@ -364,6 +358,23 @@
                             </button>
                         </div>
                     {% endif %}
+
+                    <div class="sidesheet" data-detail-target="logboek">
+                        <button type="button"
+                                class="btn-close"
+                                aria-label="Sluit"
+                                data-action="detail#closeLogboek">{% include "icons/close.svg" %}</button>
+                        <div class="sidesheet-backdrop sidesheet-exit"
+                            data-action="click->detail#closeLogboek"></div>
+                        <div class="content tijdlijn-container">
+                            <section class=""
+                                data-testid="detailTijdlijn"
+                                id="melding_detail_tijdlijn">
+                                {% include "melding/detail/tijdlijn.html" with melding=melding perms=perms disable_stream=True only %}
+                            </section>
+                        </div>
+                    </div>
+
                 </div>
             {% endwith %}
         {% endif %}
