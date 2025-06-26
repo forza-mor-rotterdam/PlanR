@@ -408,6 +408,10 @@ class MeldingAfhandelenView(
     def voorlopige_melding_status(self, context):
         OPGELOST = "opgelost"
         NIET_OPGELOST = "niet_opgelost"
+        if len(context["taken"]["opgeloste_taken"]) == len(
+            context["taken"]["niet_verwijderde_taken"]
+        ):
+            return OPGELOST
         if not context["taken"]["alle_taken"]:
             return NIET_OPGELOST
         if not context["taken"]["niet_verwijderde_taken"]:
@@ -420,10 +424,11 @@ class MeldingAfhandelenView(
 
     def form_valid(self, form):
         mor_core_service = MORCoreService()
+        niet_opgelost_reden = form.cleaned_data.get("niet_opgelost_reden")
         response = mor_core_service.melding_afhandelen(
             self.kwargs.get("id"),
             resolutie=form.cleaned_data.get("resolutie"),
-            afhandelreden=form.cleaned_data.get("niet_opgelost_reden").reden,
+            afhandelreden=niet_opgelost_reden.reden if niet_opgelost_reden else None,
             specificatie=form.cleaned_data.get("specificatie"),
             omschrijving_extern=form.cleaned_data.get("omschrijving_extern"),
             gebruiker=self.request.user.email,
