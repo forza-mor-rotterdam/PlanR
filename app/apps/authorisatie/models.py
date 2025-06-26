@@ -184,6 +184,26 @@ class StandaardExterneOmschrijvingVerwijderenPermissie(BasisPermissie):
     codenaam = "standaard_externe_omschrijving_verwijderen"
 
 
+class MeldingAfhandelredenLijstBekijkenPermissie(BasisPermissie):
+    naam = "Melding afhandelreden lijst bekijken"
+    codenaam = "melding_afhandelreden_lijst_bekijken"
+
+
+class MeldingAfhandelredenAanmakenPermissie(BasisPermissie):
+    naam = "Melding afhandelreden aanmaken"
+    codenaam = "melding_afhandelreden_aanmaken"
+
+
+class MeldingAfhandelredenAanpassenPermissie(BasisPermissie):
+    naam = "Melding afhandelreden aanpassen"
+    codenaam = "melding_afhandelreden_aanpassen"
+
+
+class MeldingAfhandelredenVerwijderenPermissie(BasisPermissie):
+    naam = "Melding afhandelreden verwijderen"
+    codenaam = "melding_afhandelreden_verwijderen"
+
+
 class SpecificatieLijstBekijkenPermissie(BasisPermissie):
     naam = "Specificatie lijst bekijken"
     codenaam = "specificatie_lijst_bekijken"
@@ -277,6 +297,10 @@ gebruikersgroep_permissies = (
     StandaardExterneOmschrijvingBekijkenPermissie,
     StandaardExterneOmschrijvingAanpassenPermissie,
     StandaardExterneOmschrijvingVerwijderenPermissie,
+    MeldingAfhandelredenLijstBekijkenPermissie,
+    MeldingAfhandelredenAanmakenPermissie,
+    MeldingAfhandelredenAanpassenPermissie,
+    MeldingAfhandelredenVerwijderenPermissie,
     SpecificatieLijstBekijkenPermissie,
     SpecificatieAanmakenPermissie,
     SpecificatieAanpassenPermissie,

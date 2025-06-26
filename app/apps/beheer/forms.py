@@ -2,6 +2,7 @@ import logging
 
 from apps.main.models import (
     SPECIFICATIE_CACHE_TIMEOUT,
+    STATUS_NIET_OPGELOST,
     STATUS_NIET_OPGELOST_REDENEN_CHOICES,
     STATUS_NIET_OPGELOST_REDENEN_TITEL,
     ZICHTBAARHEID_CHOICES,
@@ -108,6 +109,15 @@ class StandaardExterneOmschrijvingForm(forms.ModelForm):
             )
             .get("results", [])
         )
+        self.fields["zichtbaarheid"].choices = [
+            (zichtbaarheid[0], zichtbaarheid[1])
+            for zichtbaarheid in ZICHTBAARHEID_CHOICES
+            if len(self.fields["reden"].choices)
+            or (
+                not len(self.fields["reden"].choices)
+                and zichtbaarheid[0] != STATUS_NIET_OPGELOST
+            )
+        ]
         self.fields["specificatie_opties"].choices = [
             (
                 specificatie.get("_links", {}).get("self", {}).get("href", "-"),
