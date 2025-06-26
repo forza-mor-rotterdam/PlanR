@@ -67,7 +67,7 @@ export default class extends Controller {
     const maxHeight = maxHeightDialog - heightTop - heightFooter - 20
     this.contentContainerTarget.style.maxHeight = `${maxHeight}px`
   }
-  onResolutieChangeHandler() {
+  onResolutieChangeHandler(e) {
     this.heeftAangepastTekst = false
     this.aangepastTekst = ''
     this.resolutie = this.element.querySelector(
@@ -98,7 +98,7 @@ export default class extends Controller {
   }
   onChangeExternalText(e) {
     this.aangepastTekst = e.target.value
-    this.heeftAangepastTekst = true
+    this.heeftAangepastTekst = !!e.target.value
     this.update()
   }
 
@@ -115,6 +115,8 @@ export default class extends Controller {
     )
     this.externalTextTarget.value = standaardExterneOmschrijving.tekst
     this.updateCharacterCount(standaardExterneOmschrijving.tekst.length)
+    const showSubmitButton = this.externalTextTarget.value
+    this.submitButtonTarget.disabled = !showSubmitButton
   }
 
   updateCharacterCount(count) {
