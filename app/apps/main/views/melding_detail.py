@@ -408,8 +408,10 @@ class MeldingAfhandelenView(
     def voorlopige_melding_status(self, context):
         OPGELOST = "opgelost"
         NIET_OPGELOST = "niet_opgelost"
-        if len(context["taken"]["opgeloste_taken"]) == len(
-            context["taken"]["niet_verwijderde_taken"]
+        if (
+            len(context["taken"]["opgeloste_taken"])
+            == len(context["taken"]["niet_verwijderde_taken"])
+            and len(context["taken"]["opgeloste_taken"]) > 0
         ):
             return OPGELOST
         if not context["taken"]["alle_taken"]:
