@@ -420,7 +420,7 @@ class MeldingAfhandelenView(
             return NIET_OPGELOST
         if context["taken"]["niet_opgeloste_taken"]:
             return NIET_OPGELOST
-        if not context["taken"]["open_taken"]:
+        if context["taken"]["open_taken"]:
             return NIET_OPGELOST
         return OPGELOST
 
