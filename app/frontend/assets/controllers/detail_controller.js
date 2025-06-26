@@ -324,10 +324,6 @@ export default class extends Controller {
       e.preventDefault()
       this.logboekTarget.classList.add('show')
       document.body.classList.add('show-logboek')
-
-      console.log('window.innerWidth', window.innerWidth)
-      console.log('document.documentElement.clientWidth', document.documentElement.clientWidth)
-      console.log('scrollBarWidth', scrollBarWidth)
       document.body.style.paddingRight = `${scrollBarWidth}px`
     }
   }

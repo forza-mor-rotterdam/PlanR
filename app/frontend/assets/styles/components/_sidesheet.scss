@@ -20,13 +20,13 @@ body.show-logboek {
         backdrop-filter: blur(5px);
 
         .turboframe-container,
-        .tijdlijn-container {
+        .container__tijdlijn {
             right: 0;
         }
     }
 
     .turboframe-container,
-    .tijdlijn-container {
+    .container__tijdlijn {
         position: absolute;
         top: 0;
         right: -100%;
@@ -37,7 +37,7 @@ body.show-logboek {
         overflow-y: auto;
         transition: right 0.5s ease-in-out;
         box-sizing: border-box;
-        padding: $container-padding-x;
+        padding: 16px 20px;
 
         h1 {
             font-size: 1.25em;
@@ -47,9 +47,8 @@ body.show-logboek {
 
         h2 {
             font-size: 1em;
-            border-top: 1px solid $gray-600;
-            padding-top: $container-padding-x;
-            margin-top: $alert-padding-x;
+            padding-top: 0;
+            margin-top: 0;
             display: flex;
             gap: 4px;
 
@@ -77,7 +76,7 @@ body.show-logboek {
     .btn-close {
         z-index: 2105;
         background: transparent;
-        top: $container-padding-x;
+        top: 0.5rem;
         right: calc($container-padding-x - 8px);
         min-width: 20px;
         min-height: 20px;
@@ -125,9 +124,26 @@ body.show-sidesheet {
     }
 }
 
-body.show-sidesheet-dashboardfilters,
 body.show-logboek {
     .sidesheet {
+        left: 0;
+        backdrop-filter: blur(2px);
+
+        .content {
+            right: 0;
+        }
+
+        > .sidesheet-backdrop {
+            display: block;
+            height: 100%;
+            opacity: 0.25;
+            transition: opacity 0.5s ease-in-out;
+        }
+    }
+}
+
+body.show-sidesheet-dashboardfilters {
+    .sidesheet--dashboardfilter {
         left: 0;
         backdrop-filter: blur(2px);
 
