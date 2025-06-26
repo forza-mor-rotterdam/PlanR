@@ -606,6 +606,7 @@ class MeldingAfhandelenForm(forms.Form):
             )
         ]
         standaardtekst_choices.insert(0, ("aangepasteTekst", "- Aangepaste tekst -"))
+        standaardtekst_choices.insert(0, ("", "- Selecteer een standaardtekst -"))
         self.fields["standaardtekst"].choices = standaardtekst_choices
 
 
