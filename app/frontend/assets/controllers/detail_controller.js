@@ -4,7 +4,8 @@ import L from 'leaflet'
 
 let detailScrollY = 0,
   distance = 0,
-  actionsHeight = 0
+  actionsHeight = 0,
+  scrollBarWidth = 0
 export default class extends Controller {
   static values = {
     signalen: String,
@@ -35,6 +36,7 @@ export default class extends Controller {
   }
 
   initialize() {
+    scrollBarWidth = window.innerWidth - document.documentElement.clientWidth
     this.coordinates = []
     if (this.hasTabsTarget && this.hasTabsContentTarget) {
       const tabs = this.tabsTarget.querySelectorAll('.btn--tab')
@@ -318,19 +320,23 @@ export default class extends Controller {
   }
 
   openLogboek(e) {
-    console.log('openLogboek')
     if (this.logboekTarget) {
       e.preventDefault()
       this.logboekTarget.classList.add('show')
+      document.body.classList.add('show-logboek')
+
+      console.log('window.innerWidth', window.innerWidth)
+      console.log('document.documentElement.clientWidth', document.documentElement.clientWidth)
+      console.log('scrollBarWidth', scrollBarWidth)
+      document.body.style.paddingRight = `${scrollBarWidth}px`
     }
-    document.body.classList.add('show-logboek')
   }
 
   closeLogboek() {
-    console.log('closeLogboek')
     if (this.hasLogboekTarget) {
       this.logboekTarget.classList.remove('show')
+      document.body.classList.remove('show-logboek')
+      document.body.style.paddingRight = ''
     }
-    document.body.classList.remove('show-logboek')
   }
 }
