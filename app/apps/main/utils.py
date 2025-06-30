@@ -473,12 +473,12 @@ class LogboekItem:
         )
 
     @property
-    def datum(self):
+    def datumtijd(self):
         return datetime.fromisoformat(self._meldinggebeurtenis["aangemaakt_op"])
 
     @property
-    def datum_verbose(self):
-        return self.datum.strftime("%d-%m-%Y")
+    def datum(self):
+        return self.datumtijd.date()
 
     @property
     def tijd(self):
@@ -551,6 +551,7 @@ class LogboekItem:
             "icon",
             "gebruiker",
             "tijd",
+            "datumtijd",
             "datum",
             "omschrijving_intern",
             "omschrijving_extern",
@@ -588,20 +589,18 @@ class Logboek:
         )
 
         dagen = sorted(
-            list(set([logboek_item.datum.date() for logboek_item in logboek_items])),
+            list(set([logboek_item.datum for logboek_item in logboek_items])),
             reverse=True,
         )
-        for d in dagen:
-            print(d)
 
         self.logboek_items_gegroepeerd = [
             {
-                "datum_verbose": dag,
+                "datum": dag,
                 "logboek_items": sorted(
                     [
                         logboek_item
                         for logboek_item in self.logboek_items_gesorteerd
-                        if logboek_item.datum.date() == dag
+                        if logboek_item.datum == dag
                     ],
                     key=lambda x: x.datum,
                     reverse=True,
