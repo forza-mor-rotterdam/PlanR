@@ -279,13 +279,20 @@
     .container__thumbs {
         ul {
             margin: 0;
+            display: flex;
+            justify-content: flex-start;
+            gap: 8px;
+
             li {
                 cursor: auto;
                 margin: 0;
+                padding: 0 !important;
             }
         }
         .container__image {
             opacity: 1;
+            height: 64px;
+            width: 83px;
         }
     }
 
