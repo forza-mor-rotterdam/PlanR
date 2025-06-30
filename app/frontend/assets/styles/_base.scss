@@ -237,6 +237,7 @@ h2 + p {
 }
 
 a {
+    color: inherit;
     transition: color $transition-duration-default $transition-ease-default;
 
     svg {
@@ -310,7 +311,7 @@ summary:focus-visible {
 }
 a,
 .link {
-    color: $primary;
+    color: inherit;
     text-decoration: $link-decoration;
     cursor: pointer;
     position: relative;

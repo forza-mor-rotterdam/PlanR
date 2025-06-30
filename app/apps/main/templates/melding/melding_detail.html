@@ -360,15 +360,19 @@
                     {% endif %}
 
                     <div class="sidesheet" data-detail-target="logboek">
-                        <button type="button"
-                                class="btn-close"
-                                aria-label="Sluit"
-                                data-action="detail#closeLogboek">{% include "icons/close.svg" %}</button>
                         <div class="sidesheet-backdrop sidesheet-exit"
                             data-action="click->detail#closeLogboek"></div>
-                        <div class="content container__tijdlijn">
-                            <h2>Logboek</h2>
-                            <section class=""
+                        <div class="container__logboek">
+                            <button type="button"
+                                class="btn-close"
+                                aria-label="Sluit"
+                                data-action="detail#closeLogboek">
+                                {% include "icons/close.svg" %}
+                            </button>
+                            <header>
+                                <h2>Logboek</h2>
+                            </header>
+                            <section class="content"
                                 data-testid="detailTijdlijn"
                                 id="melding_detail_tijdlijn">
                                 {% include "melding/detail/tijdlijn.html" with melding=melding perms=perms disable_stream=True only %}
