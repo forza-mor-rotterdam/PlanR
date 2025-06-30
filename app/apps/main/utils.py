@@ -482,7 +482,7 @@ class LogboekItem:
 
     @property
     def tijd(self):
-        return self.datum.strftime("%H:%M:%S")
+        return self.datumtijd.strftime("%H:%M:%S")
 
     @property
     def gebruiker(self):
