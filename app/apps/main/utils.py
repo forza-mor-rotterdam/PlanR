@@ -1,11 +1,13 @@
 import base64
 import logging
 from collections import OrderedDict
+from datetime import datetime
 from re import sub
 
 from apps.main.services import MercureService
 from django.core.files.storage import default_storage
 from django.http import QueryDict
+from django.template.loader import get_template
 from utils.case_conversions import to_kebab
 
 logger = logging.getLogger(__name__)
@@ -393,13 +395,13 @@ class LogboekItem:
     TAAK_AFGEHANDELD = "taak_afgehandeld"
     TAAK_VERWIJDERD = "taak_verwijderd"
 
-    gebeurtenis_types = {
+    _types = {
         MELDING_AANGEMAAKT: "Melding aangemaakt",
-        MELDING_GEANNULEERD: "Melding geannuleerd",
+        MELDING_GEANNULEERD: "Melding geannuleerd",  # check mor-core
         MELDING_HEROPEND: "Melding heropend",
         MELDING_AFGEHANDELD: "Melding afgehandeld",
-        MELDING_GEPAUZEERD: "Melding gepauzeerd",
-        MELDING_HERVAT: "Melding hervat",
+        MELDING_GEPAUZEERD: "Melding gepauzeerd",  # check mor-core
+        MELDING_HERVAT: "Melding hervat",  # check mor-core
         AFBEELDING_TOEGEVOEGD: "Afbeelding toegevoegd",
         NOTITIE_TOEGEVOEGD: "Notitie toegevoegd",
         LOCATIE_AANGEMAAKT: "Locatie aangepast",
@@ -411,22 +413,34 @@ class LogboekItem:
     }
     _type = None
 
-    def __init__(self, meldinggebeurtenis, taakopdrachten):
+    def __init__(
+        self,
+        meldinggebeurtenis,
+        taakopdrachten,
+        vorige_meldinggebeurtenis=None,
+        signalen=[],
+    ):
         self._meldinggebeurtenis = meldinggebeurtenis
+        self._signaal_via_href = {
+            signaal["_links"]["self"]: signaal for signaal in signalen
+        }
+        self._vorige_meldinggebeurtenis = vorige_meldinggebeurtenis
         self._taakopdrachten_via_id = {
             taakopdracht["id"]: taakopdracht for taakopdracht in taakopdrachten
         }
-        self._resolutie = meldinggebeurtenis["resolutie"]
+        self._resolutie = meldinggebeurtenis.get("resolutie")
         self._bijlagen = meldinggebeurtenis["bijlagen"]
         self._locatie = meldinggebeurtenis["locatie"]
         self._urgentie = meldinggebeurtenis["urgentie"]
-        self._signaal = meldinggebeurtenis["signaal"]
+        self._signaal = meldinggebeurtenis.get("signaal")
         self._gebeurtenis_type = meldinggebeurtenis["gebeurtenis_type"]
         self._taakgebeurtenis = meldinggebeurtenis["taakgebeurtenis"]
 
         self._type = self._set_gebeurtenis_type()
 
     def _set_gebeurtenis_type(self):
+        if not self._vorige_meldinggebeurtenis:
+            return self.MELDING_AANGEMAAKT
         if self._resolutie:
             return self.MELDING_AFGEHANDELD
         if self._bijlagen:
@@ -437,15 +451,16 @@ class LogboekItem:
             return self.LOCATIE_AANGEMAAKT
         if self._signaal:
             return self.SIGNAAL_TOEGEVOEGD
+        if self._gebeurtenis_type == self.MELDING_HEROPEND:
+            return self.MELDING_HEROPEND
         if self._taakgebeurtenis:
-            taakopdracht = self._get_taakopdracht(self._taakgebeurtenis["taakopdracht"])
-            if taakopdracht["resolutie"]:
+            self._get_taakopdracht(self._taakgebeurtenis["taakopdracht"])
+            if self._taakgebeurtenis["resolutie"]:
                 return self.TAAK_AFGEHANDELD
-            if taakopdracht["verwijderd_op"]:
+            if self._taakgebeurtenis["verwijderd_op"]:
                 return self.TAAK_VERWIJDERD
             return self.TAAK_AANGEMAAKT
-
-        return self.TAAK_AANGEMAAKT
+        return
 
     def _get_taakopdracht(self, taakopdracht_id):
         return self._taakopdrachten_via_id.get(
@@ -458,19 +473,139 @@ class LogboekItem:
         )
 
     @property
+    def datum(self):
+        return datetime.fromisoformat(self._meldinggebeurtenis["aangemaakt_op"])
+
+    @property
+    def datum_verbose(self):
+        return self.datum.strftime("%d-%m-%Y")
+
+    @property
+    def tijd(self):
+        return self.datum.strftime("%H:%M:%S")
+
+    @property
     def gebruiker(self):
+        o = self._meldinggebeurtenis
         if self._taakgebeurtenis:
-            taakopdracht = self._get_taakopdracht(self._taakgebeurtenis["taakopdracht"])
-            return taakopdracht["gebruiker"]
-        return self._meldinggebeurtenis["gebruiker"]
+            o = self._taakgebeurtenis
+        return o.get("gebruiker")
 
     @property
     def titel(self):
         if self._taakgebeurtenis:
             taakopdracht = self._get_taakopdracht(self._taakgebeurtenis["taakopdracht"])
-            return self._gebeurtenis_types[self._type] % taakopdracht
-        return self._gebeurtenis_types[self._type]
+            return self._types[self._type] % taakopdracht
+        return self._types.get(self._type, "Onbekend logboek item")
+
+    @property
+    def omschrijving_intern(self):
+        o = self._meldinggebeurtenis
+        if self._taakgebeurtenis:
+            o = self._taakgebeurtenis
+        return o.get("omschrijving_intern")
+
+    @property
+    def omschrijving_extern(self):
+        o = self._meldinggebeurtenis
+        if self._taakgebeurtenis:
+            o = self._taakgebeurtenis
+        return o.get("omschrijving_extern")
+
+    @property
+    def bijlagen(self):
+        o = self._meldinggebeurtenis
+        signaal_href = self._meldinggebeurtenis["_links"]["signaal"]["href"]
+        if signaal_href:
+            o = self._signaal_via_href.get(signaal_href, {})
+        if self._taakgebeurtenis:
+            o = self._taakgebeurtenis
+        return o.get("bijlagen")
 
     @property
     def icon(self):
-        return f"icons/logboek/{self._type}.svg"
+        return f"logboek/icons/{self._type}.svg"
+
+    @property
+    def icon_template(self):
+        try:
+            return get_template(f"logboek/icons/{self._type}.svg")
+        except Exception:
+            return get_template("logboek/icons/standaard.svg")
+
+    @property
+    def _content_template(self):
+        try:
+            return get_template(f"logboek/content/{self._type}.html")
+        except Exception:
+            return get_template("logboek/content/standaard.html")
+
+    @property
+    def render_icon(self):
+        return self.icon_template.render()
+
+    @property
+    def render_content(self):
+        content_context_properties = (
+            "titel",
+            "icon",
+            "gebruiker",
+            "tijd",
+            "datum",
+            "omschrijving_intern",
+            "omschrijving_extern",
+            "bijlagen",
+        )
+        return self._content_template.render(
+            {
+                prop: getattr(self, prop, "not found")
+                for prop in content_context_properties
+            }
+        )
+
+
+class Logboek:
+    def __init__(self, melding):
+        meldinggebeurtenissen = melding["meldinggebeurtenissen"]
+        taakopdrachten_voor_melding = melding["taakopdrachten_voor_melding"]
+        signalen_voor_melding = melding["signalen_voor_melding"]
+
+        meldinggebeurtenissen_sorted = sorted(
+            meldinggebeurtenissen, key=lambda x: x["aangemaakt_op"], reverse=False
+        )
+
+        logboek_items = [
+            LogboekItem(
+                meldinggebeurtenis,
+                taakopdrachten_voor_melding,
+                meldinggebeurtenissen_sorted[i - 1] if i != 0 else None,
+                signalen=signalen_voor_melding,
+            )
+            for i, meldinggebeurtenis in enumerate(meldinggebeurtenissen_sorted)
+        ]
+        self.logboek_items_gesorteerd = sorted(
+            logboek_items, key=lambda x: x.datum, reverse=True
+        )
+
+        dagen = sorted(
+            list(set([logboek_item.datum.date() for logboek_item in logboek_items])),
+            reverse=True,
+        )
+        for d in dagen:
+            print(d)
+
+        self.logboek_items_gegroepeerd = [
+            {
+                "datum_verbose": dag,
+                "logboek_items": sorted(
+                    [
+                        logboek_item
+                        for logboek_item in self.logboek_items_gesorteerd
+                        if logboek_item.datum.date() == dag
+                    ],
+                    key=lambda x: x.datum,
+                    reverse=True,
+                ),
+            }
+            for dag in dagen
+        ]

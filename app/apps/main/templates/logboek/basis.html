@@ -1,0 +1,31 @@
+{% extends "infosheet/turbo.html" %}
+
+{% block header %}
+    <div class="header">
+        <div class="scroll-handle" data-infosheet-target="scrollHandle"></div>
+        <h1>Logboek</h1>
+        <button class="btn-close--small"
+                data-action="infosheet#closeInfosheet"
+                aria-label="Sluiten">{% include "icons/close.svg" %}</button>
+    </div>
+{% endblock header %}
+
+{% block content %}
+<ul>
+    {% for logboek_groep in logboek.logboek_items_gegroepeerd %}
+        <li>
+        {{logboek_groep.datum_verbose}}
+
+            <ul>
+                {% for logboek_item in logboek_groep.logboek_items %}
+                    <li>
+                        {{logboek_item.titel}}
+                        {{logboek_item.render_icon}}
+                        {{logboek_item.render_content}}
+                    </li>
+                {% endfor %}
+            </ul>
+        </li>
+    {% endfor %}
+</ul>
+{% endblock content %}

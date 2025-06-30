@@ -2,6 +2,7 @@ from apps.authenticatie.views import GebruikerProfielView, SessionTimerView
 from apps.health.views import healthz
 from apps.main.views import (
     LichtmastView,
+    LogboekView,
     LoginView,
     LogoutView,
     MeldingAfhandelenView,
@@ -151,6 +152,11 @@ urlpatterns = [
         "melding/verzonden/<uuid:signaal_uuid>/",
         melding_verzonden,
         name="melding_verzonden",
+    ),
+    path(
+        "melding/<uuid:id>/logboek/",
+        LogboekView.as_view(),
+        name="logboek",
     ),
     # Notificaties
     path(
