@@ -13,13 +13,22 @@
             {% melding_taken melding as taak_info %}
                 <ul class="list-clean">
                     <li>
+                        <button type="button"
+                                class="btn btn-icon"
+                                data-action="infosheet#openInfosheet"
+                                data-infosheet-action-param="{% url 'taaktype_taakr' %}?taakapplicatie-taaktype-url={{ taakr_taaktype_links.taakapplicatie_taaktype_url }}">
+                                {% include "icons/pause_circle.svg" %}
+                            Toon logboek
+                        </button>
+                    </li>
+                    <li>
                         {% if perms.authorisatie.melding_pauzeren and melding.status.naam != "pauze" and melding.status.naam != "wachten_melder" %}
                             <button type="button"
                                     class="btn btn-icon"
                                     data-action="modal#openModal"
                                     data-modal-action-param="{% url 'melding_pauzeren' melding.uuid %}">
                                     {% include "icons/pause_circle.svg" %}
-                                Melding pauzeren
+                                Pauzeer melding
                             </button>
                         {% endif %}
                     </li>
@@ -30,7 +39,7 @@
                                     data-action="modal#openModal"
                                     data-modal-action-param="{% url 'melding_spoed_veranderen' melding.uuid %}">
                                     {% include "icons/warning_triangle.svg" %}
-                                {% if melding.urgentie >= 0.5 %}Spoedstatus verwijderen{% else %}Spoedstatus toevoegen{% endif %}
+                                {% if melding.urgentie >= 0.5 %}Verwijder spoedstatus{% else %}Voeg spoedstatus toe{% endif %}
                             </button>
                         {% endif %}
                     </li>
@@ -41,7 +50,7 @@
                                     data-action="modal#openModal"
                                     data-modal-action-param="{% url 'melding_annuleren' melding.uuid %}">
                                     {% include "icons/bin.svg" %}
-                                Melding annuleren
+                                Anuuleer melding
                             </button>
                         {% endif %}
                     </li>

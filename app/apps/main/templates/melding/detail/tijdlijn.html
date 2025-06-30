@@ -11,6 +11,54 @@
 {% block target %}melding_detail_tijdlijn{% endblock target %}
 <!-- djlint:on -->
 {% block content %}
+
+    <div class="">
+        <div class="group">
+            <h3>Vandaag</h3>
+            <ul class="list-clean">
+                <li>
+                    {% include "icons/pause_circle.svg" %}
+                    <div class="message">
+                        <h4>Notitie toegevoegd</h4>
+                        <p>
+                            Dit is de opmerking die tijdelijk even hier weergegeven wordt totdat het notitie blok klaar is.
+                        </p>
+                        <p>
+                            Dit is de opmerking die tijdelijk even hier weergegeven wordt totdat het notitie blok klaar is.
+                        </p>
+                        <small>Om 11:24 uur door <a href="">Jan Schouten</a></small>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="group">
+            <h3>Gisteren</h3>
+            <ul class="list-clean">
+                <li>
+                    {% include "icons/pause_circle.svg"  %}
+                    <div class="message">
+                        <h4>Taak "Grofvuil ophalen" aangemaakt</h4>
+                        <p>
+                            Notitie: Dit is de opmerking.
+                        </p>
+                        <small>Om 11:24 uur door <a href="">Jan Schouten</a></small>
+                    </div>
+                </li>
+                <li>
+                    {% include "icons/pause_circle.svg"  %}
+                    <div class="message">
+                        <h4>Taak "Grofvuil ophalen" aangemaakt</h4>
+                        <p>
+                            Notitie: Dit is de opmerking.
+                        </p>
+                        <small>Om 11:24 uur door <a href="">Jan Schouten</a></small>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
     {% melding_naar_tijdlijn melding as tijdlijn_data %}
     <ul class="list__mutations">
         {% for row_data in tijdlijn_data %}

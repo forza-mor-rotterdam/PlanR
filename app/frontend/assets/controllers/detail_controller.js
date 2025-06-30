@@ -4,7 +4,8 @@ import L from 'leaflet'
 
 let detailScrollY = 0,
   distance = 0,
-  actionsHeight = 0
+  actionsHeight = 0,
+  scrollBarWidth = 0
 export default class extends Controller {
   static values = {
     signalen: String,
@@ -19,6 +20,7 @@ export default class extends Controller {
     'lichtmast',
     'kaartDefault',
     'taakStatusContainer',
+    'logboek',
   ]
 
   containerActionsTargetConnected(inputHeight = 0) {
@@ -34,6 +36,7 @@ export default class extends Controller {
   }
 
   initialize() {
+    scrollBarWidth = window.innerWidth - document.documentElement.clientWidth
     this.coordinates = []
     if (this.hasTabsTarget && this.hasTabsContentTarget) {
       const tabs = this.tabsTarget.querySelectorAll('.btn--tab')
@@ -314,5 +317,22 @@ export default class extends Controller {
     // form.find(input["type=file"]).value=null
     form.reset()
     e.target.closest('details').open = false
+  }
+
+  openLogboek(e) {
+    if (this.logboekTarget) {
+      e.preventDefault()
+      this.logboekTarget.classList.add('show')
+      document.body.classList.add('show-logboek')
+      document.body.style.paddingRight = `${scrollBarWidth}px`
+    }
+  }
+
+  closeLogboek() {
+    if (this.hasLogboekTarget) {
+      this.logboekTarget.classList.remove('show')
+      document.body.classList.remove('show-logboek')
+      document.body.style.paddingRight = ''
+    }
   }
 }

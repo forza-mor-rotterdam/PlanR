@@ -3,6 +3,7 @@ export default class extends Controller {
   static targets = ['sidesheet', 'turboframe']
 
   openSidesheet(e) {
+    console.log('openSidesheet')
     if (this.hasSidesheetTarget && this.hasTurboframeTarget) {
       e.preventDefault()
       const sidesheet = this.sidesheetTarget
@@ -13,6 +14,7 @@ export default class extends Controller {
   }
 
   closeSidesheet() {
+    console.log('closeSidesheet')
     if (this.hasSidesheetTarget) {
       const sidesheet = this.sidesheetTarget
       sidesheet.classList.remove('show')
