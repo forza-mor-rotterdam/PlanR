@@ -40,6 +40,7 @@ from apps.main.messages import (
 from apps.main.models import MeldingAfhandelreden, StandaardExterneOmschrijving
 from apps.main.services import MORCoreService, TaakRService
 from apps.main.utils import (
+    Logboek,
     melding_locaties,
     melding_taken,
     publiceer_topic_met_subscriptions,
@@ -1011,3 +1012,17 @@ def locatie_aanpassen(request, id):
             {"error": str(e)},
             status=getattr(e, "status_code", 500),
         )
+
+
+class LogboekView(MeldingDetailViewMixin, PermissionRequiredMixin, TemplateView):
+    template_name = "logboek/basis.html"
+    permission_required = "authorisatie.melding_bekijken"
+
+    def get_context_data(self, **kwargs):
+        kwargs = super().get_context_data(**kwargs)
+        kwargs.update(
+            {
+                "logboek": Logboek(kwargs["melding"]),
+            }
+        )
+        return kwargs
