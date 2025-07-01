@@ -276,19 +276,6 @@
         }
     }
 
-    .container__thumbs {
-        ul {
-            margin: 0;
-            li {
-                cursor: auto;
-                margin: 0;
-            }
-        }
-        .container__image {
-            opacity: 1;
-        }
-    }
-
     &.has-taken {
         .container__aanmaken {
             background-color: transparent;

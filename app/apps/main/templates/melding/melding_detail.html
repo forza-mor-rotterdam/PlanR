@@ -35,7 +35,7 @@
             {% context_template "melding_detail_acties.html" as acties_template %}
             {% get_bijlagen melding as bijlagen %}
             {% with signalen=melding.signalen_voor_melding %}
-                <div data-controller="detail"
+                <div data-controller="detail sidesheet"
                     data-detail-locaties-value="{{ locaties.adressen|json_encode }}"
                     data-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
                     data-detail-url-prefix-value="{{ MOR_CORE_URL_PREFIX }}"
