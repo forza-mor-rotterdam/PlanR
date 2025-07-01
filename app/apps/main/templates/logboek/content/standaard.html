@@ -1,6 +1,20 @@
-<ul>
-    <li>tijd: {{ tijd }}</li>
-    <li>gebruiker: {{ gebruiker }}</li>
-    <li>omschrijving_intern: {{ omschrijving_intern }}</li>
-    <li>bijlagen: {{ bijlagen }}</li>
-</ul>
+{% load mor_core_url from main_tags %}
+{% load get_gebruiker_object_middels_email from gebruikers_tags %}
+{% if omschrijving_intern and titel != omschrijving_intern %}<p>{{ omschrijving_intern }}</p>{% endif %}
+<small>Om {{ tijd }} uur{% if gebruiker %} door <a href="" data-action="modal#openModal" data-modal-action-param="{% url 'gebruiker_info' gebruiker_email=gebruiker %}">{{ gebruiker }}</a>{% endif %}</small>
+
+{% if bijlagen|length > 0 %}
+    <div class="container__thumbs">
+        <ul>
+            {% for bijlage in bijlagen %}
+            <li>
+                <div class="container__image">
+                    <div class="image"
+                        style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url|mor_core_url }}')">
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}

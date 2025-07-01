@@ -407,9 +407,9 @@ class LogboekItem:
         LOCATIE_AANGEMAAKT: "Locatie aangepast",
         URGENTIE_AANGEPAST: "Spoed aangepast",
         SIGNAAL_TOEGEVOEGD: "Melding ontdubbeld",
-        TAAK_AANGEMAAKT: "Taak '%(titel)s' aangemaakt",
-        TAAK_AFGEHANDELD: "Taak '%(titel)s' afgehandeld",
-        TAAK_VERWIJDERD: "Taak '%(titel)s' verwijderd",
+        TAAK_AANGEMAAKT: 'Taak "%(titel)s" aangemaakt',
+        TAAK_AFGEHANDELD: 'Taak "%(titel)s" afgehandeld',
+        TAAK_VERWIJDERD: 'Taak "%(titel)s" verwijderd',
     }
     _type = None
 
@@ -531,7 +531,7 @@ class LogboekItem:
         try:
             return get_template(f"logboek/icons/{self._type}.svg")
         except Exception:
-            return get_template("logboek/icons/standaard.svg")
+            return get_template("logboek/icons/onbekend.svg")
 
     @property
     def _content_template(self):
