@@ -78,9 +78,9 @@ export default class extends Controller {
     )
     this.update()
     if (e?.target?.value == 'niet_opgelost') {
-      this.redenContainerTarget.scrollIntoView()
+      this.redenContainerTarget.scrollIntoView(false)
     } else if (e?.target?.value == 'opgelost') {
-      this.standaardtekstContainerTarget.scrollIntoView()
+      this.standaardtekstContainerTarget.scrollIntoView(false)
     }
   }
 
@@ -94,7 +94,7 @@ export default class extends Controller {
     })
     this.update()
 
-    this.specificatieContainerTarget.scrollIntoView()
+    this.specificatieContainerTarget.scrollIntoView(false)
   }
   onChangeExternalText(e) {
     this.aangepastTekst = e.target.value
@@ -256,7 +256,7 @@ export default class extends Controller {
     this.heeftAangepastTekst = false
     this.aangepastTekst = ''
     this.update()
-    this.standaardtekstContainerTarget.scrollIntoView()
+    this.standaardtekstContainerTarget.scrollIntoView(false)
   }
   update() {
     const nietOpgelost = this.resolutie === 'niet_opgelost'

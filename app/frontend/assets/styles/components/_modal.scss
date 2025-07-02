@@ -195,6 +195,11 @@ body.show-modal--first-filter {
     &-body {
         padding: 0 $container-padding-x $container-padding-x;
 
+        &:has(.flex-content) {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
         .container__details {
             h2 {
                 color: $black;
@@ -214,7 +219,6 @@ body.show-modal--first-filter {
     &-footer--sticky {
         border-top: 1px solid $blue-200;
         padding: 1rem 1.5rem 0;
-        margin: 0 -1.5rem;
 
         button {
             margin-bottom: 0;
@@ -240,6 +244,8 @@ body.show-modal--first-filter {
     flex-direction: column;
 
     .flex-content {
+        padding: $container-padding-x $container-padding-x 0;
+        box-sizing: border-box;
         flex: 1 1 auto;
         overflow-y: auto;
         scroll-behavior: smooth;
