@@ -388,12 +388,14 @@ class LogboekItem:
     MELDING_HERVAT = "melding_hervat"
     AFBEELDING_TOEGEVOEGD = "afbeelding_toegevoegd"
     NOTITIE_TOEGEVOEGD = "notitie_toegevoegd"
+    INFORMATIE_TOEGEVOEGD = "informatie_toegevoegd"
     LOCATIE_AANGEMAAKT = "locatie_aangemaakt"
     URGENTIE_AANGEPAST = "urgentie_aangepast"
     SIGNAAL_TOEGEVOEGD = "signaal_toegevoegd"
     TAAK_AANGEMAAKT = "taak_aangemaakt"
     TAAK_AFGEHANDELD = "taak_afgehandeld"
     TAAK_VERWIJDERD = "taak_verwijderd"
+    TAAK_GEANNULEERD = "taak_geannuleerd"
 
     _types = {
         MELDING_AANGEMAAKT: "Melding aangemaakt",
@@ -404,12 +406,14 @@ class LogboekItem:
         MELDING_HERVAT: "Melding hervat",  # check mor-core
         AFBEELDING_TOEGEVOEGD: "Afbeelding toegevoegd",
         NOTITIE_TOEGEVOEGD: "Notitie toegevoegd",
+        INFORMATIE_TOEGEVOEGD: "Informatie toegevoegd",
         LOCATIE_AANGEMAAKT: "Locatie aangepast",
         URGENTIE_AANGEPAST: "Spoed aangepast",
         SIGNAAL_TOEGEVOEGD: "Melding ontdubbeld",
         TAAK_AANGEMAAKT: 'Taak "%(titel)s" aangemaakt',
         TAAK_AFGEHANDELD: 'Taak "%(titel)s" afgehandeld',
         TAAK_VERWIJDERD: 'Taak "%(titel)s" verwijderd',
+        TAAK_GEANNULEERD: 'Taak "%(titel)s" geannuleerd',
     }
     _type = None
 
@@ -417,7 +421,7 @@ class LogboekItem:
         self,
         meldinggebeurtenis,
         taakopdrachten,
-        vorige_meldinggebeurtenis=None,
+        vorige_meldinggebeurtenis={},
         signalen=[],
     ):
         self._meldinggebeurtenis = meldinggebeurtenis
@@ -429,32 +433,57 @@ class LogboekItem:
             taakopdracht["id"]: taakopdracht for taakopdracht in taakopdrachten
         }
         self._resolutie = meldinggebeurtenis.get("resolutie")
+        self._omschrijving_intern = meldinggebeurtenis.get("omschrijving_intern")
         self._bijlagen = meldinggebeurtenis["bijlagen"]
         self._locatie = meldinggebeurtenis["locatie"]
         self._urgentie = meldinggebeurtenis["urgentie"]
         self._signaal = meldinggebeurtenis.get("signaal")
         self._gebeurtenis_type = meldinggebeurtenis["gebeurtenis_type"]
         self._taakgebeurtenis = meldinggebeurtenis["taakgebeurtenis"]
+        self._status = (
+            meldinggebeurtenis["status"]["naam"]
+            if meldinggebeurtenis["status"]
+            else None
+        )
 
         self._type = self._set_gebeurtenis_type()
 
     def _set_gebeurtenis_type(self):
-        if not self._vorige_meldinggebeurtenis:
-            return self.MELDING_AANGEMAAKT
+        print(self._resolutie)
+        print(self._status)
+        print(self._gebeurtenis_type)
+        print(self._vorige_meldinggebeurtenis.get("gebeurtenis_type"))
+        print(self._vorige_meldinggebeurtenis.get("status"))
+        print("")
+        if (
+            self._vorige_meldinggebeurtenis.get("status")
+            and self._vorige_meldinggebeurtenis["status"]["naam"] == "geannuleerd"
+        ):
+            return self.MELDING_HERVAT
+        if self._status == "geannuleerd":
+            return self.MELDING_GEANNULEERD
+        if self._gebeurtenis_type == "standaard" and (
+            self._bijlagen or self._omschrijving_intern
+        ):
+            if self._bijlagen and self._omschrijving_intern:
+                return self.INFORMATIE_TOEGEVOEGD
+            if self._bijlagen:
+                return self.AFBEELDING_TOEGEVOEGD
+            return self.NOTITIE_TOEGEVOEGD
+        if self._gebeurtenis_type in (self.MELDING_HEROPEND, self.MELDING_AANGEMAAKT):
+            return self._gebeurtenis_type
         if self._resolutie:
             return self.MELDING_AFGEHANDELD
-        if self._bijlagen:
-            return self.AFBEELDING_TOEGEVOEGD
         if self._urgentie:
             return self.URGENTIE_AANGEPAST
         if self._locatie:
             return self.LOCATIE_AANGEMAAKT
         if self._signaal:
             return self.SIGNAAL_TOEGEVOEGD
-        if self._gebeurtenis_type == self.MELDING_HEROPEND:
-            return self.MELDING_HEROPEND
         if self._taakgebeurtenis:
             self._get_taakopdracht(self._taakgebeurtenis["taakopdracht"])
+            if self._taakgebeurtenis["resolutie"] == "geannuleerd":
+                return self.TAAK_GEANNULEERD
             if self._taakgebeurtenis["resolutie"]:
                 return self.TAAK_AFGEHANDELD
             if self._taakgebeurtenis["verwijderd_op"]:
@@ -579,7 +608,7 @@ class Logboek:
             LogboekItem(
                 meldinggebeurtenis,
                 taakopdrachten_voor_melding,
-                meldinggebeurtenissen_sorted[i - 1] if i != 0 else None,
+                meldinggebeurtenissen_sorted[i - 1] if i != 0 else {},
                 signalen=signalen_voor_melding,
             )
             for i, meldinggebeurtenis in enumerate(meldinggebeurtenissen_sorted)
@@ -602,7 +631,7 @@ class Logboek:
                         for logboek_item in self.logboek_items_gesorteerd
                         if logboek_item.datum == dag
                     ],
-                    key=lambda x: x.datum,
+                    key=lambda x: x.datumtijd,
                     reverse=True,
                 ),
             }
