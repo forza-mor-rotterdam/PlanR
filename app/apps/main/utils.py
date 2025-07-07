@@ -437,7 +437,6 @@ class LogboekItem:
         self._bijlagen = meldinggebeurtenis["bijlagen"]
         self._locatie = meldinggebeurtenis["locatie"]
         self._urgentie = meldinggebeurtenis["urgentie"]
-        self._signaal = meldinggebeurtenis.get("signaal")
         self._gebeurtenis_type = meldinggebeurtenis["gebeurtenis_type"]
         self._taakgebeurtenis = meldinggebeurtenis["taakgebeurtenis"]
         self._status = (
@@ -445,16 +444,9 @@ class LogboekItem:
             if meldinggebeurtenis["status"]
             else None
         )
-
         self._type = self._set_gebeurtenis_type()
 
     def _set_gebeurtenis_type(self):
-        print(self._resolutie)
-        print(self._status)
-        print(self._gebeurtenis_type)
-        print(self._vorige_meldinggebeurtenis.get("gebeurtenis_type"))
-        print(self._vorige_meldinggebeurtenis.get("status"))
-        print("")
         if (
             self._vorige_meldinggebeurtenis.get("status")
             and self._vorige_meldinggebeurtenis["status"]["naam"] == "geannuleerd"
@@ -470,7 +462,11 @@ class LogboekItem:
             if self._bijlagen:
                 return self.AFBEELDING_TOEGEVOEGD
             return self.NOTITIE_TOEGEVOEGD
-        if self._gebeurtenis_type in (self.MELDING_HEROPEND, self.MELDING_AANGEMAAKT):
+        if self._gebeurtenis_type in (
+            self.MELDING_HEROPEND,
+            self.MELDING_AANGEMAAKT,
+            self.SIGNAAL_TOEGEVOEGD,
+        ):
             return self._gebeurtenis_type
         if self._resolutie:
             return self.MELDING_AFGEHANDELD
@@ -478,8 +474,6 @@ class LogboekItem:
             return self.URGENTIE_AANGEPAST
         if self._locatie:
             return self.LOCATIE_AANGEMAAKT
-        if self._signaal:
-            return self.SIGNAAL_TOEGEVOEGD
         if self._taakgebeurtenis:
             self._get_taakopdracht(self._taakgebeurtenis["taakopdracht"])
             if self._taakgebeurtenis["resolutie"] == "geannuleerd":
