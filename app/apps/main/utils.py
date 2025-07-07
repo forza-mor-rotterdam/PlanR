@@ -447,11 +447,6 @@ class LogboekItem:
         self._type = self._set_gebeurtenis_type()
 
     def _set_gebeurtenis_type(self):
-        if (
-            self._vorige_meldinggebeurtenis.get("status")
-            and self._vorige_meldinggebeurtenis["status"]["naam"] == "geannuleerd"
-        ):
-            return self.MELDING_HERVAT
         if self._status == "geannuleerd":
             return self.MELDING_GEANNULEERD
         if self._gebeurtenis_type == "standaard" and (
@@ -462,16 +457,28 @@ class LogboekItem:
             if self._bijlagen:
                 return self.AFBEELDING_TOEGEVOEGD
             return self.NOTITIE_TOEGEVOEGD
+        if self._status in (
+            "wachten_melder",
+            "pauze",
+        ):
+            return self.MELDING_GEPAUZEERD
         if self._gebeurtenis_type in (
             self.MELDING_HEROPEND,
             self.MELDING_AANGEMAAKT,
             self.SIGNAAL_TOEGEVOEGD,
+            self.URGENTIE_AANGEPAST,
         ):
             return self._gebeurtenis_type
-        if self._resolutie:
+        if self._vorige_meldinggebeurtenis.get(
+            "status"
+        ) and self._vorige_meldinggebeurtenis["status"]["naam"] in (
+            "geannuleerd",
+            "wachten_melder",
+            "pauze",
+        ):
+            return self.MELDING_HERVAT
+        if self._status == "afgehandeld":
             return self.MELDING_AFGEHANDELD
-        if self._urgentie:
-            return self.URGENTIE_AANGEPAST
         if self._locatie:
             return self.LOCATIE_AANGEMAAKT
         if self._taakgebeurtenis:
