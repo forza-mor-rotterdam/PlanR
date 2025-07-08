@@ -115,6 +115,7 @@ dialog.infosheet {
     @media (min-width: map-get($grid-breakpoints, lg)) {
         inset: auto 0 0 auto;
         width: 38%;
+        max-width: 500px;
         height: 100vh;
         max-height: none;
         border-radius: 0;
