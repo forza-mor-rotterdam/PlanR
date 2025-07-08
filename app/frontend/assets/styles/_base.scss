@@ -706,6 +706,14 @@ body.no-js {
 
 // HELPER-CLASSES
 
+.clamped {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .has-background--white {
     padding: 1rem;
     background-color: $white;
@@ -940,6 +948,7 @@ body.no-js {
         bottom: 0;
         right: 1em;
         transform: rotate(90deg);
+        transition: transform $transition-duration-default $transition-ease-default;
         path {
             fill: currentColor;
         }
@@ -951,6 +960,7 @@ body.no-js {
         box-sizing: border-box;
         svg {
             display: block;
+            cursor: pointer;
         }
     }
 

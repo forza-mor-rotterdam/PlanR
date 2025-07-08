@@ -1,4 +1,5 @@
-.container__taken {
+.container__taken,
+.container__status {
     font-size: $fz-14;
     .taken--header,
     .container__taak > summary {
@@ -30,6 +31,14 @@
     .container__taak > .container__taak--content:not(.container__taak--content_extra) {
         display: grid;
         grid-template-columns: minmax(0, 2fr) minmax(0, 2fr) minmax(0, 3fr);
+    }
+
+    .container__status--content {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 3fr) minmax(
+                0,
+                1fr
+            );
     }
 
     .taken--header {
@@ -349,6 +358,34 @@
                         pointer-events: all;
                     }
                 }
+            }
+        }
+    }
+}
+
+.container__status {
+    .container__content {
+        h3 {
+            color: inherit;
+        }
+
+        .container__overflow {
+            position: relative;
+            max-height: 5em;
+            width: auto;
+            -webkit-line-clamp: 3;
+
+            svg {
+                right: 4px;
+                bottom: 5px;
+            }
+
+            &.show {
+                border: none;
+                padding: unset;
+                -webkit-line-clamp: unset;
+                padding-right: 1rem;
+                max-height: 20em;
             }
         }
     }
