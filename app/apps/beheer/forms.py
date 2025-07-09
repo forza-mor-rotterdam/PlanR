@@ -32,8 +32,8 @@ class MeldingAfhandelredenRadioSelect(forms.RadioSelect):
 
 class StandaardExterneOmschrijvingForm(forms.ModelForm):
     titel = forms.CharField(
-        label="Afhandelreden",
-        help_text="Deze tekst wordt gebruikt om de juiste standaard tekst te selecteren.",
+        label="Titel van de tekst",
+        help_text="Deze titel wordt gebruikt om de juiste standaard tekst te selecteren.",
         widget=forms.TextInput(
             attrs={
                 "data-externeomschrijvingformulier-target": "externeOmschrijvingTitel",
