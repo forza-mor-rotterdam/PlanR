@@ -76,6 +76,7 @@ export default class extends Controller {
     this.standaardExterneOmschrijvingen = this.standaardExterneOmschrijvingLijst.filter(
       (omschrijving) => ['altijd', this.resolutie].includes(omschrijving.zichtbaarheid)
     )
+    console.log(this.standaardExterneOmschrijvingen.length)
     this.update()
     if (e?.target?.value == 'niet_opgelost') {
       this.redenContainerTarget.scrollIntoView(false)
@@ -194,6 +195,9 @@ export default class extends Controller {
     this.specificatieUrls = reden?.specificatie_opties ?? []
     const standaardExterneOmschrijvingLijst = this.standaardExterneOmschrijvingen.filter(
       (omschrijving) => {
+        if (!nietOpgelost && omschrijving.zichtbaarheid === 'opgelost') {
+          return true
+        }
         if (!nietOpgelostReden && nietOpgelost) {
           return false
         }
@@ -206,7 +210,7 @@ export default class extends Controller {
         if (specificatieUrl) {
           return omschrijving.specificatie_opties.includes(specificatieUrl)
         }
-        if (nietOpgelostReden && !this.specificatieUrls.length) {
+        if (nietOpgelostReden && !this.specificatieUrls.length && nietOpgelost) {
           return omschrijving.reden === parseInt(nietOpgelostReden)
         }
         return !nietOpgelost
