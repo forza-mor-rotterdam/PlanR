@@ -601,7 +601,9 @@ class MeldingAfhandelenForm(forms.Form):
                 standaard_externe_omschrijving["id"],
                 standaard_externe_omschrijving["titel"],
             )
-            for standaard_externe_omschrijving in StandaardExterneOmschrijving.objects.values(
+            for standaard_externe_omschrijving in StandaardExterneOmschrijving.objects.exclude(
+                zichtbaarheid="verbergen"
+            ).values(
                 "id", "titel"
             )
         ]
