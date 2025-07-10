@@ -24,7 +24,6 @@ export default class extends Controller {
   ]
 
   connect() {
-    console.log(this.meldingAfhandelredenLijstValue)
     this.meldingAfhandelredenLijst = JSON.parse(this.meldingAfhandelredenLijstValue)
     if (this.hasExterneOmschrijvingTekstTarget) {
       externeOmschrijvingTekstMaxCharacter = document.createElement('small')
@@ -158,20 +157,24 @@ export default class extends Controller {
         ?.value === NIET_OPGELOST
 
     this.updateCharacterCount(tekst.length)
-    if (!nietOpgelost) {
+    if (!nietOpgelost && this.hasNietOpgelostRedenFieldTarget) {
       Array.from(
         this.element.querySelectorAll(`input[name='${this.nietOpgelostRedenFieldTarget.name}']`)
       ).map((elem) => {
         elem.checked = false
       })
     }
-    const nietOpgelostRedenValue = this.element.querySelector(
-      `input[name='${this.nietOpgelostRedenFieldTarget.name}']:checked`
-    )?.value
-    this.filterSpecificaties(nietOpgelostRedenValue)
-    const specificatieValue = this.element.querySelector(
-      `input[name='${this.nietOpgelostSpecificatieOptiesFieldTarget.name}']:checked`
-    )?.value
+    let nietOpgelostRedenValue = null
+    let specificatieValue = null
+    if (this.hasNietOpgelostRedenFieldTarget) {
+      nietOpgelostRedenValue = this.element.querySelector(
+        `input[name='${this.nietOpgelostRedenFieldTarget.name}']:checked`
+      )?.value
+      this.filterSpecificaties(nietOpgelostRedenValue)
+      specificatieValue = this.element.querySelector(
+        `input[name='${this.nietOpgelostSpecificatieOptiesFieldTarget.name}']:checked`
+      )?.value
+    }
 
     this.nietOpgelostContainerTargets.map((elem) => {
       elem.classList[nietOpgelost ? 'remove' : 'add']('hide')
@@ -181,11 +184,6 @@ export default class extends Controller {
     })
 
     let showSubmitButton = zichtbaarheid && zichtbaarheid != NIET_OPGELOST && titel && tekst
-
-    console.log(!!this.specificatieUrls.length)
-    console.log(specificatieValue)
-    console.log(!!specificatieValue)
-    console.log('')
 
     showSubmitButton =
       showSubmitButton ||
