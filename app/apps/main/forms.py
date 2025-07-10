@@ -526,6 +526,21 @@ class MeldingAfhandelenForm(forms.Form):
         required=True,
         max_length=1000,
     )
+    omschrijving_intern = forms.CharField(
+        label="Interne opmerking",
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "data-testid": "omschrijving_intern",
+                "data-controller": "input-char-counter",
+                "data-action": "input-char-counter#onTextChangeHandler",
+                "rows": "4",
+                "maxlength": "5000",
+            }
+        ),
+        required=False,
+        max_length=5000,
+    )
 
     def __init__(self, *args, **kwargs):
         kwargs.pop("niet_opgelost", None)

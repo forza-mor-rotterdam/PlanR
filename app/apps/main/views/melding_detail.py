@@ -392,7 +392,7 @@ class MeldingAfhandelenView(
         melding_afhandelreden_lijst = MeldingAfhandelreden.objects.values(
             "id", "specificatie_opties"
         )
-        self.initial = {"resolutie": self.voorlopige_melding_status(context)}
+        self.initial = {"resolutie": self.voorlopige_melding_resolutie(context)}
         context.update(
             {
                 "form": self.get_form(),
@@ -405,7 +405,7 @@ class MeldingAfhandelenView(
 
         return context
 
-    def voorlopige_melding_status(self, context):
+    def voorlopige_melding_resolutie(self, context):
         OPGELOST = "opgelost"
         NIET_OPGELOST = "niet_opgelost"
         if (
@@ -427,12 +427,13 @@ class MeldingAfhandelenView(
     def form_valid(self, form):
         mor_core_service = MORCoreService()
         niet_opgelost_reden = form.cleaned_data.get("niet_opgelost_reden")
-        response = mor_core_service.melding_afhandelen(
+        response = mor_core_service.melding_afhandelen_v2(
             self.kwargs.get("id"),
             resolutie=form.cleaned_data.get("resolutie"),
             afhandelreden=niet_opgelost_reden.reden if niet_opgelost_reden else None,
             specificatie=form.cleaned_data.get("specificatie"),
             omschrijving_extern=form.cleaned_data.get("omschrijving_extern"),
+            omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
             gebruiker=self.request.user.email,
         )
         if response.get("error"):

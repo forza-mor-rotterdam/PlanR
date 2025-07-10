@@ -145,7 +145,7 @@ class MeldingAfhandelredenForm(forms.ModelForm):
                 "data-beheer--melding-afhandelreden-target": "reden",
             }
         ),
-        required=False,
+        required=True,
         choices=STATUS_NIET_OPGELOST_REDENEN_CHOICES,
     )
     toelichting = forms.CharField(
@@ -241,7 +241,7 @@ class MeldingAfhandelredenForm(forms.ModelForm):
                 },
                 extra_data=reden_extra_data,
             ),
-            required=False,
+            required=True,
             choices=reden_choices,
         )
 
