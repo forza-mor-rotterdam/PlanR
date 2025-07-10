@@ -154,6 +154,19 @@ textarea {
                 border-color: $gray-tint04;
             }
         }
+
+        &--primary {
+            background-color: $green-900;
+            color: $white;
+            border-color: $green-900;
+            transition: background-color 0.15s ease-in-out;
+
+            &:hover,
+            &:focus-visible {
+                background-color: darken($green-900, 10%);
+                border-color: darken($green-900, 10%);
+            }
+        }
     }
 
     &-tertiary {

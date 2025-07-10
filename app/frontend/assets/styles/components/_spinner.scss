@@ -3,7 +3,8 @@
     background-color: $primary;
 }
 
-turbo-frame {
+turbo-frame,
+.container__hero {
     position: relative;
     display: block;
     width: 100%;
@@ -36,7 +37,8 @@ turbo-frame {
         pointer-events: none;
         opacity: 0;
     }
-    &:not([data-spinner="hide"])[busy] {
+    &:not([data-spinner="hide"])[busy],
+    &:has(.hero-image.hide) {
         &::before {
             right: 0;
             bottom: 0;
