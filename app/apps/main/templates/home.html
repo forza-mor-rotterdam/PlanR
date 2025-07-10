@@ -1,13 +1,53 @@
 {% extends "base.html" %}
+{% load webpack_static from webpack_loader %}
 {% block title %}
     Home | PlanR
 {% endblock title %}
+{% block body_class %}page__unauthorized{% endblock body_class %}
 {% block body %}
     <turbo-frame id="overview">
     <div class="border-green print-only"></div>
-    <div class="page__detail">
-        <div data-controller="detail">
-            <div class="grid-container">
+    <div class="container__unauthorized">
+        <div class="container__hero">
+            <div class="hero"
+                data-controller="hero-image"
+                data-hero-image-paths='[
+                "{% webpack_static "images/login_1.jpg" %}",
+                "{% webpack_static "images/login_2.jpg" %}",
+                "{% webpack_static "images/login_3.jpg" %}"
+                ]'
+            >
+                <img
+                    data-hero-image-target="img"
+                    class="hero-image hide"
+                    alt="Hero afbeelding">
+                <img class="logo-organisatie"
+                    alt="Logo Rotterdam"
+                    src="{% webpack_static 'images/logo-organisatie_wit.svg' %}"
+                >
+                <div class="spinner"></div>
+            </div>
+        </div>
+        <div class="container__content">
+
+            <img class="logo-organisatie"
+                alt="Logo Rotterdam"
+                src="{% webpack_static 'images/logo-organisatie.svg' %}"
+            >
+            <h1>
+                <span class="color--primary">Plan</span>R
+            </h1>
+            <p>
+                PlanR is de app voor het voeren van regie over melding in de openbare ruimte.
+            </p>
+            <a href="{% url 'login' %}"
+                class="btn btn-action btn-action--primary"
+                target="_top"
+                data-turbo="false">
+                Inloggen
+            </a>
+        </div>
+            <!-- <div class="grid-container">
                 <div class="grid-item">
                     <div>
                         <h1>Home</h1>
@@ -47,7 +87,7 @@
                         {% endif %}
                     </section>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
     </turbo-frame>
