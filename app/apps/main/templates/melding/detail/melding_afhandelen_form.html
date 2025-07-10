@@ -26,7 +26,7 @@
                 <div class="wrapper-sticky-footer">
                     <div class="flex-content" data-meldingbehandelformulier-target="contentContainer">
                         {% include terugkoppeling_gewenst_template %}
-                        {% if taak_info.aantal_actieve_taken > 0 or not form.niet_opgelost_reden.field.choices|length or not form.standaardtekst.field.choices|length %}
+                        {% if taak_info.aantal_actieve_taken > 0 %}
                             <div class="alert alert--warning">
                                 <span>
                                     <svg width="32"
@@ -38,7 +38,6 @@
                                     </svg>
                                 </span>
                                 <div>
-                                    {% if taak_info.aantal_actieve_taken > 0 %}
                                         Deze melding bevat de volgende openstaande
                                         {% if taak_info.aantal_actieve_taken == 1 %}
                                             taak
@@ -56,13 +55,6 @@
                                                 taken
                                             {% endif %}
                                         aangepast naar ‘Geannuleerd’.</span>
-                                    {% elif not form.niet_opgelost_reden.field.choices|length %}
-                                        Er zijn geen afhandelredenen ingesteld!<br>
-                                        Vraag een functioneelbeheerder om deze aan te maken.
-                                    {% elif not form.standaardtekst.field.choices|length %}
-                                        Er zijn geen standaard externe omschrijvingen ingesteld!<br>
-                                        Vraag een functioneelbeheerder om deze aan te maken.
-                                    {% endif %}
                                 </div>
                             </div>
                         {% endif %}
@@ -100,6 +92,9 @@
                                 <div class="form-control__with-helptext js-validation margin-top">{{ form.omschrijving_extern|render_rotterdam_formulier }}</div>
                             </fieldset>
                         {% endif %}
+                        <fieldset class="fieldset--separated">
+                            <div class="form-control__with-helptext js-validation input--separated">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
+                        </fieldset>
                     </div>
                     <div class="modal-footer modal-footer--sticky">
                         <div class="form-row btn-row btn-row--horizontal">

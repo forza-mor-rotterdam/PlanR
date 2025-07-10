@@ -33,7 +33,8 @@ django-debug-toolbar==4.0.0
 django-encrypted-model-fields==0.6.5
 isoweek==1.3.3
 beautifulsoup4==4.12.3
-git+https://github.com/forza-mor-rotterdam/mor-api-services.git@d1c00ac2bc19633316b9f13680726472150d55da
+git+https://github.com/forza-mor-rotterdam/mor-api-services.git@7e6f31c2daa586cb2e4ff7d022034122253ac1e2
 opentelemetry.instrumentation.wsgi
 opentelemetry.instrumentation.django
 lxml
+pika==1.3.2
