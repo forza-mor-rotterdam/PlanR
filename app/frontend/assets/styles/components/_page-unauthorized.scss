@@ -94,6 +94,11 @@
             top: 1rem;
             left: 1rem;
         }
+
+        .container__details {
+            max-width: 355px;
+            margin: 0 auto;
+        }
     }
 
     @media (min-width: map-get($grid-breakpoints, md)) {
