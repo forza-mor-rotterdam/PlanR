@@ -48,16 +48,26 @@
                     Inloggen
                 </a>
             {% else %}
+                <p>
+                    Helaas, je hebt niet de juiste rechten om deze pagina te mogen bekijken.
+                </p>
                     {% if perms.authorisatie.beheer_bekijken %}
+                    <p>
+                        Je hebt wel beheerrechten.
+                    </p>
+                    <p></p>
                         <a href="{% url 'beheer' %}"
                             class="btn btn-action"
                             target="_top"
                             data-turbo="false">Ga naar de beheeromgeving</a>
                     {% elif perms.authorisatie.melding_lijst_bekijken %}
+                    <p>
+                        Je mag wel de lijst met meldingen bekijken.
+                    </p>
                         <a href="{% url 'melding_lijst' %}"
                             class="btn btn-action"
                             target="_top"
-                            data-turbo="false">Bekijk je meldingen</a>
+                            data-turbo="false">Bekijk de meldingen</a>
                     {% else %}
                         <div class="container__details">
                             <p>
