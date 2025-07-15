@@ -330,6 +330,7 @@ textarea {
     label {
         font-weight: 400;
         font-size: 0.778rem;
+        word-break: break-word;
 
         &:has(input:disabled) {
             color: $text-muted;
