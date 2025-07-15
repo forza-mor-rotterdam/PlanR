@@ -77,13 +77,9 @@
     table tbody {
         td {
             text-align: left;
-            padding-left: 0;
-            padding-right: 1rem;
-        }
-
-        td {
-            padding-top: 0.5rem;
+            padding: 0.5rem 1rem 0 0;
             vertical-align: top;
+            word-break: break-word;
 
             > ul,
             > p {
