@@ -11,15 +11,39 @@ from django_celery_results.admin import TaskResultAdmin
 from django_celery_results.models import TaskResult
 
 
+class MeldingAfhandelredenAdmin(admin.ModelAdmin):
+    list_display = [
+        "reden",
+        "specificatie_opties",
+    ]
+
+
 class StandaardExterneOmschrijvingAdmin(admin.ModelAdmin):
     def korte_tekst(self, obj):
         return truncate_tekst(obj.tekst)
 
-    list_display = ["titel", "korte_tekst"]
+    list_display = [
+        "titel",
+        "korte_tekst",
+        "zichtbaarheid",
+        "reden",
+        "specificatie_opties",
+    ]
     form = StandaardExterneOmschrijvingAanpassenForm
 
     fieldsets = (
-        (None, {"fields": ["titel", "tekst"]}),
+        (
+            None,
+            {
+                "fields": [
+                    "titel",
+                    "tekst",
+                    "zichtbaarheid",
+                    "reden",
+                    "specificatie_opties",
+                ]
+            },
+        ),
         # ("onderwerpen", {"fields": ["onderwerpen"]})
     )
     search_fields = [
@@ -33,6 +57,7 @@ class StandaardExterneOmschrijvingAdmin(admin.ModelAdmin):
 admin.site.register(
     models.StandaardExterneOmschrijving, StandaardExterneOmschrijvingAdmin
 )
+admin.site.register(models.MeldingAfhandelreden, MeldingAfhandelredenAdmin)
 
 
 def retry_celery_task_admin_action(modeladmin, request, queryset):

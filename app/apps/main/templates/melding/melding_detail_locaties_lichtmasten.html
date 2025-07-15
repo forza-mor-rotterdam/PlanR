@@ -1,27 +1,14 @@
 {% if lichtmasten %}
     <div data-controller="map"
          data-map-default-lat-lon="[51.924420, 4.477750]">
-        <h4 class="green">Lichtmasten ({{ lichtmasten|length }})</h4>
-        {% comment %} <div>
-            <label for="lichtmasten_id">
-                <input id="lichtmasten_id" type="checkbox" data-detail-map-layer-types-param='["lichtmasten", "lichtmastenSto"]' data-action="detail#onMapLayerChange">
-                Toon lichtmasten
-            </label>
-            <div class="container__uitklapper">
-                <span>{% include "icons/info.svg" %}</span>
-                <div class="legenda">
-                    <ul class="list-clean">
-                    </ul>
-                </div>
-            </div>
-        </div> {% endcomment %}
+        <h4 class="green">Lichtmasten {% if lichtmasten|length > 1 %}({{ lichtmasten|length }}){% endif %}</h4>
         <div class="container__details-list-with-map has-background--white">
             <ul class="list-clean">
                 {% for lichtmast in lichtmasten %}
                     <li>
                         <details data-map-target="details" data-action="toggle->map#toggleDetails">
                             <summary>
-                                <h5>Lichtmast {{ lichtmast.lichtmast_id }} ({{ lichtmast.bron_signaal_ids|length }})</h5>
+                                <h5>Lichtmast {{ lichtmast.lichtmast_id }} {% if lichtmast.bron_signaal_ids|length > 1 %}({{ lichtmast.bron_signaal_ids|length }}){% endif %}</h5>
                             </summary>
                             <turbo-frame src="{% url 'lichtmast' lichtmast.lichtmast_id %}" id="lichtmast_{{ lichtmast.lichtmast_id }}">
                             </turbo-frame>

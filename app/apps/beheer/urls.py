@@ -13,6 +13,15 @@ from apps.authorisatie.views import (
     RechtengroepVerwijderenView,
 )
 from apps.beheer.views import (
+    MeldingAfhandelredenAanmakenView,
+    MeldingAfhandelredenAanpassenView,
+    MeldingAfhandelredenLijstView,
+    MeldingAfhandelredenVerwijderenView,
+    SpecificatieAanmakenView,
+    SpecificatieAanpassenView,
+    SpecificatieLijstView,
+    SpecificatieTerughalenView,
+    SpecificatieVerwijderenView,
     StandaardExterneOmschrijvingAanmakenView,
     StandaardExterneOmschrijvingAanpassenView,
     StandaardExterneOmschrijvingLijstView,
@@ -121,6 +130,51 @@ urlpatterns = [
         "standaardtekst/<int:pk>/verwijderen/",
         StandaardExterneOmschrijvingVerwijderenView.as_view(),
         name="standaard_externe_omschrijving_verwijderen",
+    ),
+    path(
+        "melding-afhandelreden/",
+        MeldingAfhandelredenLijstView.as_view(),
+        name="melding_afhandelreden_lijst",
+    ),
+    path(
+        "melding-afhandelreden/aanmaken/",
+        MeldingAfhandelredenAanmakenView.as_view(),
+        name="melding_afhandelreden_aanmaken",
+    ),
+    path(
+        "melding-afhandelreden/<int:pk>/aanpassen/",
+        MeldingAfhandelredenAanpassenView.as_view(),
+        name="melding_afhandelreden_aanpassen",
+    ),
+    path(
+        "melding-afhandelreden/<int:pk>/verwijderen/",
+        MeldingAfhandelredenVerwijderenView.as_view(),
+        name="melding_afhandelreden_verwijderen",
+    ),
+    path(
+        "specificatie/",
+        SpecificatieLijstView.as_view(),
+        name="specificatie_lijst",
+    ),
+    path(
+        "specificatie/aanmaken/",
+        SpecificatieAanmakenView.as_view(),
+        name="specificatie_aanmaken",
+    ),
+    path(
+        "specificatie/<uuid:uuid>/aanpassen/",
+        SpecificatieAanpassenView.as_view(),
+        name="specificatie_aanpassen",
+    ),
+    path(
+        "specificatie/<uuid:uuid>/verwijderen/",
+        SpecificatieVerwijderenView.as_view(),
+        name="specificatie_verwijderen",
+    ),
+    path(
+        "specificatie/<uuid:uuid>/terughalen/",
+        SpecificatieTerughalenView.as_view(),
+        name="specificatie_terughalen",
     ),
     path(
         "release-notes/",

@@ -4,7 +4,11 @@ import math
 import uuid
 
 from apps.context.utils import get_gebruiker_context
-from apps.main.models import StandaardExterneOmschrijving
+from apps.main.models import (
+    SPECIFICATIE_CACHE_TIMEOUT,
+    MeldingAfhandelreden,
+    StandaardExterneOmschrijving,
+)
 from apps.main.services import MORCoreService, render_onderwerp
 from apps.main.utils import get_valide_filter_classes, get_valide_kolom_classes
 from django import forms
@@ -45,6 +49,10 @@ class CheckboxSelectMultiple(forms.CheckboxSelectMultiple):
         option["attrs"].update({"item_count": option_data.get("item_count")})
         option["attrs"].update({"selected": args[3]})
         return option
+
+
+class MeldingAfhandelredenRadioSelect(forms.RadioSelect):
+    template_name = "widgets/melding_afhandelreden_radio_select.html"
 
 
 class MultipleChoiceField(forms.MultipleChoiceField):
@@ -449,6 +457,177 @@ class TaakVerwijderenForm(forms.Form):
 
 
 class MeldingAfhandelenForm(forms.Form):
+    resolutie = forms.ChoiceField(
+        label="Resolutie",
+        widget=forms.RadioSelect(
+            attrs={
+                "class": "list--form-radio-input",
+                "data-meldingbehandelformulier-target": "resolutieField",
+                "data-action": "meldingbehandelformulier#onResolutieChangeHandler",
+            }
+        ),
+        choices=(
+            ("opgelost", "Opgelost"),
+            ("niet_opgelost", "Niet opgelost"),
+        ),
+        required=True,
+        initial="niet_opgelost",
+    )
+    niet_opgelost_reden = forms.ModelChoiceField(
+        label="Reden",
+        widget=MeldingAfhandelredenRadioSelect(
+            attrs={
+                "class": "list--form-radio-input",
+                "data-meldingbehandelformulier-target": "nietOpgelostRedenField",
+                "data-action": "meldingbehandelformulier#onChangeRedenHandler",
+            }
+        ),
+        required=False,
+        queryset=MeldingAfhandelreden.objects.all(),
+    )
+    specificatie = forms.ChoiceField(
+        label="Specificatie",
+        widget=forms.RadioSelect(
+            attrs={
+                "class": "list--form-radio-input",
+                "data-meldingbehandelformulier-target": "specificatieField",
+                "data-action": "meldingbehandelformulier#onChangeHandler",
+            }
+        ),
+        required=False,
+    )
+    standaardtekst = forms.ChoiceField(
+        label="Standaardtekst",
+        required=False,
+        widget=forms.Select(
+            attrs={
+                "class": "form-control",
+                "data-testid": "testid",
+                "data-meldingbehandelformulier-target": "standardTextChoice",
+                "data-action": "meldingbehandelformulier#onChangeStandardTextChoice",
+            }
+        ),
+        choices=(),
+    )
+    omschrijving_extern = forms.CharField(
+        label="Wijzig tekst",
+        help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "data-testid": "message",
+                "rows": "4",
+                "data-meldingbehandelformulier-target": "externalText",
+                "data-action": "meldingbehandelformulier#onChangeExternalText",
+                "name": "omschrijving_extern",
+                "maxlength": "1000",
+            }
+        ),
+        required=True,
+        max_length=1000,
+    )
+    omschrijving_intern = forms.CharField(
+        label="Interne opmerking",
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "data-testid": "omschrijving_intern",
+                "data-controller": "input-char-counter",
+                "data-action": "input-char-counter#onTextChangeHandler",
+                "rows": "4",
+                "maxlength": "5000",
+            }
+        ),
+        required=False,
+        max_length=5000,
+    )
+
+    def __init__(self, *args, **kwargs):
+        kwargs.pop("niet_opgelost", None)
+        super().__init__(*args, **kwargs)
+
+        melding_afhandelredenen = MeldingAfhandelreden.objects.all()
+        if not StandaardExterneOmschrijving.objects.filter(zichtbaarheid="altijd"):
+            standaard_externe_omschrijving_lijst = (
+                StandaardExterneOmschrijving.objects.filter(
+                    reden__isnull=False
+                ).values_list("reden", "specificatie_opties")
+            )
+            standaard_externe_omschrijving_lijst_comb = {
+                seo[0]: list(
+                    set(
+                        [
+                            url
+                            for s in standaard_externe_omschrijving_lijst
+                            for url in s[1]
+                            if s[1] == seo[1]
+                        ]
+                    )
+                )
+                for seo in standaard_externe_omschrijving_lijst
+            }
+            standaard_externe_omschrijving_reden_ids = list(
+                standaard_externe_omschrijving_lijst_comb.keys()
+            )
+
+            melding_afhandelredenen_ids = []
+            for melding_afhandelreden in melding_afhandelredenen.filter(
+                id__in=standaard_externe_omschrijving_reden_ids
+            ):
+                standaard_externe_omschrijving_urls = (
+                    standaard_externe_omschrijving_lijst_comb.get(
+                        melding_afhandelreden.id, []
+                    )
+                )
+                if (
+                    melding_afhandelreden.specificatie_opties
+                    and standaard_externe_omschrijving_urls
+                ):
+                    melding_afhandelredenen_ids.append(melding_afhandelreden.id)
+                else:
+                    melding_afhandelredenen_ids.append(melding_afhandelreden.id)
+
+            melding_afhandelredenen = melding_afhandelredenen.filter(
+                id__in=melding_afhandelredenen_ids
+            )
+
+        self.fields["niet_opgelost_reden"].queryset = melding_afhandelredenen
+        specificatie_lijst = (
+            MORCoreService()
+            .specificatie_lijst(
+                params={
+                    "limit": 100,
+                    "is_verwijderd": False,
+                },
+                force_cache=True,
+                cache_timeout=SPECIFICATIE_CACHE_TIMEOUT,
+            )
+            .get("results", [])
+        )
+        self.fields["specificatie"].choices = [
+            (
+                specificatie.get("_links", {}).get("self", {}).get("href"),
+                specificatie.get("naam", "-"),
+            )
+            for specificatie in specificatie_lijst
+        ]
+        standaardtekst_choices = [
+            (
+                standaard_externe_omschrijving["id"],
+                standaard_externe_omschrijving["titel"],
+            )
+            for standaard_externe_omschrijving in StandaardExterneOmschrijving.objects.exclude(
+                zichtbaarheid="verbergen"
+            ).values(
+                "id", "titel"
+            )
+        ]
+        standaardtekst_choices.insert(0, ("aangepasteTekst", "- Aangepaste tekst -"))
+        standaardtekst_choices.insert(0, ("", "- Selecteer een standaardtekst -"))
+        self.fields["standaardtekst"].choices = standaardtekst_choices
+
+
+class MeldingAfhandelenOldForm(forms.Form):
     def __init__(self, *args, **kwargs):
         # Als het om een B&C formulier gaat en er geen terugkoppeling gewenst is en/of er geen email bekend is
         standaard_omschrijving_niet_weergeven = kwargs.pop(
@@ -547,6 +726,7 @@ class MeldingHeropenenForm(forms.Form):
                     "rows": "4",
                     "data-controller": "characterCount",
                     "data-action": "characterCount#onChangeText",
+                    "data-melding-heropenen-target": "internalText",
                 }
             ),
             required=True,
@@ -560,6 +740,8 @@ class MeldingPauzerenForm(forms.Form):
         widget=forms.RadioSelect(
             attrs={
                 "class": "list--form-radio-input",
+                "data-melding-pauzeren-target": "statusField",
+                "data-action": "melding-pauzeren#onStatusChangeHandler",
             }
         ),
         choices=(

@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% load get from melding_tags %}
+{% block title %}
+    Specificatie overzicht | Beheer | PlanR
+{% endblock title %}
+{% block header %}
+    {% with pageTitle="Beheer" %}
+        {% include "snippets/pageheader.html" %}
+    {% endwith %}
+{% endblock header %}
+{% block body %}
+    <turbo-frame id="beheer" data-turbo-action="advance">
+    <div class="page__beheer" data-controller="row-search">
+        <div>
+            <a href="{% url 'beheer' %}" class="link--back" data-turbo-frame="_top">
+                <svg width="25"
+                     height="16"
+                     viewBox="0 0 25 16"
+                     fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.15173 1.73256L7.73753 0.318359L1.44704 6.60885L1.4142 6.576L0 7.9902L1.4115 9.4017L1.37867 9.43453L7.67186 15.7277L9.08606 14.3135L3.7726 9.00006H24.0098V7.00006H3.88423L9.15173 1.73256Z" fill="#404B4F" />
+                </svg>
+                <span>Beheer</span>
+            </a>
+        </div>
+        <div class="container__flex">
+            <h1>Specificatie overzicht</h1>
+            <a class="btn btn-action" href="{% url 'specificatie_aanmaken' %}">
+                <svg width="24"
+                     height="24"
+                     viewBox="0 0 32 32"
+                     fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M17 6H15V15H6V17H15V26H17V17H26V15H17V6Z" fill="#ffffff"></path>
+                </svg>
+                Nieuwe specificatie
+            </a>
+        </div>
+        <!-- <form>
+            <div class="form-row">
+                <label for="id_zoeken">Zoeken</label>
+                <div>
+                    <input type="text" id="id_zoeken" name="zoeken" class="form-control " data-action="row-search#search">
+                </div>
+            </div>
+        </form> -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Naam</th>
+                    <th>Reden</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in object_list %}
+                    {% with specificatie_links=object|get:"_links" %}
+                    <tr data-row-search-target="row">
+                        <td data-row-search-target="searchable">{{ object.naam }}</td>
+                        <td>
+                            {% if object.reden %}
+                            <a href="{{ object.reden.aanpassen_url }}">{{ object.reden.reden }}</a>
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'specificatie_aanpassen' object.uuid %}" aria-label="Aanpassen" data-turbo="false">{% include "icons/edit2.svg" %}</a>
+                        </td>
+                        <td>
+                            {% if not object.reden %}
+                                <a href="{% url 'specificatie_verwijderen' object.uuid %}"
+                                   onclick="return confirm('Weet je zeker dat je deze specificatie wilt verwijderen?')"
+                                   aria-label="Verwijderen" data-turbo="false">{% include "icons/bin.svg" %}</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endwith %}
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if verwijderde_specificatie_lijst %}
+        <details>
+            <summary>
+                <h4>
+                    Verwijderde specificaties
+                </h4>
+            </summary>
+            <div class="container__table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Naam</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for object in verwijderde_specificatie_lijst %}
+                            {% with specificatie_links=object|get:"_links" %}
+                            <tr data-row-search-target="row">
+                                <td data-row-search-target="searchable">{{ object.naam }}</td>
+                                <td>
+                                    <a href="{% url 'specificatie_terughalen' object.uuid %}"
+                                    aria-label="Terughalen"
+                                    onclick="return confirm('Weet je zeker dat je deze specificatie wil terughalen?')" data-turbo="false">terughalen</a>
+                                </td>
+                            </tr>
+                            {% endwith %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </details>
+        {% endif %}
+    </div>
+    </turbo-frame>
+{% endblock body %}

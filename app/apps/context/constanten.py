@@ -139,7 +139,7 @@ class AdresBuurtWijkKolom(StandaardKolom):
     _key = "adres_buurt_wijk"
     _kolom_hoofd = "Ter hoogte van"
     _td_standaard_classes = "nowrap"
-    _ordering_value = "locatie__straatnaam"
+    _ordering_value = "referentie_locatie__straatnaam"
 
     def td_label(self):
         default = "-"
@@ -283,7 +283,7 @@ class StatusKolom(StandaardKolom):
         status = {
             "afgehandeld": "voltooid",
             "controle": "controle",
-            "in_behandeling": "opgelost",
+            "in_behandeling": "in_behandeling",
             "geannuleerd": "geannuleerd",
             "wachten_melder": "geannuleerd",
             "pauze": "geannuleerd",

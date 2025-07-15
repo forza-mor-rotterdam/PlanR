@@ -31,8 +31,7 @@
             <form action="{% url 'melding_heropenen' melding.uuid %}"
                   method="post"
                   class="form--horizontal"
-                  data-controller="meldingbehandelformulier"
-                  data-meldingbehandelformulier-target="meldingBehandelFormulier"
+                  data-controller="melding-heropenen"
                   enctype="multipart/form-data"
                   data-turbo-frame="_top"
                   novalidate>
@@ -42,7 +41,7 @@
                     <button type="reset" class="btn btn-tertiary" data-action="modal#closeModal">
                         <span>Annuleren</span>
                     </button>
-                    <button type="submit" class="btn btn-action">
+                    <button type="submit" class="btn btn-action-v2" data-melding-heropenen-target="submitButton">
                         <span>Heropenen</span>
                     </button>
                 </div>

@@ -58,6 +58,7 @@
                   class="form--horizontal"
                   data-turbo-frame="_top"
                   id="pauzeerForm"
+                  data-controller="melding-pauzeren"
                   novalidate>
                 {% csrf_token %}
                 <div class="form-control__no-border">{{ form.status|render_rotterdam_formulier }}</div>
@@ -67,7 +68,8 @@
                         <span>Annuleren</span>
                     </button>
                     <button type="submit"
-                            class="btn btn-action"
+                            class="btn btn-action-v2"
+                            data-melding-pauzeren-target="submitButton"
                             {% if actieve_taken %}disabled{% endif %}>
                         <span>Pauzeren</span>
                     </button>

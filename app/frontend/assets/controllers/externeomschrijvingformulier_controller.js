@@ -10,10 +10,21 @@ export default class extends Controller {
   static values = {
     formIsSubmitted: Boolean,
     parentContext: String,
+    meldingAfhandelredenLijst: String,
   }
-  static targets = ['externeOmschrijvingTekst', 'externeOmschrijvingTitel']
+  static targets = [
+    'externeOmschrijvingTekst',
+    'externeOmschrijvingTitel',
+    'zichtbaarheidField',
+    'nietOpgelostContainer',
+    'nietOpgelostRedenField',
+    'nietOpgelostSpecificatiesContainer',
+    'nietOpgelostSpecificatieOptiesField',
+    'submitButton',
+  ]
 
   connect() {
+    this.meldingAfhandelredenLijst = JSON.parse(this.meldingAfhandelredenLijstValue)
     if (this.hasExterneOmschrijvingTekstTarget) {
       externeOmschrijvingTekstMaxCharacter = document.createElement('small')
       this.externeOmschrijvingTekstTarget.parentNode.insertBefore(
@@ -28,7 +39,7 @@ export default class extends Controller {
       }
     }
 
-    form = document.querySelector('#externeOmschrijvingForm')
+    form = this.element
     inputList = document.querySelectorAll('[type="text"], textarea')
 
     for (const element of inputList) {
@@ -54,12 +65,13 @@ export default class extends Controller {
         event.preventDefault()
       }
     })
+    this.specificatieUrls = []
+    this.update()
   }
 
   onChangeExterneOmschrijvingTekst(e) {
     this.updateCharacterCount(e.target.value.length)
   }
-
   updateCharacterCount(count) {
     if (externeOmschrijvingTekstMaxCharacter) {
       externeOmschrijvingTekstMaxCharacter.innerHTML = `${externeOmschrijvingTekstMaxCharacterPrefix}${count}/${this.externeOmschrijvingTekstTarget.maxLength}`
@@ -110,5 +122,78 @@ export default class extends Controller {
 
   clearExternalMessage() {
     this.externeOmschrijvingTekstTarget.value = ''
+  }
+  onChangeHandler() {
+    this.update()
+  }
+  filterSpecificaties(nietOpgelostRedenValue) {
+    const reden = this.meldingAfhandelredenLijst.find(
+      (reden) => reden.id === parseInt(nietOpgelostRedenValue)
+    )
+    this.specificatieUrls = reden?.specificatie_opties ?? []
+    Array.from(
+      this.element.querySelectorAll(
+        `input[name='${this.nietOpgelostSpecificatieOptiesFieldTarget.name}']`
+      )
+    ).map((elem) => {
+      const show = this.specificatieUrls.includes(elem.value)
+      if (!show) {
+        elem.checked = false
+      }
+      elem.disabled = !show
+      elem.closest('li').style.display = show ? 'block' : 'none'
+      // elem.closest('li').style.opacity = show ? '1' : '.5'
+    })
+  }
+  update() {
+    const NIET_OPGELOST = 'niet_opgelost'
+    const titel = this.externeOmschrijvingTitelTarget?.value
+    const tekst = this.externeOmschrijvingTekstTarget?.value
+    const zichtbaarheid = this.element.querySelector(
+      `input[name='${this.zichtbaarheidFieldTarget.name}']:checked`
+    )?.value
+    const nietOpgelost =
+      this.element.querySelector(`input[name='${this.zichtbaarheidFieldTarget.name}']:checked`)
+        ?.value === NIET_OPGELOST
+
+    this.updateCharacterCount(tekst.length)
+    if (!nietOpgelost && this.hasNietOpgelostRedenFieldTarget) {
+      Array.from(
+        this.element.querySelectorAll(`input[name='${this.nietOpgelostRedenFieldTarget.name}']`)
+      ).map((elem) => {
+        elem.checked = false
+      })
+    }
+    let nietOpgelostRedenValue = null
+    let specificatieValue = null
+    if (this.hasNietOpgelostRedenFieldTarget) {
+      nietOpgelostRedenValue = this.element.querySelector(
+        `input[name='${this.nietOpgelostRedenFieldTarget.name}']:checked`
+      )?.value
+      this.filterSpecificaties(nietOpgelostRedenValue)
+      specificatieValue = this.element.querySelector(
+        `input[name='${this.nietOpgelostSpecificatieOptiesFieldTarget.name}']:checked`
+      )?.value
+    }
+
+    this.nietOpgelostContainerTargets.map((elem) => {
+      elem.classList[nietOpgelost ? 'remove' : 'add']('hide')
+    })
+    this.nietOpgelostSpecificatiesContainerTargets.map((elem) => {
+      elem.classList[this.specificatieUrls.length ? 'remove' : 'add']('hide')
+    })
+
+    let showSubmitButton = zichtbaarheid && zichtbaarheid != NIET_OPGELOST && titel && tekst
+
+    showSubmitButton =
+      showSubmitButton ||
+      (titel &&
+        tekst &&
+        zichtbaarheid === NIET_OPGELOST &&
+        !!nietOpgelostRedenValue &&
+        ((!!specificatieValue && !!this.specificatieUrls.length) ||
+          (!this.specificatieUrls.length && !specificatieValue)))
+
+    this.submitButtonTarget.disabled = !showSubmitButton
   }
 }

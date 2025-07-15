@@ -68,6 +68,7 @@
                     display: block;
                     width: 32px;
                     cursor: pointer;
+                    padding-left: 0;
 
                     &:hover,
                     &:has(input:checked) {
@@ -79,8 +80,8 @@
                 }
 
                 input {
-                    width: 0;
-                    height: 0;
+                    width: 0 !important;
+                    height: 0 !important;
                     position: absolute;
                     border: 0;
                     box-shadow: none;

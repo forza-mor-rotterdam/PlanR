@@ -1,0 +1,14 @@
+{% load context_template from context_tags %}
+{% context_template "melding_detail_acties.html" as acties_template %}
+{% include "melding/detail/taken.html" %}
+{% include "melding/detail/melding_detail_titel.html" %}
+
+<turbo-stream action="update" target="modal_body">
+<template>
+    <div data-modal-target="modalSluiten"></div>
+</template>
+</turbo-stream>
+
+{% include "melding/detail/tijdlijn.html" with melding=melding only %}
+{% include acties_template %}
+{% include "public/notificaties/toast_lijst.html" with messages=messages only %}

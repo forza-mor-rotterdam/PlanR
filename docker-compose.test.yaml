@@ -14,7 +14,6 @@ services:
     networks:
       - planr_network
 
-
   redis:
     image: redis
     networks:

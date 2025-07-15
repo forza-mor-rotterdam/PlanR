@@ -4,6 +4,7 @@ from apps.main.views import (
     LichtmastView,
     LoginView,
     LogoutView,
+    MeldingAfhandelenView,
     MeldingDetail,
     TaakRTaaktypeView,
     TakenAanmakenStreamView,
@@ -80,6 +81,11 @@ urlpatterns = [
     path("publiceer-topic/<uuid:id>/", publiceer_topic, name="publiceer_topic"),
     path("health/", include("health_check.urls")),
     path("healthz/", healthz, name="healthz"),
+    path(
+        "melding/<uuid:id>/afhandelen/",
+        MeldingAfhandelenView.as_view(),
+        name="melding_afhandelen",
+    ),
     path(
         "melding/<uuid:id>/afhandelen/",
         melding_afhandelen,

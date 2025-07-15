@@ -1,0 +1,27 @@
+{% load json_encode from json_tags %}
+{% with id=widget.attrs.id %}
+    <ul {% if id %}id="{{ id }}"{% endif %} class="list--form-check-input">
+        {% for group in widget.optgroups %}
+            {% for option in group.1 %}
+                <li>
+                    <label {% if option.attrs.id %}for="{{ option.attrs.id }}"{% endif %}
+                           {% if option.hide %}style="display: none;"{% endif %}>
+                        <input type="{{ option.type }}"
+                               name="{{ option.name }}"
+                               {% if option.value != None %}value="{{ option.value|stringformat:'s' }}"{% endif %}
+                               {% include "django/forms/widgets/attrs.html" with widget=option %}
+                               class="list--form-check-input"
+                               data-specificatie-urls="{{ option.value.instance.specificatie_opties|json_encode }}"
+                               hidelabel>
+                        {{ option.label }}
+                        {% if option.value.instance.toelichting %}
+                            <small>
+                                {{ option.value.instance.toelichting }}
+                            </small>
+                        {% endif %}
+                    </label>
+                </li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+{% endwith %}

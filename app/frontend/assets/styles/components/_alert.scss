@@ -81,6 +81,14 @@
                 border-radius: 100%;
             }
         }
+
+        &--opgelost {
+            background-color: $green-200;
+
+            &::before {
+                background-color: $green-900;
+            }
+        }
     }
 
     h1 & {
@@ -97,6 +105,7 @@
         background-color: $blue-200;
         font-size: 0.778rem;
         font-weight: 400;
+        word-break: break-word;
 
         &::before {
             content: "";
@@ -122,7 +131,7 @@
         }
     }
 
-    &--opgelost {
+    &--in_behandeling {
         background-color: $green-200;
 
         &::before {
@@ -130,9 +139,17 @@
         }
     }
 
+    &--niet-opgelost {
+        background-color: $red-300;
+
+        &::before {
+            background-color: $red-900;
+        }
+    }
+
     &--voltooid,
+    &--opgelost,
     &--geannuleerd,
-    &--niet-opgelost,
     &--niet-gevonden {
         background-color: $gray-200;
 

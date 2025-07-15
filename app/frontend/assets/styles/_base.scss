@@ -37,7 +37,7 @@ html {
         box-sizing: border-box;
         transition: width $transition-duration-default $transition-ease-default;
         position: fixed;
-        top: 75;
+        top: 0;
         left: 0;
         border-right: 1px solid $green-400;
 
@@ -460,6 +460,7 @@ ul {
 }
 
 ul {
+    padding-left: 20px;
     &.list-clean,
     &.form-check-input {
         @include list-clean();
@@ -611,9 +612,10 @@ dl {
 .list--blocks-horizontal {
     @include list-clean();
     display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
     margin-bottom: 100px;
     li {
-        margin: 0 0 0 0.25rem;
         padding: $input-padding-x;
         border: 1px solid $gray-tint04;
         position: relative;
@@ -822,8 +824,12 @@ body.no-js {
     padding-bottom: 0.5em;
 }
 
+.padding-bottom-0 {
+    padding-bottom: 0 !important;
+}
+
 .margin-bottom {
-    margin-bottom: 1rem;
+    margin-bottom: 1rem !important;
 }
 
 .margin--bottom {

@@ -225,6 +225,12 @@ export default class extends Controller {
     clone.querySelector('[data-titel]').textContent = taaktypeData.omschrijving
     clone.querySelector('[data-toelichting]').textContent = taaktypeData.toelichting
     clone.querySelector('[data-omschrijving]').textContent = taaktypeData.omschrijving
+    const infobutton = clone.querySelector('[data-infosheet-action-param]')
+    const target = infobutton.getAttribute('data-infosheet-action-param')
+    infobutton.setAttribute(
+      'data-infosheet-action-param',
+      `${target}${taaktypeData.taakapplicatie_taaktype_url}`
+    )
     li.dataset.taaktypeUrl = taaktypeUrl
     taakapplicatieTaaktypeUrlInput.value = taaktypeUrl
     titelInput.value = taaktypeData.omschrijving
