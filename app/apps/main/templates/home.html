@@ -55,7 +55,7 @@
                         Je hebt wel beheerrechten.
                     </p>
                         <a href="{% url 'beheer' %}"
-                            class="btn btn-action"
+                            class="btn btn-action btn-action--primary"
                             target="_top"
                             data-turbo="false">Ga naar de beheeromgeving</a>
                     {% elif perms.authorisatie.melding_lijst_bekijken %}
@@ -63,7 +63,7 @@
                         Je mag wel de lijst met meldingen bekijken.
                     </p>
                         <a href="{% url 'melding_lijst' %}"
-                            class="btn btn-action"
+                            class="btn btn-action btn-action--primary"
                             target="_top"
                             data-turbo="false">Bekijk de meldingen</a>
                     {% else %}
