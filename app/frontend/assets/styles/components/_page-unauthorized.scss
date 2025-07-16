@@ -1,4 +1,10 @@
 .page__unauthorized {
+    .container__toplevel {
+        > aside,
+        .container__main .bar--top {
+            display: none;
+        }
+    }
     .container__main {
         margin: 0;
         padding: 0;
