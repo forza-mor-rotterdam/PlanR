@@ -3,10 +3,10 @@
     <div>
 
         <ul class="list-nav--primary">
-            {% if request.user.is_authenticated %}
+            {% if request.user.is_authenticated  and perms.authorisatie.melding_lijst_bekijken %}
                 <li>
                     <a class="btn {% if '/melding/' in request.path %}active{% endif %}"
-                       href="{% url 'root' %}">
+                       href="{% url 'melding_lijst' %}">
                         {% include "icons/meldingen.svg" %}
                         <span class="nav--wide">Meldingen</span>
                     </a>
