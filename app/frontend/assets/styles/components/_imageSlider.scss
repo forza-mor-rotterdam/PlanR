@@ -299,3 +299,25 @@
         }
     }
 }
+
+.container__taken,
+.container__logboek {
+    .container__thumbs {
+        ul {
+            margin: 0;
+            display: flex;
+            gap: 8px;
+            li {
+                cursor: auto;
+                margin: 0;
+                padding: 0;
+                gap: 0;
+            }
+        }
+        .container__image {
+            opacity: 1;
+            width: 100px;
+            height: 66px;
+        }
+    }
+}

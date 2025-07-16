@@ -1,0 +1,37 @@
+{% extends "infosheet/turbo.html" %}
+{% load humanize %}
+
+{% block header %}
+    <div class="header">
+        <div class="scroll-handle" data-infosheet-target="scrollHandle"></div>
+        <h1>Logboek</h1>
+        <button class="btn-close--small"
+                data-action="infosheet#closeInfosheet"
+                aria-label="Sluiten">{% include "icons/close.svg" %}</button>
+    </div>
+{% endblock header %}
+
+{% block content %}
+<section class="content container__logboek"
+    data-testid="detailTijdlijn"
+    id="melding_detail_tijdlijn">
+        <ul class="list-clean">
+            {% for logboek_groep in logboek.logboek_items_gegroepeerd %}
+                <li class="group">
+                    <h3>{{logboek_groep.datum|naturalday:"j F Y"|capfirst}}</h3>
+                    <ul class="list-clean">
+                        {% for logboek_item in logboek_groep.logboek_items %}
+                            <li>
+                                {{logboek_item.render_icon}}
+                                <div class="message haai">
+                                    <h4>{{logboek_item.titel}}</h4>
+                                    {{logboek_item.render_content}}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
+{% endblock content %}
