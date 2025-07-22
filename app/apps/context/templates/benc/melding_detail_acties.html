@@ -13,6 +13,16 @@
             {% melding_taken melding as taak_info %}
                 <ul class="list-clean">
                     <li>
+                        <button type="button"
+                            class="btn btn-icon"
+                            data-action="infosheet#openInfosheet"
+                            data-infosheet-action-param="{% url 'logboek' melding.uuid %}"
+                        >
+                            {% include "icons/clock_ccw.svg" %}
+                            Toon logboek
+                        </button>
+                    </li>
+                    <li>
                         {% if perms.authorisatie.melding_pauzeren and melding.status.naam != "pauze" and melding.status.naam != "wachten_melder" %}
                             <button type="button"
                                     class="btn btn-icon"
