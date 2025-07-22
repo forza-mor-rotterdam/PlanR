@@ -14,7 +14,7 @@
     <div class="container__details">
         <h2>Status</h2>
         <div class="container__status">
-            <div class="container__status--content">
+            <div class="container__status--content" data-controller="overflow-toggle" data-overflow-toggle-target="container" data-overflow-toggle-item-class="content__overflow">
                 <div class="container__content cols--2">
                     <h3>Afgehandeld door</h3>
                     <div class="content">
@@ -36,20 +36,18 @@
                 </div>
                 <div class="container__content">
                     <h3>Interne opmerking</h3>
-                    <div class="content container__overflow" data-controller="overflow">
+                    <div class="content container__overflow">
                         <p class="content__overflow">
                             Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende maand uitgevoerd worden. Wij zullen u op  de hoogte houden wanneer de werkzaamheden gedaan zijn Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende maand uitgevoerd worden. Wij zullen u op  de hoogte houden wanneer de werkzaamheden gedaan zijn. Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende.
                         </p>
-                        {% include "icons/arrow-right.svg" %}
                     </div>
                 </div>
                 <div class="container__content cols--6">
                     <h3>Bericht voor melder</h3>
-                    <div class="content container__overflow" data-controller="overflow">
+                    <div class="content container__overflow">
                         <p class="content__overflow">
                             Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende maand uitgevoerd worden. Wij zullen u op  de hoogte houden wanneer de werkzaamheden gedaan zijn Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende maand uitgevoerd worden. Wij zullen u op  de hoogte houden wanneer de werkzaamheden gedaan zijn. Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende.
                         </p>
-                        {% include "icons/arrow-right.svg" %}
                     </div>
                 </div>
                 <div class="container__content cols--2">
@@ -58,11 +56,18 @@
                         <p>04-04-2025 16.44</p>
                     </div>
                 </div>
+                <button type="button"
+                    class="btn--clean"
+                    data-overflow-toggle-target="toggle"
+                    data-action="overflow-toggle#toggle"
+                    hidden>
+                    {% include "icons/arrow-right.svg" %}
+                </button>
             </div>
         </div>
 
         <div class="container__status">
-            <div class="container__status--content">
+            <div class="container__status--content" data-controller="overflow-toggle" data-overflow-toggle-target="container" data-overflow-toggle-item-class="content__overflow">
                 <div class="container__content cols--2">
                     <h3>Afgehandeld door</h3>
                     <div class="content">
@@ -84,11 +89,12 @@
                 </div>
                 <div class="container__content cols--6">
                     <h3>Bericht voor melder</h3>
-                    <div class="content container__overflow" data-controller="overflow">
+                    <div class="content container__overflow">
                         <p class="content__overflow">
                             Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende maand uitgevoerd worden. Wij zullen u op  de hoogte houden wanneer de werkzaamheden gedaan zijn Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende maand uitgevoerd worden. Wij zullen u op  de hoogte houden wanneer de werkzaamheden gedaan zijn. Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende.
+                            Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende maand uitgevoerd worden. Wij zullen u op  de hoogte houden wanneer de werkzaamheden gedaan zijn Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende maand uitgevoerd worden. Wij zullen u op  de hoogte houden wanneer de werkzaamheden gedaan zijn. Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende.
+                            Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende maand uitgevoerd worden. Wij zullen u op  de hoogte houden wanneer de werkzaamheden gedaan zijn Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende maand uitgevoerd worden. Wij zullen u op  de hoogte houden wanneer de werkzaamheden gedaan zijn. Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende.
                         </p>
-                        {% include "icons/arrow-right.svg" %}
                     </div>
                 </div>
                 <div class="container__content cols--2">
@@ -97,11 +103,18 @@
                         <p>04-04-2025 16.44</p>
                     </div>
                 </div>
+                <button type="button"
+                    class="btn--clean"
+                    data-overflow-toggle-target="toggle"
+                    data-action="overflow-toggle#toggle"
+                    hidden>
+                    {% include "icons/arrow-right.svg" %}
+                </button>
             </div>
         </div>
 
         <div class="container__status">
-            <div class="container__status--content cols--4">
+            <div class="container__status--content cols--4" data-controller="overflow-toggle" data-overflow-toggle-target="container" data-overflow-toggle-item-class="content__overflow">
                 <div class="container__content cols--2">
                     <h3>Afgehandeld door</h3>
                     <div class="content">
@@ -113,11 +126,10 @@
                 </div>
                 <div class="container__content cols--6">
                     <h3>Bericht voor melder</h3>
-                    <div class="content container__overflow" data-controller="overflow">
+                    <div class="content container__overflow">
                         <p class="content__overflow">
                             Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende maand uitgevoerd worden. Wij zullen u op  de hoogte houden wanneer de werkzaamheden gedaan zijn Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende maand uitgevoerd worden. Wij zullen u op  de hoogte houden wanneer de werkzaamheden gedaan zijn. Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende.
                         </p>
-                        {% include "icons/arrow-right.svg" %}
                     </div>
                 </div>
                 <div class="container__content cols--2">
@@ -126,6 +138,13 @@
                         <p>04-04-2025 16.44</p>
                     </div>
                 </div>
+                <button type="button"
+                    class="btn--clean"
+                    data-overflow-toggle-target="toggle"
+                    data-action="overflow-toggle#toggle"
+                    hidden>
+                    {% include "icons/arrow-right.svg" %}
+                </button>
             </div>
         </div>
 
