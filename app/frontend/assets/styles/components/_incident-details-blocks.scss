@@ -36,6 +36,8 @@
     .container__status--content {
         display: flex;
         justify-content: flex-start;
+        position: relative;
+        background-color: $white;
 
         .container__content {
             flex: 1 1 18.75%;
@@ -51,6 +53,30 @@
 
             &.cols--6 {
                 min-width: 31.25%;
+            }
+        }
+
+        button {
+            position: absolute;
+            right: 0.5rem;
+            top: 0.5rem;
+            transform: rotate(90deg);
+            transition: transform $transition-duration-default $transition-ease-default;
+
+            svg {
+                path {
+                    fill: $black;
+                }
+            }
+
+            &:hover {
+                background-color: transparent;
+            }
+        }
+
+        &.is-expanded {
+            button {
+                transform: rotate(-90deg);
             }
         }
     }
@@ -396,22 +422,26 @@
 
         .container__overflow {
             position: relative;
-            max-height: 5em;
+            max-height: none;
             width: auto;
-            -webkit-line-clamp: 3;
 
             svg {
                 right: 4px;
                 bottom: 5px;
             }
 
-            &.show {
-                border: none;
-                padding: unset;
-                -webkit-line-clamp: unset;
-                padding-right: 1rem;
-                max-height: 20em;
+            .content__overflow {
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-height: 8rem;
+                transition: max-height $transition-duration-default $transition-ease-default;
             }
+        }
+
+        &:last-child {
+            padding-right: 30px;
         }
     }
 }
