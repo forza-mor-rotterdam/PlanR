@@ -3,7 +3,7 @@
 {% if omschrijving_intern and titel != omschrijving_intern %}<p>{{ omschrijving_intern }}</p>{% endif %}
 {% with gebruiker_object=gebruiker|get_gebruiker_object_middels_email %}
 <small>
-    Om {{ tijd }} uur{% if gebruiker %} door <a href="" data-action="modal#openModal" data-modal-action-param="{% url 'gebruiker_info' gebruiker_email=gebruiker %}">{{ gebruiker_object.full_name }}</a>{% endif %}
+    Om {{ tijd }} uur{% if gebruiker and perms.authorisatie.medewerker_gegevens_bekijken %} door <a href="" data-action="modal#openModal" data-modal-action-param="{% url 'gebruiker_info' gebruiker_email=gebruiker %}">{{ gebruiker_object.full_name }}</a>{% endif %}
 </small>
 {% endwith %}
 

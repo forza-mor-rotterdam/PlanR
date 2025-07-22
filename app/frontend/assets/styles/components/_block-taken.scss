@@ -256,6 +256,16 @@
                 color: $gray-600;
                 font-size: 0.667rem;
             }
+
+            .container__thumbs {
+                padding-top: 0;
+                li {
+                    &:not(:first-child) {
+                        border-top: none;
+                        padding-top: 0;
+                    }
+                }
+            }
         }
     }
 
