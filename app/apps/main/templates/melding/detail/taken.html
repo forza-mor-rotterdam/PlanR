@@ -44,10 +44,10 @@
                                 <small>{{ taak.verantwoordelijke_afdeling.naam }}</small>
                             </div>
                             <div>
-                                <span class="help-text">{{ eerste_taakgebeurtenis.aangemaakt_op|to_datetime|date:"d-m-Y, H:i" }}</span>
+                                <span class="help-text" data-testid="taak_aanmaakdatum">{{ eerste_taakgebeurtenis.aangemaakt_op|to_datetime|date:"d-m-Y, H:i" }}</span>
                             </div>
                             <div>
-                                <span class="help-text">
+                                <span class="help-text" data-testid="taak_uitgevoerddatum">
                                     {% if taak.afgesloten_op %}{{ laatste_taakgebeurtenis.aangemaakt_op|to_datetime|date:"d-m-Y, H:i" }}{% endif %}
                                 </span>
                             </div>
