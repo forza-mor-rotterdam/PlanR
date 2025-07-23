@@ -409,7 +409,7 @@ class LogboekItem:
         INFORMATIE_TOEGEVOEGD: "Informatie toegevoegd",
         LOCATIE_AANGEMAAKT: "Locatie aangepast",
         URGENTIE_AANGEPAST: "Spoed aangepast",
-        SIGNAAL_TOEGEVOEGD: "Melding ontdubbeld",
+        SIGNAAL_TOEGEVOEGD: "Melding samengevoegd",
         TAAK_AANGEMAAKT: 'Taak "%(titel)s" aangemaakt',
         TAAK_AFGEHANDELD: 'Taak "%(titel)s" afgehandeld',
         TAAK_VERWIJDERD: 'Taak "%(titel)s" verwijderd',
