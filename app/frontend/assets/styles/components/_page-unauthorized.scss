@@ -106,6 +106,17 @@
             max-width: 355px;
             margin: 0 auto;
         }
+
+        dl {
+            div {
+                display: block;
+
+                dt,
+                dd {
+                    display: inline;
+                }
+            }
+        }
     }
 
     @media (min-width: map-get($grid-breakpoints, md)) {

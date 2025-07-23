@@ -47,9 +47,9 @@
                     Inloggen
                 </a>
             {% else %}
-                <p>
-                    Helaas, je hebt niet de juiste rechten om deze pagina te mogen bekijken.
-                </p>
+                <h2>
+                    Helaas, je hebt niet de juiste rechten<br>om PlanR te kunnen gebruiken.
+                </h2>
                     {% if perms.authorisatie.beheer_bekijken %}
                     <p>
                         Je hebt wel beheerrechten.
@@ -69,11 +69,15 @@
                     {% else %}
                         <div class="container__details">
                             <p>
-                                Je bent wel ingelogd, maar je account heeft nog wat aandacht nodig om gebruik te kunnen maken van PlanR.
-                                <br>
-                                Hieronder vind je de instellingen zoals je nu bij ons bekend bent.
+                                Je account heeft nog wat aandacht nodig om gebruik te kunnen maken van PlanR. Hieronder vind je de instellingen die nu bij ons bekend zijn:
                             </p>
                             {% include "auth/rollen_rechten.html" %}
+
+                            <a href="https://rotterdam.topdesk.net/tas/public/ssp/content/serviceflow?unid=d1dbff359d2e4655b3edea6ca1806c4e&openedFromService=true"
+                            class="btn btn-action btn-action--primary"
+                            target="_top"
+                            data-turbo="false">Vraag rechten aan</a>
+
                         </div>
                     {% endif %}
                 {% endif %}

@@ -25,7 +25,9 @@
                                 {{logboek_item.render_icon}}
                                 <div class="message">
                                     <h4>{{logboek_item.titel}}</h4>
-                                    {{logboek_item.render_content}}
+                                    <div class="container__overflow" data-controller="overflow" tabindex="0">
+                                        {{logboek_item.render_content}}
+                                    </div>
                                 </div>
                             </li>
                         {% endfor %}

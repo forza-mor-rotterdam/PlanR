@@ -35,8 +35,50 @@
 
         .message {
             font-size: 0.778rem;
+
+            .container__overflow {
+                position: relative;
+                overflow: hidden;
+                display: block;
+                -webkit-line-clamp: unset;
+                max-height: none;
+                // -webkit-box-orient: vertical;
+
+                .content__overflow {
+                    overflow: hidden;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 4;
+                    max-height: 6em;
+                    -webkit-box-orient: vertical;
+                }
+
+                &.has-overflow {
+                    margin-right: 1em;
+                    padding-right: 1.6em;
+                    box-sizing: border-box;
+                    svg {
+                        display: block;
+                        top: 0;
+                    }
+                }
+
+                &.show {
+                    border: none;
+                    padding: 0 1.35em 0 0;
+                    .content__overflow {
+                        -webkit-line-clamp: unset;
+                        max-height: 20em;
+                        // padding: 0.25em 1.35em 0.25em 0.25em;
+                    }
+                    svg {
+                        transform: rotate(-90deg);
+                        right: 1em;
+                    }
+                }
+            }
             p {
                 margin: 0;
+                word-break: break-word;
 
                 & + p {
                     margin-top: 0.5rem;
