@@ -15,6 +15,10 @@
         <h2>Status</h2>
         <div class="container__status">
             <div class="container__status--content" data-controller="overflow-toggle" data-overflow-toggle-target="container" data-overflow-toggle-item-class="content__overflow">
+                {% comment %}
+                    @Maurice De content-containers met Afgehandeld door en Datum en tijd hebben een axtra class cols--2 om een max-width af te dwingen
+                    De content-container met het bericht voor de melder heeft een extra class cols--6 om een min-width af te dwingen
+                {% endcomment %}
                 <div class="container__content cols--2">
                     <h3>Afgehandeld door</h3>
                     <div class="content">
@@ -65,89 +69,6 @@
                 </button>
             </div>
         </div>
-
-        <div class="container__status">
-            <div class="container__status--content" data-controller="overflow-toggle" data-overflow-toggle-target="container" data-overflow-toggle-item-class="content__overflow">
-                <div class="container__content cols--2">
-                    <h3>Afgehandeld door</h3>
-                    <div class="content">
-                        <span class="initials">MS</span>
-                        <div class="message">
-                            <h4>Malik Schouten</h4>
-                        </div>
-                    </div>
-                </div>
-                <div class="container__content">
-                    <h3>Reden</h3>
-                    <div class="content">
-                        <p>Niet nu</p>
-                    </div>
-                    <h3>Specificatie</h3>
-                    <div class="content">
-                        <p>Reeds ingediend</p>
-                    </div>
-                </div>
-                <div class="container__content cols--6">
-                    <h3>Bericht voor melder</h3>
-                    <div class="content container__overflow">
-                        <p class="content__overflow">
-                            Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende maand uitgevoerd worden. Wij zullen u op  de hoogte houden wanneer de werkzaamheden gedaan zijn Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende maand uitgevoerd worden. Wij zullen u op  de hoogte houden wanneer de werkzaamheden gedaan zijn. Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende.
-                            Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende maand uitgevoerd worden. Wij zullen u op  de hoogte houden wanneer de werkzaamheden gedaan zijn Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende maand uitgevoerd worden. Wij zullen u op  de hoogte houden wanneer de werkzaamheden gedaan zijn. Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende.
-                            Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende maand uitgevoerd worden. Wij zullen u op  de hoogte houden wanneer de werkzaamheden gedaan zijn Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende maand uitgevoerd worden. Wij zullen u op  de hoogte houden wanneer de werkzaamheden gedaan zijn. Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende.
-                        </p>
-                    </div>
-                </div>
-                <div class="container__content cols--2">
-                    <h3>Datum en tijd</h3>
-                    <div class="content">
-                        <p>04-04-2025 16.44</p>
-                    </div>
-                </div>
-                <button type="button"
-                    class="btn--clean"
-                    data-overflow-toggle-target="toggle"
-                    data-action="overflow-toggle#toggle"
-                    hidden>
-                    {% include "icons/arrow-right.svg" %}
-                </button>
-            </div>
-        </div>
-
-        <div class="container__status">
-            <div class="container__status--content cols--4" data-controller="overflow-toggle" data-overflow-toggle-target="container" data-overflow-toggle-item-class="content__overflow">
-                <div class="container__content cols--2">
-                    <h3>Afgehandeld door</h3>
-                    <div class="content">
-                        <span class="initials">MS</span>
-                        <div class="message">
-                            <h4>Malik Schouten</h4>
-                        </div>
-                    </div>
-                </div>
-                <div class="container__content cols--6">
-                    <h3>Bericht voor melder</h3>
-                    <div class="content container__overflow">
-                        <p class="content__overflow">
-                            Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende maand uitgevoerd worden. Wij zullen u op  de hoogte houden wanneer de werkzaamheden gedaan zijn Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende maand uitgevoerd worden. Wij zullen u op  de hoogte houden wanneer de werkzaamheden gedaan zijn. Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende.
-                        </p>
-                    </div>
-                </div>
-                <div class="container__content cols--2">
-                    <h3>Datum en tijd</h3>
-                    <div class="content">
-                        <p>04-04-2025 16.44</p>
-                    </div>
-                </div>
-                <button type="button"
-                    class="btn--clean"
-                    data-overflow-toggle-target="toggle"
-                    data-action="overflow-toggle#toggle"
-                    hidden>
-                    {% include "icons/arrow-right.svg" %}
-                </button>
-            </div>
-        </div>
-
     </div>
 </section>
 
