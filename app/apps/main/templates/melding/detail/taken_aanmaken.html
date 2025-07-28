@@ -135,7 +135,7 @@
                                 <button type="reset" class="btn btn-tertiary" data-controller="detail" data-action="modal#closeModal" data-modal-target="modal">
                                     <span>Annuleren</span>
                                 </button>
-                                <button type="submit" class="btn btn-action-v2">
+                                <button type="submit" class="btn btn-action">
                                     <span>{{ form.submit_label }}</span>
                                 </button>
                     </div> {% endcomment %}
@@ -154,7 +154,7 @@
                         data-action="taken-aanmaken--manager#gotoPreviousStep">
                     <span>Vorige</span>
                 </button>
-                <button class="btn btn-action-v2 stap1"
+                <button class="btn btn-action stap1"
                         data-taken-aanmaken--manager-target="knopVolgende"
                         data-action="taken-aanmaken--manager#gotoNextStep"
                         disabled>
@@ -163,7 +163,7 @@
                 <button type="submit"
                         disabled
                         form="formTakenAanmaken"
-                        class="btn btn-action-v2 stap2"
+                        class="btn btn-action stap2"
                         data-taken-aanmaken--manager-target="knopAanmaken">
                     {% comment %}  TODO get number of taaktypes for "Taak" or "Taken" {% endcomment %}
                     <span>Aanmaken</span>

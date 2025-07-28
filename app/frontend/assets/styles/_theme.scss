@@ -50,10 +50,6 @@ $neutral-600: #bfd2d9;
 $neutral-200: #eaeef1;
 $neutral-100: #f7f9fa;
 
-// magentatinten
-$magenta-tint01: #c93675;
-$magenta-tint02: #a12b5e;
-
 $white: #fff;
 $black: #000;
 
@@ -80,8 +76,7 @@ $warning: #edb500;
 $danger: #e3614d;
 $light: $gray-tint01;
 $dark: $gray-tint11;
-$action: $magenta-tint01;
-$action-active: $magenta-tint02;
+$action: $neutral-900;
 
 // Grid breakpoints
 //

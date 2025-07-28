@@ -10,7 +10,7 @@ document.querySelector('#showAction').addEventListener('click', () => {
 
 document.querySelector('#sendEmail').addEventListener('click', (e) => {
   e.target.classList.add('disabled')
-  document.querySelector('.btn-action-v2.hidden').classList.remove('hidden')
+  document.querySelector('.btn-action.hidden').classList.remove('hidden')
 })
 
 function setData() {
