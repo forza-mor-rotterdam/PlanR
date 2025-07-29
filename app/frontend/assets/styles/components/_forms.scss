@@ -126,8 +126,7 @@ select {
 
 .form-control:hover:not(:focus):not([disabled]):not([read-only]),
 .form-select:hover:not(:focus):not([disabled]):not([read-only]) {
-    border-color: $text-muted;
-    box-shadow: 0 0 0 1px $text-muted;
+    border-color: $black;
 }
 
 .is-invalid {
@@ -161,7 +160,7 @@ select {
 }
 
 .help-block:not(.invalid-text) {
-    font-size: $h5-font-size;
+    font-size: $fz-14;
     margin: 0.25rem 0;
     display: block;
     color: $gray-tint09;
@@ -180,10 +179,10 @@ $form-search-indicator-position: left 10px center !default;
 
 .form-control {
     padding: 8px 16px;
-    font-size: 1em;
+    font-size: $fz-14;
     font-weight: 400;
     background-color: #fff;
-    border: 1px solid #7c8b90;
+    border: 1px solid $gray-200;
     box-sizing: border-box;
     font-family: "Bolder", sans-serif;
     &.search {
@@ -208,12 +207,11 @@ $form-search-indicator-position: left 10px center !default;
 }
 
 .form-select {
-    background-image: url("data:image/svg+xml, <svg width=%2724%27 height=%2724%27 viewBox=%270 0 24 24%27 fill=%27none%27 xmlns=%27http://www.w3.org/2000/svg%27> <path fill-rule=%27evenodd%27 clip-rule=%27evenodd%27 d=%27M15.75 9.75L12 4.5L8.25 9.75H15.75ZM15.75 14.25L12 19.5L8.25 14.25H15.75Z%27 fill=%27%2365757B%27/> </svg>");
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iOCIgdmlld0JveD0iMCAwIDEyIDgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik02LjYzNDA4IDYuNzY2NjRMMTEuODIxMyAxLjc2NDg5TDEwLjc2OTYgMC43NTA4OTlMNi4xMDc5IDUuMjMxNzRMMS40NDYyMyAwLjc1MDg5OUwwLjM5NDUzMSAxLjc2NDg5TDUuNTgxNzEgNi43NjY2NEw2LjEwNzgzIDcuMjQ2MDlMNi42MzQwOCA2Ljc2NjY0WiIgZmlsbD0iYmxhY2siLz4KPC9zdmc+Cg==");
     background-repeat: no-repeat;
-    background-position: right 10px center;
-    background-size: 24px 24px;
+    background-position: right 16px center;
     padding: 8px 34px 8px 16px;
-    font-size: 1em;
+    font-size: $fz-14;
     color: $gray-tint11;
     &.search {
         background-image: escape-svg($form-search-indicator), escape-svg($form-select-indicator) !important;
@@ -223,6 +221,7 @@ $form-search-indicator-position: left 10px center !default;
 
 textarea {
     color: $gray-tint11;
+    padding: 10px 12px;
 }
 
 .form-check {
@@ -264,8 +263,8 @@ textarea {
         margin-left: 0;
         margin-top: 0.15rem;
         vertical-align: text-top;
-        width: 0.778rem;
-        height: 0.778rem;
+        width: $fz-14;
+        height: $fz-14;
     }
 
     &:checked[type="radio"] {
@@ -312,7 +311,7 @@ textarea {
     ~ .form-radio-label {
         line-height: 1.5rem;
         font-weight: 400;
-        font-size: 1rem;
+        font-size: $fz-14;
     }
 }
 
@@ -329,7 +328,7 @@ textarea {
     }
     label {
         font-weight: 400;
-        font-size: 0.778rem;
+        font-size: $fz-14;
         word-break: break-word;
 
         &:has(input:disabled) {
@@ -343,12 +342,12 @@ textarea {
 
             input[type="radio"] {
                 // margin-left: -12px;
-                width: 0.778rem;
-                height: 0.778rem;
+                width: $fz-14;
+                height: $fz-14;
                 margin-top: 0;
             }
             small {
-                font-size: 0.667rem;
+                font-size: $fz-12;
                 display: inline-block;
                 padding-left: 8px;
                 color: $gray-800;
@@ -537,13 +536,17 @@ input.form-radio-input {
 
     > label,
     > .label {
-        font-size: $h5-font-size;
+        font-size: 1rem;
         line-height: 24px;
+        margin-bottom: 0.25em;
 
         small {
             font-weight: 400;
-            font-size: $h6-font-size;
         }
+    }
+
+    .label + div ul {
+        margin-top: 0;
     }
 
     .form--login & {
@@ -587,7 +590,7 @@ input.form-radio-input {
 
     .list--grouped {
         font-weight: 700;
-        font-size: 1rem;
+        font-size: $fz-14;
         ul ul {
             font-weight: 400;
             margin: $input-padding-y 0;
@@ -685,7 +688,7 @@ input.form-radio-input {
         border: 1px solid #7c8b90;
         outline: 0;
         padding: 0 16px;
-        font-size: 1em;
+        font-size: $fz-14;
         width: 100%;
         color: #404b4f;
         text-align: left;
@@ -905,7 +908,7 @@ input.readonly {
     position: relative;
     input[type="search"] {
         margin: 0;
-        border: 1px solid $blue-200;
+        border: 1px solid $gray-200;
         padding-right: 36px;
         color: $black;
         font-size: 0.777rem;
@@ -1244,13 +1247,13 @@ form.taken-aanmaken {
             }
         }
     }
-    .help-block:not(.invalid-text) {
-        font-size: 0.8888rem;
-    }
+    // .help-block:not(.invalid-text) {
+    //     font-size: 0.8888rem;
+    // }
 
     .list--3cols-form {
         @include list-clean();
-        font-size: 0.889rem;
+        font-size: $fz-16;
         > li:first-child {
             font-weight: 700;
             padding: 0 0.889rem 0.5rem;
@@ -1279,7 +1282,7 @@ form.taken-aanmaken {
         }
 
         > li {
-            font-size: 0.778rem;
+            font-size: $fz-14;
             position: relative;
 
             .btn--remove {
@@ -1334,7 +1337,7 @@ form.taken-aanmaken {
             }
 
             h3 {
-                font-size: 0.889rem;
+                font-size: $fz-16;
                 color: $green-tint01;
             }
 
@@ -1343,9 +1346,8 @@ form.taken-aanmaken {
                 line-height: 1.25em;
                 font-family: $font-family-sans-serif;
                 width: 100%;
-                border: 1px solid $blue-200;
+                border: 1px solid $gray-200;
                 resize: none;
-                padding: 0.75rem;
                 box-sizing: border-box;
             }
         }
@@ -1365,7 +1367,7 @@ form.taken-aanmaken {
                     height: 16px;
                     span {
                         font-weight: 400;
-                        font-size: 0.667rem;
+                        font-size: $fz-12;
                         display: inline-block;
                     }
                     svg {
@@ -1401,7 +1403,7 @@ form.taken-aanmaken {
     }
 
     .help-block {
-        font-size: 0.778rem;
+        font-size: $fz-14;
         padding-left: 4px;
     }
 
@@ -1451,7 +1453,7 @@ form.taken-aanmaken {
     .form-control__with-helptext {
         .form-control,
         .help-block {
-            font-size: 0.778rem;
+            font-size: $fz-14;
         }
     }
 }
@@ -1466,7 +1468,8 @@ form.taken-aanmaken {
 
 .input--separated {
     li {
-        border: 1px solid $blue-200;
+        border: 1px solid $gray-200;
+        transition: border-color $transition-duration-default $transition-ease-default;
         margin-bottom: 8px;
 
         &:last-child {
@@ -1475,6 +1478,10 @@ form.taken-aanmaken {
 
         label {
             padding: 14px;
+        }
+
+        &:has(label:hover) {
+            border-color: $black;
         }
     }
 

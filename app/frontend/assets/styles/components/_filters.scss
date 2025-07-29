@@ -2,7 +2,7 @@
     margin-top: $alert-padding-y;
 
     .h5 {
-        font-size: 0.778rem;
+        font-size: $fz-14;
         margin: 0.1rem 0 0;
         line-height: 24px;
     }
@@ -42,7 +42,7 @@
             margin-bottom: 0.25rem;
         }
         label {
-            font-size: 0.778rem;
+            font-size: $fz-14;
             display: inline;
             &:has(input) {
                 margin-top: 0.25rem;
@@ -60,7 +60,7 @@
             position: absolute;
             right: 0;
             top: 0.35rem;
-            font-size: 0.778rem;
+            font-size: $fz-14;
             z-index: 20;
 
             .searchinfo-CTA {
@@ -131,7 +131,7 @@
         border: 1px solid $gray-tint04;
         outline: 0;
         padding: 12px $input-padding-x;
-        font-size: 0.875em;
+        font-size: $fz-14;
         width: 100%;
         margin-bottom: 12px;
         color: $gray-tint11;

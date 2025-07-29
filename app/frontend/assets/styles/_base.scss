@@ -263,7 +263,7 @@ a {
 }
 // TABLES
 table {
-    font-size: 0.875em;
+    font-size: $fz-12;
     border-collapse: collapse;
     width: 100%;
 
@@ -272,7 +272,7 @@ table {
     }
     th,
     td {
-        padding: 10px 5px 10px 0;
+        padding: 8px 5px 8px 0;
     }
     thead {
         th {
