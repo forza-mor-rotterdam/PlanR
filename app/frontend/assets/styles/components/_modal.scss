@@ -177,7 +177,7 @@ body.show-modal--first-filter {
         h1 {
             padding: 25px 48px 0 0;
             margin: 0 0 1rem;
-            font-size: calc(1.25rem + 1.5vw);
+            font-size: $h3-font-size;
 
             small {
                 display: block;
@@ -330,7 +330,7 @@ body.show-modal--first-filter {
 
         .btn {
             width: auto;
-            font-size: 0.889rem;
+            font-size: $fz-16;
             margin-bottom: 0;
 
             &-textlink {

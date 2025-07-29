@@ -60,14 +60,14 @@
                            name="zoeken"
                            class="form-control "
                            data-action="row-search#search">
-                    <span data-row-search-target="resultCount"></span>
+                    <small data-row-search-target="resultCount"></small>
                 </div>
             </div>
         </form>
         {% comment %} {% if ongeauthoriseerde_gebruikers %} {% endcomment %}
         <details>
             <summary>
-                <h2>
+                <h2 class="h5">
                     Niet geauthoriseerde gebruikers(<span data-row-search-target="resultCount"
       data-container-id="ongeauthoriseerde_gebruikers_container"></span>)
                 </h2>
@@ -147,7 +147,7 @@
         {% comment %} {% endif %} {% endcomment %}
         <details>
             <summary>
-                <h2>
+                <h2 class="h5">
                     Geauthoriseerde gebruikers(<span data-row-search-target="resultCount"
       data-container-id="geauthoriseerde_gebruikers_container"></span>)
                 </h2>
@@ -222,7 +222,7 @@
         </details>
         <details>
             <summary>
-                <h2>
+                <h2 class="h5">
                     Verwijderde gebruikers(<span data-row-search-target="resultCount"
       data-container-id="verwijderde_gebruikers_container"></span>)
                 </h2>

@@ -11,7 +11,7 @@
 {% block body %}
     <p>Het serviceverzoek is ingediend</p>
     {% if meldingen_signaal %}<p>Het verzoeknummer is: {{ meldingen_signaal.melding }}</p>{% endif %}
-    <a href="{% url 'melding_aanmaken' %}" class="btn btn-action-v2">
+    <a href="{% url 'melding_aanmaken' %}" class="btn btn-action">
         <span>Nog een verzoek indienen</span>
     </a>
 {% endblock body %}

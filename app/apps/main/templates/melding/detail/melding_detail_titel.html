@@ -5,7 +5,7 @@
     <template>
 {% endif %}
 
-    <h1>
+    <h1 class="h2">
     {% if request.user.profiel.context.template == "benc" %}
         {% with grafnummer=melding.locaties_voor_melding.0.grafnummer vak=melding.locaties_voor_melding.0.vak plaats=melding.locaties_voor_melding.0.begraafplaats %}
             {% if grafnummer %}Grafnummer {{ grafnummer }}{% endif %}

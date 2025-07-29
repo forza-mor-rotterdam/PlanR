@@ -1,5 +1,5 @@
 .container__taken {
-    font-size: 0.778rem;
+    font-size: $fz-14;
     .taken--header,
     .container__taak > summary {
         display: grid;
@@ -34,7 +34,7 @@
 
     .taken--header {
         font-weight: 700;
-        font-size: 0.778rem;
+        font-size: $fz-14;
         padding: 0.75rem 1rem;
 
         > div {
@@ -96,7 +96,7 @@
             font-weight: 700;
 
             small {
-                font-size: 0.778rem;
+                font-size: $fz-14;
                 font-weight: 400;
                 word-break: break-word;
             }
@@ -129,12 +129,12 @@
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
-            font-size: 0.778rem;
+            font-size: $fz-14;
             margin-bottom: 0;
         }
 
         .description p {
-            font-size: 0.889rem;
+            font-size: $fz-16;
         }
 
         &[open] {
@@ -211,7 +211,7 @@
         }
 
         h3 {
-            font-size: 0.778rem;
+            font-size: $fz-14;
             color: $green-900;
             margin-bottom: 0.75rem;
         }
@@ -243,7 +243,7 @@
 
                 h4,
                 p {
-                    font-size: 0.778rem;
+                    font-size: $fz-14;
                     margin-bottom: 0;
                     line-height: 1rem;
                     word-break: break-word;
@@ -254,7 +254,7 @@
             }
             small {
                 color: $gray-600;
-                font-size: 0.667rem;
+                font-size: $fz-12;
             }
 
             .container__thumbs {
@@ -336,7 +336,7 @@
         }
 
         span {
-            font-size: 0.667rem;
+            font-size: $fz-12;
         }
     }
 
