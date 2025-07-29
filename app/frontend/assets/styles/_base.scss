@@ -8,13 +8,9 @@ html,
 body {
     margin: 0;
     font-family: "Bolder", sans-serif;
-    font-size: 1em;
+    font-size: 1rem;
     color: $body-color;
     background-color: $blue-100;
-
-    @media (min-width: map-get($grid-breakpoints, sm)) {
-        font-size: 1.125em;
-    }
 }
 
 body {
@@ -34,7 +30,7 @@ html {
 
     aside {
         width: 227px;
-        height: 100vh;
+        height: calc(100vh - 60px);
         box-sizing: border-box;
         transition: width $transition-duration-default $transition-ease-default;
         position: fixed;

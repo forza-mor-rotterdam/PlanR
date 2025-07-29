@@ -139,7 +139,7 @@ textarea {
             position: absolute;
             right: 0;
             top: 0;
-            padding: 8px;
+            padding: 4px;
             margin: 0 0 0 auto;
             box-shadow: none;
             box-sizing: content-box;
@@ -159,7 +159,6 @@ textarea {
                 }
             }
 
-            &:hover,
             &:focus-visible {
                 outline: none !important;
                 background-color: $gray-100;

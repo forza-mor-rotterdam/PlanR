@@ -151,8 +151,8 @@
         z-index: 25;
         justify-content: flex-end;
         background-color: $blue-100;
-        width: calc(100% - 257px);
-        transform: translateX(-15px);
+        width: calc(100% - 260px);
+        transform: translateX(-12px);
         padding-left: 16px;
         max-width: calc(2000px - 1.5em);
 
@@ -161,7 +161,7 @@
         }
 
         .nav--small & {
-            width: calc(100% - 90px);
+            width: calc(100% - 93px);
         }
     }
 }

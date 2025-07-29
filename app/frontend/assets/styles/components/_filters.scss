@@ -47,14 +47,18 @@
             &:has(input) {
                 margin-top: 0.25rem;
                 font-weight: 400;
+                line-height: 1.8;
             }
 
             input {
                 vertical-align: top;
                 margin-right: 0.25rem;
+
+                + span {
+                    font-size: $fz-12;
+                }
             }
         }
-        // sorry, @Remco
 
         .container__info {
             position: absolute;
@@ -115,7 +119,7 @@
 }
 
 .filter-header {
-    font-size: 0.7em;
+    font-size: $fz-12;
     @media (min-width: map-get($grid-breakpoints, md)) {
         display: flex;
         justify-content: space-between;
