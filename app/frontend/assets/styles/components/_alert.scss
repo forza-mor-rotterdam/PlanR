@@ -29,8 +29,8 @@
     }
 
     &--info {
-        background-color: rgba(23, 145, 212, 0.1);
-        border-color: rgba(23, 145, 212, 0.25);
+        background-color: $blue-200;
+        border-color: transparent;
 
         a {
             color: inherit;
@@ -58,6 +58,38 @@
 
     .container__actions & {
         margin-top: 1em;
+    }
+
+    &-v2 {
+        position: relative;
+        padding: 1.125em;
+        margin-bottom: 1rem;
+        font-size: $fz-12;
+        border-radius: 6px;
+
+        > strong {
+            font-size: 1rem;
+            display: inline-block;
+            margin-bottom: 0.25rem;
+            padding-left: 20px;
+
+            svg {
+                vertical-align: text-top;
+                margin-left: -22px;
+            }
+        }
+
+        &--info {
+            background-color: $blue-200;
+
+            a {
+                color: inherit;
+            }
+
+            > strong {
+                color: $blue-900;
+            }
+        }
     }
 }
 
