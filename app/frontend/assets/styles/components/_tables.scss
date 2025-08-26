@@ -85,6 +85,14 @@
 
         td {
             border-bottom: 1px solid $green-400;
+
+            &:nth-child(2) {
+                font-weight: 700;
+            }
+
+            a {
+                text-decoration: none;
+            }
         }
         &:hover {
             cursor: pointer;
