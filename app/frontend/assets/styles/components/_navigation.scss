@@ -108,11 +108,6 @@
         &:focus-visible,
         &.active {
             background-color: $white;
-            svg {
-                path {
-                    fill: $green-tint01;
-                }
-            }
         }
     }
 
