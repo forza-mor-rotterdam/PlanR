@@ -340,12 +340,15 @@ textarea {
     &-to-top {
         font-size: 0.7em;
         padding: 0.5em 0.8em 0.5em 0;
-        width: auto;
+        width: 45px;
+        height: 45px;
         position: fixed;
         bottom: 0.5em;
         right: 0.5em;
         background-color: $white;
-        box-shadow: 0 4px 10px 1px rgba(0, 0, 0, 0.25);
+        // box-shadow: 0 4px 10px 1px rgba(0, 0, 0, 0.25);
+        box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+        border-radius: 100%;
         z-index: 1100;
         opacity: 0;
         display: none;
@@ -355,9 +358,10 @@ textarea {
         transition-behavior: allow-discrete;
 
         svg {
-            width: 32px;
-            height: 32px;
-            transform: rotate(-90deg);
+            width: 16px;
+            height: 16px;
+            transform: rotate(-180deg);
+            transform-origin: 65% 45%;
             vertical-align: middle;
         }
 
@@ -375,11 +379,8 @@ textarea {
 
         &:hover,
         &:focus-visible {
-            svg {
-                path {
-                    fill: $green-tint01;
-                }
-            }
+            background-color: $gray-100;
+            transition: background-color $transition-duration-default $transition-ease-default;
         }
     }
 
