@@ -14,14 +14,11 @@
     }
 
     a.link--back {
-        margin-left: 30px;
+        margin-left: 20px;
         min-height: 1em;
 
         svg {
-            left: -30px;
-            path {
-                fill: $green-tint01;
-            }
+            left: -20px;
         }
     }
 

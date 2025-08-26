@@ -336,14 +336,26 @@ a,
     &.link--back {
         @include has-icon();
         height: 36px;
-        padding-left: 10px;
-        font-size: 0.875em;
-        font-weight: 700;
+        text-decoration: none;
+        margin-left: 18px;
 
         > svg {
-            left: -20px;
-            top: 3px;
+            left: -18px;
+            top: 1px;
             padding-right: 20px;
+            path {
+                fill: currentColor;
+            }
+        }
+
+        .page__detail & {
+            position: fixed;
+            z-index: 50;
+            top: 37px;
+
+            .nav--small & {
+                left: 30px;
+            }
         }
     }
 
