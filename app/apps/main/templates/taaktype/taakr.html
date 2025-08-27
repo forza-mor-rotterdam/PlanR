@@ -18,13 +18,18 @@
             {% else %}
                 <p>Nog niet ingevuld</p>
             {% endif %}
-            {% if taaktype.doorlooptijd %}
                 <h2 class="h5">Doorlooptijd</h2>
+            {% if taaktype.doorlooptijd %}
                 <p>
                     <span data-controller="dagen-uren" data-value="{{ taaktype.doorlooptijd }}"></span>
                     {% if taaktype.doorlooptijd_alleen_werkdagen %}, alleen op werkdagen{% endif %}
                 </p>
+            {% else %}
+                <p>Nader te bepalen</p>
             {% endif %}
+                <p class="help-text">
+                    De doorlooptijd is een uitkomst van de afspraken die gemaakt zijn met teamleiders. Hier wordt mee bedoeld wat de te verwachten tijd is dat het kost om een taak af te handelen.
+                </p>
             {% if taaktype.waarom_wel|length > 0 %}
                 <h2 class="label--positive">Wanneer wel</h2>
                 <div class="container__slider-horizontal {% if taaktype.waarom_wel|length < 2 %}single-item{% endif %}">
