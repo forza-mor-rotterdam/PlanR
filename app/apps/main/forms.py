@@ -622,9 +622,10 @@ class MeldingAfhandelenForm(forms.Form):
                 "id", "titel"
             )
         ]
-        standaardtekst_choices.insert(0, ("aangepasteTekst", "- Aangepaste tekst -"))
-        standaardtekst_choices.insert(0, ("", "- Selecteer een standaardtekst -"))
-        self.fields["standaardtekst"].choices = standaardtekst_choices
+        sortedlist = sorted(standaardtekst_choices, key=lambda x: x[1].lower())
+        sortedlist.insert(0, ("aangepasteTekst", "- Aangepaste tekst -"))
+        sortedlist.insert(0, ("", "- Selecteer een standaardtekst -"))
+        self.fields["standaardtekst"].choices = sortedlist
 
 
 class MeldingAfhandelenOldForm(forms.Form):
