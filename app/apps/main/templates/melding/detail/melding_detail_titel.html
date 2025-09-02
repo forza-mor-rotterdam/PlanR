@@ -9,7 +9,8 @@
     {% if request.user.profiel.context.template == "benc" %}
         {% with grafnummer=melding.locaties_voor_melding.0.grafnummer vak=melding.locaties_voor_melding.0.vak plaats=melding.locaties_voor_melding.0.begraafplaats %}
             {% if grafnummer %}Grafnummer {{ grafnummer }}{% endif %}
-            {% if vak %}, Vak {{ vak }}{% endif %}
+            {% if grafnummer and vak %}, {% endif %}
+            {% if vak %}Vak {{ vak }}{% endif %}
             {% if not grafnummer and not vak and plaats %}
                 {% vind_in_dict melding.meta_uitgebreid.begraafplaats.choices plaats %}
                 {% vind_in_dict melding.signalen_voor_melding.0.meta_uitgebreid.begraafplaats.choices plaats as signaal_begraafplaats_naam %}
