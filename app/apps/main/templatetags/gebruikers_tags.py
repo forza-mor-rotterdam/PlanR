@@ -43,7 +43,7 @@ def get_gebruiker_object_middels_email(value):
         raw_response=False,
     )
     if isinstance(gebruiker, dict) and gebruiker.get("error"):
-        gebruiker = {}
+        gebruiker = {"email": value}
     else:
         first_name = gebruiker.get("first_name", "")
         last_name = gebruiker.get("last_name", "")
