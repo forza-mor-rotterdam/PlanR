@@ -57,7 +57,6 @@
                   enctype="multipart/form-data"
                   novalidate>
                 {% csrf_token %}
-                <div class="form-control__with-helptext js-validation">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
                 {% include omschrijving_extern_template %}
                 <div class="form-row btn-row">
                     <button type="reset" class="btn btn-tertiary" data-action="modal#closeModal">

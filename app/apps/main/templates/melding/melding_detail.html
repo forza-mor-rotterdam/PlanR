@@ -30,7 +30,6 @@
 {% block body %}
     <turbo-frame id="overview">
         {% if not melding.error %}
-            {% context_template "melding_detail_titel.html" as titel_template %}
             {% context_template "melding_detail_melder.html" as melder_template %}
             {% context_template "melding_detail_acties.html" as acties_template %}
             {% get_bijlagen melding as bijlagen %}
