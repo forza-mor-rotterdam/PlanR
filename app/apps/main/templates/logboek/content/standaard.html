@@ -1,11 +1,10 @@
 {% load mor_core_url from main_tags %}
-{% load get_gebruiker_object_middels_email from gebruikers_tags %}
 {% if omschrijving_intern and titel != omschrijving_intern %}
     <p class="content__overflow">
         Notitie: {{ omschrijving_intern }}
     </p>
     {% include "icons/arrow-right.svg" %}
-    {% endif %}
+{% endif %}
 
 {% if bijlagen|length > 0 %}
     <div class="container__thumbs">
@@ -22,13 +21,4 @@
         </ul>
     </div>
 {% endif %}
-{% with gebruiker_object=gebruiker|get_gebruiker_object_middels_email %}
-<small>
-    {% comment %}
-    Link alleen tonen voor gebruikers met de juiste rechten
-    Maar perms worden niet meegegeven..
-    {{ perms.authorisatie.medewerker_gegevens_bekijken }}
-    {% endcomment %}
-    Om {{ tijd }} uur{% if gebruiker %} door <a href="" data-action="modal#openModal" data-modal-action-param="{% url 'gebruiker_info' gebruiker_email=gebruiker %}">{{ gebruiker_object.full_name }}</a>{% endif %}
-</small>
-{% endwith %}
+{% include "logboek/item_sub.html" %}

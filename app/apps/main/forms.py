@@ -438,22 +438,6 @@ class TaakVerwijderenForm(forms.Form):
                 initial=taakopdracht_opties[0][0],
                 required=True,
             )
-            self.fields["omschrijving_intern"] = forms.CharField(
-                label="Interne opmerking",
-                help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",
-                widget=forms.Textarea(
-                    attrs={
-                        "data-controller": "characterCount",
-                        "data-action": "characterCount#onChangeText",
-                        "class": "form-control",
-                        "data-testid": "information",
-                        "rows": "4",
-                        "data-meldingbehandelformulier-target": "internalText",
-                    }
-                ),
-                required=False,
-                max_length=5000,
-            )
 
 
 class MeldingAfhandelenForm(forms.Form):
@@ -611,74 +595,6 @@ class MeldingAfhandelenForm(forms.Form):
         sortedlist.insert(0, ("aangepasteTekst", "- Aangepaste tekst -"))
         sortedlist.insert(0, ("", "- Selecteer een standaardtekst -"))
         self.fields["standaardtekst"].choices = sortedlist
-
-
-class MeldingAfhandelenOldForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        # Als het om een B&C formulier gaat en er geen terugkoppeling gewenst is en/of er geen email bekend is
-        standaard_omschrijving_niet_weergeven = kwargs.pop(
-            "standaard_omschrijving_niet_weergeven", None
-        )
-        super().__init__(*args, **kwargs)
-
-        (
-            self.default_standaard_omschrijving,
-            _created,
-        ) = StandaardExterneOmschrijving.objects.get_or_create(
-            titel="Standaard afhandelreden",
-            defaults={
-                "tekst": "Deze melding is behandeld. Bedankt voor uw inzet om Rotterdam schoon, heel en veilig te houden."
-            },
-        )
-        if not standaard_omschrijving_niet_weergeven:
-            self.fields["standaard_omschrijvingen"] = forms.ModelChoiceField(
-                queryset=StandaardExterneOmschrijving.objects.all(),
-                label="Afhandelreden",
-                to_field_name="tekst",
-                required=True,
-                widget=forms.Select(
-                    attrs={
-                        "class": "form-control",
-                        "data-testid": "testid",
-                        "data-meldingbehandelformulier-target": "standardTextChoice",
-                        "data-action": "meldingbehandelformulier#onChangeStandardTextChoice",
-                    }
-                ),
-                initial=self.default_standaard_omschrijving,
-            )
-
-            self.fields["omschrijving_extern"] = forms.CharField(
-                label="Bericht voor de melder",
-                help_text="Je kunt deze tekst aanpassen of eigen tekst toevoegen.",
-                widget=forms.Textarea(
-                    attrs={
-                        "class": "form-control",
-                        "data-testid": "message",
-                        "rows": "4",
-                        "data-meldingbehandelformulier-target": "externalText",
-                        "data-action": "meldingbehandelformulier#onChangeExternalText",
-                        "name": "omschrijving_extern",
-                        "maxlength": "1000",
-                    }
-                ),
-                required=True,
-                max_length=1000,
-            )
-
-        self.fields["omschrijving_intern"] = forms.CharField(
-            label="Interne opmerking",
-            help_text="Deze tekst wordt niet naar de melder verstuurd.",
-            widget=forms.Textarea(
-                attrs={
-                    "class": "form-control",
-                    "rows": "4",
-                    "data-controller": "characterCount",
-                    "data-action": "characterCount#onChangeText",
-                }
-            ),
-            required=False,
-            max_length=5000,
-        )
 
 
 class MeldingAnnulerenForm(forms.Form):

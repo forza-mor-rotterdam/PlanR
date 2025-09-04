@@ -17,7 +17,6 @@ from apps.main.views import (
     informatie_toevoegen,
     locatie_aanpassen,
     melding_aanmaken,
-    melding_afhandelen,
     melding_annuleren,
     melding_heropenen,
     melding_hervatten,
@@ -85,11 +84,6 @@ urlpatterns = [
     path(
         "melding/<uuid:id>/afhandelen/",
         MeldingAfhandelenView.as_view(),
-        name="melding_afhandelen",
-    ),
-    path(
-        "melding/<uuid:id>/afhandelen/",
-        melding_afhandelen,
         name="melding_afhandelen",
     ),
     path(
