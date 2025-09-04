@@ -1,3 +1,4 @@
+from apps.main.models import STATUS_NIET_OPGELOST_REDENEN_TITEL
 from apps.main.services import render_onderwerp as render_onderwerp_service
 from apps.main.utils import melding_naar_tijdlijn as base_melding_naar_tijdlijn
 from apps.main.utils import melding_taken as base_melding_taken
@@ -6,6 +7,11 @@ from django import template
 from django.utils.safestring import mark_safe
 
 register = template.Library()
+
+
+@register.filter
+def afhandelreden_titel(afhandelreden_key):
+    return STATUS_NIET_OPGELOST_REDENEN_TITEL.get(afhandelreden_key, afhandelreden_key)
 
 
 @register.filter

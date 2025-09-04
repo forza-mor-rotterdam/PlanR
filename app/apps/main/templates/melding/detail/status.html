@@ -2,14 +2,10 @@
 {% load gebruikersnaam gebruikersinitialen get_gebruiker_object_middels_email from gebruikers_tags %}
 {% load humanize %}
 {% load mor_core_url from main_tags %}
-{% load get taak_status_tekst taak_status_css_class api_url_to_user_url from melding_tags %}
+{% load get taak_status_tekst taak_status_css_class api_url_to_user_url afhandelreden_titel from melding_tags %}
 {% load vertaal from vertaal_tags %}
 
-{% if view.is_stream %}
-<turbo-stream target="melding_detail_taken" action="update">
-    <template>
-{% endif %}
-
+{% if melding.afgesloten_op %}
 <section class="section--separated" data-testid="detailTaken">
     <div class="container__details">
         <h2>Status</h2>
@@ -22,27 +18,43 @@
                 <div class="container__content cols--2">
                     <h3>Afgehandeld door</h3>
                     <div class="content">
-                        <span class="initials">MS</span>
+                        <span class="initials">{{ melding.meldinggebeurtenissen.0.gebruiker|get_gebruiker_object_middels_email|gebruikersinitialen }}</span>
                         <div class="message">
-                            <h4>Malik Schouten</h4>
+                            <h4>{{ melding.meldinggebeurtenissen.0.gebruiker|get_gebruiker_object_middels_email|gebruikersnaam }}</h4>
                         </div>
                     </div>
                 </div>
                 <div class="container__content">
                     <h3>Reden</h3>
                     <div class="content">
-                        <p>Niet nu</p>
+                        <p>
+                            {% if melding.afhandelreden %}
+                            {{ melding.afhandelreden|afhandelreden_titel }}
+                            {% else %}
+                            -
+                            {% endif %}
+                        </p>
                     </div>
                     <h3>Specificatie</h3>
                     <div class="content">
-                        <p>Reeds ingediend</p>
+                        <p>
+                            {% if melding.specificatie %}
+                            {{ melding.specificatie.naam }}
+                            {% else %}
+                            -
+                            {% endif %}
+                        </p>
                     </div>
                 </div>
                 <div class="container__content">
                     <h3>Interne opmerking</h3>
                     <div class="content container__overflow">
                         <p class="content__overflow">
-                            Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende maand uitgevoerd worden. Wij zullen u op  de hoogte houden wanneer de werkzaamheden gedaan zijn Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende maand uitgevoerd worden. Wij zullen u op  de hoogte houden wanneer de werkzaamheden gedaan zijn. Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende.
+                            {% if melding.meldinggebeurtenissen.0.omschrijving_intern %}
+                            {{ melding.meldinggebeurtenissen.0.omschrijving_intern }}
+                            {% else %}
+                            -
+                            {% endif %}
                         </p>
                     </div>
                 </div>
@@ -50,14 +62,14 @@
                     <h3>Bericht voor melder</h3>
                     <div class="content container__overflow">
                         <p class="content__overflow">
-                            Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende maand uitgevoerd worden. Wij zullen u op  de hoogte houden wanneer de werkzaamheden gedaan zijn Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende maand uitgevoerd worden. Wij zullen u op  de hoogte houden wanneer de werkzaamheden gedaan zijn. Deze melding is al ingepland maar kan vanwege weersomstandigheden pas volgende.
+                            {{ melding.meldinggebeurtenissen.0.omschrijving_extern }}
                         </p>
                     </div>
                 </div>
                 <div class="container__content cols--2">
                     <h3>Datum en tijd</h3>
                     <div class="content">
-                        <p>04-04-2025 16.44</p>
+                        <p>{{ melding.afgesloten_op|to_datetime}}</p>
                     </div>
                 </div>
                 <button type="button"
@@ -71,8 +83,4 @@
         </div>
     </div>
 </section>
-
-{% if view.is_stream %}
-    </template>
-</turbo-stream>
 {% endif %}
