@@ -409,7 +409,7 @@ class LogboekItem:
         INFORMATIE_TOEGEVOEGD: "Informatie toegevoegd",
         LOCATIE_AANGEMAAKT: "Locatie aangepast",
         URGENTIE_AANGEPAST: "Spoed aangepast",
-        SIGNAAL_TOEGEVOEGD: "Melding samengevoegd",
+        SIGNAAL_TOEGEVOEGD: 'Melding samengevoegd met: "%(bron_signaal_id)s"',
         TAAK_AANGEMAAKT: 'Taak "%(titel)s" aangemaakt',
         TAAK_AFGEHANDELD: 'Taak "%(titel)s" afgehandeld',
         TAAK_VERWIJDERD: 'Taak "%(titel)s" verwijderd',
@@ -421,9 +421,11 @@ class LogboekItem:
         self,
         meldinggebeurtenis,
         taakopdrachten,
+        request,
         vorige_meldinggebeurtenis={},
         signalen=[],
     ):
+        self.request = request
         self._meldinggebeurtenis = meldinggebeurtenis
         self._signaal_via_href = {
             signaal["_links"]["self"]: signaal for signaal in signalen
@@ -523,6 +525,11 @@ class LogboekItem:
 
     @property
     def titel(self):
+        signaal_href = self._meldinggebeurtenis["_links"]["signaal"]["href"]
+        if signaal_href:
+            return self._types[self._type] % self._signaal_via_href.get(
+                signaal_href, {}
+            )
         if self._taakgebeurtenis:
             taakopdracht = self._get_taakopdracht(self._taakgebeurtenis["taakopdracht"])
             return self._types[self._type] % taakopdracht
@@ -530,6 +537,11 @@ class LogboekItem:
 
     @property
     def omschrijving_intern(self):
+        signaal_href = self._meldinggebeurtenis["_links"]["signaal"]["href"]
+        if signaal_href:
+            return self._types[self._type] % self._signaal_via_href.get(
+                signaal_href, {}
+            )
         o = self._meldinggebeurtenis
         if self._taakgebeurtenis:
             o = self._taakgebeurtenis
@@ -591,12 +603,14 @@ class LogboekItem:
             {
                 prop: getattr(self, prop, "not found")
                 for prop in content_context_properties
-            }
+            },
+            self.request,
         )
 
 
 class Logboek:
-    def __init__(self, melding):
+    def __init__(self, melding, request):
+        self.request = request
         meldinggebeurtenissen = melding["meldinggebeurtenissen"]
         taakopdrachten_voor_melding = melding["taakopdrachten_voor_melding"]
         signalen_voor_melding = melding["signalen_voor_melding"]
@@ -609,6 +623,7 @@ class Logboek:
             LogboekItem(
                 meldinggebeurtenis,
                 taakopdrachten_voor_melding,
+                self.request,
                 meldinggebeurtenissen_sorted[i - 1] if i != 0 else {},
                 signalen=signalen_voor_melding,
             )

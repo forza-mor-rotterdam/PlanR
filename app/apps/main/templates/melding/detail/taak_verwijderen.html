@@ -17,7 +17,6 @@
             {% csrf_token %}
             {% if taakopdracht %}<h2>{{ taakopdracht.titel }}</h2>{% endif %}
             <div data-controller="select2Modal">{{ form.taakopdracht|render_rotterdam_formulier }}</div>
-            <div class="form-control__with-helptext">{{ form.omschrijving_intern|render_rotterdam_formulier }}</div>
             <div class="form-row btn-row">
                 <button type="reset" class="btn btn-tertiary" data-action="modal#closeModal">
                     <span>Annuleren</span>
