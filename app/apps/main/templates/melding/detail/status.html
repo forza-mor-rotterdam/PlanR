@@ -5,18 +5,22 @@
 {% load get taak_status_tekst taak_status_css_class api_url_to_user_url afhandelreden_titel from melding_tags %}
 {% load vertaal from vertaal_tags %}
 
-{% if melding.afgesloten_op %}
+{% if melding.status.naam in "afgehandeld,geannuleerd,wachten_melder,pauze" %}
 <section class="section--separated" data-testid="detailTaken">
     <div class="container__details">
         <h2>Status</h2>
         <div class="container__status">
             <div class="container__status--content" data-controller="overflow-toggle" data-overflow-toggle-target="container" data-overflow-toggle-item-class="content__overflow">
-                {% comment %}
-                    @Maurice De content-containers met Afgehandeld door en Datum en tijd hebben een axtra class cols--2 om een max-width af te dwingen
-                    De content-container met het bericht voor de melder heeft een extra class cols--6 om een min-width af te dwingen
-                {% endcomment %}
                 <div class="container__content cols--2">
-                    <h3>Afgehandeld door</h3>
+                    <h3>
+                        {% if melding.status.naam == "afgehandeld" %}
+                            Afgehandeld
+                        {% elif melding.status.naam == "geannuleerd" %}
+                            Geannuleerd
+                        {% elif melding.status.naam == "pauze" or melding.status.naam == "wachten_melder"%}
+                            Gepauzeerd
+                        {% endif %}
+                         door</h3>
                     <div class="content">
                         <span class="initials">{{ melding.meldinggebeurtenissen.0.gebruiker|get_gebruiker_object_middels_email|gebruikersinitialen }}</span>
                         <div class="message">
@@ -30,46 +34,54 @@
                         <p>
                             {% if melding.afhandelreden %}
                             {{ melding.afhandelreden|afhandelreden_titel }}
+                            {% elif melding.status.naam == "pauze" %}
+                            Wachten op een collega of externe instantie
+                            {% elif melding.status.naam == "wachten_melder" %}
+                            Wachten op melder
                             {% else %}
                             -
                             {% endif %}
                         </p>
                     </div>
+                    {% if melding.specificatie %}
                     <h3>Specificatie</h3>
                     <div class="content">
                         <p>
-                            {% if melding.specificatie %}
                             {{ melding.specificatie.naam }}
-                            {% else %}
-                            -
-                            {% endif %}
                         </p>
                     </div>
+                    {% endif %}
                 </div>
+                {% if melding.meldinggebeurtenissen.0.omschrijving_intern %}
                 <div class="container__content">
                     <h3>Interne opmerking</h3>
                     <div class="content container__overflow">
                         <p class="content__overflow">
-                            {% if melding.meldinggebeurtenissen.0.omschrijving_intern %}
                             {{ melding.meldinggebeurtenissen.0.omschrijving_intern }}
-                            {% else %}
-                            -
-                            {% endif %}
                         </p>
                     </div>
                 </div>
+                {% endif %}
                 <div class="container__content cols--6">
                     <h3>Bericht voor melder</h3>
                     <div class="content container__overflow">
                         <p class="content__overflow">
+                            {% if melding.meldinggebeurtenissen.0.omschrijving_extern %}
                             {{ melding.meldinggebeurtenissen.0.omschrijving_extern }}
+                            {% else %}
+                            -
+                            {% endif %}
                         </p>
                     </div>
                 </div>
                 <div class="container__content cols--2">
                     <h3>Datum en tijd</h3>
                     <div class="content">
+                        {% if melding.afgesloten_op %}
                         <p>{{ melding.afgesloten_op|to_datetime}}</p>
+                        {% elif melding.status.naam == "pauze" or melding.status.naam == "wachten_melder" %}
+                        <p>{{ melding.meldinggebeurtenissen.0.aangemaakt_op|to_datetime }}</p>
+                        {% endif %}
                     </div>
                 </div>
                 <button type="button"
