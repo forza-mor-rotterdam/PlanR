@@ -244,12 +244,8 @@
         padding: 0.75rem 1rem;
     }
     .container__content {
-        padding: 1rem 0.5rem;
+        padding: 1rem;
         background-color: $white;
-
-        &:first-child {
-            padding-left: 0;
-        }
 
         &:last-child {
             padding-right: 0;
@@ -407,6 +403,22 @@
                     }
                 }
             }
+        }
+    }
+}
+
+.container__taken {
+    .taken--header,
+    .container__taak > summary {
+        > div {
+            padding: 0.5em;
+        }
+        > div:first-child {
+            padding-left: 0;
+        }
+
+        > div:last-child {
+            padding-right: 0;
         }
     }
 }
