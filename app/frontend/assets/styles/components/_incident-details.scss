@@ -283,8 +283,8 @@
     min-width: 182px;
     @media (min-width: map-get($grid-breakpoints, md)) {
         position: fixed;
-        top: 28px;
-        right: 140px;
+        top: 34px;
+        right: 80px;
     }
 
     span,
@@ -295,12 +295,12 @@
 
     span {
         white-space: nowrap;
-        line-height: 36px;
+        line-height: 24px;
         align-self: flex-start;
         flex: 0;
     }
     .container__buttons {
-        width: 80px;
+        width: 50px;
         position: relative;
         > turbo-frame {
             width: auto;
@@ -323,15 +323,15 @@
 
         .melding-navigatie {
             display: inline-block;
-            width: 36px;
-            height: 36px;
+            width: 24px;
+            height: 24px;
             background-color: transparent;
             position: relative;
 
             svg {
                 position: absolute;
                 top: calc(50% - 10px);
-                left: 7px;
+                left: 1px;
                 width: 20px;
                 height: 20px;
                 path {
@@ -348,9 +348,14 @@
         }
     }
 
+    #melding_next_volgend .melding-navigatie {
+        svg {
+            transform: rotate(-90deg);
+        }
+    }
     #melding_next_vorige .melding-navigatie {
         svg {
-            transform: rotate(180deg);
+            transform: rotate(90deg);
         }
     }
 }

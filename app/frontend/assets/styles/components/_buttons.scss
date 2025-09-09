@@ -109,7 +109,7 @@ textarea {
     &-close {
         position: absolute;
         right: 10px;
-        top: 18px;
+        top: 15px;
         padding: 8px;
         margin: 0 0 0 auto;
         box-shadow: none;
@@ -124,10 +124,11 @@ textarea {
         border-radius: 0;
         opacity: 1;
         cursor: pointer;
+        transition: background-color $transition-duration-default $transition-ease-default;
 
         &:hover,
         &:active {
-            opacity: 0.75;
+            background-color: $white;
         }
 
         &:focus-visible {
@@ -340,11 +341,13 @@ textarea {
     &-to-top {
         font-size: 0.7em;
         padding: 0.5em 0.8em 0.5em 0;
+        margin-bottom: 0;
         width: 45px;
         height: 45px;
+        min-height: 0;
         position: fixed;
-        bottom: 0.5em;
-        right: 0.5em;
+        bottom: 1em;
+        right: 1em;
         background-color: $white;
         // box-shadow: 0 4px 10px 1px rgba(0, 0, 0, 0.25);
         box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
