@@ -40,10 +40,12 @@ def qs_offset(request_get, offset_param):
 
 
 @register.simple_tag
-def vind_in_dict(op_zoek_dict, key):
+def vind_in_dict(op_zoek_dict, key, default=None):
     if not isinstance(op_zoek_dict, dict):
         return key
-    result = op_zoek_dict.get(key, op_zoek_dict.get(str(key), key))
+    if not default:
+        default = key
+    result = op_zoek_dict.get(key, op_zoek_dict.get(str(key), default))
     if isinstance(result, (list, tuple)):
         return result[0]
     return result
