@@ -1,6 +1,6 @@
 import string
 
-from apps.main.constanten import BEGRAAFPLAATSEN, VERTALINGEN
+from apps.main.constanten import BEGRAAFPLAATSEN, BEGRAAFPLAATSEN_LOOKUP, VERTALINGEN
 from apps.main.services import MORCoreService, render_onderwerp
 from apps.main.utils import melding_taken
 from django.http import QueryDict
@@ -215,10 +215,7 @@ class BegraafplaatsKolom(StandaardKolom):
     def td_label(self):
         default = "-"
         begraafplaats = string_based_lookup(self.context, self._kolom_inhoud)
-        begraafplaatsen = {
-            begraafplaats[0]: begraafplaats[1] for begraafplaats in BEGRAAFPLAATSEN
-        }
-        return escape(begraafplaatsen.get(begraafplaats, default))
+        return escape(BEGRAAFPLAATSEN_LOOKUP.get(begraafplaats, default))
 
 
 class GrafnummerKolom(StandaardKolom):
