@@ -62,18 +62,16 @@
                     </div>
                 </div>
                 {% endif %}
+                {% if melding.meldinggebeurtenissen.0.omschrijving_extern %}
                 <div class="container__content cols--6">
                     <h3>Bericht voor melder</h3>
                     <div class="content container__overflow">
                         <p class="content__overflow">
-                            {% if melding.meldinggebeurtenissen.0.omschrijving_extern %}
                             {{ melding.meldinggebeurtenissen.0.omschrijving_extern }}
-                            {% else %}
-                            -
-                            {% endif %}
                         </p>
                     </div>
                 </div>
+                {% endif %}
                 <div class="container__content cols--2">
                     <h3>Datum en tijd</h3>
                     <div class="content">
