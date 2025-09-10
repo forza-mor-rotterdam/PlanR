@@ -385,6 +385,7 @@ class LogboekItem:
     MELDING_HEROPEND = "melding_heropend"
     MELDING_AFGEHANDELD = "melding_afgehandeld"
     MELDING_GEPAUZEERD = "melding_gepauzeerd"
+    MELDING_GEPAUZEERD_WACHTEN_MELDER = "melding_gepauzeerd_wachten_melder"
     MELDING_HERVAT = "melding_hervat"
     AFBEELDING_TOEGEVOEGD = "afbeelding_toegevoegd"
     NOTITIE_TOEGEVOEGD = "notitie_toegevoegd"
@@ -402,7 +403,8 @@ class LogboekItem:
         MELDING_GEANNULEERD: "Melding geannuleerd",  # check mor-core
         MELDING_HEROPEND: "Melding heropend",
         MELDING_AFGEHANDELD: "Melding afgehandeld",
-        MELDING_GEPAUZEERD: "Melding gepauzeerd",  # check mor-core
+        MELDING_GEPAUZEERD: "Melding gepauzeerd: Wachten op een collega of externe instantie",  # check mor-core
+        MELDING_GEPAUZEERD_WACHTEN_MELDER: "Melding gepauzeerd: Wachten op melder",  # check mor-core
         MELDING_HERVAT: "Melding hervat",  # check mor-core
         AFBEELDING_TOEGEVOEGD: "Afbeelding toegevoegd",
         NOTITIE_TOEGEVOEGD: "Notitie toegevoegd",
@@ -459,10 +461,9 @@ class LogboekItem:
             if self._bijlagen:
                 return self.AFBEELDING_TOEGEVOEGD
             return self.NOTITIE_TOEGEVOEGD
-        if self._status in (
-            "wachten_melder",
-            "pauze",
-        ):
+        if self._status == "wachten_melder":
+            return self.MELDING_GEPAUZEERD_WACHTEN_MELDER
+        if self._status == "pauze":
             return self.MELDING_GEPAUZEERD
         if self._gebeurtenis_type in (
             self.MELDING_HEROPEND,
