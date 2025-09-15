@@ -43,12 +43,17 @@ def get_gebruiker_object_middels_email(value):
         raw_response=False,
     )
     if isinstance(gebruiker, dict) and gebruiker.get("error"):
-        gebruiker = {"email": value}
+        gebruiker = {
+            "email": value,
+            "full_name": value,
+        }
     else:
         first_name = gebruiker.get("first_name", "")
         last_name = gebruiker.get("last_name", "")
         if full_name := f"{first_name} {last_name}".strip():
             gebruiker["full_name"] = full_name
+        else:
+            gebruiker["full_name"] = value
 
     user_model = get_user_model()
     user_from_model = user_model.objects.filter(email=value).first()
