@@ -351,13 +351,9 @@ a,
         .page__detail & {
             position: fixed;
             z-index: 50;
-            top: 36px;
-            left: -124px;
-            transition: left $transition-duration-default $transition-ease-default;
-
-            .nav--small & {
-                left: 43px;
-            }
+            top: 20px;
+            left: 100px;
+            height: auto;
         }
     }
 

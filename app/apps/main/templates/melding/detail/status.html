@@ -10,7 +10,7 @@
     <div class="container__details">
         <h2>Status</h2>
         <div class="container__status">
-            <div class="container__status--content" data-controller="overflow-toggle" data-overflow-toggle-target="container" data-overflow-toggle-item-class="content__overflow">
+            <div class="container__status--content" data-controller="overflow-toggle" data-overflow-toggle-target="container" data-overflow-toggle-item-class="content__overflow" data-action="click->overflow-toggle#toggle">
                 <div class="container__content cols--2">
                     <h3>
                         {% if melding.status.naam == "afgehandeld" %}
@@ -25,33 +25,36 @@
                         <span class="initials">{{ melding.meldinggebeurtenissen.0.gebruiker|get_gebruiker_object_middels_email|gebruikersinitialen }}</span>
                         <div class="message">
                             <h4>{{ melding.meldinggebeurtenissen.0.gebruiker|get_gebruiker_object_middels_email|gebruikersnaam }}</h4>
+                            {% with gebruiker=melding.meldinggebeurtenissen.0.gebruiker|get_gebruiker_object_middels_email %}
+                                {% if gebruiker.rol %}<span class="help-text">{{ gebruiker.rol }}</span>{% endif %}
+                            {% endwith %}
                         </div>
                     </div>
                 </div>
-                <div class="container__content">
-                    <h3>Reden</h3>
-                    <div class="content">
-                        <p>
-                            {% if melding.afhandelreden %}
-                            {{ melding.afhandelreden|afhandelreden_titel }}
-                            {% elif melding.status.naam == "pauze" %}
-                            Wachten op een collega of externe instantie
-                            {% elif melding.status.naam == "wachten_melder" %}
-                            Wachten op melder
-                            {% else %}
-                            -
-                            {% endif %}
-                        </p>
+                {% if melding.status.naam == "pauze" or melding.status.naam == "wachten_melder" or melding.specificatie %}
+                    <div class="container__content">
+                        {% if melding.status.naam == "pauze" or melding.status.naam == "wachten_melder" %}
+                            <h3>Reden</h3>
+                            <div class="content">
+                                <p>
+                                    {% if melding.status.naam == "pauze" %}
+                                        Wachten op een collega of externe instantie
+                                    {% elif melding.status.naam == "wachten_melder" %}
+                                        Wachten op melder
+                                    {% endif %}
+                                </p>
+                            </div>
+                        {% endif %}
+                        {% if melding.specificatie %}
+                        <h3>Specificatie</h3>
+                        <div class="content">
+                            <p>
+                                {{ melding.specificatie.naam }}
+                            </p>
+                        </div>
+                        {% endif %}
                     </div>
-                    {% if melding.specificatie %}
-                    <h3>Specificatie</h3>
-                    <div class="content">
-                        <p>
-                            {{ melding.specificatie.naam }}
-                        </p>
-                    </div>
-                    {% endif %}
-                </div>
+                {% endif %}
                 {% if melding.meldinggebeurtenissen.0.omschrijving_intern %}
                 <div class="container__content">
                     <h3>Interne opmerking</h3>
@@ -85,7 +88,6 @@
                 <button type="button"
                     class="btn--clean"
                     data-overflow-toggle-target="toggle"
-                    data-action="overflow-toggle#toggle"
                     hidden>
                     {% include "icons/arrow-right.svg" %}
                 </button>

@@ -16,6 +16,9 @@ export default class extends Controller {
     })
 
     const overflowDetected = Array.from(items).some((item) => item.scrollHeight > item.offsetHeight)
+    if (overflowDetected) {
+      this.containerTarget.classList.add('has-overflow')
+    }
     if (overflowDetected && this.hasToggleTarget) {
       this.toggleTarget.hidden = false
     }

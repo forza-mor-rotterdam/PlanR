@@ -152,8 +152,7 @@
         justify-content: flex-end;
         background-color: $blue-100;
         width: calc(100% - 260px);
-        transform: translateX(-12px);
-        padding-left: 16px;
+        padding-left: 4px;
         max-width: calc(2000px - 1.5em);
 
         .wrapper--actions {

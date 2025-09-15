@@ -58,8 +58,8 @@
 
         button {
             position: absolute;
-            right: 0.5rem;
-            top: 0.5rem;
+            right: 1rem;
+            top: 0.75rem;
             transform: rotate(90deg);
             transition: transform $transition-duration-default $transition-ease-default;
 
@@ -72,6 +72,10 @@
             &:hover {
                 background-color: transparent;
             }
+        }
+
+        &.has-overflow {
+            cursor: pointer;
         }
 
         &.is-expanded {
@@ -303,6 +307,7 @@
                 }
                 .help-text {
                     white-space: normal;
+                    font-size: $fz-14;
                 }
             }
             small {
