@@ -31,16 +31,20 @@
                         </div>
                     </div>
                 </div>
-                {% if melding.status.naam == "pauze" or melding.status.naam == "wachten_melder" or melding.specificatie %}
+                {% if melding.afhandelreden or melding.status.naam == "pauze" or melding.status.naam == "wachten_melder" or melding.specificatie %}
                     <div class="container__content">
-                        {% if melding.status.naam == "pauze" or melding.status.naam == "wachten_melder" %}
+                        {% if melding.afhandelreden or melding.status.naam == "pauze" or melding.status.naam == "wachten_melder" %}
                             <h3>Reden</h3>
                             <div class="content">
                                 <p>
-                                    {% if melding.status.naam == "pauze" %}
+                                    {% if melding.afhandelreden %}
+                                        {{ melding.afhandelreden|afhandelreden_titel }}
+                                    {% elif melding.status.naam == "pauze" %}
                                         Wachten op een collega of externe instantie
                                     {% elif melding.status.naam == "wachten_melder" %}
                                         Wachten op melder
+                                    {% else %}
+                                        -
                                     {% endif %}
                                 </p>
                             </div>
