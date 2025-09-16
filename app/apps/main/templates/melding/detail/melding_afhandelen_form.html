@@ -23,7 +23,7 @@
                   novalidate>
                 {% csrf_token %}
 
-                <div class="wrapper-sticky-footer">
+                <div {% if form.resolutie.value != "opgelost" %}class="wrapper-sticky-footer"{% endif %}>
                     <div class="flex-content" data-meldingbehandelformulier-target="contentContainer">
                         {% include terugkoppeling_gewenst_template %}
                         {% if taak_info.aantal_actieve_taken > 0 %}
@@ -38,12 +38,7 @@
                                         {% else %}
                                             worden de openstaande taken
                                         {% endif %}
-                                        {% for taak in taak_info.actieve_taken %}
-                                            <em>
-                                                {{ taak.titel }}
-                                                {% if not forloop.last %},{% endif %}
-                                            </em>
-                                        {% endfor %}
+                                        {% for taak in taak_info.actieve_taken %}{% if not forloop.first and not forloop.last %}, {% endif %}{% if forloop.last %} en {% endif %}<em>{{ taak.titel }}</em>{% endfor %}
                                         geannuleerd.
                                     </p>
                                 </div>
