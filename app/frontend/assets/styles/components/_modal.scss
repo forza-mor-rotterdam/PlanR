@@ -256,6 +256,16 @@ body.show-modal--first-filter {
         box-sizing: border-box;
     }
 }
+.wrapper-no-sticky-footer {
+    display: block;
+
+    .flex-content {
+        padding: $container-padding-x $container-padding-x 0;
+        box-sizing: border-box;
+        overflow-y: auto;
+        scroll-behavior: smooth;
+    }
+}
 
 .show-modal .modal--multistep-form {
     .modal-content {

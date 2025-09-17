@@ -23,7 +23,7 @@
                   novalidate>
                 {% csrf_token %}
 
-                <div {% if form.resolutie.value != "opgelost" %}class="wrapper-sticky-footer"{% endif %}>
+                <div class="{% if form.resolutie.value != 'opgelost' %}wrapper-sticky-footer{% else %}wrapper-no-sticky-footer{% endif %}">
                     <div class="flex-content" data-meldingbehandelformulier-target="contentContainer">
                         {% include terugkoppeling_gewenst_template %}
                         {% if taak_info.aantal_actieve_taken > 0 %}
