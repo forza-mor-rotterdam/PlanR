@@ -1,5 +1,10 @@
 {% load mor_core_url from main_tags %}
-{% if omschrijving_intern and titel != omschrijving_intern %}<p class="content__overflow">{{ omschrijving_intern }}</p>{% endif %}
+{% if omschrijving_intern and titel != omschrijving_intern %}
+    <p class="content__overflow">
+        "{{ omschrijving_intern }}"
+    </p>
+    {% include "icons/arrow-right.svg" %}
+{% endif %}
 
 {% if bijlagen|length > 0 %}
     <div class="container__thumbs">

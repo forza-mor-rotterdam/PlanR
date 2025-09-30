@@ -22,7 +22,7 @@
                         </button>
                     </li>
                     <li>
-                        {% if perms.authorisatie.melding_pauzeren and melding.status.naam != "pauze" and melding.status.naam != "wachten_melder" %}
+                        {% if perms.authorisatie.melding_pauzeren and melding.status.naam != "pauze" and melding.status.naam != "wachten_melder" and melding.status.naam != 'afgehandeld'  %}
                             <button type="button"
                                     class="btn btn-icon"
                                     data-action="modal#openModal"

@@ -43,7 +43,8 @@
                 display: block;
                 -webkit-line-clamp: unset;
                 max-height: none;
-                // -webkit-box-orient: vertical;
+                margin-right: 1em;
+                padding: 0 2em 0 0;
 
                 .content__overflow {
                     overflow: hidden;
@@ -54,8 +55,6 @@
                 }
 
                 &.has-overflow {
-                    margin-right: 1em;
-                    padding-right: 2em;
                     box-sizing: border-box;
                     svg {
                         display: block;
@@ -65,7 +64,6 @@
 
                 &.show {
                     border: none;
-                    padding: 0 1.35em 0 0;
                     .content__overflow {
                         -webkit-line-clamp: unset;
                         max-height: 120em;

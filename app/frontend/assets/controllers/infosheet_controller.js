@@ -5,6 +5,22 @@ let scrollPositionForDialog = 0
 export default class extends Controller {
   static targets = ['infosheet', 'scrollHandle', 'infosheetTurboframe', 'toplevelContainer']
 
+  connect() {
+    this.handleKeydown = this.handleKeydown.bind(this)
+    document.addEventListener('keydown', this.handleKeydown)
+  }
+
+  disconnect() {
+    document.removeEventListener('keydown', this.handleKeydown)
+  }
+
+  handleKeydown(event) {
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      this.closeInfosheet()
+    }
+  }
+
   scrollHandleTargetConnected(element) {
     this.startX = 0
     this.startY = 0
@@ -74,6 +90,7 @@ export default class extends Controller {
       this.toplevelContainerTarget.style.paddingRight = `${scrollbarWidth}px`
       document.body.style.top = `-${scrollPositionForDialog}px`
       document.body.style.position = 'fixed'
+      document.body.style.overflow = 'hidden'
       this.infosheetTarget.addEventListener('click', (event) => {
         if (event.target === event.currentTarget) {
           event.stopPropagation()
@@ -81,13 +98,13 @@ export default class extends Controller {
         }
       })
     }
-    document.body.style.overflow = 'hidden'
   }
 
   closeInfosheet() {
     if (this.hasInfosheetTarget) {
       if (this.infosheetTarget.open) {
         this.infosheetTarget.classList.add('closing')
+        console.log('closeInfosheet')
         setTimeout(() => (this.infosheetTurboframeTarget.innerHTML = ''), 400)
         setTimeout(() => {
           this.infosheetTarget.close()
