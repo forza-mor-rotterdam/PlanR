@@ -21,8 +21,9 @@
                             Toon logboek
                         </button>
                     </li>
+                     {% if not melding.afgesloten_op %}
                     <li>
-                        {% if perms.authorisatie.melding_pauzeren and melding.status.naam != "pauze" and melding.status.naam != "wachten_melder" and melding.status.naam != 'afgehandeld'  %}
+                        {% if perms.authorisatie.melding_pauzeren and melding.status.naam != "pauze" and melding.status.naam != "wachten_melder" %}
                             <button type="button"
                                     class="btn btn-icon"
                                     data-action="modal#openModal"
@@ -54,6 +55,7 @@
                             </button>
                         {% endif %}
                     </li>
+                    {% endif %}
                 </ul>
         </div>
     </div>
