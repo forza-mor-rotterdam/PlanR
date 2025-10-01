@@ -45,7 +45,7 @@
                             </div>
                         {% endif %}
                         {% if form.standaardtekst.field.choices|length %}
-                            <fieldset class="fieldset--separated hide" data-meldingbehandelformulier-target="resolutieContainer">
+                            <fieldset class="fieldset--separated" data-meldingbehandelformulier-target="resolutieContainer">
                                 <div class="form-control__with-helptext js-validation input--separated">{{ form.resolutie|render_rotterdam_formulier }}</div>
                             </fieldset>
                             {% if form.niet_opgelost_reden.field.choices|length %}
