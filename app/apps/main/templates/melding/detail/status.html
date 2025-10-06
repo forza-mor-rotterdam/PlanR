@@ -2,10 +2,12 @@
 {% load gebruikersnaam gebruikersinitialen get_gebruiker_object_middels_email from gebruikers_tags %}
 {% load humanize %}
 {% load mor_core_url from main_tags %}
-{% load get taak_status_tekst taak_status_css_class api_url_to_user_url afhandelreden_titel from melding_tags %}
+{% load get taak_status_tekst taak_status_css_class api_url_to_user_url afhandelreden_titel meldinggebeurtenis_middels_status from melding_tags %}
 {% load vertaal from vertaal_tags %}
 
 {% if melding.status.naam in "afgehandeld,geannuleerd,wachten_melder,pauze" %}
+{% meldinggebeurtenis_middels_status melding melding.status.naam as meldinggebeurtenis %}
+{% if meldinggebeurtenis %}
 <section class="section--separated" data-testid="detailTaken">
     <div class="container__details">
         <h2>Status</h2>
@@ -22,10 +24,10 @@
                         {% endif %}
                          door</h3>
                     <div class="content">
-                        <span class="initials">{{ melding.meldinggebeurtenissen.0.gebruiker|get_gebruiker_object_middels_email|gebruikersinitialen }}</span>
+                        <span class="initials">{{ meldinggebeurtenis.gebruiker|get_gebruiker_object_middels_email|gebruikersinitialen }}</span>
                         <div class="message">
-                            <h4>{{ melding.meldinggebeurtenissen.0.gebruiker|get_gebruiker_object_middels_email|gebruikersnaam }}</h4>
-                            {% with gebruiker=melding.meldinggebeurtenissen.0.gebruiker|get_gebruiker_object_middels_email %}
+                            <h4>{{ meldinggebeurtenis.gebruiker|get_gebruiker_object_middels_email|gebruikersnaam }}</h4>
+                            {% with gebruiker=meldinggebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
                                 {% if gebruiker.rol %}<span class="help-text">{{ gebruiker.rol }}</span>{% endif %}
                             {% endwith %}
                         </div>
@@ -59,22 +61,22 @@
                         {% endif %}
                     </div>
                 {% endif %}
-                {% if melding.meldinggebeurtenissen.0.omschrijving_intern %}
+                {% if meldinggebeurtenis.omschrijving_intern %}
                 <div class="container__content">
                     <h3>Interne opmerking</h3>
                     <div class="content container__overflow">
                         <p class="content__overflow">
-                            {{ melding.meldinggebeurtenissen.0.omschrijving_intern }}
+                            {{ meldinggebeurtenis.omschrijving_intern }}
                         </p>
                     </div>
                 </div>
                 {% endif %}
-                {% if melding.meldinggebeurtenissen.0.omschrijving_extern %}
+                {% if meldinggebeurtenis.omschrijving_extern %}
                 <div class="container__content cols--6">
                     <h3>Bericht voor melder</h3>
                     <div class="content container__overflow">
                         <p class="content__overflow">
-                            {{ melding.meldinggebeurtenissen.0.omschrijving_extern }}
+                            {{ meldinggebeurtenis.omschrijving_extern }}
                         </p>
                     </div>
                 </div>
@@ -85,7 +87,7 @@
                         {% if melding.afgesloten_op %}
                         <p>{{ melding.afgesloten_op|to_datetime}}</p>
                         {% elif melding.status.naam == "pauze" or melding.status.naam == "wachten_melder" %}
-                        <p>{{ melding.meldinggebeurtenissen.0.aangemaakt_op|to_datetime }}</p>
+                        <p>{{ meldinggebeurtenis.aangemaakt_op|to_datetime }}</p>
                         {% endif %}
                     </div>
                 </div>
@@ -99,4 +101,5 @@
         </div>
     </div>
 </section>
+{% endif %}
 {% endif %}

@@ -153,3 +153,16 @@ def api_url_to_user_url(api_url):
     api_base_path = "/api/v1/"
     user_base_path = "/"
     return api_url.replace(api_base_path, user_base_path)
+
+
+@register.simple_tag
+def meldinggebeurtenis_middels_status(melding, status):
+    meldinggebeurtenissen = [
+        meldinggebeurtenis
+        for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
+        if meldinggebeurtenis.get("status")
+        and meldinggebeurtenis.get("status", {}).get("naam") == status
+    ]
+    if meldinggebeurtenissen:
+        return meldinggebeurtenissen[0]
+    return
