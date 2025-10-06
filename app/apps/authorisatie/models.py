@@ -56,11 +56,6 @@ class TaakAanmakenPermissie(BasisPermissie):
     codenaam = "taak_aanmaken"
 
 
-class TaakAfrondenPermissie(BasisPermissie):
-    naam = "Taak afronden"
-    codenaam = "taak_afronden"
-
-
 class TaakVerwijderenPermissie(BasisPermissie):
     naam = "Taak verwijderen"
     codenaam = "taak_verwijderen"
@@ -272,7 +267,6 @@ gebruikersgroep_permissies = (
     MeldingenHervattenPermissie,
     MeldingenSpoedVeranderenPermissie,
     TaakAanmakenPermissie,
-    TaakAfrondenPermissie,
     TaakVerwijderenPermissie,
     MedewerkerGegevensBekijkenPermissie,
     GebruikerLijstBekijkenPermissie,

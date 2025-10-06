@@ -19,8 +19,6 @@
                 line-height: 59px;
                 pointer-events: all;
                 text-align: left;
-                min-width: 50%;
-                background-color: $blue-100;
                 z-index: -1;
 
                 a {
@@ -40,7 +38,7 @@
         }
 
         .container__user {
-            padding: 12px 20px 0 0;
+            padding: 13px 20px 0 0;
             display: flex;
 
             .container__uitklapper {
@@ -171,14 +169,14 @@
 
 .initials {
     display: inline-block;
-    width: 2.62em;
-    height: 2.62em;
+    width: 36px;
+    height: 36px;
     background-color: $blue-200;
     color: $blue-900;
     text-align: center;
     border-radius: 100%;
-    line-height: 2.62em;
-    font-size: 0.85em;
+    line-height: 36px;
+    font-size: 0.85rem;
     text-transform: uppercase;
     transition: background-color $transition-duration-default $transition-ease-default;
 }
@@ -186,6 +184,7 @@
 .trigger--notificationslist {
     width: 1.8em;
     height: 1.8em;
+    margin-top: 4px;
     display: flex;
     flex-direction: column;
     justify-content: center;

@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime, timedelta
 
+from apps.main.constanten import BEGRAAFPLAATSEN_LOOKUP
 from apps.main.services import MercureService
 from apps.release_notes.models import ReleaseNote
 from django.conf import settings
@@ -71,4 +72,5 @@ def general_settings(context):
         "APP_ENV": settings.APP_ENV,
         "MOR_CORE_URL_PREFIX": settings.MOR_CORE_URL_PREFIX,
         "DEPLOY_DATE": deploy_date_formatted,
+        "BEGRAAFPLAATSEN_LOOKUP": BEGRAAFPLAATSEN_LOOKUP,
     }

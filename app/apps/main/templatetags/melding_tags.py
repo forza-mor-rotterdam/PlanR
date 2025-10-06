@@ -1,3 +1,4 @@
+from apps.main.models import STATUS_NIET_OPGELOST_REDENEN_TITEL
 from apps.main.services import render_onderwerp as render_onderwerp_service
 from apps.main.utils import melding_naar_tijdlijn as base_melding_naar_tijdlijn
 from apps.main.utils import melding_taken as base_melding_taken
@@ -6,6 +7,11 @@ from django import template
 from django.utils.safestring import mark_safe
 
 register = template.Library()
+
+
+@register.filter
+def afhandelreden_titel(afhandelreden_key):
+    return STATUS_NIET_OPGELOST_REDENEN_TITEL.get(afhandelreden_key, afhandelreden_key)
 
 
 @register.filter
@@ -147,3 +153,16 @@ def api_url_to_user_url(api_url):
     api_base_path = "/api/v1/"
     user_base_path = "/"
     return api_url.replace(api_base_path, user_base_path)
+
+
+@register.simple_tag
+def meldinggebeurtenis_middels_status(melding, status):
+    meldinggebeurtenissen = [
+        meldinggebeurtenis
+        for meldinggebeurtenis in melding.get("meldinggebeurtenissen", [])
+        if meldinggebeurtenis.get("status")
+        and meldinggebeurtenis.get("status", {}).get("naam") == status
+    ]
+    if meldinggebeurtenissen:
+        return meldinggebeurtenissen[0]
+    return

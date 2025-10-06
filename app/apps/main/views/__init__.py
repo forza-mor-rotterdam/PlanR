@@ -16,6 +16,7 @@ from apps.main.utils import (
     get_ui_instellingen,
     update_qd_met_standaard_meldingen_filter_qd,
 )
+from apps.main.views.melding_detail import LogboekView  # NOQA
 from apps.main.views.melding_detail import MeldingAfhandelenView  # NOQA
 from apps.main.views.melding_detail import MeldingDetail  # NOQA
 from apps.main.views.melding_detail import TakenAanmakenStreamView  # NOQA
@@ -23,7 +24,6 @@ from apps.main.views.melding_detail import TakenAanmakenView  # NOQA
 from apps.main.views.melding_detail import informatie_toevoegen  # NOQA
 from apps.main.views.melding_detail import locatie_aanpassen  # NOQA
 from apps.main.views.melding_detail import melding_aanmaken  # NOQA
-from apps.main.views.melding_detail import melding_afhandelen  # NOQA
 from apps.main.views.melding_detail import melding_annuleren  # NOQA
 from apps.main.views.melding_detail import melding_heropenen  # NOQA
 from apps.main.views.melding_detail import melding_hervatten  # NOQA

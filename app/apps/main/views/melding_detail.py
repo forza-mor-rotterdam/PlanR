@@ -6,7 +6,6 @@ from apps.main.forms import (
     LocatieAanpassenForm,
     MeldingAanmakenForm,
     MeldingAfhandelenForm,
-    MeldingAfhandelenOldForm,
     MeldingAnnulerenForm,
     MeldingHeropenenForm,
     MeldingHervattenForm,
@@ -40,6 +39,7 @@ from apps.main.messages import (
 from apps.main.models import MeldingAfhandelreden, StandaardExterneOmschrijving
 from apps.main.services import MORCoreService, TaakRService
 from apps.main.utils import (
+    Logboek,
     melding_locaties,
     melding_taken,
     publiceer_topic_met_subscriptions,
@@ -447,72 +447,6 @@ class MeldingAfhandelenView(
             "melding/detail/melding_afhandelen_success.html",
             context=context,
         )
-
-
-@login_required
-@permission_required("authorisatie.melding_afhandelen", raise_exception=True)
-def melding_afhandelen(request, id):
-    mor_core_service = MORCoreService()
-    melding = mor_core_service.get_melding(id)
-    if isinstance(melding, dict) and melding.get("error"):
-        messages.error(request=request, message=MELDING_OPHALEN_ERROR)
-        return render(
-            request,
-            "melding/melding_actie_form.html",
-        )
-
-    benc_user = request.user.profiel.context.template == "benc"
-    signaal = (
-        melding.get("signalen_voor_melding")[0]
-        if melding.get("signalen_voor_melding")
-        else {}
-    )
-    # Als het om een B&C formulier gaat en er geen terugkoppeling gewenst is en/of er geen email bekend is
-    standaard_omschrijving_niet_weergeven = bool(
-        benc_user
-        and (
-            signaal.get("meta", {}).get("terugkoppeling_gewenst") != "Ja"
-            or not signaal.get("melder", {}).get("email")
-        )
-    )
-    form = MeldingAfhandelenOldForm(
-        standaard_omschrijving_niet_weergeven=standaard_omschrijving_niet_weergeven
-    )
-    if request.POST:
-        form = MeldingAfhandelenOldForm(
-            request.POST,
-            standaard_omschrijving_niet_weergeven=standaard_omschrijving_niet_weergeven,
-        )
-        if form.is_valid():
-            bijlagen = request.FILES.getlist("bijlagen", [])
-            bijlagen_base64 = []
-            for f in bijlagen:
-                file_name = default_storage.save(f.name, f)
-                bijlagen_base64.append({"bestand": to_base64(file_name)})
-
-            response = mor_core_service.melding_status_aanpassen(
-                id,
-                omschrijving_extern=form.cleaned_data.get("omschrijving_extern"),
-                omschrijving_intern=form.cleaned_data.get("omschrijving_intern"),
-                bijlagen=bijlagen_base64,
-                gebruiker=request.user.email,
-                status="afgehandeld",
-                resolutie="opgelost",
-            )
-            if isinstance(response, dict) and response.get("error"):
-                messages.error(request=request, message=MELDING_AFHANDELEN_ERROR)
-            else:
-                messages.success(request=request, message=MELDING_AFHANDELEN_SUCCESS)
-            return redirect("melding_detail", id=id)
-
-    return render(
-        request,
-        "melding/detail/melding_afhandelen.html",
-        {
-            "form": form,
-            "melding": melding,
-        },
-    )
 
 
 @login_required
@@ -1011,3 +945,17 @@ def locatie_aanpassen(request, id):
             {"error": str(e)},
             status=getattr(e, "status_code", 500),
         )
+
+
+class LogboekView(MeldingDetailViewMixin, PermissionRequiredMixin, TemplateView):
+    template_name = "logboek/basis.html"
+    permission_required = "authorisatie.melding_bekijken"
+
+    def get_context_data(self, **kwargs):
+        kwargs = super().get_context_data(**kwargs)
+        kwargs.update(
+            {
+                "logboek": Logboek(kwargs["melding"], self.request),
+            }
+        )
+        return kwargs

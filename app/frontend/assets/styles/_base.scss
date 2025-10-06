@@ -8,13 +8,9 @@ html,
 body {
     margin: 0;
     font-family: "Bolder", sans-serif;
-    font-size: 1em;
+    font-size: 1rem;
     color: $body-color;
     background-color: $blue-100;
-
-    @media (min-width: map-get($grid-breakpoints, sm)) {
-        font-size: 1.125em;
-    }
 }
 
 body {
@@ -22,6 +18,7 @@ body {
     -moz-osx-font-smoothing: grayscale;
     font-smoothing: antialiased;
     width: 100%;
+    box-sizing: border-box;
 }
 
 html {
@@ -33,7 +30,7 @@ html {
 
     aside {
         width: 227px;
-        height: 100vh;
+        height: calc(100vh - 60px);
         box-sizing: border-box;
         transition: width $transition-duration-default $transition-ease-default;
         position: fixed;
@@ -262,7 +259,7 @@ a {
 }
 // TABLES
 table {
-    font-size: 0.875em;
+    font-size: $fz-14;
     border-collapse: collapse;
     width: 100%;
 
@@ -271,7 +268,7 @@ table {
     }
     th,
     td {
-        padding: 10px 5px 10px 0;
+        padding: 8px 5px 8px 0;
     }
     thead {
         th {
@@ -309,7 +306,7 @@ summary:focus-visible {
 }
 a,
 .link {
-    color: $primary;
+    color: inherit;
     text-decoration: $link-decoration;
     cursor: pointer;
     position: relative;
@@ -339,14 +336,24 @@ a,
     &.link--back {
         @include has-icon();
         height: 36px;
-        padding-left: 10px;
-        font-size: 0.875em;
-        font-weight: 700;
+        text-decoration: none;
+        margin-left: 18px;
 
         > svg {
-            left: -20px;
-            top: 3px;
+            left: -18px;
+            top: 1px;
             padding-right: 20px;
+            path {
+                fill: currentColor;
+            }
+        }
+
+        .page__detail & {
+            position: fixed;
+            z-index: 50;
+            top: 20px;
+            left: 100px;
+            height: auto;
         }
     }
 
@@ -697,6 +704,14 @@ body.no-js {
 
 // HELPER-CLASSES
 
+.clamped {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .has-background--white {
     padding: 1rem;
     background-color: $white;
@@ -775,7 +790,8 @@ body.no-js {
     background-color: $gray-tint01;
 }
 
-.green {
+.green,
+.color--primary {
     color: $green-tint01;
 }
 .nowrap {
@@ -930,6 +946,7 @@ body.no-js {
         bottom: 0;
         right: 1em;
         transform: rotate(90deg);
+        transition: transform $transition-duration-default $transition-ease-default;
         path {
             fill: currentColor;
         }
@@ -941,6 +958,7 @@ body.no-js {
         box-sizing: border-box;
         svg {
             display: block;
+            cursor: pointer;
         }
     }
 

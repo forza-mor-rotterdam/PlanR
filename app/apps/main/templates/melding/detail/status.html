@@ -1,0 +1,115 @@
+{% load to_datetime naturalday_with_time_or_timesince from date_tags %}
+{% load gebruikersnaam gebruikersinitialen get_gebruiker_object_middels_email from gebruikers_tags %}
+{% load humanize %}
+{% load mor_core_url from main_tags %}
+{% load get taak_status_tekst taak_status_css_class api_url_to_user_url afhandelreden_titel meldinggebeurtenis_middels_status from melding_tags %}
+{% load vertaal from vertaal_tags %}
+
+{% if melding.status.naam in "afgehandeld,geannuleerd,wachten_melder,pauze" %}
+{% meldinggebeurtenis_middels_status melding melding.status.naam as meldinggebeurtenis %}
+{% if meldinggebeurtenis %}
+<section class="section--separated" data-testid="detailTaken">
+    <div class="container__details">
+        <h2>Status</h2>
+        <div class="container__status">
+            <div class="container__status--content" data-controller="overflow-toggle" data-overflow-toggle-target="container" data-overflow-toggle-item-class="content__overflow" data-action="click->overflow-toggle#toggle">
+                <div class="container__content cols--2">
+                    <h3>
+                        {% if melding.status.naam == "afgehandeld" %}
+                            Afgehandeld
+                        {% elif melding.status.naam == "geannuleerd" %}
+                            Geannuleerd
+                        {% elif melding.status.naam == "pauze" or melding.status.naam == "wachten_melder"%}
+                            Gepauzeerd
+                        {% endif %}
+                         door</h3>
+                    <div class="content">
+                        <span class="initials">{{ meldinggebeurtenis.gebruiker|get_gebruiker_object_middels_email|gebruikersinitialen }}</span>
+                        <div class="message">
+                            <h4>{{ meldinggebeurtenis.gebruiker|get_gebruiker_object_middels_email|gebruikersnaam }}</h4>
+                            {% with gebruiker=meldinggebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
+                                {% if gebruiker.rol %}<span class="help-text">{{ gebruiker.rol }}</span>{% endif %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                </div>
+                {% if melding.status.naam == "afgehandeld" %}
+                <div class="container__content">
+                    <h3>Conclusie</h3>
+                    <div class="content container__overflow">
+                        <p class="content__overflow">
+                            {{ meldinggebeurtenis.resolutie|vertaal }}
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+                {% if melding.afhandelreden or melding.status.naam == "pauze" or melding.status.naam == "wachten_melder" or melding.specificatie %}
+                    <div class="container__content">
+                        {% if melding.afhandelreden or melding.status.naam == "pauze" or melding.status.naam == "wachten_melder" %}
+                            <h3>Reden</h3>
+                            <div class="content">
+                                <p>
+                                    {% if melding.afhandelreden %}
+                                        {{ melding.afhandelreden|afhandelreden_titel }}
+                                    {% elif melding.status.naam == "pauze" %}
+                                        Wachten op een collega of externe instantie
+                                    {% elif melding.status.naam == "wachten_melder" %}
+                                        Wachten op melder
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </p>
+                            </div>
+                        {% endif %}
+                        {% if melding.specificatie %}
+                        <h3>Specificatie</h3>
+                        <div class="content">
+                            <p>
+                                {{ melding.specificatie.naam }}
+                            </p>
+                        </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+                {% if meldinggebeurtenis.omschrijving_intern %}
+                <div class="container__content">
+                    <h3>Interne opmerking</h3>
+                    <div class="content container__overflow">
+                        <p class="content__overflow">
+                            {{ meldinggebeurtenis.omschrijving_intern }}
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+                {% if meldinggebeurtenis.omschrijving_extern %}
+                <div class="container__content cols--6">
+                    <h3>Bericht voor melder</h3>
+                    <div class="content container__overflow">
+                        <p class="content__overflow">
+                            {{ meldinggebeurtenis.omschrijving_extern }}
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="container__content cols--2">
+                    <h3>Datum en tijd</h3>
+                    <div class="content">
+                        {% if melding.afgesloten_op %}
+                        <p>{{ melding.afgesloten_op|to_datetime}}</p>
+                        {% elif melding.status.naam == "pauze" or melding.status.naam == "wachten_melder" %}
+                        <p>{{ meldinggebeurtenis.aangemaakt_op|to_datetime }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <button type="button"
+                    class="btn--clean"
+                    data-overflow-toggle-target="toggle"
+                    hidden>
+                    {% include "icons/arrow-right.svg" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endif %}

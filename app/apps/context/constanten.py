@@ -1,6 +1,6 @@
 import string
 
-from apps.main.constanten import BEGRAAFPLAATSEN, VERTALINGEN
+from apps.main.constanten import BEGRAAFPLAATSEN, BEGRAAFPLAATSEN_LOOKUP, VERTALINGEN
 from apps.main.services import MORCoreService, render_onderwerp
 from apps.main.utils import melding_taken
 from django.http import QueryDict
@@ -215,10 +215,7 @@ class BegraafplaatsKolom(StandaardKolom):
     def td_label(self):
         default = "-"
         begraafplaats = string_based_lookup(self.context, self._kolom_inhoud)
-        begraafplaatsen = {
-            begraafplaats[0]: begraafplaats[1] for begraafplaats in BEGRAAFPLAATSEN
-        }
-        return escape(begraafplaatsen.get(begraafplaats, default))
+        return escape(BEGRAAFPLAATSEN_LOOKUP.get(begraafplaats, default))
 
 
 class GrafnummerKolom(StandaardKolom):
@@ -485,6 +482,25 @@ class BuurtFilter(StandaardFilter):
         buurten_met_wijken = MORCoreService().buurten_met_wijken(cache_timeout=5)
         if isinstance(buurten_met_wijken, dict) and buurten_met_wijken.get("error"):
             return []
+        import json
+
+        buurten_met_wijken_deduplicated = list(
+            set(
+                [
+                    json.dumps(
+                        {
+                            k: v
+                            for k, v in buurt_wijk.items()
+                            if k in ["buurtnaam", "wijknaam"]
+                        }
+                    )
+                    for buurt_wijk in buurten_met_wijken
+                ]
+            )
+        )
+        buurten_met_wijken = [
+            json.loads(buurt_wijk) for buurt_wijk in buurten_met_wijken_deduplicated
+        ]
         wijken = sorted(
             list(set([locatie["wijknaam"] for locatie in buurten_met_wijken])),
             key=lambda b: b.lower(),

@@ -148,8 +148,7 @@
 
                     &:hover,
                     &:focus-visible {
-                        color: $green-tint01;
-                        text-decoration: underline;
+                        text-decoration: none;
                         outline: none !important;
                     }
                 }

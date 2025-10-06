@@ -2,6 +2,7 @@ from apps.authenticatie.views import GebruikerProfielView, SessionTimerView
 from apps.health.views import healthz
 from apps.main.views import (
     LichtmastView,
+    LogboekView,
     LoginView,
     LogoutView,
     MeldingAfhandelenView,
@@ -16,7 +17,6 @@ from apps.main.views import (
     informatie_toevoegen,
     locatie_aanpassen,
     melding_aanmaken,
-    melding_afhandelen,
     melding_annuleren,
     melding_heropenen,
     melding_hervatten,
@@ -87,11 +87,6 @@ urlpatterns = [
         name="melding_afhandelen",
     ),
     path(
-        "melding/<uuid:id>/afhandelen/",
-        melding_afhandelen,
-        name="melding_afhandelen",
-    ),
-    path(
         "melding/<uuid:id>/annuleren/",
         melding_annuleren,
         name="melding_annuleren",
@@ -151,6 +146,11 @@ urlpatterns = [
         "melding/verzonden/<uuid:signaal_uuid>/",
         melding_verzonden,
         name="melding_verzonden",
+    ),
+    path(
+        "melding/<uuid:id>/logboek/",
+        LogboekView.as_view(),
+        name="logboek",
     ),
     # Notificaties
     path(

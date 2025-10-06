@@ -90,15 +90,19 @@
                  id="toast_lijst"></div>
         {% endif %}
         <div class="container__toplevel" data-modal-target="toplevelContainer" data-infosheet-target="toplevelContainer">
-            {% block aside %}
-                {% include "snippets/aside.html" %}
-            {% endblock aside %}
+            {% if request.user.is_authenticated %}
+                {% block aside %}
+                    {% include "snippets/aside.html" %}
+                {% endblock aside %}
+            {% endif %}
             <div class="container__main">
-                {% block header %}
-                    {% with pageTitle="PlanR" %}
-                        {% include "snippets/pageheader.html" %}
-                    {% endwith %}
-                {% endblock header %}
+                {% if request.user.is_authenticated %}
+                    {% block header %}
+                        {% with pageTitle="PlanR" %}
+                            {% include "snippets/pageheader.html" %}
+                        {% endwith %}
+                    {% endblock header %}
+                {% endif %}
                 <main data-controller=" main ">
                     <div class="container">
                         {% block body %}
@@ -116,10 +120,14 @@
         {% endif %}
         {% block javascripts_end %}
         {% endblock javascripts_end %}
-        <div data-notificaties--toast-manager-target="herlaad"></div>
+        {% if request.user.is_authenticated %}
+            <div data-notificaties--toast-manager-target="herlaad"></div>
+        {% endif %}
         {% include "snippets/modal_template.html" %}
-        <dialog class="infosheet" data-infosheet-target="infosheet">
-            <turbo-frame id="infosheet" data-infosheet-target="infosheetTurboframe"></turbo-frame>
-        </dialog>
+        {% if request.user.is_authenticated %}
+            <dialog class="infosheet" data-infosheet-target="infosheet">
+                <turbo-frame id="infosheet" data-infosheet-target="infosheetTurboframe"></turbo-frame>
+            </dialog>
+        {% endif %}
     </body>
 </html>

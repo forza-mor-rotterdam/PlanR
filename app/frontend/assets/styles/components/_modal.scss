@@ -177,7 +177,7 @@ body.show-modal--first-filter {
         h1 {
             padding: 25px 48px 0 0;
             margin: 0 0 1rem;
-            font-size: calc(1.25rem + 1.5vw);
+            font-size: $h3-font-size;
 
             small {
                 display: block;
@@ -256,6 +256,16 @@ body.show-modal--first-filter {
         box-sizing: border-box;
     }
 }
+.wrapper-no-sticky-footer {
+    display: block;
+
+    .flex-content {
+        padding: $container-padding-x $container-padding-x 0;
+        box-sizing: border-box;
+        overflow-y: auto;
+        scroll-behavior: smooth;
+    }
+}
 
 .show-modal .modal--multistep-form {
     .modal-content {
@@ -330,7 +340,7 @@ body.show-modal--first-filter {
 
         .btn {
             width: auto;
-            font-size: 0.889rem;
+            font-size: $fz-16;
             margin-bottom: 0;
 
             &-textlink {

@@ -11,27 +11,27 @@
 {% endblock header %}
 {% block body %}
     <turbo-frame id="beheer" data-turbo-action="advance">
-    <ul class="list--blocks-horizontal">
+    <ul class="list-horizontal">
         <li>
-            <a href="{% url 'gebruiker_lijst' %}">Gebruikers</a>
+            <a href="{% url 'gebruiker_lijst' %}" class="btn btn-tertiary"><span>Gebruikers</span></a>
         </li>
         <li>
-            <a href="{% url 'context_lijst' %}">Rollen</a>
+            <a href="{% url 'context_lijst' %}" class="btn btn-tertiary"><span>Rollen</span></a>
         </li>
         <li>
-            <a href="{% url 'rechtengroep_lijst' %}">Rechtengroepen</a>
+            <a href="{% url 'rechtengroep_lijst' %}" class="btn btn-tertiary"><span>Rechtengroepen</span></a>
         </li>
         <li>
-            <a href="{% url 'standaard_externe_omschrijving_lijst' %}">Standaard teksten</a>
+            <a href="{% url 'standaard_externe_omschrijving_lijst' %}" class="btn btn-tertiary"><span>Standaard teksten</span></a>
         </li>
         <li>
-            <a href="{% url 'specificatie_lijst' %}">Specificaties</a>
+            <a href="{% url 'specificatie_lijst' %}" class="btn btn-tertiary"><span>Specificaties</span></a>
         </li>
         <li>
-            <a href="{% url 'melding_afhandelreden_lijst' %}">Melding afhandelredenen</a>
+            <a href="{% url 'melding_afhandelreden_lijst' %}" class="btn btn-tertiary"><span>Melding afhandelredenen</span></a>
         </li>
         <li>
-            <a href="{% url 'release_note_lijst' %}">Berichten</a>
+            <a href="{% url 'release_note_lijst' %}" class="btn btn-tertiary"><span>Berichten</span></a>
         </li>
     </ul>
     </turbo-frame>

@@ -131,3 +131,7 @@ BEGRAAFPLAATSEN = (
     ("10", "Begraafplaats Rozenburg"),
     ("11", "Zuiderbegraafplaats"),
 )
+
+BEGRAAFPLAATSEN_LOOKUP = {
+    begraafplaats[0]: begraafplaats[1] for begraafplaats in BEGRAAFPLAATSEN
+}

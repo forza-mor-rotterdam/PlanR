@@ -1,19 +1,24 @@
 .page__beheer {
     padding: 0.5rem 0;
 
+    h1 {
+        font-size: $h2-font-size;
+    }
+
+    table {
+        font-size: $fz-14;
+    }
+
     @media (min-width: map-get($grid-breakpoints, lg)) {
-        padding: 2rem 0 4rem;
+        padding: 0 0 4rem;
     }
 
     a.link--back {
-        margin-left: 30px;
+        margin-left: 20px;
         min-height: 1em;
 
         svg {
-            left: -30px;
-            path {
-                fill: $green-tint01;
-            }
+            left: -20px;
         }
     }
 

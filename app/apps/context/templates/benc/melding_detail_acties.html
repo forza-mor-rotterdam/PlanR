@@ -6,12 +6,22 @@
 <!-- djlint:on -->
 {% block content %}
 <div class="wrapper--actions">
-    {% if not melding.afgesloten_op %}
     <div class="container__uitklapper">
         <span data-testid="melding_handelingen_uitklapper">{% include "icons/dots.svg" %}</span>
         <div class="legenda">
             {% melding_taken melding as taak_info %}
                 <ul class="list-clean">
+                    <li>
+                        <button type="button"
+                            class="btn btn-icon"
+                            data-action="infosheet#openInfosheet"
+                            data-infosheet-action-param="{% url 'logboek' melding.uuid %}"
+                        >
+                            {% include "icons/clock_ccw.svg" %}
+                            Toon logboek
+                        </button>
+                    </li>
+                     {% if not melding.afgesloten_op %}
                     <li>
                         {% if perms.authorisatie.melding_pauzeren and melding.status.naam != "pauze" and melding.status.naam != "wachten_melder" %}
                             <button type="button"
@@ -45,10 +55,10 @@
                             </button>
                         {% endif %}
                     </li>
+                    {% endif %}
                 </ul>
         </div>
     </div>
-    {% endif %}
     {% if perms.authorisatie.melding_hervatten and melding.status.naam == "pauze" or melding.status.naam == "wachten_melder" %}
         <button type="button"
                 class="btn btn-tertiary"

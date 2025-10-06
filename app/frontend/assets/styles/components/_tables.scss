@@ -58,12 +58,12 @@
         background-color: $gray-tint01;
         background-size: cover;
         background-position: 50% 50%;
-        height: 48px;
-        width: 64px;
-        margin: 0 $input-padding-y 4px 0;
+        height: 36px;
+        width: 36px;
+        margin: 6px;
 
         .thumbnail {
-            height: 48px;
+            height: 100%;
             display: block;
             margin: 0 auto;
         }
@@ -72,9 +72,10 @@
     .background-image {
         background-color: $gray-tint01;
         background-image: url(../icons/noimage.svg);
-        background-size: 40%;
-        height: 48px;
-        width: 64px;
+        background-size: 70%;
+        height: 36px;
+        width: 36px;
+        margin: 6px;
         background-repeat: no-repeat;
         background-position: center;
     }
@@ -84,6 +85,14 @@
 
         td {
             border-bottom: 1px solid $green-400;
+
+            &:nth-child(2) {
+                font-weight: 700;
+            }
+
+            a {
+                text-decoration: none;
+            }
         }
         &:hover {
             cursor: pointer;
@@ -102,14 +111,6 @@
             text-decoration: none;
             color: inherit;
         }
-    }
-
-    .clamped {
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 3;
-        overflow: hidden;
-        text-overflow: ellipsis;
     }
 
     .btn-textlink {

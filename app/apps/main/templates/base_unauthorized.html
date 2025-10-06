@@ -1,0 +1,125 @@
+{% load render_bundle from webpack_loader %}
+{% load webpack_static from webpack_loader %}
+<!DOCTYPE html>
+<html lang="nl">
+    <head data-controller="head">
+        <meta charset="UTF-8">
+        <meta name="git_sha" value="{{ GIT_SHA }}">
+        <meta name="viewport"
+              content="user-scalable=no, width=device-width, initial-scale=1.0">
+        <meta name="description"
+              content="Applicatie voor midoffice medewerkers om regie uit te voeren op de MOR-keten">
+        <meta name="keywords"
+              content="MOR, Meldingen openbare ruimte, gemeente Rotterdam, PlanR, midoffice, regie, meldingen">
+        <title>
+            {% block title %}
+                PlanR
+            {% endblock title %}
+        </title>
+        <link rel="apple-touch-icon"
+              sizes="180x180"
+              href="{{ base_url }}{% webpack_static 'images/apple-touch-icon.png' %}" />
+        <link rel="icon"
+              type="image/png"
+              sizes="32x32"
+              href="{{ base_url }}{% webpack_static 'images/favicon-32x32.png' %}" />
+        <link rel="icon"
+              type="image/png"
+              sizes="16x16"
+              href="{{ base_url }}{% webpack_static 'images/favicon-16x16.png' %}" />
+        <link rel="mask-icon"
+              href="{{ base_url }}{% webpack_static 'images/safari-pinned-tab.svg' %}"
+              color="#00811f" />
+        <link rel="manifest"
+              href="{{ base_url }}{% webpack_static 'manifest.json' %}" />
+        <link rel="shortcut icon"
+              href="{{ base_url }}{% webpack_static 'images/favicon.ico' %}" />
+        <link rel="icon"
+              href="{{ base_url }}{% webpack_static 'images/favicon.ico' %}" />
+        <script src="/static/rdam.geojson" type="text/javascript"></script>
+        <meta name="turbo-cache-control" content="no-cache">
+        <meta name="git-sha" content="{{ GIT_SHA }}">
+        <meta name="turbo-prefetch" content="false">
+        {% block stylesheets %}
+            <link rel="stylesheet"
+                  href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+                  integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+                  crossorigin="" />
+            <link href=" https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css "
+                  rel="stylesheet">
+            {% render_bundle 'app' 'css' %}
+        {% endblock stylesheets %}
+        {% if DEBUG and LIVE_UPDATE %}
+            <script>
+            const chatSocket = new WebSocket(
+                "ws://localhost:"
+                + {{DEV_SOCKET_PORT}}
+            );
+
+            chatSocket.onmessage = function(e) {
+                if (e.data === "reload"){
+                    location.reload()
+                }
+            };
+
+            chatSocket.onclose = function(e) {
+                console.error("socket closed unexpectedly");
+            };
+            </script>
+        {% endif %}
+        {% block javascripts %}
+            <script src=" https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js "></script>
+            <script src=" https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js "></script>
+            {% render_bundle 'app' 'js' attrs='data-head-target="mainScript"' %}
+        {% endblock javascripts %}
+        <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin="">
+        </script>
+    </head>
+    <body class="{% block body_class %}{% endblock body_class %}"
+          data-controller=" notificaties--manager notificaties--toast-manager focus-trap modal infosheet "
+          data-notificaties--manager-snack-overzicht-url-value="{% url 'snack_overzicht_stream' %}"
+          data-notificaties--manager-url-value="{{ APP_MERCURE_PUBLIC_URL }}"
+          data-notificaties--manager-topic-snack-value="/notificaties/snack/"
+          data-notificaties--manager-token-value="{{ MERCURE_SUBSCRIBER_TOKEN }}"
+          data-notificaties--toast-manager-toast-url-value="{% url 'toast_lijst' %}">
+        <a href="#id_maincontent" class="skiplink">Ga direct naar de content</a>
+        {% if request.user.is_authenticated %}
+            <turbo-frame src="{% url 'snack_lijst' %}" id="tf_snack_lijst">
+            </turbo-frame>
+            <div class="container__notification container__notification--toast"
+                 id="toast_lijst"></div>
+        {% endif %}
+        <div class="container__toplevel" data-modal-target="toplevelContainer" data-infosheet-target="toplevelContainer">
+            {% block aside %}
+                {% include "snippets/aside.html" %}
+            {% endblock aside %}
+            <div class="container__main">
+                {% block header %}
+                    {% with pageTitle="PlanR" %}
+                        {% include "snippets/pageheader.html" %}
+                    {% endwith %}
+                {% endblock header %}
+                <main data-controller=" main ">
+                    <div class="container">
+                        {% block body %}
+                        {% endblock body %}
+                    </div>
+                </main>
+            </div>
+        </div>
+        {% if APP_ENV != "productie" %}
+            <div class="container--env">
+                <div class="container">
+                    <span class="badge badge--red">{{ APP_ENV }}</span>
+                </div>
+            </div>
+        {% endif %}
+        {% block javascripts_end %}
+        {% endblock javascripts_end %}
+        <div data-notificaties--toast-manager-target="herlaad"></div>
+        {% include "snippets/modal_template.html" %}
+        <dialog class="infosheet" data-infosheet-target="infosheet">
+            <turbo-frame id="infosheet" data-infosheet-target="infosheetTurboframe"></turbo-frame>
+        </dialog>
+    </body>
+</html>

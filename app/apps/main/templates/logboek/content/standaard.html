@@ -1,0 +1,24 @@
+{% load mor_core_url from main_tags %}
+{% if omschrijving_intern and titel != omschrijving_intern %}
+    <p class="content__overflow">
+        Notitie: {{ omschrijving_intern }}
+    </p>
+    {% include "icons/arrow-right.svg" %}
+{% endif %}
+
+{% if bijlagen|length > 0 %}
+    <div class="container__thumbs">
+        <ul>
+            {% for bijlage in bijlagen %}
+            <li>
+                <div class="container__image">
+                    <div class="image"
+                        style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url|mor_core_url }}')">
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+{% include "logboek/item_sub.html" %}

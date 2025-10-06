@@ -30,12 +30,11 @@
 {% block body %}
     <turbo-frame id="overview">
         {% if not melding.error %}
-            {% context_template "melding_detail_titel.html" as titel_template %}
             {% context_template "melding_detail_melder.html" as melder_template %}
             {% context_template "melding_detail_acties.html" as acties_template %}
             {% get_bijlagen melding as bijlagen %}
             {% with signalen=melding.signalen_voor_melding %}
-                <div data-controller="detail"
+                <div data-controller="detail sidesheet"
                     data-detail-locaties-value="{{ locaties.adressen|json_encode }}"
                     data-detail-afbeeldingen-value="{{ bijlagen|json_encode }}"
                     data-detail-url-prefix-value="{{ MOR_CORE_URL_PREFIX }}"
@@ -51,13 +50,7 @@
                                         <a href="{% url 'melding_lijst' %}"
                                         data-turbo-action='advance'
                                         class="link--back">
-                                            <svg width="25"
-                                                height="16"
-                                                viewBox="0 0 25 16"
-                                                fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M9.15173 1.73256L7.73753 0.318359L1.44704 6.60885L1.4142 6.576L0 7.9902L1.4115 9.4017L1.37867 9.43453L7.67186 15.7277L9.08606 14.3135L3.7726 9.00006H24.0098V7.00006H3.88423L9.15173 1.73256Z" fill="#404B4F" />
-                                            </svg>
+                                            {% include "icons/arrow-short.svg" %}
                                             Terug
                                         </a>
                                         {% include "melding/melding_gebruiker_actief.html" %}
@@ -81,6 +74,9 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                                <div id="stream_melding_detail_status">
+                                    {% include "melding/detail/status.html" %}
                                 </div>
                                 <div id="melding_detail_taken">
                                     {% include "melding/detail/taken.html" %}
@@ -341,26 +337,25 @@
                                         {% endif %}
                                         <section class="section--separated">
                                             <div class="container__details">
-                                                <h2>Tijdlijn</h2>
+                                                <h2>Notities en foto's</h2>
                                                 {% if melding.status.naam != "afgehandeld" and melding.status.naam != "geannuleerd" %}
                                                     <turbo-frame id="informatie_toevoegen" src="{% url 'informatie_toevoegen' melding.uuid %}">
                                                     </turbo-frame>
                                                 {% endif %}
                                             </div>
                                         </section>
-                                        <section class="section--separated {% if melding.status.naam is 'afgehandeld' or melding.status.naam is not 'geannuleerd' %}no-padding{% endif %}"
+                                        {% comment %} <section class="section--separated {% if melding.status.naam is 'afgehandeld' or melding.status.naam is not 'geannuleerd' %}no-padding{% endif %}"
                                                     data-testid="detailTijdlijn"
                                                     id="melding_detail_tijdlijn">
                                             {% include "melding/detail/tijdlijn.html" with melding=melding perms=perms disable_stream=True only %}
-                                        </section>
+                                        </section> {% endcomment %}
                                     </div>
                                 </div>
                             </div>
                             <button data-detail-target="btnToTop"
                                     data-action="detail#scrollToTop"
                                     class="btn btn-to-top">
-                                {% include "icons/arrow-double.svg" %}
-                                Terug naar boven
+                                {% include "icons/arrow-right-v2.svg" %}
                             </button>
                         </div>
                     {% endif %}
