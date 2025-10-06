@@ -442,7 +442,7 @@ class TaakVerwijderenForm(forms.Form):
 
 class MeldingAfhandelenForm(forms.Form):
     resolutie = forms.ChoiceField(
-        label="Resolutie",
+        label="Conclusie",
         widget=forms.RadioSelect(
             attrs={
                 "class": "list--form-radio-input",

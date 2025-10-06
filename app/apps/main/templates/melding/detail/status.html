@@ -33,6 +33,16 @@
                         </div>
                     </div>
                 </div>
+                {% if melding.status.naam == "afgehandeld" %}
+                <div class="container__content">
+                    <h3>Conclusie</h3>
+                    <div class="content container__overflow">
+                        <p class="content__overflow">
+                            {{ meldinggebeurtenis.resolutie|vertaal }}
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
                 {% if melding.afhandelreden or melding.status.naam == "pauze" or melding.status.naam == "wachten_melder" or melding.specificatie %}
                     <div class="container__content">
                         {% if melding.afhandelreden or melding.status.naam == "pauze" or melding.status.naam == "wachten_melder" %}
