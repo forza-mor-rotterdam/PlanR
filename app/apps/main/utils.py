@@ -465,7 +465,10 @@ class LogboekItem:
             return self.MELDING_GEPAUZEERD_WACHTEN_MELDER
         if self._status == "pauze":
             return self.MELDING_GEPAUZEERD
+        if self._locatie:
+            return self.LOCATIE_AANGEMAAKT
         if self._gebeurtenis_type in (
+            self.MELDING_HERVAT,
             self.MELDING_HEROPEND,
             self.MELDING_AANGEMAAKT,
             self.SIGNAAL_TOEGEVOEGD,
@@ -482,8 +485,6 @@ class LogboekItem:
             return self.MELDING_HERVAT
         if self._status == "afgehandeld":
             return self.MELDING_AFGEHANDELD
-        if self._locatie:
-            return self.LOCATIE_AANGEMAAKT
         if self._taakgebeurtenis:
             self._get_taakopdracht(self._taakgebeurtenis["taakopdracht"])
             if self._taakgebeurtenis["resolutie"] == "geannuleerd":
@@ -493,7 +494,7 @@ class LogboekItem:
             if self._taakgebeurtenis["verwijderd_op"]:
                 return self.TAAK_VERWIJDERD
             return self.TAAK_AANGEMAAKT
-        return
+        return self.MELDING_HERVAT
 
     def _get_taakopdracht(self, taakopdracht_id):
         return self._taakopdrachten_via_id.get(
