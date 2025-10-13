@@ -1,7 +1,7 @@
 import string
 
 from apps.main.constanten import BEGRAAFPLAATSEN, BEGRAAFPLAATSEN_LOOKUP, VERTALINGEN
-from apps.main.services import MORCoreService, render_onderwerp
+from apps.main.services import LocatieService, render_onderwerp
 from apps.main.utils import melding_taken
 from django.http import QueryDict
 from django.template.loader import get_template
@@ -479,7 +479,7 @@ class BuurtFilter(StandaardFilter):
     _label = "Wijk en buurt"
 
     def opties(self):
-        buurten_met_wijken = MORCoreService().buurten_met_wijken(cache_timeout=5)
+        buurten_met_wijken = LocatieService().buurten_met_wijken()
         if isinstance(buurten_met_wijken, dict) and buurten_met_wijken.get("error"):
             return []
         import json
