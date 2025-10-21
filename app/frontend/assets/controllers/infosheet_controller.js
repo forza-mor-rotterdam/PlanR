@@ -86,8 +86,6 @@ export default class extends Controller {
       scrollPositionForDialog = window.scrollY
       this.infosheetTurboframeTarget.setAttribute('src', e.params.action)
       this.infosheetTarget.showModal()
-      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
-      this.toplevelContainerTarget.style.paddingRight = `${scrollbarWidth}px`
       document.body.style.top = `-${scrollPositionForDialog}px`
       document.body.style.position = 'fixed'
       document.body.style.overflow = 'hidden'
@@ -112,7 +110,6 @@ export default class extends Controller {
           document.body.style.top = ''
           window.scrollTo({ top: scrollPositionForDialog, left: 0, behavior: 'instant' })
           this.infosheetTarget.classList.remove('closing')
-          this.toplevelContainerTarget.style.paddingRight = ``
         }, 500)
       }
     }
