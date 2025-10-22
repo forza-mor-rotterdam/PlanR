@@ -33,12 +33,14 @@ html {
         width: 227px;
         height: calc(100vh - 60px);
         box-sizing: border-box;
-        transition: width $transition-duration-default $transition-ease-default;
         position: fixed;
         top: 0;
         left: 0;
         border-right: 1px solid $green-400;
 
+        .nav--transition & {
+            transition: width $transition-duration-default $transition-ease-default;
+        }
         .nav--small & {
             width: 60px;
         }
@@ -48,7 +50,6 @@ html {
         margin-left: 227px;
         padding-top: 60px;
         flex: 1;
-        transition: margin-left $transition-duration-default $transition-ease-default;
 
         > .bar--top {
             border-bottom: 1px solid $green-400;
@@ -81,17 +82,10 @@ html {
         margin-left: 60px;
     }
 }
-
-body,
-main {
-    // margin: 0 auto;
-
-    // > .container,
-    // > .container--env .container {
-    //     display: block;
-    //     max-width: map-get($container-max-widths, xxl);
-    //     margin: 0 auto;
-    // }
+.nav--transition {
+    .container__main {
+        transition: margin-left $transition-duration-default $transition-ease-default;
+    }
 }
 
 body.wide--xl {
