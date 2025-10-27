@@ -64,9 +64,7 @@ export default class extends Controller {
       })
   }
   contentTargetConnected() {
-    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
     document.body.classList.add('show-modal')
-    this.toplevelContainerTarget.style.paddingRight = `${scrollbarWidth}px`
     console.log('CLONE')
     if (this.params.action) {
       this.fetchModalContent(this.params.action)
@@ -120,7 +118,6 @@ export default class extends Controller {
     }
     setTimeout(() => {
       document.body.classList.remove('show-modal')
-      this.toplevelContainerTarget.style.paddingRight = ``
       if (this.hasDialogTarget) {
         this.dialogTarget.remove()
       }
