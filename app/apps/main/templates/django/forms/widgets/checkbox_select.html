@@ -1,7 +1,7 @@
 {% load file_exists from main_tags %}
 {% load l10n %}
 {% with id=widget.attrs.id %}
-    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}">
+    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}" data-controller="selectAll">
         {% if id and not widget.attrs.hideLabel %}
             <h3 class="label {% if widget.attrs.hasMoreInfo and widget.help_text %}has-more-info{% endif %}">
                 {{ widget.label }}{{ widget.attrs.hideLabel }}

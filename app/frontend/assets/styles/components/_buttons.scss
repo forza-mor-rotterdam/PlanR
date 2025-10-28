@@ -432,3 +432,11 @@ a.btn {
     align-items: center;
     box-sizing: border-box;
 }
+
+.btn-inline {
+    @extend .btn-textlink;
+    white-space: nowrap;
+    display: inline;
+    width: auto;
+    color: currentColor;
+}

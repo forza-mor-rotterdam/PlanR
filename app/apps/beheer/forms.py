@@ -295,6 +295,7 @@ class SynchronisatieTaakopdrachtenForm(forms.Form):
             attrs={
                 "class": "form-check-input",
                 "data-row-search-target": "searchable",
+                "showSelectAll": True,
             }
         ),
         choices=(),
