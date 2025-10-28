@@ -319,6 +319,8 @@ CSP_CONNECT_SRC = (
         "iam.forzamor.nl",
         "api.pdok.nl",
         "localhost:7002",
+        "unpkg.com",
+        "webpack:",
     )
 )
 

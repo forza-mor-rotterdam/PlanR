@@ -287,3 +287,24 @@ class SpecificatieForm(forms.Form):
                 f"Deze naam bestaat al{', maar is verwijderd' if zoek_resultaten[0].get('verwijderd_op') else ''}"
             )
         return data
+
+
+class SynchronisatieTaakopdrachtenForm(forms.Form):
+    taakopdrachten = forms.MultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple(
+            attrs={
+                "class": "form-check-input",
+                "data-row-search-target": "searchable",
+            }
+        ),
+        choices=(),
+        label="Taakopdrachten",
+        required=True,
+    )
+
+    def __init__(self, *args, **kwargs):
+        taakopdracht_choices = kwargs.pop("taakopdracht_choices", None)
+        super().__init__(*args, **kwargs)
+
+        if taakopdracht_choices:
+            self.fields["taakopdrachten"].choices = taakopdracht_choices

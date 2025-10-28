@@ -97,7 +97,7 @@ services:
       - mor_bridge_network
 
   mercure:
-    image: dunglas/mercure
+    image: dunglas/mercure:v0.20
     restart: unless-stopped
     environment:
       MERCURE_EXTRA_DIRECTIVES: |

@@ -33,7 +33,7 @@
                             <ul {% if id %}id="{{ id }}_{{ index }}"{% endif %}>
                             {% endif %}
                             {% for option in options %}
-                                <li class="{% if widget.required and form.required_css_class %}{{ form.required_css_class }}{% endif %}">
+                                <li class="{% if widget.required and form.required_css_class %}{{ form.required_css_class }}{% endif %}" data-row-search-target="row">
                                     <div class="form-check">
                                         {% include "django/forms/widgets/input.html" with widget=option %}
                                         <label class="form-check-label"

@@ -5,6 +5,7 @@ from apps.beheer.forms import (
     SpecificatieForm,
     StandaardExterneOmschrijvingForm,
     StandaardExterneOmschrijvingSearchForm,
+    SynchronisatieTaakopdrachtenForm,
 )
 from apps.main.models import (
     SPECIFICATIE_CACHE_TIMEOUT,
@@ -438,3 +439,90 @@ class SpecificatieTerughalenView(PermissionRequiredMixin, View):
             f"De specificatie '{response_detail.get('naam')}' is teruggehaald",
         )
         return redirect(reverse("specificatie_lijst"))
+
+
+class SynchronisatieTaakopdrachtenLijstView(PermissionRequiredMixin, FormView):
+    permission_required = "authorisatie.synchronisatie_taakopdrachten_lijst_bekijken"
+    template_name = "beheer/synchronisatie/taakopdrachten_lijst.html"
+    form_class = SynchronisatieTaakopdrachtenForm
+    success_url = reverse_lazy("syncronisatie_taakopdrachten")
+    taakopdracht_choices = []
+
+    def dispatch(self, request, *args, **kwargs):
+        taakapplicaties_response = MORCoreService().applicaties(
+            params={"applicatie_type": "taakapplicatie"}, cache_timeout=60 * 60
+        )
+        taakopdrachten_response = MORCoreService().taakopdrachten(
+            params={
+                "limit": 100,
+                "is_not_afgesloten": True,
+                "is_not_verwijderd": True,
+                "has_no_taak_url": True,
+                "task_taak_aanmaken_status": [
+                    "geen_task",
+                    "FAILURE",
+                    "SUCCESS",
+                ],
+            }
+        )
+
+        if taakapplicaties_response.get("error"):
+            raise Exception(taakapplicaties_response.get("error"))
+        if taakopdrachten_response.get("error"):
+            raise Exception(taakopdrachten_response.get("error"))
+
+        taakapplicaties_by_url = {
+            taakapplicatie.get("_links").get("self"): taakapplicatie.get("naam")
+            for taakapplicatie in taakapplicaties_response["results"]
+        }
+
+        taakopdrachten_response_results = [
+            taakopdracht
+            | {
+                "applicatie_naam": taakapplicaties_by_url.get(
+                    taakopdracht.get("_links").get("applicatie"),
+                    "Applicatie niet gevonden",
+                )
+            }
+            for taakopdracht in taakopdrachten_response["results"]
+        ]
+
+        self.taakopdracht_choices = [
+            (
+                taakopdracht["uuid"],
+                f'{taakopdracht["titel"]} ({taakopdracht["applicatie_naam"]}, uuid: {taakopdracht["uuid"]})',
+            )
+            for taakopdracht in taakopdrachten_response_results
+        ]
+        self.taakopdracht_count = taakopdrachten_response["count"]
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update(
+            {
+                "taakopdracht_choices": self.taakopdracht_choices,
+            }
+        )
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context.update(
+            {
+                "count": self.taakopdracht_count,
+            }
+        )
+        return context
+
+    def form_valid(self, form):
+        herstart_taak_aanmaken_taakopdrachten_response = (
+            MORCoreService().herstart_task_taak_aanmaken(
+                taakopdracht_uuids=form.cleaned_data["taakopdrachten"]
+            )
+        )
+        if herstart_taak_aanmaken_taakopdrachten_response.get("error"):
+            raise Exception(herstart_taak_aanmaken_taakopdrachten_response.get("error"))
+        return super().form_valid(form)

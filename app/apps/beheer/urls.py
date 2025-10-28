@@ -26,6 +26,7 @@ from apps.beheer.views import (
     StandaardExterneOmschrijvingAanpassenView,
     StandaardExterneOmschrijvingLijstView,
     StandaardExterneOmschrijvingVerwijderenView,
+    SynchronisatieTaakopdrachtenLijstView,
     beheer,
 )
 from apps.context.views import (
@@ -195,5 +196,10 @@ urlpatterns = [
         "release-notes/<int:pk>/verwijderen/",
         ReleaseNoteVerwijderenView.as_view(),
         name="release_note_verwijderen",
+    ),
+    path(
+        "syncronisatie/taakopdrachten",
+        SynchronisatieTaakopdrachtenLijstView.as_view(),
+        name="syncronisatie_taakopdrachten",
     ),
 ]
