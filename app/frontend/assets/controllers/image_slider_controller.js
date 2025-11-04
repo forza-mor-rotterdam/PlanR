@@ -10,6 +10,22 @@ export default class extends Controller {
     this.selectedCls = 'selected'
     this.bijlagen = JSON.parse(this.dataValue)
   }
+
+  connect() {
+    this._onResize = this._onResize.bind(this)
+    window.addEventListener('resize', this._onResize)
+
+    this._onResize()
+  }
+
+  disconnect() {
+    window.removeEventListener('resize', this._onResize)
+  }
+
+  _onResize() {
+    this.updateSlider()
+  }
+
   modalImageSliderOutletConnected() {
     this.modalImageSliderOutlet.init(this)
   }
@@ -19,6 +35,7 @@ export default class extends Controller {
   selectThumbHandler(e) {
     const selectedThumb = e.target.closest('li')
     this.updateSlider(selectedThumb.dataset.imageUuid)
+    this.lastViewedImage = selectedThumb.dataset.imageUuid
   }
   onScrollSliderHandler() {
     this.updateSlider(
@@ -28,8 +45,9 @@ export default class extends Controller {
     )
   }
   updateSlider(imageUuid) {
+    const imageId = imageUuid || this.lastViewedImage
     this.thumbTargets.map((elem) =>
-      elem.classList[imageUuid === elem.dataset.imageUuid ? 'add' : 'remove'](this.selectedCls)
+      elem.classList[imageId === elem.dataset.imageUuid ? 'add' : 'remove'](this.selectedCls)
     )
     const selectedThumb = this.thumbTargets.find((elem) =>
       elem.classList.contains(this.selectedCls)
@@ -39,6 +57,8 @@ export default class extends Controller {
       left: Number(index) * this.imageSliderContainerTarget.offsetWidth,
       top: 0,
     })
-    selectedThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+    if (imageId) {
+      selectedThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+    }
   }
 }
