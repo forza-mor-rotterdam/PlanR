@@ -337,8 +337,8 @@
                                         {% endif %}
                                         <section class="section--separated">
                                             <div class="container__details">
-                                                <h2>Notities en foto's</h2>
                                                 {% if melding.status.naam != "afgehandeld" and melding.status.naam != "geannuleerd" %}
+                                                    <h2>Notities en foto's</h2>
                                                     <turbo-frame id="informatie_toevoegen" src="{% url 'informatie_toevoegen' melding.uuid %}">
                                                     </turbo-frame>
                                                 {% endif %}
