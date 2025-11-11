@@ -12,6 +12,7 @@ from apps.main.models import (
 from apps.main.services import MORCoreService
 from django import forms
 from django.core.exceptions import ValidationError
+from utils.widgets import ChoiceWidgetOptionDataMixin
 
 logger = logging.getLogger(__name__)
 
@@ -289,9 +290,42 @@ class SpecificatieForm(forms.Form):
         return data
 
 
-class SynchronisatieTaakopdrachtenForm(forms.Form):
-    taakopdrachten = forms.MultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple(
+class MultipleChoiceField(forms.MultipleChoiceField):
+    ...
+
+
+class CheckboxSelectMultipleTaakopdrachtTaakAanmakenIssue(
+    ChoiceWidgetOptionDataMixin, forms.CheckboxSelectMultiple
+):
+    template_name = "beheer/taakopdrachten_taak_aanmaken_issues/taakopdracht_input.html"
+
+
+class PaginationRadioWidget(forms.RadioSelect):
+    template_name = (
+        "beheer/taakopdrachten_taak_aanmaken_issues/pagination_radio_select_widget.html"
+    )
+
+
+class TaakopdrachtTaakAanmakenIssueLijstForm(forms.Form):
+    page = forms.ChoiceField(
+        widget=PaginationRadioWidget(
+            attrs={
+                "data-action": "radioSelectPaginator#onPageChangeHandler",
+            }
+        ),
+        required=False,
+    )
+    q = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+            }
+        ),
+        label="Zoek",
+        required=False,
+    )
+    taakopdrachten = MultipleChoiceField(
+        widget=CheckboxSelectMultipleTaakopdrachtTaakAanmakenIssue(
             attrs={
                 "class": "form-check-input",
                 "data-row-search-target": "searchable",
@@ -300,12 +334,21 @@ class SynchronisatieTaakopdrachtenForm(forms.Form):
         ),
         choices=(),
         label="Taakopdrachten",
-        required=True,
+        required=False,
     )
 
     def __init__(self, *args, **kwargs):
         taakopdracht_choices = kwargs.pop("taakopdracht_choices", None)
+        page_choices = kwargs.pop("page_choices", None)
         super().__init__(*args, **kwargs)
 
+        if page_choices:
+            self.fields["page"].choices = page_choices
+
         if taakopdracht_choices:
-            self.fields["taakopdrachten"].choices = taakopdracht_choices
+            self.fields["taakopdrachten"].choices = [
+                (k, k) for k, v in taakopdracht_choices
+            ]
+            self.fields["taakopdrachten"].widget.option_data = {
+                k: v for k, v in taakopdracht_choices
+            }
