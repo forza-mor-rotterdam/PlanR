@@ -11,7 +11,7 @@
 {% block content %}
     <div class="content">
         <div class="container__content--taakr">
-            {% if taaktype.toelichting %}<p>{{ taaktype.toelichting|linebreaksbr }}</p>{% endif %}
+            {% if taaktype.toelichting %}<p>{{ taaktype.toelichting }}</p>{% endif %}
             {% if taaktype.verantwoordelijke_afdeling %}
                 <h2 class="h5">Verantwoordelijke afdeling</h2>
                 <p>{{ taaktype.verantwoordelijke_afdeling }}</p>
