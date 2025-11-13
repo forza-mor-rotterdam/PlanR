@@ -364,7 +364,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Session settings for django-session-timeout-joinup
 SESSION_EXPIRE_MAXIMUM_SECONDS = int(
-    os.getenv("SESSION_EXPIRE_MAXIMUM_SECONDS", "28800")
+    os.getenv("SESSION_EXPIRE_MAXIMUM_SECONDS", "36000")
 )
 SESSION_EXPIRE_SECONDS = int(
     os.getenv("SESSION_EXPIRE_SECONDS", "3600" if APP_ENV != "test" else "600")
