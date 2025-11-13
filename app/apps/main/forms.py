@@ -13,6 +13,7 @@ from apps.main.services import MORCoreService, render_onderwerp
 from apps.main.utils import get_valide_filter_classes, get_valide_kolom_classes
 from django import forms
 from django.core.files.storage import default_storage
+from django.forms import formset_factory
 from django.utils import timezone
 from django_select2.forms import Select2Widget
 from utils.rd_convert import rd_to_wgs
@@ -354,6 +355,9 @@ class TakenAanmakenForm(forms.Form):
         required=True,
         max_length=200,
     )
+
+
+TakenAanmakenFormset = formset_factory(TakenAanmakenForm, extra=0)
 
 
 class TaakAfrondenForm(forms.Form):
