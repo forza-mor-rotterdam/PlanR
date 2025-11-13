@@ -12,7 +12,7 @@ from apps.main.forms import (
     MeldingPauzerenForm,
     MeldingSpoedForm,
     TaakVerwijderenForm,
-    TakenAanmakenForm,
+    TakenAanmakenFormset,
 )
 from apps.main.messages import (
     MELDING_AFHANDELEN_ERROR,
@@ -50,7 +50,6 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.files.storage import default_storage
-from django.forms import formset_factory
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -662,7 +661,7 @@ def melding_spoed_veranderen(request, id):
 class TakenAanmakenView(
     MeldingDetailTaaktypeViewMixin, StreamViewMixin, PermissionRequiredMixin, FormView
 ):
-    form_class = formset_factory(TakenAanmakenForm, extra=0)
+    form_class = TakenAanmakenFormset
     template_name = "melding/detail/taken_aanmaken.html"
     permission_required = "authorisatie.taak_aanmaken"
 
