@@ -6,7 +6,6 @@ from apps.beheer.forms import (
     SpecificatieForm,
     StandaardExterneOmschrijvingForm,
     StandaardExterneOmschrijvingSearchForm,
-    TaakopdrachtTaakAanmakenIssueLijstForm,
 )
 from apps.main.models import (
     SPECIFICATIE_CACHE_TIMEOUT,
@@ -443,15 +442,16 @@ class SpecificatieTerughalenView(PermissionRequiredMixin, View):
         return redirect(reverse("specificatie_lijst"))
 
 
-class TaakopdrachtTaakAanmakenIssueLijstView(PermissionRequiredMixin, FormView):
+# class TaakopdrachtTaakAanmakenIssueLijstView(PermissionRequiredMixin, FormView):
+class TaakopdrachtTaakAanmakenIssueLijstView(PermissionRequiredMixin, View):
     permission_required = (
         "authorisatie.taakopdrachten_taak_aanmaken_issue_lijst_bekijken"
     )
     template_name = (
         "beheer/taakopdrachten_taak_aanmaken_issues/taakopdrachten_lijst.html"
     )
-    form_class = TaakopdrachtTaakAanmakenIssueLijstForm
-    success_url = reverse_lazy("taakopdrachten_taak_aanmaken_issues")
+    # form_class = TaakopdrachtTaakAanmakenIssueLijstForm
+    # success_url = reverse_lazy("taakopdrachten_taak_aanmaken_issues")
     taakopdracht_choices = []
     page_size = 100
     page = "1"
@@ -512,12 +512,12 @@ class TaakopdrachtTaakAanmakenIssueLijstView(PermissionRequiredMixin, FormView):
             for taakopdracht in taakopdrachten_response_results
         ]
         self.taakopdracht_count = taakopdrachten_response["count"]
-        self.initial.update(
-            {
-                "page": page,
-                "q": q,
-            }
-        )
+        # self.initial.update(
+        #     {
+        #         "page": page,
+        #         "q": q,
+        #     }
+        # )
 
         return super().dispatch(request, *args, **kwargs)
 
