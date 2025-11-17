@@ -509,15 +509,15 @@ class TaakopdrachtTaakAanmakenIssueLijstView(PermissionRequiredMixin, FormView):
         self.taakopdracht_count = taakopdrachten_response["count"]
         return super().dispatch(request, *args, **kwargs)
 
-    def get_initial(self):
-        initial = super().get_initial()
-        self.initial.update(
-            {
-                "page": int(self.request.session.get(self.page_session_key, "1")),
-                "q": self.request.session.get(self.q_session_key, ""),
-            }
-        )
-        return initial
+    # def get_initial(self):
+    #     initial = super().get_initial()
+    #     self.initial.update(
+    #         {
+    #             "page": int(self.request.session.get(self.page_session_key, "1")),
+    #             "q": self.request.session.get(self.q_session_key, ""),
+    #         }
+    #     )
+    #     return initial
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
