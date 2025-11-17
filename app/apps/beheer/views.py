@@ -1,11 +1,11 @@
 import logging
-import math
 
 from apps.beheer.forms import (
     MeldingAfhandelredenForm,
     SpecificatieForm,
     StandaardExterneOmschrijvingForm,
     StandaardExterneOmschrijvingSearchForm,
+    TaakopdrachtTaakAanmakenIssueLijstForm,
 )
 from apps.main.models import (
     SPECIFICATIE_CACHE_TIMEOUT,
@@ -442,16 +442,15 @@ class SpecificatieTerughalenView(PermissionRequiredMixin, View):
         return redirect(reverse("specificatie_lijst"))
 
 
-# class TaakopdrachtTaakAanmakenIssueLijstView(PermissionRequiredMixin, FormView):
-class TaakopdrachtTaakAanmakenIssueLijstView(PermissionRequiredMixin, View):
+class TaakopdrachtTaakAanmakenIssueLijstView(PermissionRequiredMixin, FormView):
     permission_required = (
         "authorisatie.taakopdrachten_taak_aanmaken_issue_lijst_bekijken"
     )
     template_name = (
         "beheer/taakopdrachten_taak_aanmaken_issues/taakopdrachten_lijst.html"
     )
-    # form_class = TaakopdrachtTaakAanmakenIssueLijstForm
-    # success_url = reverse_lazy("taakopdrachten_taak_aanmaken_issues")
+    form_class = TaakopdrachtTaakAanmakenIssueLijstForm
+    success_url = reverse_lazy("taakopdrachten_taak_aanmaken_issues")
     taakopdracht_choices = []
     page_size = 100
     page = "1"
@@ -521,18 +520,18 @@ class TaakopdrachtTaakAanmakenIssueLijstView(PermissionRequiredMixin, View):
 
         return super().dispatch(request, *args, **kwargs)
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs.update(
-            {
-                "taakopdracht_choices": self.taakopdracht_choices,
-                "page_choices": [
-                    (p + 1, p + 1)
-                    for p in range(math.ceil(self.taakopdracht_count / self.page_size))
-                ],
-            }
-        )
-        return kwargs
+    # def get_form_kwargs(self):
+    #     kwargs = super().get_form_kwargs()
+    #     kwargs.update(
+    #         {
+    #             "taakopdracht_choices": self.taakopdracht_choices,
+    #             "page_choices": [
+    #                 (p + 1, p + 1)
+    #                 for p in range(math.ceil(self.taakopdracht_count / self.page_size))
+    #             ],
+    #         }
+    #     )
+    #     return kwargs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
