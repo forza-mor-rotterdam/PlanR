@@ -349,6 +349,6 @@ class TaakopdrachtTaakAanmakenIssueLijstForm(forms.Form):
             self.fields["taakopdrachten"].choices = [
                 (k, k) for k, v in taakopdracht_choices
             ]
-            # self.fields["taakopdrachten"].widget.option_data = {
-            #     k: v for k, v in taakopdracht_choices
-            # }
+            self.fields["taakopdrachten"].widget.option_data = {
+                k: v for k, v in taakopdracht_choices
+            }
