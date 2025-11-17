@@ -459,7 +459,7 @@ class TaakopdrachtTaakAanmakenIssueLijstView(PermissionRequiredMixin, FormView):
 
     def dispatch(self, request, *args, **kwargs):
         taakapplicaties_response = MORCoreService().applicaties(
-            params={"applicatie_type": "taakapplicatie"}, cache_timeout=60 * 60
+            params={"applicatie_type": "taakapplicatie"}, cache_timeout=60
         )
         page = int(self.request.session.get(self.page_session_key, "1"))
         q = self.request.session.get(self.q_session_key, "")
