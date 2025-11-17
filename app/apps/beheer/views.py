@@ -461,7 +461,10 @@ class TaakopdrachtTaakAanmakenIssueLijstView(PermissionRequiredMixin, FormView):
         taakapplicaties_response = MORCoreService().applicaties(
             params={"applicatie_type": "taakapplicatie"}, cache_timeout=60 * 60
         )
-        page = int(self.request.session.get(self.page_session_key, "1"))
+        try:
+            page = int(self.request.session.get(self.page_session_key, "1"))
+        except Exception:
+            page = 1
         q = self.request.session.get(self.q_session_key, "")
         params = {
             "limit": self.page_size,
@@ -509,15 +512,20 @@ class TaakopdrachtTaakAanmakenIssueLijstView(PermissionRequiredMixin, FormView):
         self.taakopdracht_count = taakopdrachten_response["count"]
         return super().dispatch(request, *args, **kwargs)
 
-    # def get_initial(self):
-    #     initial = super().get_initial()
-    #     self.initial.update(
-    #         {
-    #             "page": int(self.request.session.get(self.page_session_key, "1")),
-    #             "q": self.request.session.get(self.q_session_key, ""),
-    #         }
-    #     )
-    #     return initial
+    def get_initial(self):
+        initial = super().get_initial()
+        try:
+            page = int(self.request.session.get(self.page_session_key, "1"))
+        except Exception:
+            page = 1
+
+        initial.update(
+            {
+                "page": page,
+                "q": self.request.session.get(self.q_session_key, ""),
+            }
+        )
+        return initial
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
