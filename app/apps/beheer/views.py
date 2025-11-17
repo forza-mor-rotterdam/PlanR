@@ -21,7 +21,6 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (
@@ -458,12 +457,7 @@ class TaakopdrachtTaakAanmakenIssueLijstView(PermissionRequiredMixin, FormView):
     page_session_key = "taakopdrachten_taak_aanmaken_issues__page"
     q_session_key = "taakopdrachten_taak_aanmaken_issues__q"
 
-    def get(self, request, *args, **kwargs):
-        return HttpResponse("taakopdrachten_taak_aanmaken_issues")
-        # return super().get(request, *args, **kwargs)
-
     def dispatch(self, request, *args, **kwargs):
-        print("DISPATCH")
         taakapplicaties_response = MORCoreService().applicaties(
             params={"applicatie_type": "taakapplicatie"}, cache_timeout=60 * 60
         )
