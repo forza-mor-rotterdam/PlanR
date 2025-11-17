@@ -125,7 +125,7 @@
                     <div data-taken-aanmaken--manager-target="stap2"
                          class="stap2"
                          id="taken_aanmaken_form">
-                        {% include "melding/detail/taken_aanmaken_form.html" with form=form view=view disable_stream=True %}
+                        {% comment %} {% include "melding/detail/taken_aanmaken_form.html" with form=form view=view disable_stream=True %} {% endcomment %}
                     </div>
                     {% comment %} {% csrf_token %}
                             {{ form.urgentie }}
