@@ -1,4 +1,5 @@
 import logging
+import math
 
 from apps.beheer.forms import (
     MeldingAfhandelredenForm,
@@ -520,18 +521,18 @@ class TaakopdrachtTaakAanmakenIssueLijstView(PermissionRequiredMixin, FormView):
 
         return super().dispatch(request, *args, **kwargs)
 
-    # def get_form_kwargs(self):
-    #     kwargs = super().get_form_kwargs()
-    #     kwargs.update(
-    #         {
-    #             "taakopdracht_choices": self.taakopdracht_choices,
-    #             "page_choices": [
-    #                 (p + 1, p + 1)
-    #                 for p in range(math.ceil(self.taakopdracht_count / self.page_size))
-    #             ],
-    #         }
-    #     )
-    #     return kwargs
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update(
+            {
+                "taakopdracht_choices": self.taakopdracht_choices,
+                "page_choices": [
+                    (p + 1, p + 1)
+                    for p in range(math.ceil(self.taakopdracht_count / self.page_size))
+                ],
+            }
+        )
+        return kwargs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
