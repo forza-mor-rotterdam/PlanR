@@ -463,6 +463,7 @@ class TaakopdrachtTaakAanmakenIssueLijstView(PermissionRequiredMixin, FormView):
         # return super().get(request, *args, **kwargs)
 
     def dispatch(self, request, *args, **kwargs):
+        print("DISPATCH")
         taakapplicaties_response = MORCoreService().applicaties(
             params={"applicatie_type": "taakapplicatie"}, cache_timeout=60 * 60
         )
@@ -512,14 +513,17 @@ class TaakopdrachtTaakAanmakenIssueLijstView(PermissionRequiredMixin, FormView):
             for taakopdracht in taakopdrachten_response_results
         ]
         self.taakopdracht_count = taakopdrachten_response["count"]
-        # self.initial.update(
-        #     {
-        #         "page": page,
-        #         "q": q,
-        #     }
-        # )
-
         return super().dispatch(request, *args, **kwargs)
+
+    def get_initial(self):
+        initial = super().get_initial()
+        self.initial.update(
+            {
+                "page": int(self.request.session.get(self.page_session_key, "1")),
+                "q": self.request.session.get(self.q_session_key, ""),
+            }
+        )
+        return initial
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
