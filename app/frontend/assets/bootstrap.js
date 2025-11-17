@@ -3,10 +3,11 @@ import { start as TurboStart } from '@hotwired/turbo'
 import { definitionsFromContext } from '@hotwired/stimulus-webpack-helpers'
 import Chart from '@stimulus-components/chartjs'
 
-const application = StimulusApplication.start()
-application.register('chart', Chart)
-const context = require.context('./controllers', true, /\.js$/)
-application.load(definitionsFromContext(context))
-window.Stimulus = application
-
-TurboStart()
+if (typeof document.App === 'undefined') {
+  document.App = StimulusApplication.start()
+  document.App.register('chart', Chart)
+  const context = require.context('./controllers', true, /\.js$/)
+  document.App.load(definitionsFromContext(context))
+  window.Stimulus = document.App
+  TurboStart()
+}
