@@ -311,6 +311,8 @@ CSP_CONNECT_SRC = (
         "mercure.planr-test.forzamor.nl",
         "mercure.planr-acc.forzamor.nl",
         "mercure.planr.forzamor.nl",
+        "unpkg.com",
+        "webpack:",
     )
     if not DEBUG
     else (
