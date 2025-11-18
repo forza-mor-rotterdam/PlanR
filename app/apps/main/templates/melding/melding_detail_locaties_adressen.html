@@ -1,4 +1,4 @@
-{% if perms.authorisatie.locatie_aanpassen and locaties %}
+{% if perms.authorisatie.locatie_aanpassen and locaties and melding.status.naam != 'afgehandeld' and melding.status.naam != 'geannuleerd' %}
     <button type="button"
             class="btn btn-icon btn-textlink"
             data-action="modal#openModal"

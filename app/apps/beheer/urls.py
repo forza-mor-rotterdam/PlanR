@@ -26,6 +26,7 @@ from apps.beheer.views import (
     StandaardExterneOmschrijvingAanpassenView,
     StandaardExterneOmschrijvingLijstView,
     StandaardExterneOmschrijvingVerwijderenView,
+    TaakopdrachtTaakAanmakenIssueLijstView,
     beheer,
 )
 from apps.context.views import (
@@ -195,5 +196,10 @@ urlpatterns = [
         "release-notes/<int:pk>/verwijderen/",
         ReleaseNoteVerwijderenView.as_view(),
         name="release_note_verwijderen",
+    ),
+    path(
+        "taakopdrachten-taak-aanmaken-issues",
+        TaakopdrachtTaakAanmakenIssueLijstView.as_view(),
+        name="taakopdrachten_taak_aanmaken_issues",
     ),
 ]

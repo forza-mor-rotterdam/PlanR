@@ -41,7 +41,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.http import Http404, HttpResponse, QueryDict, StreamingHttpResponse
+from django.http import Http404, HttpResponse, QueryDict
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -282,12 +282,12 @@ def melding_pdf_download(request, id):
 @login_required
 @permission_required("authorisatie.melding_bekijken", raise_exception=True)
 def meldingen_bestand(request):
-    Instelling.actieve_instelling()
-    mor_core_service = MORCoreService()
     modified_path = request.path.replace(settings.MOR_CORE_URL_PREFIX, "")
-    response = mor_core_service.bestand_halen(modified_path)
-    return StreamingHttpResponse(
-        response.raw,
+    response = MORCoreService().bestand_halen(
+        modified_path, stream=False, cache_timeout=3600
+    )
+    return HttpResponse(
+        response,
         content_type=response.headers.get("content-type"),
         headers={
             "Content-Disposition": "attachment",

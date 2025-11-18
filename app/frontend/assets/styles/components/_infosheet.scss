@@ -19,7 +19,7 @@ dialog.infosheet {
     display: flex;
     flex-direction: column;
     z-index: 3000;
-    opacity: 1;
+    opacity: 0;
 
     &:has(> turbo-frame) {
         display: block;

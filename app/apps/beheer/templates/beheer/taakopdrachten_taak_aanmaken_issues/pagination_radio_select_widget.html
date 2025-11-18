@@ -1,0 +1,15 @@
+<div class="container__pagination" data-controller="radioSelectPaginator">
+    <div class="pagination">
+        <div class="wrapper-horizontal">
+            <ul id="id_offset" class="list--form-check-input">
+                {% for group, options, index in widget.optgroups %}
+                {% for option in options %}
+                <li>
+                    {% include option.template_name with widget=option %}
+                </li>
+                {% endfor%}
+                {% endfor%}
+            </ul>
+        </div>
+    </div>
+</div>

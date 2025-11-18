@@ -38,6 +38,7 @@ class MORCoreService(BasisMORCoreService):
         kwargs.update(
             {
                 "basis_url": instellingen.mor_core_basis_url,
+                "client_name": "PlanR",
                 "gebruikersnaam": instellingen.mor_core_gebruiker_email,
                 "wachtwoord": instellingen.mor_core_gebruiker_wachtwoord,
                 "token_timeout": instellingen.mor_core_token_timeout,

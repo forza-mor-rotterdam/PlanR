@@ -1,10 +1,12 @@
 import logging
+import math
 
 from apps.beheer.forms import (
     MeldingAfhandelredenForm,
     SpecificatieForm,
     StandaardExterneOmschrijvingForm,
     StandaardExterneOmschrijvingSearchForm,
+    TaakopdrachtTaakAanmakenIssueLijstForm,
 )
 from apps.main.models import (
     SPECIFICATIE_CACHE_TIMEOUT,
@@ -438,3 +440,132 @@ class SpecificatieTerughalenView(PermissionRequiredMixin, View):
             f"De specificatie '{response_detail.get('naam')}' is teruggehaald",
         )
         return redirect(reverse("specificatie_lijst"))
+
+
+class TaakopdrachtTaakAanmakenIssueLijstView(PermissionRequiredMixin, FormView):
+    permission_required = (
+        "authorisatie.taakopdrachten_taak_aanmaken_issue_lijst_bekijken"
+    )
+    template_name = (
+        "beheer/taakopdrachten_taak_aanmaken_issues/taakopdrachten_lijst.html"
+    )
+    form_class = TaakopdrachtTaakAanmakenIssueLijstForm
+    success_url = reverse_lazy("taakopdrachten_taak_aanmaken_issues")
+    taakopdracht_choices = []
+    page_size = 100
+    page = "1"
+    page_session_key = "taakopdrachten_taak_aanmaken_issues__page"
+    q_session_key = "taakopdrachten_taak_aanmaken_issues__q"
+
+    def dispatch(self, request, *args, **kwargs):
+        taakapplicaties_response = MORCoreService().applicaties(
+            params={"applicatie_type": "taakapplicatie"}, cache_timeout=60 * 60
+        )
+        try:
+            page = int(self.request.session.get(self.page_session_key, "1"))
+        except Exception:
+            page = 1
+        q = self.request.session.get(self.q_session_key, "")
+        params = {
+            "limit": self.page_size,
+            "q": q,
+            "offset": (page - 1) * self.page_size,
+            "is_not_afgesloten": True,
+            "is_not_verwijderd": True,
+            "has_no_taak_url": True,
+            "task_taak_aanmaken_status": [
+                "geen_task",
+                "FAILURE",
+                "SUCCESS",
+            ],
+        }
+        taakopdrachten_response = MORCoreService().taakopdrachten(params=params)
+
+        if taakapplicaties_response.get("error"):
+            raise Exception(taakapplicaties_response.get("error"))
+        if taakopdrachten_response.get("error"):
+            raise Exception(taakopdrachten_response.get("error"))
+
+        taakapplicaties_by_url = {
+            taakapplicatie.get("_links").get("self"): taakapplicatie.get("naam")
+            for taakapplicatie in taakapplicaties_response["results"]
+        }
+
+        taakopdrachten_response_results = [
+            taakopdracht
+            | {
+                "applicatie_naam": taakapplicaties_by_url.get(
+                    taakopdracht.get("_links").get("applicatie"),
+                    "Applicatie niet gevonden",
+                )
+            }
+            for taakopdracht in taakopdrachten_response["results"]
+        ]
+
+        self.taakopdracht_choices = [
+            (
+                taakopdracht["uuid"],
+                taakopdracht,
+            )
+            for taakopdracht in taakopdrachten_response_results
+        ]
+        self.taakopdracht_count = taakopdrachten_response["count"]
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_initial(self):
+        initial = super().get_initial()
+        try:
+            page = int(self.request.session.get(self.page_session_key, "1"))
+        except Exception:
+            page = 1
+
+        initial.update(
+            {
+                "page": page,
+                "q": self.request.session.get(self.q_session_key, ""),
+            }
+        )
+        return initial
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update(
+            {
+                "taakopdracht_choices": self.taakopdracht_choices,
+                "page_choices": [
+                    (p + 1, p + 1)
+                    for p in range(math.ceil(self.taakopdracht_count / self.page_size))
+                ],
+            }
+        )
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(
+            {
+                "count": self.taakopdracht_count,
+            }
+        )
+        return context
+
+    def form_valid(self, form):
+        q = form.cleaned_data.get("q") if form.cleaned_data.get("q") else ""
+        page = (
+            int(form.cleaned_data.get("page", "1"))
+            if form.cleaned_data.get("page")
+            else 1
+        )
+        q_changed = q != self.request.session.get(self.q_session_key)
+        self.request.session[self.q_session_key] = q
+        self.request.session[self.page_session_key] = page if not q_changed else 1
+
+        herstart_taak_aanmaken_taakopdrachten_response = (
+            MORCoreService().herstart_task_taak_aanmaken(
+                taakopdracht_uuids=form.cleaned_data["taakopdrachten"]
+            )
+        )
+
+        if herstart_taak_aanmaken_taakopdrachten_response.get("error"):
+            raise Exception(herstart_taak_aanmaken_taakopdrachten_response.get("error"))
+        return super().form_valid(form)

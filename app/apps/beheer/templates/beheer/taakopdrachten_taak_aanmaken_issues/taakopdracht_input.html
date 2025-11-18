@@ -1,0 +1,54 @@
+{% load file_exists from main_tags %}
+{% load l10n %}
+{% with id=widget.attrs.id %}
+    <div class="form-row {{ classes.label }} {{ classes.value }} {{ classes.single_value }}" data-controller="selectAll" data-selectAll-row-query-selector-value="tr.row">
+        {% if id and not widget.attrs.hideLabel %}
+            <h3 class="label {% if widget.attrs.hasMoreInfo and widget.help_text %}has-more-info{% endif %}">
+                {{ widget.label }}{{ widget.attrs.hideLabel }}
+            </h3>
+        {% endif %}
+        <div class="container__buttons">
+            <button class="btn btn-textlink btn-inline"
+                    data-action="selectAll#selectAll"
+                    data-selectAll-filter-type-param="all">Selecteer alles</button>
+            |
+            <button class="btn btn-inline" data-action="selectAll#selectAll">Selecteer niets</button>
+        </div>
+        <div id="{{ id }}" class="container__table">
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Titel</th>
+                        <th>Applicatie naam</th>
+                        <th>Taakopdracht uuid</th>
+                        <th>Taak aanmaken error</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for group, options, index in widget.optgroups %}
+                        {% for option in options %}
+                            <tr class="row" data-row-search-target="row">
+                                <td>
+                                    <div class="form-check">{% include "django/forms/widgets/input.html" with widget=option %}</div>
+                                </td>
+                                <td data-row-search-target="searchable">
+                                    {{ option.attrs.titel }}
+                                </td>
+                                <td data-row-search-target="searchable">{{ option.attrs.applicatie_naam }}</td>
+                                <td data-row-search-target="searchable">{{ option.attrs.uuid }}</td>
+                                <td data-row-search-target="searchable">
+                                    {% if option.attrs.taak_aanmaken_error %}
+                                        {{ option.attrs.taak_aanmaken_error }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endwith %}
