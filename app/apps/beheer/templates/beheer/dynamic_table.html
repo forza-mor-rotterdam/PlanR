@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load rotterdam_formulier_html %}
+{% load json_encode from json_tags %}
+{% block title %}
+    Beheer | PlanR
+{% endblock title %}
+{% block header %}
+    {% with pageTitle="Beheer" %}
+        {% include "snippets/pageheader.html" %}
+    {% endwith %}
+{% endblock header %}
+{% block body %}
+    <table class="table--sorter" data-controller="table--sorter">
+        <thead>
+            <tr>
+                {% for column_head_id in data.0.keys %}
+                <th
+                    data-table--sorter-column-head-id-param="{{ column_head_id }}"
+                    data-column-head-id="{{ column_head_id }}"
+                    data-sort-direction="desc"
+                    data-sort-order="0"
+                    data-table--sorter-target="columnHead">
+                    <a data-table--sorter-column-head-id-param="{{ column_head_id }}" data-action="table--sorter#thClickHandler">{{ column_head_id }}<span data-sort-direction-indicator></span></a>
+                    <strong data-sort-order-indicator style="display: none;"></strong>
+                    <a data-remove-sort-indicator data-action="table--sorter#removeSortOrderHandler" data-table--sorter-column-head-id-param="{{ column_head_id }}">x</a>
+                </th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for tr in data %}
+            <tr data-table--sorter-target="row">
+                {% for key, td in tr.items %}
+                <td data-asc="{{ td.sorting.0 }}" data-desc="{{ td.sorting.1 }}" data-column-row-id="{{ key }}">
+                    {{ td.value }}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock body %}
