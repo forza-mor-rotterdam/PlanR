@@ -251,6 +251,11 @@ class ReleaseNoteVerwijderenPermissie(BasisPermissie):
     codenaam = "release_note_verwijderen"
 
 
+class TaakAanmakenIssueLijstBekijkenPermissie(BasisPermissie):
+    naam = "Taak aanmaken issue lijst bekijken"
+    codenaam = "taakopdrachten_taak_aanmaken_issue_lijst_bekijken"
+
+
 class DashboardBekijkenPermissie(BasisPermissie):
     naam = "Dashboard bekijken"
     codenaam = "dashboard_bekijken"
@@ -305,6 +310,7 @@ gebruikersgroep_permissies = (
     ReleaseNoteBekijkenPermissie,
     ReleaseNoteAanpassenPermissie,
     ReleaseNoteVerwijderenPermissie,
+    TaakAanmakenIssueLijstBekijkenPermissie,
     DashboardBekijkenPermissie,
 )
 

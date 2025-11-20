@@ -32,6 +32,7 @@ def melding_lijst(request):
     standaard_waardes = {
         "limit": "25",
         "foldout_states": "[]",
+        "offset": "0",
     }
     standaard_waardes.update(get_ui_instellingen(gebruiker))
     actieve_filters = get_actieve_filters(gebruiker)
