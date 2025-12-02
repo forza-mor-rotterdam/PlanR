@@ -16,11 +16,11 @@
                 <div class="container__content cols--2">
                     <h3>
                         {% if melding.status.naam == "afgehandeld" %}
-                            Afgehandeld
+                            {% if DEFAULT_BOT_USER_EMAIL == meldinggebeurtenis.gebruiker %}Automatisch afgehandeld{% else %}Afgehandeld{% endif %}
                         {% elif melding.status.naam == "geannuleerd" %}
-                            Geannuleerd
+                            {% if DEFAULT_BOT_USER_EMAIL == meldinggebeurtenis.gebruiker %}Automatisch geannuleerd{% else %}Geannuleerd{% endif %}
                         {% elif melding.status.naam == "pauze" or melding.status.naam == "wachten_melder"%}
-                            Gepauzeerd
+                            {% if DEFAULT_BOT_USER_EMAIL == meldinggebeurtenis.gebruiker %}Automatisch gepauzeerd{% else %}Gepauzeerd{% endif %}
                         {% endif %}
                          door</h3>
                     <div class="content">
