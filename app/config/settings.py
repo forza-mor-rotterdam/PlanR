@@ -55,6 +55,8 @@ ENABLE_DJANGO_ADMIN_LOGIN = os.getenv("ENABLE_DJANGO_ADMIN_LOGIN", False) in TRU
 LOGIN_URL = "login"
 LOGOUT_URL = "logout"
 
+DEFAULT_BOT_USER_EMAIL = os.getenv("DEFAULT_BOT_USER_EMAIL", "botjeknor@rotterdam.nl")
+
 INSTALLED_APPS = (
     # templates override
     "apps.main",

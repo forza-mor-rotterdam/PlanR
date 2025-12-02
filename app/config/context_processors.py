@@ -73,4 +73,5 @@ def general_settings(context):
         "MOR_CORE_URL_PREFIX": settings.MOR_CORE_URL_PREFIX,
         "DEPLOY_DATE": deploy_date_formatted,
         "BEGRAAFPLAATSEN_LOOKUP": BEGRAAFPLAATSEN_LOOKUP,
+        "DEFAULT_BOT_USER_EMAIL": settings.DEFAULT_BOT_USER_EMAIL,
     }
