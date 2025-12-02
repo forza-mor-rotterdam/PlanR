@@ -37,6 +37,11 @@ export default class extends Controller {
       this.searchInputTarget.focus()
     }, 600)
   }
+  uuidv4() {
+    return '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, (c) =>
+      (+c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))).toString(16)
+    )
+  }
 
   modalSluitenTargetConnected() {}
 
@@ -145,6 +150,94 @@ export default class extends Controller {
     )
     this.resetFormulierTaaktypeIndexes()
   }
+  getAvailableParentElements(geselecteerdFormulierTaaktype) {
+    const geselecteerdFormulierTaaktypeParents = JSON.parse(
+      geselecteerdFormulierTaaktype.dataset.parents
+    )
+    const geselecteerdFormulierTaaktypeChildren = JSON.parse(
+      geselecteerdFormulierTaaktype.dataset.children
+    )
+    console.log('geselecteerdFormulierTaaktypeParents', geselecteerdFormulierTaaktypeParents)
+    return this.geselecteerdFormulierTaaktypeTargets
+      .filter((elem) => elem != geselecteerdFormulierTaaktype)
+      .filter((elem) => {
+        // const children = JSON.parse(elem.dataset.children)
+        return (
+          !geselecteerdFormulierTaaktypeParents.includes(elem.dataset.uuid) &&
+          !geselecteerdFormulierTaaktypeChildren.includes(elem.dataset.uuid)
+        )
+      })
+  }
+  parentsSelectedHandler(e) {
+    e.preventDefault()
+    const uuid = this.removeCurrentParentList()
+    console.log(e.params.uuid)
+    const selectedChild = this.geselecteerdFormulierTaaktypeTargets.find(
+      (elem) => elem.dataset.uuid === uuid
+    )
+    const selectedParent = this.geselecteerdFormulierTaaktypeTargets.find(
+      (elem) => elem.dataset.uuid === e.params.uuid
+    )
+    console.log(selectedParent)
+
+    const parents = JSON.parse(selectedChild.dataset.parents)
+    !parents.includes(e.params.uuid) && parents.push(e.params.uuid)
+    selectedChild.dataset.parents = JSON.stringify(parents)
+
+    const addChildToParent = (parent, uuidParent, childUuid) => {
+      console.log('addChildToParent', parent, childUuid)
+      const children = JSON.parse(parent.dataset.children)
+      !children.includes(childUuid) && children.push(childUuid)
+      parent.dataset.children = JSON.stringify(children)
+      const parentParentUuids = JSON.parse(uuidParent.dataset.children)
+      parentParentUuids.map((uuid) => {
+        console.log('parent uuids', uuid)
+        const parentParent = this.geselecteerdFormulierTaaktypeTargets.find(
+          (elem) => elem.dataset.uuid === uuid
+        )
+        addChildToParent(selectedParent, parentParent, uuid)
+      })
+    }
+    addChildToParent(selectedParent, selectedParent, uuid)
+  }
+  removeCurrentParentList() {
+    const parentsList = this.element.querySelector('[data-parents-list]')
+    const uuid = parentsList?.dataset.parentsList
+    parentsList && parentsList.remove()
+    return uuid
+  }
+  taaktypeAfhankelijkheidHandler(e) {
+    this.removeCurrentParentList()
+    const geselecteerdFormulierTaaktype = e.target.closest(
+      '[data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktype"]'
+    )
+    const summary = e.target.closest('summary')
+    const right = summary.getBoundingClientRect().right - e.target.getBoundingClientRect().right
+    const ul = document.createElement('UL')
+    ul.dataset.parentsList = geselecteerdFormulierTaaktype.dataset.uuid
+    ul.style.background = 'white'
+    ul.style.position = 'absolute'
+    ul.style.top = '0px'
+    ul.style.right = right + 'px'
+
+    const availableParentElements = this.getAvailableParentElements(geselecteerdFormulierTaaktype)
+    availableParentElements.map((elem) => {
+      const li = document.createElement('LI')
+      const a = document.createElement('A')
+      const input = document.createElement('INPUT')
+      const label = document.createElement('LABEL')
+      input.type = 'checkbox'
+      label.textContent = elem.dataset.uuid
+      label.appendChild(input)
+      ul.appendChild(li)
+      li.appendChild(a)
+      a.href = '#'
+      a.setAttribute('data-action', 'taken-aanmaken--manager#parentsSelectedHandler')
+      a.setAttribute('data-taken-aanmaken--manager-uuid-param', elem.dataset.uuid)
+      a.textContent = elem.dataset.uuid
+      summary.appendChild(ul)
+    })
+  }
   taaktypeVerwijderenHandler(e) {
     this.taaktypeVerwijderen(e.target.closest('[data-taaktype-url]').dataset.taaktypeUrl)
   }
@@ -207,21 +300,28 @@ export default class extends Controller {
   }
   geselecteerdTaaktypeFormulierElement(taaktypeUrl) {
     const taaktypeData = this.taaktypeByUrl[taaktypeUrl]
+    const uuid = this.uuidv4()
     const template = document.getElementById('template_geselecteerd_formulier_taaktype')
     const clone = template.content.cloneNode(true)
     let li = clone.querySelector('li')
+    li.dataset.uuid = uuid
+    li.dataset.children = '[]'
+    li.dataset.parents = '[]'
+
     let taakapplicatieTaaktypeUrlInput = clone.querySelector(
       `input[name*='-taakapplicatie_taaktype_url']`
     )
     let titelInput = clone.querySelector(`input[name*='-titel']`)
     let meldingUuidInput = clone.querySelector(`input[name*='-melding_uuid']`)
     let gebruikerInput = clone.querySelector(`input[name*='-gebruiker']`)
+    let uuidInput = clone.querySelector(`input[name*='-gebruiker']`)
 
     clone.querySelector('[data-afdelingen]').textContent = taaktypeData.afdelingen
       .map((afd) => afd.naam)
       .join(', ')
-    clone.querySelector('[data-verantwoordelijke-afdeling]').textContent =
-      taaktypeData.verantwoordelijke_afdeling?.naam
+    clone.querySelector('[data-verantwoordelijke-afdeling]').textContent = uuid
+    // clone.querySelector('[data-verantwoordelijke-afdeling]').textContent =
+    // taaktypeData.verantwoordelijke_afdeling?.naam
     clone.querySelector('[data-titel]').textContent = taaktypeData.omschrijving
     clone.querySelector('[data-toelichting]').textContent = taaktypeData.toelichting
     clone.querySelector('[data-omschrijving]').textContent = taaktypeData.omschrijving
@@ -236,6 +336,7 @@ export default class extends Controller {
     titelInput.value = taaktypeData.omschrijving
     meldingUuidInput.value = this.meldingUuidValue
     gebruikerInput.value = this.gebruikerValue
+    uuidInput.value = uuid
     return clone
   }
 
