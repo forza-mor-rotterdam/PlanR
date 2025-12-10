@@ -21,6 +21,7 @@ export default class extends Controller {
   ]
   static values = {
     taaktypes: String,
+    openstaandeTaken: String,
     meldingUuid: String,
     gebruiker: String,
   }
@@ -28,6 +29,12 @@ export default class extends Controller {
   connect() {
     this.taaktypeMax = 10
     this.taaktypes = JSON.parse(this.taaktypesValue)
+    this.openstaandeTaken = JSON.parse(this.openstaandeTakenValue).map((taak) => {
+      return {
+        taakopdrachtUrl: taak._links.self,
+        titel: taak.titel,
+      }
+    })
     this.taaktypeByUrl = this.taaktypes.reduce(
       (o, v) => ((o[v._links.taakapplicatie_taaktype_url] = v), o),
       {}
@@ -154,60 +161,98 @@ export default class extends Controller {
     const geselecteerdFormulierTaaktypeParents = JSON.parse(
       geselecteerdFormulierTaaktype.dataset.parents
     )
-    const geselecteerdFormulierTaaktypeChildren = JSON.parse(
-      geselecteerdFormulierTaaktype.dataset.children
+    const geselecteerdFormulierTaaktypeAllParentUuids = this.getAllRelatedUuids(
+      geselecteerdFormulierTaaktype,
+      'parents'
     )
-    console.log('geselecteerdFormulierTaaktypeParents', geselecteerdFormulierTaaktypeParents)
-    return this.geselecteerdFormulierTaaktypeTargets
-      .filter((elem) => elem != geselecteerdFormulierTaaktype)
-      .filter((elem) => {
-        // const children = JSON.parse(elem.dataset.children)
-        return (
-          !geselecteerdFormulierTaaktypeParents.includes(elem.dataset.uuid) &&
-          !geselecteerdFormulierTaaktypeChildren.includes(elem.dataset.uuid)
-        )
-      })
+    const existingTaken = this.openstaandeTaken.map((elem) => [
+      elem.titel,
+      elem.taakopdrachtUrl,
+      geselecteerdFormulierTaaktypeParents.includes(elem.taakopdrachtUrl),
+      true,
+    ])
+    const availableElements = this.geselecteerdFormulierTaaktypeTargets.filter(
+      (elem) => elem != geselecteerdFormulierTaaktype
+    )
+    const availableSelectedUuids = availableElements
+      .filter((elem) => geselecteerdFormulierTaaktypeParents.includes(elem.dataset.uuid))
+      .map((elem) => elem.dataset.uuid)
+    const availableTaken = availableElements.map((elem) => {
+      const elemAllParentUuids = this.getAllRelatedUuids(elem, 'parents')
+      const isSelected = geselecteerdFormulierTaaktypeParents.includes(elem.dataset.uuid)
+      const elemIsChildOfCurrent = elemAllParentUuids.includes(
+        geselecteerdFormulierTaaktype.dataset.uuid
+      )
+      const elemIsParentOfCurrent = geselecteerdFormulierTaaktypeAllParentUuids.includes(
+        elem.dataset.uuid
+      )
+      const elemIsParentOfOthers =
+        availableSelectedUuids.filter((value) => elemAllParentUuids.includes(value)).length > 0
+      return [
+        elem.querySelector('[data-omschrijving]').textContent,
+        elem.dataset.uuid,
+        isSelected,
+        isSelected ||
+          (!elemIsParentOfCurrent && !elemIsChildOfCurrent && !elemIsParentOfOthers && !isSelected),
+      ]
+    })
+
+    return [...availableTaken, ...existingTaken]
   }
   parentsSelectedHandler(e) {
     e.preventDefault()
-    const uuid = this.removeCurrentParentList()
-    console.log(e.params.uuid)
+    const ul = e.target.closest('ul')
+    const parentUUID = e.params.parentUuid
+    const childUUID = e.params.childUuid
+    const active = e.params.active
     const selectedChild = this.geselecteerdFormulierTaaktypeTargets.find(
-      (elem) => elem.dataset.uuid === uuid
+      (elem) => elem.dataset.uuid === childUUID
     )
-    const selectedParent = this.geselecteerdFormulierTaaktypeTargets.find(
-      (elem) => elem.dataset.uuid === e.params.uuid
-    )
-    console.log(selectedParent)
-
-    const parents = JSON.parse(selectedChild.dataset.parents)
-    !parents.includes(e.params.uuid) && parents.push(e.params.uuid)
-    selectedChild.dataset.parents = JSON.stringify(parents)
-
-    const addChildToParent = (parent, uuidParent, childUuid) => {
-      console.log('addChildToParent', parent, childUuid)
-      const children = JSON.parse(parent.dataset.children)
-      !children.includes(childUuid) && children.push(childUuid)
-      parent.dataset.children = JSON.stringify(children)
-      const parentParentUuids = JSON.parse(uuidParent.dataset.children)
-      parentParentUuids.map((uuid) => {
-        console.log('parent uuids', uuid)
-        const parentParent = this.geselecteerdFormulierTaaktypeTargets.find(
+    let parents = JSON.parse(selectedChild.dataset.parents)
+    !active ? parents.push(parentUUID) : parents.splice(parents.indexOf(parentUUID), 1)
+    parents = JSON.stringify([...new Set(parents)])
+    selectedChild.dataset.parents = parents
+    let parentsInput = selectedChild.querySelector(`input[name*='-parents']`)
+    parentsInput.value = parents
+    this.renderParentOptions(selectedChild, ul)
+  }
+  setChildForParents(parent, currentParent, childUUID, addToParent) {
+    let children = JSON.parse(parent.dataset.children)
+    addToParent ? children.push(childUUID) : children.splice(children.indexOf(childUUID), 1)
+    children = [...new Set(children)]
+    parent.dataset.children = JSON.stringify(children)
+    const parentParentUuids = JSON.parse(currentParent.dataset.children)
+    parentParentUuids.map((uuid) => {
+      console.log('parent uuids', uuid)
+      const parentParent = this.geselecteerdFormulierTaaktypeTargets.find(
+        (elem) => elem.dataset.uuid === uuid
+      )
+      this.setChildForParents(parent, parentParent, uuid, addToParent)
+    })
+  }
+  getAllRelatedUuids(elem, relation) {
+    let allRelatedUuids = []
+    const getRelatedUuids = (relatedElem) => {
+      const uuids = JSON.parse(relatedElem.dataset[relation])
+      allRelatedUuids = [...allRelatedUuids, ...uuids]
+      uuids.map((uuid) => {
+        const relatedElem = this.geselecteerdFormulierTaaktypeTargets.find(
           (elem) => elem.dataset.uuid === uuid
         )
-        addChildToParent(selectedParent, parentParent, uuid)
+        relatedElem && getRelatedUuids(relatedElem)
       })
     }
-    addChildToParent(selectedParent, selectedParent, uuid)
+    getRelatedUuids(elem)
+    return [...new Set(allRelatedUuids)]
   }
-  removeCurrentParentList() {
+  removeCurrentParentOptions() {
     const parentsList = this.element.querySelector('[data-parents-list]')
     const uuid = parentsList?.dataset.parentsList
     parentsList && parentsList.remove()
     return uuid
   }
-  taaktypeAfhankelijkheidHandler(e) {
-    this.removeCurrentParentList()
+  showParentOptionsHandler(e) {
+    this.removeCurrentParentOptions()
     const geselecteerdFormulierTaaktype = e.target.closest(
       '[data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktype"]'
     )
@@ -219,23 +264,34 @@ export default class extends Controller {
     ul.style.position = 'absolute'
     ul.style.top = '0px'
     ul.style.right = right + 'px'
+    ul.style.zIndex = 10
+    this.renderParentOptions(geselecteerdFormulierTaaktype, ul)
 
+    geselecteerdFormulierTaaktype.appendChild(ul)
+  }
+  renderParentOptions(geselecteerdFormulierTaaktype, ul) {
+    ul.innerHTML = ''
     const availableParentElements = this.getAvailableParentElements(geselecteerdFormulierTaaktype)
-    availableParentElements.map((elem) => {
+    availableParentElements.map(([titel, id, selected, active]) => {
       const li = document.createElement('LI')
-      const a = document.createElement('A')
       const input = document.createElement('INPUT')
       const label = document.createElement('LABEL')
+      const span = document.createElement('SPAN')
+      span.textContent = titel
       input.type = 'checkbox'
-      label.textContent = elem.dataset.uuid
+      input.checked = selected
+      input.setAttribute('data-action', 'taken-aanmaken--manager#parentsSelectedHandler')
+      input.setAttribute('data-taken-aanmaken--manager-parent-uuid-param', id)
+      input.setAttribute(
+        'data-taken-aanmaken--manager-child-uuid-param',
+        geselecteerdFormulierTaaktype.dataset.uuid
+      )
+      input.setAttribute('data-taken-aanmaken--manager-active-param', selected)
+      input.disabled = !active
       label.appendChild(input)
+      label.appendChild(span)
+      li.appendChild(label)
       ul.appendChild(li)
-      li.appendChild(a)
-      a.href = '#'
-      a.setAttribute('data-action', 'taken-aanmaken--manager#parentsSelectedHandler')
-      a.setAttribute('data-taken-aanmaken--manager-uuid-param', elem.dataset.uuid)
-      a.textContent = elem.dataset.uuid
-      summary.appendChild(ul)
     })
   }
   taaktypeVerwijderenHandler(e) {
@@ -255,6 +311,14 @@ export default class extends Controller {
       .find((elem) => elem.dataset.taaktypeUrl == taaktypeUrl)
       ?.remove()
     this.resetFormulierTaaktypeIndexes()
+  }
+  geselecteerdFormulierTaaktypeTargetDisconnected(elem) {
+    const uuid = elem.dataset.uuid
+    this.geselecteerdFormulierTaaktypeTargets.map((elem) => {
+      let parents = JSON.parse(elem.dataset.parents)
+      parents.includes(uuid) && parents.splice(parents.indexOf(uuid), 1)
+      elem.dataset.parents = JSON.stringify(parents)
+    })
   }
   resetFormulierTaaktypeIndexes() {
     const taaktypeAantal = this.geselecteerdFormulierTaaktypeTargets.length
@@ -304,24 +368,19 @@ export default class extends Controller {
     const template = document.getElementById('template_geselecteerd_formulier_taaktype')
     const clone = template.content.cloneNode(true)
     let li = clone.querySelector('li')
-    li.dataset.uuid = uuid
-    li.dataset.children = '[]'
-    li.dataset.parents = '[]'
-
     let taakapplicatieTaaktypeUrlInput = clone.querySelector(
       `input[name*='-taakapplicatie_taaktype_url']`
     )
     let titelInput = clone.querySelector(`input[name*='-titel']`)
     let meldingUuidInput = clone.querySelector(`input[name*='-melding_uuid']`)
     let gebruikerInput = clone.querySelector(`input[name*='-gebruiker']`)
-    let uuidInput = clone.querySelector(`input[name*='-gebruiker']`)
+    let uuidInput = clone.querySelector(`input[name*='-uuid']`)
 
     clone.querySelector('[data-afdelingen]').textContent = taaktypeData.afdelingen
       .map((afd) => afd.naam)
       .join(', ')
-    clone.querySelector('[data-verantwoordelijke-afdeling]').textContent = uuid
-    // clone.querySelector('[data-verantwoordelijke-afdeling]').textContent =
-    // taaktypeData.verantwoordelijke_afdeling?.naam
+    clone.querySelector('[data-verantwoordelijke-afdeling]').textContent =
+      taaktypeData.verantwoordelijke_afdeling?.naam
     clone.querySelector('[data-titel]').textContent = taaktypeData.omschrijving
     clone.querySelector('[data-toelichting]').textContent = taaktypeData.toelichting
     clone.querySelector('[data-omschrijving]').textContent = taaktypeData.omschrijving
@@ -337,6 +396,7 @@ export default class extends Controller {
     meldingUuidInput.value = this.meldingUuidValue
     gebruikerInput.value = this.gebruikerValue
     uuidInput.value = uuid
+    li.dataset.uuid = uuid
     return clone
   }
 
