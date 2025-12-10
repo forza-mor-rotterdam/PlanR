@@ -7,6 +7,7 @@
     <div class="modal-content stap1"
          data-controller="taken-aanmaken--manager"
          data-taken-aanmaken--manager-taaktypes-value="{{ taakr_taaktypes_niet_ingebruik_met_afdelingen|json_encode }}"
+         data-taken-aanmaken--manager-openstaande-taken-value="{{ taken.openstaande_taken|json_encode }}"
          data-taken-aanmaken--manager-gebruiker-value="{{ request.user.email }}"
          data-taken-aanmaken--manager-melding-uuid-value="{{ view.kwargs.id }}"
          data-action="click->taken-aanmaken--manager#showHideSearchResult">
@@ -169,7 +170,7 @@
         </li>
     </template>
     <template id="template_geselecteerd_formulier_taaktype">
-        <li data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktype">
+        <li data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktype" data-parents="[]">
             <details data-action="taken-aanmaken--manager#toggleDetailsHandler">
                 <summary>
                     <div class="container__titel">
@@ -180,9 +181,14 @@
                     </div>
                     <div>
                         <span class="cta--summary">Opmerking toevoegen</span>
+                    </div>
+                    <div data-status>
+
+                    </div>
+                    <div>
                         <button role="button"
                                 class="btn--clean"
-                                data-action="taken-aanmaken--manager#taaktypeAfhankelijkheidHandler:prevent">
+                                data-action="taken-aanmaken--manager#showParentOptionsHandler:prevent">
                             {% include "icons/arrow-double.svg" %}
                         </button>
                         <button role="button"
@@ -204,7 +210,7 @@
                                 <span>Meer info</span>
                             </button>
                         </strong>
-                        <p data-toelichting=""></p>
+                        <p data-toelichting></p>
                         <h3>Afdeling(en)</h3>
                         <span data-afdelingen></span>
                     </div>
@@ -232,15 +238,15 @@
                         <input type="hidden"
                                name="form-0-gebruiker"
                                id="id_form-0-gebruiker"
-                               value="admin@admin.com">
+                               value="">
                         <input type="hidden"
                                name="form-0-uuid"
                                id="id_form-0-uuid"
                                value="">
                         <input type="hidden"
-                               name="form-0-afhankelijkheid"
-                               id="id_form-0-afhankelijkheid"
-                               value="">
+                               name="form-0-parents"
+                               id="id_form-0-parents"
+                               value="[]">
                     </div>
                 </div>
             </details>
