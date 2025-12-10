@@ -297,6 +297,11 @@ class MeldingDetailTaaktypeViewMixin(MeldingDetailViewMixin):
             context["taken"]["niet_verwijderde_taken"] = [
                 taak for taak in alle_taken if not taak["verwijderd_op"]
             ]
+            context["taken"]["openstaande_taken"] = [
+                taak
+                for taak in alle_taken
+                if not taak["verwijderd_op"] and not taak["afgesloten_op"]
+            ]
 
         context.update(
             {

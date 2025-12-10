@@ -345,6 +345,16 @@ class TakenAanmakenForm(forms.Form):
         required=True,
         max_length=200,
     )
+    uuid = forms.CharField(
+        widget=forms.HiddenInput(),
+        required=True,
+        max_length=200,
+    )
+    parents = forms.CharField(
+        widget=forms.HiddenInput(),
+        required=True,
+        max_length=5000,
+    )
 
 
 TakenAanmakenFormset = formset_factory(TakenAanmakenForm, extra=0)
