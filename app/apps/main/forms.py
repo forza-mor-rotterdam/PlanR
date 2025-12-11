@@ -11,9 +11,10 @@ from apps.main.models import (
 )
 from apps.main.services import MORCoreService, render_onderwerp
 from apps.main.utils import get_valide_filter_classes, get_valide_kolom_classes
+from apps.main.validators import validate_taakvolgorde
 from django import forms
 from django.core.files.storage import default_storage
-from django.forms import formset_factory
+from django.forms import BaseFormSet, formset_factory
 from django.utils import timezone
 from django_select2.forms import Select2Widget
 from utils.rd_convert import rd_to_wgs
@@ -357,7 +358,15 @@ class TakenAanmakenForm(forms.Form):
     )
 
 
-TakenAanmakenFormset = formset_factory(TakenAanmakenForm, extra=0)
+class BaseTakenAanmakenFormSet(BaseFormSet):
+    def clean(self):
+        super().clean()
+        validate_taakvolgorde(self.cleaned_data)
+
+
+TakenAanmakenFormset = formset_factory(
+    TakenAanmakenForm, extra=0, formset=BaseTakenAanmakenFormSet
+)
 
 
 class TaakAfrondenForm(forms.Form):
