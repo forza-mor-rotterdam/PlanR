@@ -183,20 +183,26 @@
                         <span class="cta--summary">Opmerking toevoegen</span>
                     </div>
                     <div data-status>
+                        <span data-status-tag class="tag tag--qualification tag--in_de_wacht" style="display: none;">In de wacht</span>
+                    </div>
+                    <div class="container__uitklapper">
+                        <span>{% include "icons/dots.svg" %}</span>
+                        <div class="legenda">
 
+                                <button type="button"
+                                        class="btn"
+                                        data-action="taken-aanmaken--manager#taaktypeVerwijderenHandler:prevent">
+                                    {% include "icons/bin.svg" %}
+                                </button>
+
+                                <button type="button"
+                                        class="btn"
+                                        data-action="taken-aanmaken--manager#showParentOptionsHandler:prevent">
+                                    Wachten op...
+                                </button>
+                        </div>
                     </div>
-                    <div>
-                        <button role="button"
-                                class="btn--clean"
-                                data-action="taken-aanmaken--manager#showParentOptionsHandler:prevent">
-                            {% include "icons/arrow-double.svg" %}
-                        </button>
-                        <button role="button"
-                                class="btn--clean btn--remove"
-                                data-action="taken-aanmaken--manager#taaktypeVerwijderenHandler:prevent">
-                            {% include "icons/bin.svg" %}
-                        </button>
-                    </div>
+                    <ul data-parents-options-container></ul>
                 </summary>
                 <div class="container__flex">
                     <div>
