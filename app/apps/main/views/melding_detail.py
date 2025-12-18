@@ -1,3 +1,4 @@
+import json
 import logging
 
 from apps.context.utils import get_gebruiker_context
@@ -11,6 +12,7 @@ from apps.main.forms import (
     MeldingHervattenForm,
     MeldingPauzerenForm,
     MeldingSpoedForm,
+    TaakStartenForm,
     TaakVerwijderenForm,
     TakenAanmakenFormset,
 )
@@ -33,6 +35,8 @@ from apps.main.messages import (
     MELDING_PAUZEREN_SUCCESS,
     MELDING_URGENTIE_AANPASSEN_ERROR,
     MELDING_URGENTIE_AANPASSEN_SUCCESS,
+    TAAK_UITZETTEN_ERROR,
+    TAAK_UITZETTEN_SUCCESS,
     TAAK_VERWIJDEREN_ERROR,
     TAAK_VERWIJDEREN_SUCCESS,
 )
@@ -40,6 +44,7 @@ from apps.main.models import MeldingAfhandelreden, StandaardExterneOmschrijving
 from apps.main.services import MORCoreService, TaakRService
 from apps.main.utils import (
     Logboek,
+    get_url_from_links,
     melding_locaties,
     melding_taken,
     publiceer_topic_met_subscriptions,
@@ -50,6 +55,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.files.storage import default_storage
+from django.core.validators import URLValidator
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -60,12 +66,11 @@ logger = logging.getLogger(__name__)
 
 
 class MeldingDetailViewMixin(ContextMixin):
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def get_melding_detail_context(self, **kwargs):
         mor_core_service = MORCoreService()
         gebruiker_context = get_gebruiker_context(self.request.user)
         melding = mor_core_service.get_melding(self.kwargs.get("id"))
-
+        kwargs = {}
         if isinstance(melding, dict) and melding.get("error"):
             status_code = melding.get("error", {}).get("status_code")
             if status_code == 404:
@@ -75,7 +80,7 @@ class MeldingDetailViewMixin(ContextMixin):
             else:
                 messages.error(request=self.request, message=MELDING_OPHALEN_ERROR)
             melding = {}
-        context.update(
+        kwargs.update(
             {
                 "melding": melding,
                 "locaties": melding_locaties(melding),
@@ -83,6 +88,7 @@ class MeldingDetailViewMixin(ContextMixin):
                 "gebruiker_context": gebruiker_context,
             }
         )
+        context = super().get_context_data(**kwargs)
         return context
 
 
@@ -191,8 +197,8 @@ class MeldingDetailTaaktypeViewMixin(MeldingDetailViewMixin):
             key=lambda b: b["omschrijving"].lower(),
         )
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def get_melding_detail_taaktype_context(self, **kwargs):
+        context = super().get_melding_detail_context(**kwargs)
         melding = context["melding"]
         gebruiker_context = context["gebruiker_context"]
 
@@ -337,7 +343,7 @@ class MeldingDetail(
             )
             return {}
 
-        context = super().get_context_data(**kwargs)
+        context = super().get_melding_detail_taaktype_context(**kwargs)
         melding = context["melding"]
         if not melding:
             return context
@@ -363,7 +369,7 @@ class MeldingDetail(
         return context
 
     def get(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
+        context = self.get_melding_detail_taaktype_context(**kwargs)
         if not context.get("meldingen_index") and self.request_next_data():
             return redirect(reverse("melding_detail", args=[self.kwargs.get("id")]))
         return self.render_to_response(context)
@@ -384,7 +390,7 @@ class MeldingAfhandelenView(
     form_class = MeldingAfhandelenForm
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super().get_melding_detail_context(**kwargs)
 
         standaard_externe_omschrijving_lijst = (
             StandaardExterneOmschrijving.objects.exclude(
@@ -670,6 +676,10 @@ class TakenAanmakenView(
     template_name = "melding/detail/taken_aanmaken.html"
     permission_required = "authorisatie.taak_aanmaken"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_melding_detail_taaktype_context(**kwargs)
+        return context
+
     def get_success_url(self):
         return reverse("taken_aanmaken", args=[self.kwargs.get("id")])
 
@@ -679,28 +689,90 @@ class TakenAanmakenStreamView(TakenAanmakenView):
     permission_required = "authorisatie.taak_aanmaken"
 
     def form_invalid(self, form):
-        logger.error("TakenAanmakenStreamView: FORM INVALID")
+        logger.error("TakenAanmakenStreamView errors: FORM INVALID")
         logger.error(form.errors)
-        return super().form_invalid(form)
+        logger.error(form.non_form_errors().as_json())
+
+        messages.error(
+            request=self.request,
+            message="De taken konden niet worden aangemaakt",
+        )
+        context = self.get_melding_detail_taaktype_context()
+        context.pop("form", None)
+        return self.render_to_response(context)
 
     def form_valid(self, form):
-        mor_core_service = MORCoreService()
-        responses = [
-            taak_data | {"response": mor_core_service.taak_aanmaken(**taak_data)}
-            for taak_data in form.cleaned_data
+        taken = [
+            taak | {"parents": json.loads(taak["parents"])}
+            for taak in form.cleaned_data
         ]
-        for response in responses:
-            if response.get("response").get("error"):
-                messages.error(
-                    request=self.request,
-                    message=f"De taak '{response.get('titel')}' kon niet worden aangemaakt",
-                )
-            else:
-                messages.success(
-                    request=self.request,
-                    message=f"De taak '{response.get('titel')}' is aangemaakt",
-                )
-        context = self.get_context_data()
+        url_validator = URLValidator()
+        mor_core_service = MORCoreService()
+        taak_aanmaken_api_fields = [
+            "melding_uuid",
+            "titel",
+            "taakapplicatie_taaktype_url",
+            "bericht",
+            "gebruiker",
+        ]
+        max_loops = 1000
+        loop_counter = 0
+        while [
+            taak for taak in taken if not taak.get("done")
+        ] and loop_counter < max_loops:
+            loop_counter += 1
+            for taak in taken:
+                urls = None
+                try:
+                    [url for url in taak["parents"] if url_validator(url)]
+                    urls = taak["parents"]
+                except Exception:
+                    ...
+                if urls is not None:
+                    taak_data = {
+                        k: v for k, v in taak.items() if k in taak_aanmaken_api_fields
+                    } | {
+                        "afhankelijkheid": [
+                            {
+                                "taakopdracht_url": url,
+                            }
+                            for url in urls
+                        ]
+                    }
+                    response = mor_core_service.taak_aanmaken(**taak_data)
+                    taakopdracht_url = response.get("_links", {}).get("self")
+                    taakopdracht_url = (
+                        taakopdracht_url.get("href")
+                        if isinstance(taakopdracht_url, dict)
+                        else taakopdracht_url
+                    )
+                    if response.get("errors"):
+                        messages.error(
+                            request=self.request,
+                            message=f"De taak '{taak['titel']}' kon niet worden aangemaakt",
+                        )
+                    elif taakopdracht_url:
+                        messages.success(
+                            request=self.request,
+                            message=f"De taak '{taak['titel']}' is aangemaakt",
+                        )
+                        for t in [tt for tt in taken if taak["uuid"] in tt["parents"]]:
+                            t["parents"] = list(
+                                map(
+                                    lambda x: taakopdracht_url
+                                    if x == taak["uuid"]
+                                    else x,
+                                    t["parents"],
+                                )
+                            )
+                    taak["done"] = True
+
+        for taak in taken:
+            logger.info(taak["titel"])
+            logger.info(taak["parents"])
+            logger.info("")
+
+        context = self.get_melding_detail_taaktype_context()
         context.pop("form", None)
         return self.render_to_response(context)
 
@@ -753,6 +825,130 @@ def taak_verwijderen(request, melding_uuid, taakopdracht_uuid=None):
     return render(
         request,
         "melding/detail/taak_verwijderen.html",
+        {
+            "form": form,
+            "melding": melding,
+            "taakopdracht": taakopdracht,
+        },
+    )
+
+
+class TakenStartenView(
+    MeldingDetailTaaktypeViewMixin, StreamViewMixin, PermissionRequiredMixin, FormView
+):
+    template_name = "melding/detail/taak_starten.html"
+    permission_required = "authorisatie.taak_starten"
+    form_class = TaakStartenForm
+    taakopdrachten = None
+
+    def dispatch(self, request, *args, **kwargs):
+        context = super().get_melding_detail_context(**kwargs)
+        self.melding = context["melding"]
+        taakopdracht_uuid = self.kwargs.get("taakopdracht_uuid")
+        self.taakopdrachten = [
+            taakopdracht
+            for taakopdracht in context["taken"]["in_de_wacht_taken"]
+            if taakopdracht["uuid"] == str(taakopdracht_uuid)
+        ]
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if self.taakopdrachten:
+            kwargs.update(
+                {
+                    "taakopdracht_opties": [
+                        (
+                            taakopdracht.get("_links", {}).get("self"),
+                            taakopdracht.get("titel"),
+                        )
+                        for taakopdracht in self.taakopdrachten
+                    ],
+                }
+            )
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context.update(
+            {
+                "taakopdracht": next(iter(self.taakopdrachten), None),
+                "melding": self.melding,
+            }
+        )
+        return context
+
+    def form_invalid(self, form):
+        logger.error(f"{self.__class__.__name__} form invalid: {form.errors}")
+        return super().form_invalid(form)
+
+    def form_valid(self, form):
+        context = super().get_melding_detail_taaktype_context()
+        print(form.cleaned_data)
+        melding_url = get_url_from_links(context["melding"], "self")
+        response = MORCoreService().taakopdracht_uitzetten(
+            melding_url=melding_url,
+            taakopdracht_url=form.cleaned_data["taakopdracht"],
+            gebruiker=self.request.user.email,
+        )
+        if isinstance(response, dict) and response.get("error"):
+            messages.error(request=self.request, message=TAAK_UITZETTEN_ERROR)
+        else:
+            messages.success(request=self.request, message=TAAK_UITZETTEN_SUCCESS)
+
+        context.pop("form", None)
+        return self.render_to_response(context)
+
+
+@login_required
+@permission_required("authorisatie.taak_verwijderen", raise_exception=True)
+def taak_starten(request, melding_uuid, taakopdracht_uuid=None):
+    mor_core_service = MORCoreService()
+
+    melding = mor_core_service.get_melding(melding_uuid)
+    if isinstance(melding, dict) and melding.get("error"):
+        messages.error(request=request, message=MELDING_OPHALEN_ERROR)
+        return render(
+            request,
+            "melding/melding_actie_form.html",
+        )
+
+    open_taakopdrachten = melding_taken(melding).get("open_taken")
+    taakopdracht_urls = {
+        taakopdracht.get("uuid"): taakopdracht.get("_links", {}).get("self")
+        for taakopdracht in open_taakopdrachten
+    }
+    taakopdracht = (
+        [to for to in open_taakopdrachten if to["uuid"] == str(taakopdracht_uuid)]
+        or [{}]
+    )[0]
+    taakopdracht_opties = [
+        (taakopdracht.get("uuid"), taakopdracht.get("titel"))
+        for taakopdracht in open_taakopdrachten
+        if (taakopdracht_uuid and taakopdracht.get("uuid") == str(taakopdracht_uuid))
+        or not taakopdracht_uuid
+    ]
+    form = TaakVerwijderenForm(taakopdracht_opties=taakopdracht_opties)
+    if request.POST:
+        form = TaakVerwijderenForm(
+            request.POST, taakopdracht_opties=taakopdracht_opties
+        )
+        if form.is_valid():
+            response = mor_core_service.taakopdracht_verwijderen(
+                taakopdracht_url=taakopdracht_urls.get(
+                    form.cleaned_data.get("taakopdracht")
+                ),
+                gebruiker=request.user.email,
+            )
+            if isinstance(response, dict) and response.get("error"):
+                messages.error(request=request, message=TAAK_VERWIJDEREN_ERROR)
+            else:
+                messages.success(request=request, message=TAAK_VERWIJDEREN_SUCCESS)
+            return redirect("melding_detail", id=melding_uuid)
+    return render(
+        request,
+        "melding/detail/taak_starten.html",
         {
             "form": form,
             "melding": melding,
@@ -956,7 +1152,7 @@ class LogboekView(MeldingDetailViewMixin, PermissionRequiredMixin, TemplateView)
     permission_required = "authorisatie.melding_bekijken"
 
     def get_context_data(self, **kwargs):
-        kwargs = super().get_context_data(**kwargs)
+        kwargs = super().get_melding_detail_context(**kwargs)
         kwargs.update(
             {
                 "logboek": Logboek(kwargs["melding"], self.request),
