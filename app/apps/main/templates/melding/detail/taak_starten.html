@@ -1,0 +1,46 @@
+{% load rotterdam_formulier_html %}
+{% load vind_in_dict from querystring_tags %}
+{% load json_encode from json_tags %}
+{% load context_template from context_tags %}
+<turbo-stream target="modal_header_title" action="update">
+<template>
+    Taak starten
+</template>
+</turbo-stream>
+<turbo-stream target="modal_body" action="update">
+<template>
+    {% if form %}
+    {% if form.taakopdracht %}
+        <form action="{% if taakopdracht %}{% url 'taak_starten' melding.uuid taakopdracht.uuid %}{% else %}{% url 'taak_verwijderen' melding.uuid %}{% endif %}"
+              method="post"
+              class="form--horizontal"
+              data-turbo-frame="_top"
+              enctype="multipart/form-data">
+            {% csrf_token %}
+            {% if taakopdracht %}<h2>{{ taakopdracht.titel }}</h2>{% endif %}
+            <div data-controller="select2Modal">{{ form.taakopdracht|render_rotterdam_formulier }}</div>
+            <div class="form-row btn-row">
+                <button type="reset" class="btn btn-tertiary" data-action="modal#closeModal">
+                    <span>Annuleren</span>
+                </button>
+                <button type="submit" class="btn btn-action">
+                    <span>Taak starten</span>
+                </button>
+            </div>
+        </form>
+    {% endif %}
+    {% else %}
+        <div data-modal-target="modalSluiten"></div>
+    {% endif %}
+</template>
+</turbo-stream>
+
+{% if not form %}
+{% context_template "melding_detail_acties.html" as acties_template %}
+{% include "melding/detail/taken.html" %}
+{% include "melding/detail/melding_detail_titel.html" %}
+{% include "melding/detail/taken_aanmaken_form.html" with form=form view=view only %}
+{% include "melding/detail/tijdlijn.html" with melding=melding only %}
+{% include acties_template %}
+{% include "public/notificaties/toast_lijst.html" with messages=messages only %}
+{% endif %}

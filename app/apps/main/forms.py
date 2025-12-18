@@ -453,6 +453,28 @@ class TaakVerwijderenForm(forms.Form):
             )
 
 
+class TaakStartenForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        taakopdracht_opties = kwargs.pop("taakopdracht_opties", None)
+        super().__init__(*args, **kwargs)
+
+        if taakopdracht_opties:
+            self.fields["taakopdracht"] = forms.ChoiceField(
+                label="Taak",
+                widget=Select2Widget(
+                    attrs={
+                        "class": "select2",
+                        "data-select2Modal-target": "targetField",
+                    }
+                )
+                if len(taakopdracht_opties) > 1
+                else forms.HiddenInput(),
+                choices=taakopdracht_opties,
+                initial=taakopdracht_opties[0][0],
+                required=True,
+            )
+
+
 class MeldingAfhandelenForm(forms.Form):
     resolutie = forms.ChoiceField(
         label="Conclusie",

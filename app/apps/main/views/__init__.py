@@ -21,6 +21,7 @@ from apps.main.views.melding_detail import MeldingAfhandelenView  # NOQA
 from apps.main.views.melding_detail import MeldingDetail  # NOQA
 from apps.main.views.melding_detail import TakenAanmakenStreamView  # NOQA
 from apps.main.views.melding_detail import TakenAanmakenView  # NOQA
+from apps.main.views.melding_detail import TakenStartenView  # NOQA
 from apps.main.views.melding_detail import informatie_toevoegen  # NOQA
 from apps.main.views.melding_detail import locatie_aanpassen  # NOQA
 from apps.main.views.melding_detail import melding_aanmaken  # NOQA

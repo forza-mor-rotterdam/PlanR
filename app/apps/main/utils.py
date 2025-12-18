@@ -31,6 +31,16 @@ def querystring_to_dict(s: str) -> dict:
     return dict(QueryDict(s))
 
 
+def get_url_from_links(data, name):
+    try:
+        return data["_links"][name].get("href", "-")
+    except Exception:
+        try:
+            return data["_links"].get(name, "-")
+        except Exception:
+            return "-"
+
+
 def to_base64(file):
     binary_file = default_storage.open(file)
     binary_file_data = binary_file.read()
@@ -329,6 +339,8 @@ def taak_status_tekst(taak, css_class=False):
             if not css_class
             else to_kebab(taak.get("resolutie", NIET_OPGELOST))
         )
+    if not taak.get("uitgezet_op"):
+        return "In de wacht" if not css_class else "in_de_wacht"
     return (
         taak_statussen.get(huidige_status_naam, huidige_status_naam)
         if not css_class
@@ -365,6 +377,11 @@ def melding_taken(melding):
         for taakopdracht in taakopdrachten_voor_melding
         if taakopdracht.get("resolutie") in ("niet_opgelost",)
     ]
+    in_de_wacht_taken = [
+        taakopdracht
+        for taakopdracht in taakopdrachten_voor_melding
+        if not taakopdracht.get("uitgezet_op") and not taakopdracht.get("verwijderd_op")
+    ]
 
     aantal_actieve_taken = len(actieve_taken)
 
@@ -376,6 +393,7 @@ def melding_taken(melding):
         "aantal_actieve_taken": aantal_actieve_taken,
         "niet_opgeloste_taken": niet_opgeloste_taken,
         "opgeloste_taken": opgeloste_taken,
+        "in_de_wacht_taken": in_de_wacht_taken,
     }
 
 
