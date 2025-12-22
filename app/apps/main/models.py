@@ -135,6 +135,10 @@ class AutomatRSettings(BasisModel):
         null=True,
     )
 
+    class Meta:
+        verbose_name = "AutomatR settings"
+        verbose_name_plural = "AutomatR settings lijst"
+
 
 class TaaktypeCategorie(models.Model):
     naam = models.CharField(max_length=100, unique=True)
