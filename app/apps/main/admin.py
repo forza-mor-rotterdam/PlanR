@@ -11,6 +11,23 @@ from django_celery_results.admin import TaskResultAdmin
 from django_celery_results.models import TaskResult
 
 
+class AutomatRSettingsAdmin(admin.ModelAdmin):
+    list_display = [
+        "name",
+    ]
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": [
+                    "name",
+                    "settings",
+                ]
+            },
+        ),
+    )
+
+
 class MeldingAfhandelredenAdmin(admin.ModelAdmin):
     list_display = [
         "reden",
@@ -58,6 +75,7 @@ admin.site.register(
     models.StandaardExterneOmschrijving, StandaardExterneOmschrijvingAdmin
 )
 admin.site.register(models.MeldingAfhandelreden, MeldingAfhandelredenAdmin)
+admin.site.register(models.AutomatRSettings, AutomatRSettingsAdmin)
 
 
 def retry_celery_task_admin_action(modeladmin, request, queryset):

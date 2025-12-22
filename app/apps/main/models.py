@@ -114,6 +114,28 @@ class MeldingAfhandelreden(BasisModel):
         return STATUS_NIET_OPGELOST_REDENEN_TITEL.get(self.reden, self.reden)
 
 
+class AutomatRSettings(BasisModel):
+    class NameChoices(models.TextChoices):
+        MELDING_AFHANDELEN_DOOR_TAAK = (
+            "melding_afhandelen_door_taak",
+            "Melding afhandelen door taak",
+        )
+        TAAK_AANMAKEN_BIJ_ONDERWERP = (
+            "taak_aanmaken_bij_onderwerp",
+            "Taak aanmaken door onderwerp",
+        )
+
+    name = models.CharField(
+        max_length=100,
+        unique=True,
+        choices=NameChoices.choices,
+    )
+    settings = models.JSONField(
+        blank=True,
+        null=True,
+    )
+
+
 class TaaktypeCategorie(models.Model):
     naam = models.CharField(max_length=100, unique=True)
     taaktypes = ListJSONField(default=list)
