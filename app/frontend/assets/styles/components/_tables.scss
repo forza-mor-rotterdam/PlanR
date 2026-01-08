@@ -152,3 +152,54 @@
         }
     }
 }
+
+.table--sorter {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+
+    thead,
+    tbody {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+    }
+
+    tr {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        align-items: stretch;
+        align-content: stretch;
+    }
+    td,
+    th {
+        flex: 1 1 0px;
+        width: 5%;
+        overflow: hidden;
+        word-wrap: break-word;
+        // flex-grow: 1;
+        // flex-shrink: 1;
+        // flex-basis: 1;
+    }
+    th[data-sort-order="0"] [data-remove-sort-indicator] {
+        display: none;
+    }
+    th:not([data-sort-order="0"]) [data-remove-sort-indicator] {
+        display: inline;
+    }
+    th[data-sort-order="0"] [data-sort-direction-indicator]::after {
+        display: none;
+    }
+    th[data-sort-direction="desc"]:not(th[data-sort-order="0"])
+        [data-sort-direction-indicator]:after {
+        display: inline;
+        content: "\25B2";
+    }
+    th[data-sort-direction="asc"]:not(th[data-sort-order="0"])
+        [data-sort-direction-indicator]:after {
+        // display: block;
+        display: inline;
+        content: "\25BC";
+    }
+}
