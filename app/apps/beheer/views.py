@@ -574,7 +574,8 @@ class TaakopdrachtTaakAanmakenIssueLijstView(PermissionRequiredMixin, FormView):
 def dynamic_table(request):
     import json
 
-    with open("app/apps/beheer/files/generated.json", "r") as file:
+    # with open("app/apps/beheer/files/generated.json", "r") as file:
+    with open("apps/beheer/files/generated.json", "r") as file:
         data = json.load(file)
 
     print(len(data))
@@ -598,7 +599,7 @@ def dynamic_table(request):
         ]
         for k, v in data_sort_unique_values.items()
     }
-    print(json.dumps(data_sort_indexes, indent=4))
+    # print(json.dumps(data_sort_indexes, indent=4))
 
     data = [
         {
@@ -612,6 +613,6 @@ def dynamic_table(request):
         }
         for d in data
     ]
-    # print(json.dumps(data, indent=4))
+    print(json.dumps(data, indent=4))
 
     return render(request, "beheer/dynamic_table.html", {"data": data})

@@ -1,0 +1,22 @@
+{% load json_encode from json_tags %}
+
+<table data-dashboard-target="table" data-controller="table" data-table-data-value="{{ table_data|json_encode }}" data-table-id-value="{{ table_id }}" data-table-row-filters-value="{{ table_row_filters|json_encode }}" data-table-sort-key-value="{{ sort_key }}">
+    <thead></thead>
+    <tbody></tbody>
+    <tfoot></tfoot>
+    <template id="{{ table_id }}_table_row">
+        <tr data-table-row></tr>
+    </template>
+    <template id="{{ table_id }}_table_head_cell">
+        <th data-table-head-cell>
+            <strong data-table-head-title></strong>
+            <a data-table-head-sorter data-action="table#sorterClickHandler">^</a>
+        </th>
+    </template>
+    <template id="{{ table_id }}_table_body_cell">
+        <td data-table-body-cell></td>
+    </template>
+    <template id="{{ table_id }}_table_foot_cell">
+        <th data-table-foot-cell></th>
+    </template>
+</table>
