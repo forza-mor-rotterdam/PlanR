@@ -32,6 +32,7 @@ from apps.main.views import (
     sidesheet_actueel,
     taak_verwijderen,
 )
+from apps.main.viewsets import AutomatRSettingsViewSet
 from apps.release_notes.views import (
     ReleaseNoteDetailView,
     ReleaseNoteListViewPublic,
@@ -46,10 +47,22 @@ from django.contrib import admin
 from django.urls import include, path, re_path
 from django.views.generic import RedirectView
 from django_select2 import urls as select2_urls
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
 from rest_framework.authtoken import views
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register(
+    r"automatr-settings", AutomatRSettingsViewSet, basename="automatr-settings"
+)
 
 urlpatterns = [
     path("", root, name="root"),
+    path("api/v1/", include((router.urls, "app"), namespace="v1")),
     path("api-token-auth/", views.obtain_auth_token),
     path("session-timer/", SessionTimerView.as_view(), name="session_timer"),
     path(
@@ -212,6 +225,18 @@ urlpatterns = [
     path("ckeditor5/", include("django_ckeditor_5.urls")),
     path("beheer/", include("apps.beheer.urls")),
     path("dashboard/", include("apps.dashboard.urls")),
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    # Optional UI:
+    path(
+        "api/schema/swagger-ui/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
+    path(
+        "api/schema/redoc/",
+        SpectacularRedocView.as_view(url_name="schema"),
+        name="redoc",
+    ),
 ]
 
 if not settings.ENABLE_DJANGO_ADMIN_LOGIN:
