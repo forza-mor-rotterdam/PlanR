@@ -43,7 +43,6 @@ export default class extends Controller {
     this.render()
   }
   render() {
-    console.log('render')
     const rowTemplate = document.getElementById(`${this.id}_table_row`)
     const headCellTemplate = document.getElementById(`${this.id}_table_head_cell`)
     const bodyCellTemplate = document.getElementById(`${this.id}_table_body_cell`)

@@ -22,7 +22,6 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log(this.identifier)
     this.tableData = JSON.parse(this.dataValue)
     this.rowFilters = JSON.parse(this.rowFiltersValue)
     this.periode = 24

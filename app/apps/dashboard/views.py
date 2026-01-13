@@ -490,19 +490,13 @@ class DashboardV2(PermissionRequiredMixin, FormView):
 
         self.melding_status_buurt_aantallen = mor_core_service.haal_data(
             url=melding_status_buurt_aantallen_url
-        )
+        ).get("results", [])
         self.melding_status_buurt_aantallen_spoed = mor_core_service.haal_data(
             url=melding_status_buurt_aantallen_url,
             params={
                 "spoed": "true",
             },
-        )
-
-        # print("self.melding_status_buurt_aantallen_spoed")
-        # print(len(self.melding_status_buurt_aantallen_spoed))
-        # print(len(self.melding_status_buurt_aantallen))
-        # print(json.dumps(buurten_json_response, indent=4))
-        # print(json.dumps(self.melding_status_buurt_aantallen, indent=4))
+        ).get("results", [])
 
         self.stadsdeel_met_wijknaam = {
             wijk.get("wijknaam"): wijk.get("stadsdeel") for wijk in PDOK_WIJKEN
@@ -562,13 +556,13 @@ class DashboardV2(PermissionRequiredMixin, FormView):
             params={
                 "afgesloten_op_gt": dt_past,
             },
-        )
+        ).get("results", [])
         melding_aangemaakt_per_buurt_aantallen = mor_core_service.haal_data(
             url=melding_aangemaakt_per_buurt_aantallen_url,
             params={
                 "aangemaakt_op_gt": dt_past,
             },
-        )
+        ).get("results", [])
 
         melding_afgehandeld_per_buurt_aantallen = [
             melding
