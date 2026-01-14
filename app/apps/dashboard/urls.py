@@ -19,7 +19,7 @@ urlpatterns = [
     path(
         "v2/",
         DashboardV2.as_view(),
-        name="dashboard",
+        name="dashboard_v2",
     ),
     path(
         "mock/",

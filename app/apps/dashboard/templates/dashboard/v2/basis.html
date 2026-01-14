@@ -19,7 +19,7 @@
 {% block body %}
     <turbo-frame id="overview" data-turbo-action="advance" data-controller="sidesheet">
     {% block content %}
-    <form method="post" action="{% url 'dashboard' %}" data-controller="dashboard" data-dashboard-data-value="{{ actueel_table|json_encode }}" data-dashboard-row-filters-value="{{ default_row_filters|json_encode }}">
+    <form method="post" action="{% url 'dashboard_v2' %}" data-controller="dashboard" data-dashboard-data-value="{{ actueel_table|json_encode }}" data-dashboard-row-filters-value="{{ default_row_filters|json_encode }}">
         {% csrf_token %}
         <div class="screen-xl">
             <section class="section--separated--l">
