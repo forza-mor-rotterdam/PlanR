@@ -48,3 +48,50 @@ class DashboardForm(forms.Form):
 
         self.fields["wijk"].choices = wijk_choices
         self.fields["onderwerp"].choices = onderwerp_choices
+
+
+class DashboardV2Form(forms.Form):
+    weergave = forms.ChoiceField(
+        widget=forms.RadioSelect(
+            attrs={
+                "class": "list--form-radio-input",
+                "data-action": "dashboard#onWeergaveChangeHandler",
+            }
+        ),
+        choices=(
+            ("wijk", "Wijk"),
+            ("buurt", "Buurt"),
+        ),
+        initial="wijk",
+    )
+    stadsdeel = forms.ChoiceField(
+        widget=forms.RadioSelect(
+            attrs={
+                "class": "list--form-radio-input",
+                "data-action": "dashboard#onStadsdeelChangeHandler",
+            }
+        ),
+        choices=(
+            ("", "Heel Rotterdam"),
+            ("noord", "Rotterdam noord"),
+            ("zuid", "Rotterdam zuid"),
+        ),
+        initial="",
+        required=False,
+    )
+    periode = forms.ChoiceField(
+        widget=forms.RadioSelect(
+            attrs={
+                "class": "list--form-radio-input",
+                "data-action": "dashboard#onPeriodeChangeHandler",
+            }
+        ),
+        choices=(
+            ("1", "1 uur"),
+            ("24", "24 uur"),
+            ("48", "2 dagen"),
+            ("168", "Één week"),
+            ("672", "4 weken"),
+        ),
+        initial="1",
+    )

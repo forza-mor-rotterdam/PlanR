@@ -1,0 +1,2 @@
+{% load to_abs from number_tags %}
+{{ alle_meldingen_lookback_aantal|to_abs }} {% if alle_meldingen_lookback_aantal|to_abs == 1 %}melding{% else %}meldingen{% endif %} {% if alle_meldingen_lookback_aantal < 0 %}minder{% elif alle_meldingen_lookback_aantal > 0 %}meer{% endif%} dan {{ periode }} uur geleden

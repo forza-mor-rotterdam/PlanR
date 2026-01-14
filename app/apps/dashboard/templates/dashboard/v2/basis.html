@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load rotterdam_formulier_html %}
+{% load l10n %}
+{% load humanize %}
+{% load tz %}
+{% load json_encode from json_tags %}
+{% load to_abs from number_tags %}
+{% block title %}
+    Dashboard | PlanR
+{% endblock title %}
+{% block header %}
+    {% with pageTitle="Dashboard" %}
+        {% include "snippets/pageheader.html" %}
+    {% endwith %}
+{% endblock header %}
+{% block body_class %}
+    wide--xl
+{% endblock body_class %}
+{% block body %}
+    <turbo-frame id="overview" data-turbo-action="advance" data-controller="sidesheet">
+    {% block content %}
+    <form method="post" action="{% url 'dashboard' %}" data-controller="dashboard" data-dashboard-data-value="{{ actueel_table|json_encode }}" data-dashboard-row-filters-value="{{ default_row_filters|json_encode }}">
+        {% csrf_token %}
+        <div class="screen-xl">
+            <section class="section--separated--l">
+                <div class="container__filters">
+                    <div class="container__title">
+                        <h1>
+                            Inzichten
+                        </h1>
+                    </div>
+                    <ul>
+                        <li><span data-dashboard-target="alleMeldingenAantal">{{alle_meldingen_aantal}}</span> meldingen, <span data-dashboard-target="lookbackAantal">{% include "dashboard/v2/lookback_aantal.html" %}</span></li>
+                        <li>Nieuwe meldingen: <span data-dashboard-target="nieuweMeldingenAantal">{{nieuwe_meldingen_aantal}}</span> (<span data-dashboard-target="nieuweMeldingenPercentage">{{ nieuwe_meldingen_percentage|floatformat:0 }}%</span>)</li>
+                        <li>Meldingen in behandeling: <span data-dashboard-target="inBehandelingMeldingenAantal">{{meldingen_in_behandeling_aantal}}</span> (<span data-dashboard-target="inBehandelingMeldingenPercentage">{{ meldingen_in_behandeling_percentage|floatformat:0 }}%</span>)</li>
+                        <li>Meldingen in controle: <span data-dashboard-target="controleMeldingenAantal">{{meldingen_in_controle_aantal}}</span> (<span data-dashboard-target="controleMeldingenPercentage">{{ meldingen_in_controle_percentage|floatformat:0 }}%</span>)</li>
+                        <li>Meldingen op pauze: <span data-dashboard-target="pauzeMeldingenAantal">{{meldingen_op_pauze_aantal}}</span> (<span data-dashboard-target="pauzeMeldingenPercentage">{{ meldingen_op_pauze_percentage|floatformat:0 }}%</span>)</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+        <div class="screen-xl">
+            <section class="section--separated--l">
+                <div class="container__filters">
+                    <div class="container__title">
+                        <h1>
+                            Actueel
+                        </h1>
+                    </div>
+                    <div class="container__filters">
+                        {{ form.weergave }}
+                        {{ form.stadsdeel }}
+                        {% include "snippets/table.html" with table_data=actueel_table table_id="dashboard_actueel" table_row_filters=default_row_filters sort_key="alle_meldingen" only %}
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="screen-xl">
+            <section class="section--separated--l">
+                <div class="container__filters">
+                    <div class="container__title">
+                        <h1>
+                            Historisch
+                        </h1>
+                    </div>
+                        {{ form.periode }}
+                    <div id="dashboard_historisch" class="container__filters">
+                        {% include "snippets/table.html" with table_data=historische_table_data table_id="dashboard_historisch" table_row_filters=default_row_filters sort_key="weergave" only %}
+                    </div>
+                </div>
+            </section>
+        </div>
+    </form>
+    {% endblock content %}
+    </turbo-frame>
+{% endblock body %}

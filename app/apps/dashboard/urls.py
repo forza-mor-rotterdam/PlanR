@@ -1,4 +1,6 @@
 from apps.dashboard.views import (
+    Dashboard,
+    DashboardV2,
     MeldingenAfgehandeld,
     NieuweMeldingen,
     NieuweTaakopdrachten,
@@ -9,6 +11,16 @@ from django.urls import path, re_path
 
 urlpatterns = [
     # Dashboard
+    path(
+        "",
+        Dashboard.as_view(),
+        name="dashboard",
+    ),
+    path(
+        "v2/",
+        DashboardV2.as_view(),
+        name="dashboard",
+    ),
     path(
         "mock/",
         dashboard_mock,

@@ -28,6 +28,7 @@ from apps.beheer.views import (
     StandaardExterneOmschrijvingVerwijderenView,
     TaakopdrachtTaakAanmakenIssueLijstView,
     beheer,
+    dynamic_table,
 )
 from apps.context.views import (
     ContextAanmakenView,
@@ -45,6 +46,7 @@ from django.urls import path
 
 urlpatterns = [
     path("", beheer, name="beheer"),
+    path("dynamic-table", dynamic_table, name="dynamic_table"),
     path(
         "gebruiker/",
         GebruikerLijstView.as_view(),

@@ -4,7 +4,7 @@ import logging
 from datetime import datetime, timedelta
 
 import isoweek
-from apps.dashboard.forms import DashboardForm
+from apps.dashboard.forms import DashboardForm, DashboardV2Form
 from apps.dashboard.models import (
     DoorlooptijdenAfgehandeldeMeldingen,
     NieuweMeldingAantallen,
@@ -21,13 +21,22 @@ from apps.main.constanten import (
     DAGEN_VAN_DE_WEEK_KORT,
     MAANDEN,
     MAANDEN_KORT,
+    MELDING_STATUS_AFGEHANDELD,
+    MELDING_STATUS_CONTROLE,
+    MELDING_STATUS_GEANNULEERD,
+    MELDING_STATUS_IN_BEHANDELING,
+    MELDING_STATUS_OPENSTAAAND,
+    MELDING_STATUS_PAUZE,
+    MELDING_STATUS_WACHTEN_MELDER,
     PDOK_WIJKEN,
 )
-from apps.main.services import OnderwerpenService
+from apps.main.services import LocatieService, MORCoreService, OnderwerpenService
 from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.gis.db import models
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic.edit import FormView
 
@@ -457,3 +466,405 @@ class NieuweTaakopdrachten(Dashboard):
         )
 
         return context
+
+
+class DashboardV2(PermissionRequiredMixin, FormView):
+    template_name = "dashboard/v2/basis.html"
+    permission_required = "authorisatie.dashboard_bekijken"
+    form_class = DashboardV2Form
+    melding_status_buurt_aantallen = []
+    melding_afgehandeld_per_buurt_aantallen = []
+    stadsdeel_met_wijknaam = {}
+    wijken_buurten = []
+    default_lookback_hours = 24
+
+    def get_stadsdeel(self, wijknaam):
+        return self.stadsdeel_met_wijknaam.get(wijknaam, "zuid")
+
+    def dispatch(self, request, *args, **kwargs):
+        locatie_service = LocatieService()
+        mor_core_service = MORCoreService()
+        melding_status_buurt_aantallen_url = "/api/v1/melding/status-buurt-aantallen"
+
+        buurten_json_response = locatie_service.buurten()
+
+        self.melding_status_buurt_aantallen = mor_core_service.haal_data(
+            url=melding_status_buurt_aantallen_url
+        ).get("results", [])
+        self.melding_status_buurt_aantallen_spoed = mor_core_service.haal_data(
+            url=melding_status_buurt_aantallen_url,
+            params={
+                "spoed": "true",
+            },
+        ).get("results", [])
+
+        self.stadsdeel_met_wijknaam = {
+            wijk.get("wijknaam"): wijk.get("stadsdeel") for wijk in PDOK_WIJKEN
+        }
+        buurten = [
+            {
+                "naam": buurt.get("naam"),
+                "stadsdeel": self.get_stadsdeel(buurt.get("wijk", {}).get("naam")),
+            }
+            for buurt in buurten_json_response.get("results", [])
+        ]
+        wijken = [
+            {
+                "naam": wijk,
+                "stadsdeel": self.get_stadsdeel(wijk),
+            }
+            for wijk in list(
+                set(
+                    [
+                        buurt.get("wijk", {}).get("naam")
+                        for buurt in buurten_json_response.get("results", [])
+                    ]
+                )
+            )
+        ]
+        self.wijken_buurten = [
+            f'{buurt.get("wijk", {}).get("naam")} | {buurt.get("naam")}'
+            for buurt in buurten_json_response.get("results", [])
+        ]
+        self.weergaves = [
+            {
+                "key": "wijk",
+                "naam": "Wijk",
+                "rows": wijken,
+            },
+            {
+                "key": "buurt",
+                "naam": "Buurt",
+                "rows": buurten,
+            },
+        ]
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_historische_table_data(self, hours=24):
+        mor_core_service = MORCoreService()
+        melding_afgehandeld_per_buurt_aantallen_url = (
+            "/api/v1/melding/afgehandeld-aantallen"
+        )
+        melding_aangemaakt_per_buurt_aantallen_url = (
+            "/api/v1/melding/aangemaakt-aantallen"
+        )
+
+        dt_past = (timezone.now() - timedelta(hours=int(hours))).isoformat()
+
+        melding_afgehandeld_per_buurt_aantallen = mor_core_service.haal_data(
+            url=melding_afgehandeld_per_buurt_aantallen_url,
+            params={
+                "afgesloten_op_gt": dt_past,
+            },
+        ).get("results", [])
+        melding_aangemaakt_per_buurt_aantallen = mor_core_service.haal_data(
+            url=melding_aangemaakt_per_buurt_aantallen_url,
+            params={
+                "aangemaakt_op_gt": dt_past,
+            },
+        ).get("results", [])
+
+        melding_afgehandeld_per_buurt_aantallen = [
+            melding
+            for melding in melding_afgehandeld_per_buurt_aantallen
+            if f'{melding.get("wijk")} | {melding.get("buurt")}' in self.wijken_buurten
+        ]
+        melding_aangemaakt_per_buurt_aantallen = [
+            melding
+            for melding in melding_aangemaakt_per_buurt_aantallen
+            if f'{melding.get("wijk")} | {melding.get("buurt")}' in self.wijken_buurten
+        ]
+        self.melding_afgehandeld_per_buurt_aantallen_totaal = sum(
+            melding.get("count", 0)
+            for melding in melding_afgehandeld_per_buurt_aantallen
+        )
+        self.melding_aangemaakt_per_buurt_aantallen_totaal = sum(
+            melding.get("count", 0)
+            for melding in melding_aangemaakt_per_buurt_aantallen
+        )
+
+        historische_table_data = [
+            {
+                "filters": {
+                    "weergave": weergave["key"],
+                    "stadsdeel": row.get("stadsdeel").lower(),
+                },
+                "columns": [
+                    {
+                        "key": "weergave",
+                        "column": weergave["naam"],
+                        "value": row.get("naam"),
+                    }
+                ]
+                + [
+                    {
+                        "key": "aangemaakt",
+                        "column": "Binnengekomen meldingen",
+                        "value": sum(
+                            [
+                                aangemaakt.get("count", 0)
+                                for aangemaakt in melding_aangemaakt_per_buurt_aantallen
+                                if aangemaakt.get(weergave["key"]) == row.get("naam")
+                            ]
+                        ),
+                    }
+                ]
+                + [
+                    {
+                        "key": "afgehandeld",
+                        "column": "Afgehandelde meldingen",
+                        "value": sum(
+                            [
+                                afgehandeld.get("count", 0)
+                                for afgehandeld in melding_afgehandeld_per_buurt_aantallen
+                                if afgehandeld.get(weergave["key"]) == row.get("naam")
+                            ]
+                        ),
+                    }
+                ],
+            }
+            for weergave in self.weergaves
+            for row in weergave["rows"]
+        ]
+        return historische_table_data
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        historische_table_data = self.get_historische_table_data(
+            hours=self.default_lookback_hours
+        )
+
+        alle_meldingen = [
+            melding
+            for melding in self.melding_status_buurt_aantallen
+            if f'{melding.get("wijk")} | {melding.get("buurt")}' in self.wijken_buurten
+            and melding.get("status")
+            not in [MELDING_STATUS_AFGEHANDELD, MELDING_STATUS_GEANNULEERD]
+        ]
+        alle_spoed_meldingen = [
+            melding
+            for melding in self.melding_status_buurt_aantallen_spoed
+            if f'{melding.get("wijk")} | {melding.get("buurt")}' in self.wijken_buurten
+            and melding.get("status")
+            not in [MELDING_STATUS_AFGEHANDELD, MELDING_STATUS_GEANNULEERD]
+        ]
+        actueel_table = [
+            {
+                "filters": {
+                    "weergave": weergave["key"],
+                    "stadsdeel": row.get("stadsdeel").lower(),
+                },
+                "columns": [
+                    {
+                        "key": "weergave",
+                        "column": weergave["naam"],
+                        "value": row.get("naam"),
+                    }
+                ]
+                + [
+                    {
+                        "key": "alle_meldingen",
+                        "column": "Alle meldingen",
+                        "value": sum(
+                            [
+                                melding.get("count", 0)
+                                for melding in alle_meldingen
+                                if melding.get(weergave["key"]) == row.get("naam")
+                            ]
+                        ),
+                    }
+                ]
+                + [
+                    {
+                        "key": "spoed_meldingen",
+                        "column": "Meldingen met spoed",
+                        "value": sum(
+                            [
+                                spoed.get("count", 0)
+                                for spoed in alle_spoed_meldingen
+                                if spoed.get(weergave["key"]) == row.get("naam")
+                            ]
+                        ),
+                    }
+                ]
+                + [
+                    {
+                        "key": "nieuwe_meldingen",
+                        "column": "Nieuwe meldingen",
+                        "value": sum(
+                            [
+                                nieuw.get("count", 0)
+                                for nieuw in alle_meldingen
+                                if nieuw.get("status") == MELDING_STATUS_OPENSTAAAND
+                                and nieuw.get(weergave["key"]) == row.get("naam")
+                            ]
+                        ),
+                    }
+                ]
+                + [
+                    {
+                        "key": "meldingen_in_behandeling",
+                        "column": "Meldingen in behandeling",
+                        "value": sum(
+                            [
+                                in_behandeling.get("count", 0)
+                                for in_behandeling in alle_meldingen
+                                if in_behandeling.get("status")
+                                == MELDING_STATUS_IN_BEHANDELING
+                                and in_behandeling.get(weergave["key"])
+                                == row.get("naam")
+                            ]
+                        ),
+                    }
+                ]
+                + [
+                    {
+                        "key": "meldingen_controle",
+                        "column": "Meldingen ter controle",
+                        "value": sum(
+                            [
+                                controle.get("count", 0)
+                                for controle in alle_meldingen
+                                if controle.get("status") == MELDING_STATUS_CONTROLE
+                                and controle.get(weergave["key"]) == row.get("naam")
+                            ]
+                        ),
+                    }
+                ]
+                + [
+                    {
+                        "key": "meldingen_pauze",
+                        "column": "Meldingen pauze",
+                        "value": sum(
+                            [
+                                pauze.get("count", 0)
+                                for pauze in alle_meldingen
+                                if pauze.get("status")
+                                in [MELDING_STATUS_PAUZE, MELDING_STATUS_WACHTEN_MELDER]
+                                and pauze.get(weergave["key"]) == row.get("naam")
+                            ]
+                        ),
+                    }
+                ],
+            }
+            for weergave in self.weergaves
+            for row in weergave["rows"]
+        ]
+
+        alle_meldingen_aantal = sum(
+            [
+                melding_status_buurt_aantal.get("count", 0)
+                for melding_status_buurt_aantal in alle_meldingen
+            ]
+        )
+        nieuwe_meldingen_aantal = sum(
+            [
+                melding_status_buurt_aantal.get("count", 0)
+                for melding_status_buurt_aantal in alle_meldingen
+                if melding_status_buurt_aantal.get("status")
+                == MELDING_STATUS_OPENSTAAAND
+            ]
+        )
+        meldingen_in_behandeling_aantal = sum(
+            [
+                melding_status_buurt_aantal.get("count", 0)
+                for melding_status_buurt_aantal in alle_meldingen
+                if melding_status_buurt_aantal.get("status")
+                == MELDING_STATUS_IN_BEHANDELING
+            ]
+        )
+        meldingen_in_controle_aantal = sum(
+            [
+                melding_status_buurt_aantal.get("count", 0)
+                for melding_status_buurt_aantal in alle_meldingen
+                if melding_status_buurt_aantal.get("status") == MELDING_STATUS_CONTROLE
+            ]
+        )
+        meldingen_op_pauze_aantal = sum(
+            [
+                melding_status_buurt_aantal.get("count", 0)
+                for melding_status_buurt_aantal in alle_meldingen
+                if melding_status_buurt_aantal.get("status")
+                in [MELDING_STATUS_PAUZE, MELDING_STATUS_WACHTEN_MELDER]
+            ]
+        )
+
+        print("alle_meldingen_aantal")
+        print(alle_meldingen_aantal)
+        print("melding_afgehandeld_per_buurt_aantallen_totaal")
+        print(self.melding_afgehandeld_per_buurt_aantallen_totaal)
+        print("melding_aangemaakt_per_buurt_aantallen_totaal")
+        print(self.melding_aangemaakt_per_buurt_aantallen_totaal)
+
+        context.update(
+            {
+                "alle_meldingen_aantal": alle_meldingen_aantal,
+                "alle_meldingen_lookback_aantal": self.melding_aangemaakt_per_buurt_aantallen_totaal
+                - self.melding_afgehandeld_per_buurt_aantallen_totaal,
+                "nieuwe_meldingen_aantal": nieuwe_meldingen_aantal,
+                "nieuwe_meldingen_percentage": (
+                    nieuwe_meldingen_aantal / alle_meldingen_aantal
+                )
+                * 100,
+                "meldingen_in_behandeling_aantal": meldingen_in_behandeling_aantal,
+                "meldingen_in_behandeling_percentage": (
+                    meldingen_in_behandeling_aantal / alle_meldingen_aantal
+                )
+                * 100,
+                "meldingen_in_controle_aantal": meldingen_in_controle_aantal,
+                "meldingen_in_controle_percentage": (
+                    meldingen_in_controle_aantal / alle_meldingen_aantal
+                )
+                * 100,
+                "meldingen_op_pauze_aantal": meldingen_op_pauze_aantal,
+                "meldingen_op_pauze_percentage": (
+                    meldingen_op_pauze_aantal / alle_meldingen_aantal
+                )
+                * 100,
+                "historische_table_data": historische_table_data,
+                "actueel_table": actueel_table,
+                "default_row_filters": {
+                    "weergave": "wijk",
+                },
+                "periode": self.default_lookback_hours,
+            }
+        )
+
+        return context
+
+    def get_initial(self):
+        initial = super().get_initial()
+
+        initial.update(
+            {
+                "periode": self.default_lookback_hours,
+                "weergave": "wijk",
+            }
+        )
+
+        return initial
+
+    def form_valid(self, form):
+        historische_table_data = self.get_historische_table_data(
+            hours=form.cleaned_data["periode"]
+        )
+        context = {
+            "historische_table_data": historische_table_data,
+            "alle_meldingen_lookback_aantal": self.melding_aangemaakt_per_buurt_aantallen_totaal
+            - self.melding_afgehandeld_per_buurt_aantallen_totaal,
+            "periode": form.cleaned_data["periode"],
+            "default_row_filters": {
+                k: v
+                for k, v in form.cleaned_data.items()
+                if v and k in ["weergave", "stadsdeel"]
+            },
+        }
+
+        response = render(
+            self.request,
+            "dashboard/v2/basis_stream.html",
+            context=context,
+        )
+        response.headers["Content-Type"] = "text/vnd.turbo-stream.html"
+        return response
