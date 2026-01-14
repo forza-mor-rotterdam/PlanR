@@ -1,4 +1,5 @@
 from apps.dashboard.views import (
+    Dashboard,
     DashboardV2,
     MeldingenAfgehandeld,
     NieuweMeldingen,
@@ -12,6 +13,11 @@ urlpatterns = [
     # Dashboard
     path(
         "",
+        Dashboard.as_view(),
+        name="dashboard",
+    ),
+    path(
+        "v2/",
         DashboardV2.as_view(),
         name="dashboard",
     ),
