@@ -76,7 +76,6 @@
             <span>Melding afhandelen</span>
         </button>
     {% endif %}
-    {% comment %} and (melding.status.naam == "afgehandeld" or melding.status.naam != "geannuleerd") {% endcomment %}
     {% if perms.authorisatie.melding_heropenen and melding.afgesloten_op %}
         <button type="button"
                 class="btn btn-tertiary"

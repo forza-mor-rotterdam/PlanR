@@ -1,4 +1,5 @@
 from apps.main.models import STATUS_NIET_OPGELOST_REDENEN_TITEL
+from apps.main.services import render_categorie as render_categorie_service
 from apps.main.services import render_onderwerp as render_onderwerp_service
 from apps.main.utils import melding_naar_tijdlijn as base_melding_naar_tijdlijn
 from apps.main.utils import melding_taken as base_melding_taken
@@ -36,6 +37,11 @@ def render_td_tags(context, kolommen):
 @register.simple_tag
 def render_onderwerp(onderwerp_url):
     return render_onderwerp_service(onderwerp_url)
+
+
+@register.simple_tag
+def render_categorie(onderwerp_url):
+    return render_categorie_service(onderwerp_url)
 
 
 @register.simple_tag

@@ -212,9 +212,19 @@
 
     dl {
         font-size: $fz-14;
+        padding: 1rem 0 0.5rem;
+        &:not(:first-child) {
+            border-top: 1px solid $blue-200;
+        }
+        &:first-child {
+            padding-top: 0;
+        }
+        &:last-child {
+            padding-bottom: 0;
+        }
     }
     .divider {
-        border-top: 1px solid #ccc;
+        border-top: 1px solid $blue-200;
         margin: 20px 0;
     }
 

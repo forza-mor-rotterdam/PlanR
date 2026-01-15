@@ -1,5 +1,4 @@
 import { Controller } from '@hotwired/stimulus'
-import { visit } from '@hotwired/turbo'
 import L from 'leaflet'
 
 let detailScrollY = 0,
@@ -19,6 +18,8 @@ export default class extends Controller {
     'lichtmast',
     'kaartDefault',
     'taakStatusContainer',
+    'tabContent',
+    'tabButton',
   ]
 
   containerActionsTargetConnected(inputHeight = 0) {
@@ -35,17 +36,8 @@ export default class extends Controller {
 
   initialize() {
     this.coordinates = []
-    if (this.hasTabsTarget && this.hasTabsContentTarget) {
-      const tabs = this.tabsTarget.querySelectorAll('.btn--tab')
-      const tabsContent = this.tabsContentTarget.querySelectorAll('.tab-content')
-      this.activateTabs(tabs, tabsContent, this)
-    }
-
-    if (this.hasTabs2Target && this.hasTabsContent2Target) {
-      const tabs = this.tabs2Target.querySelectorAll('.btn--tab')
-      const tabsContent = this.tabsContent2Target.querySelectorAll('.tab-content')
-      this.activateTabs(tabs, tabsContent, this)
-    }
+    this.urlParams = new URLSearchParams(window.location.search)
+    this.tabIndex = Number(this.urlParams.get('tabIndex')) || 1
     const locaties = this.hasLocatiesValue ? JSON.parse(this.locatiesValue) : []
     const validLocaties = locaties
       .filter((locatie) => locatie.geometrie?.coordinates)
@@ -133,9 +125,22 @@ export default class extends Controller {
 
   connect() {
     document.documentElement.scrollTop = detailScrollY
-    this.urlParams = new URLSearchParams(window.location.search)
-    this.tabIndex = Number(this.urlParams.get('tabIndex'))
-    this.selectTab(this.tabIndex || 1)
+    if (this.hasTabContentTarget) {
+      this.tabIndex =
+        parseInt(this.tabIndex) > this.tabButtonTargets.length // eslint-disable-line prettier/prettier
+          ? this.tabButtonTargets.length // eslint-disable-line prettier/prettier
+          : parseInt(this.tabIndex) < 1 // eslint-disable-line prettier/prettier
+          ? 1 // eslint-disable-line prettier/prettier
+          : parseInt(this.tabIndex) // eslint-disable-line prettier/prettier
+      this.selectTab(true)
+      window.addEventListener('popstate', (e) => {
+        if (e.state && e.state.tabIndex) {
+          this.tabIndex = e.state.tabIndex
+          this.selectTab()
+        }
+      })
+    }
+
     actionsHeight = this.containerActionsTarget.offsetHeight
     window.addEventListener('scroll', () => {
       this.checkScrollPosition()
@@ -248,57 +253,25 @@ export default class extends Controller {
       behavior: 'smooth',
     })
   }
-
-  selectTab(tabIndex) {
-    this.deselectTabs()
-    const tabs = Array.from(this.element.querySelectorAll('.btn--tab'))
-    const tabsContent = Array.from(this.element.querySelectorAll('.tab-content'))
-    if (tabs.length > 0 && tabsContent.length > 0) {
-      this.activateTabs(tabIndex, tabs, tabsContent, this)
-    }
+  tabButtonClickHandler(e) {
+    this.tabIndex = e.params.tabIndex
+    this.selectTab(true)
   }
-
-  deselectTabs() {
-    const tabs = this.element.querySelectorAll('.btn--tab')
-    const tabsContent = this.element.querySelectorAll('.tab-content')
-
-    tabs.forEach(function (element) {
-      element.classList.remove('active')
+  selectTab(pushState) {
+    this.urlParams = new URLSearchParams(window.location.search)
+    this.urlParams.set('tabIndex', this.tabIndex)
+    const targetUrl = `${window.location.pathname}?${this.urlParams}`
+    pushState && window.history.pushState({ tabIndex: this.tabIndex }, '', targetUrl)
+    this.tabContentTargets.map((tabContent) => {
+      tabContent.classList[
+        parseInt(tabContent.dataset.tabIndex) === parseInt(this.tabIndex) ? 'add' : 'remove'
+      ]('active')
     })
-    tabsContent.forEach(function (element) {
-      element.classList.remove('active')
+    this.tabButtonTargets.map((tabButton) => {
+      tabButton.classList[
+        parseInt(tabButton.dataset.tabIndex) === parseInt(this.tabIndex) ? 'add' : 'remove'
+      ]('active')
     })
-  }
-
-  activateTabs(tabIndex, tabs, tabsContent) {
-    const activeTabs = tabs.filter((tab) => Number(tab.dataset.index) === tabIndex)
-    const activeTabsContent = tabsContent.filter((tab) => Number(tab.dataset.index) === tabIndex)
-    activeTabs.forEach(function (tab) {
-      tab.classList.add('active')
-    })
-    activeTabsContent.forEach(function (tab) {
-      tab.classList.add('active')
-    })
-    tabs.forEach(function (tab) {
-      tab.addEventListener('click', function () {
-        this.urlParams = new URLSearchParams(window.location.search)
-        this.urlParams.set('tabIndex', tab.dataset.index)
-        const targetUrl = `${window.location.pathname}?${this.urlParams}`
-        detailScrollY = document.documentElement.scrollTop
-        visit(targetUrl)
-      })
-    })
-  }
-
-  onSelectTab(e, index, tabs, tabsContent) {
-    tabs.forEach(function (element) {
-      element.classList.remove('active')
-    })
-    tabsContent.forEach(function (element) {
-      element.classList.remove('active')
-    })
-    e.classList.add('active')
-    tabsContent[index].classList.add('active')
   }
 
   onMapLayerChange(e) {
