@@ -1,9 +1,11 @@
 .container__tabs {
     display: flex;
     background-color: $white;
-    padding: 1rem;
+    padding: 1rem 1rem 0;
 
     h3 {
+        font-size: 0.875rem;
+        font-weight: 700;
         flex: 0 0 40%;
         padding-top: 7px;
         margin-bottom: 0;
@@ -39,18 +41,12 @@
 }
 
 .container__tab-content {
-    padding: 0 $input-padding-y;
     background-color: white;
     width: 100%;
     box-sizing: border-box;
 
     .tab-content {
         display: none;
-
-        dl {
-            margin: 0;
-            padding: 0 0.75rem 0.75rem;
-        }
 
         &.active {
             display: block;
