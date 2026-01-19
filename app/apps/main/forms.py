@@ -42,15 +42,6 @@ class MultipleFileField(forms.FileField):
 class CheckboxSelectMultiple(forms.CheckboxSelectMultiple):
     template_name = "widgets/checkbox_options_grouped.html"
 
-    def create_option(self, *args, **kwargs):
-        args = list(args)
-        option_data = args[2]
-        args[2] = args[2].get("label")
-        option = super().create_option(*args, **kwargs)
-        option["attrs"].update({"item_count": option_data.get("item_count")})
-        option["attrs"].update({"selected": args[3]})
-        return option
-
 
 class MeldingAfhandelredenRadioSelect(forms.RadioSelect):
     template_name = "widgets/melding_afhandelreden_radio_select.html"
@@ -259,7 +250,6 @@ class FilterForm(forms.Form):
         for v in self.filter_velden:
             if opties := v.get("opties"):
                 total_opties = self._count_options(opties)
-
             self.fields[v.get("key")] = MultipleChoiceField(
                 label=f"{v.get('naam')} ({v.get('aantal_actief')}/{total_opties})",
                 widget=CheckboxSelectMultiple(

@@ -409,13 +409,13 @@ class StatusFilter(StandaardFilter):
 
     def opties(self):
         return [
-            ["afgehandeld", {"label": "Afgehandeld"}],
-            ["controle", {"label": "Te controleren"}],
-            ["geannuleerd", {"label": "Geannuleerd"}],
-            ["pauze", {"label": "Gepauzeerd"}],
-            ["in_behandeling", {"label": "In uitvoering"}],
-            ["openstaand", {"label": "Openstaand"}],
-            ["wachten_melder", {"label": "Wachten op melder"}],
+            ["afgehandeld", "Afgehandeld"],
+            ["controle", "Te controleren"],
+            ["geannuleerd", "Geannuleerd"],
+            ["pauze", "Gepauzeerd"],
+            ["in_behandeling", "In uitvoering"],
+            ["openstaand", "Openstaand"],
+            ["wachten_melder", "Wachten op melder"],
         ]
 
 
@@ -433,8 +433,8 @@ class SpoedFilter(StandaardFilter):
 
     def opties(self):
         return [
-            ["spoed", {"label": "Spoed"}],
-            ["geen_spoed", {"label": "Geen spoed"}],
+            ["spoed", "Spoed"],
+            ["geen_spoed", "Geen spoed"],
         ]
 
 
@@ -443,8 +443,7 @@ class BegraafplaatsFilter(StandaardFilter):
 
     def opties(self):
         return [
-            [begraafplaats[0], {"label": begraafplaats[1]}]
-            for begraafplaats in BEGRAAFPLAATSEN
+            [begraafplaats[0], begraafplaats[1]] for begraafplaats in BEGRAAFPLAATSEN
         ]
 
 
@@ -512,9 +511,7 @@ class BuurtFilter(StandaardFilter):
                     [
                         [
                             locatie["buurtnaam"],
-                            {
-                                "label": locatie["buurtnaam"],
-                            },
+                            locatie["buurtnaam"],
                         ]
                         for locatie in buurten_met_wijken
                         if wijk == locatie["wijknaam"]
