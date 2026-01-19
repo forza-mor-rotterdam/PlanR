@@ -73,7 +73,7 @@ class Context(BasisModel):
                 .get_groep(group_uuid, force_cache=False)
                 .get("name", ""),
                 [
-                    [onderwerp[1][0], {"label": onderwerp[1][1].get("name")}]
+                    [onderwerp[1][0], onderwerp[1][1].get("name")]
                     for onderwerp in onderwerpen_data
                     if onderwerp[1][1].get("group_uuid") == group_uuid
                 ],
