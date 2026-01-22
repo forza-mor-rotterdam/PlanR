@@ -14,60 +14,121 @@
     {% endwith %}
 {% endblock header %}
 {% block body_class %}
-    wide--xl
+    wide--xxl
 {% endblock body_class %}
 {% block body %}
     <turbo-frame id="overview" data-turbo-action="advance" data-controller="sidesheet">
     {% block content %}
     <form method="post" action="{% url 'dashboard_v2' %}" data-controller="dashboard" data-dashboard-data-value="{{ actueel_table|json_encode }}" data-dashboard-row-filters-value="{{ default_row_filters|json_encode }}">
         {% csrf_token %}
-        <div class="screen-xl">
-            <section class="section--separated--l">
+        <div class="container__dashboard">
+            <section>
                 <div class="container__filters">
                     <div class="container__title">
                         <h1>
                             Inzichten
                         </h1>
                     </div>
-                    <ul>
-                        <li><span data-dashboard-target="alleMeldingenAantal">{{alle_meldingen_aantal}}</span> meldingen, <span data-dashboard-target="lookbackAantal">{% include "dashboard/v2/lookback_aantal.html" %}</span></li>
-                        <li>Nieuwe meldingen: <span data-dashboard-target="nieuweMeldingenAantal">{{nieuwe_meldingen_aantal}}</span> (<span data-dashboard-target="nieuweMeldingenPercentage">{{ nieuwe_meldingen_percentage|floatformat:0 }}%</span>)</li>
-                        <li>Meldingen in behandeling: <span data-dashboard-target="inBehandelingMeldingenAantal">{{meldingen_in_behandeling_aantal}}</span> (<span data-dashboard-target="inBehandelingMeldingenPercentage">{{ meldingen_in_behandeling_percentage|floatformat:0 }}%</span>)</li>
-                        <li>Meldingen in controle: <span data-dashboard-target="controleMeldingenAantal">{{meldingen_in_controle_aantal}}</span> (<span data-dashboard-target="controleMeldingenPercentage">{{ meldingen_in_controle_percentage|floatformat:0 }}%</span>)</li>
-                        <li>Meldingen op pauze: <span data-dashboard-target="pauzeMeldingenAantal">{{meldingen_op_pauze_aantal}}</span> (<span data-dashboard-target="pauzeMeldingenPercentage">{{ meldingen_op_pauze_percentage|floatformat:0 }}%</span>)</li>
-                    </ul>
+                    <div class="container__filters">
+                            {{ form.weergave.as_field_group }}
+                            {{ form.stadsdeel.as_field_group }}
+                    </div>
+                </div>
+            </section>
+            <section>
+                <div class="container__filters">
+                    <div class="container__inzicht">
+                        <div class="container__inzicht__top">
+                            <span data-dashboard-target="alleMeldingenAantal">{{alle_meldingen_aantal}}</span>
+                        </div>
+                        <div class="container__inzicht__subtop">
+                            Alle meldingen
+                        </div>
+                        <div class="container__inzicht__description">
+                            Totaal van alle nieuwe meldingen, meldingen in behandeling en meldingen ter controle.
+                        </div>
+                        <div class="container__inzicht__footer">
+                            <span data-dashboard-target="lookbackAantal">{% include "dashboard/v2/lookback_aantal.html" %}</span>
+                        </div>
+                    </div>
+                    <div class="container__inzicht">
+                        <div class="container__inzicht__top">
+                            <span data-dashboard-target="nieuweMeldingenAantal">{{nieuwe_meldingen_aantal}}</span>
+                        </div>
+                        <div class="container__inzicht__subtop">
+                            Nieuwe meldingen
+                        </div>
+                        <div class="container__inzicht__description">
+                            Alle binnengekomen meldingen die nog moeten worden bekeken.
+                        </div>
+                        <div class="container__inzicht__footer">
+                            <span><strong data-dashboard-target="nieuweMeldingenPercentage">{{ nieuwe_meldingen_percentage|floatformat:0 }}%</strong> van alle meldingen</span>
+                        </div>
+                    </div>
+                    <div class="container__inzicht">
+                        <div class="container__inzicht__top">
+                            <span data-dashboard-target="inBehandelingMeldingenAantal">{{meldingen_in_behandeling_aantal}}</span>
+                        </div>
+                        <div class="container__inzicht__subtop">
+                            Meldingen in behandeling
+                        </div>
+                        <div class="container__inzicht__description">
+                            Alle meldingen waarvoor taken zijn aangemaakt, of gepauzeerd zijn.
+                        </div>
+                        <div class="container__inzicht__footer">
+                            <span><strong data-dashboard-target="inBehandelingMeldingenPercentage">{{ meldingen_in_behandeling_percentage|floatformat:0 }}%</strong> van alle meldingen</span>
+                        </div>
+                    </div>
+                    <div class="container__inzicht">
+                        <div class="container__inzicht__top">
+                            <span data-dashboard-target="controleMeldingenAantal">{{meldingen_in_controle_aantal}}</span>
+                        </div>
+                        <div class="container__inzicht__subtop">
+                            Meldingen ter controle
+                        </div>
+                        <div class="container__inzicht__description">
+                            Alle meldingen die gecontroleerd dienen te worden omdat de taken zijn uitgevoerd.
+                        </div>
+                        <div class="container__inzicht__footer">
+                            <span><strong data-dashboard-target="controleMeldingenPercentage">{{ meldingen_in_controle_percentage|floatformat:0 }}%</strong> van alle meldingen</span>
+                        </div>
+                    </div>
+                    {% comment %} <div>
+                        Meldingen op pauze: <span data-dashboard-target="pauzeMeldingenAantal">{{meldingen_op_pauze_aantal}}</span> (<span data-dashboard-target="pauzeMeldingenPercentage">{{ meldingen_op_pauze_percentage|floatformat:0 }}%</span>)
+                    </div> {% endcomment %}
                 </div>
             </section>
         </div>
-        <div class="screen-xl">
-            <section class="section--separated--l">
+        <div class="container__dashboard">
+            <section>
                 <div class="container__filters">
                     <div class="container__title">
                         <h1>
                             Actueel
                         </h1>
                     </div>
-                    <div class="container__filters">
-                        {{ form.weergave }}
-                        {{ form.stadsdeel }}
-                        {% include "snippets/table.html" with table_data=actueel_table table_id="dashboard_actueel" table_row_filters=default_row_filters sort_key="alle_meldingen" only %}
-                    </div>
                 </div>
             </section>
+            <section>
+                {% include "snippets/table.html" with table_data=actueel_table table_id="dashboard_actueel" table_row_filters=default_row_filters sort_key="alle_meldingen" only %}
+            </section>
         </div>
-        <div class="screen-xl">
-            <section class="section--separated--l">
+        <hr/>
+        <div class="container__dashboard">
+            <section>
                 <div class="container__filters">
                     <div class="container__title">
                         <h1>
                             Historisch
                         </h1>
                     </div>
-                        {{ form.periode }}
-                    <div id="dashboard_historisch" class="container__filters">
-                        {% include "snippets/table.html" with table_data=historische_table_data table_id="dashboard_historisch" table_row_filters=default_row_filters sort_key="weergave" only %}
+                    <div class="container__filters">
+                        {{ form.periode.as_field_group }}
                     </div>
                 </div>
+            </section>
+            <section>
+                {% include "snippets/table.html" with table_data=historische_table_data table_id="dashboard_historisch" table_row_filters=default_row_filters sort_key="weergave" only %}
             </section>
         </div>
     </form>

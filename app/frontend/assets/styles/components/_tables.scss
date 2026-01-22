@@ -203,3 +203,98 @@
         content: "\25BC";
     }
 }
+.table__container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-self: stretch;
+    .btn--table-export {
+        background-color: $white;
+        font-weight: $font-weight-normal;
+        margin: (map-get($container-margin, xl)) 0;
+        padding: 10px 16px;
+        width: auto;
+        border: 1px solid $gray-200;
+        svg {
+            margin-bottom: -2px;
+            margin-right: 2px;
+        }
+        path {
+            fill: $black;
+        }
+    }
+}
+table.table {
+    background-color: $white;
+
+    table,
+    tbody,
+    thead,
+    tfoot,
+    tr,
+    th,
+    td {
+        border-collapse: collapse;
+        border-style: none;
+    }
+
+    tbody td:first-child,
+    td,
+    th {
+        font-size: $fz-12;
+        padding: 11px 8px;
+        text-align: left;
+    }
+    tr:nth-child(even) {
+        background-color: unset;
+    }
+    tbody,
+    thead {
+        border-bottom: 1px solid $gray-600;
+    }
+    thead th {
+        padding-top: 18px;
+        padding-bottom: 18px;
+        text-wrap-mode: nowrap;
+    }
+    thead th .column-sorter {
+        text-decoration: none;
+        position: relative;
+        display: block;
+        padding-right: 15px;
+
+        &::before,
+        &::after {
+            position: absolute;
+            content: url("../icons/arrow-down.svg");
+            width: 5px;
+            height: 3px;
+            right: 3px;
+        }
+        &::before {
+            transform: rotate(180deg) translateY(-8px);
+        }
+        &::after {
+            transform: translateY(-1px);
+        }
+    }
+    thead th.table-sort-active.tabel-sort-direction-asc .column-sorter {
+        &::before {
+            content: url("../icons/arrow-down-solid.svg");
+        }
+        &::after {
+            content: url("../icons/arrow-down.svg");
+        }
+    }
+    thead th.table-sort-active.tabel-sort-direction-desc .column-sorter {
+        &::before {
+            content: url("../icons/arrow-down.svg");
+        }
+        &::after {
+            content: url("../icons/arrow-down-solid.svg");
+        }
+    }
+    tbody tr:not(:last-child) {
+        border-bottom: 1px solid $blue-200;
+    }
+}

@@ -58,6 +58,19 @@ export default class extends Controller {
       this.updateLookbackAantal(table.controllers.table)
     }, 1)
   }
+  hoursToWeeksDaysHours(hours) {
+    hours = parseInt(hours)
+    const weken = Math.floor(hours / (24 * 7))
+    const dagen = Math.floor(hours / 24) - weken * 7
+    const uren = hours - weken * 168 - dagen * 24
+    const urenStr = uren === 0 ? '' : uren === 1 ? 'één uur' : `${uren} uren`
+    const dagenStr = dagen === 0 ? '' : dagen === 1 ? 'één dag' : `${dagen} dagen`
+    const wekenStr = weken === 0 ? '' : weken === 1 ? 'één week' : `${weken} weken`
+    return `${wekenStr}${wekenStr && dagenStr && ' en '}${dagenStr}${urenStr && ' en '}${urenStr}`
+  }
+  localeNumber(number) {
+    return parseInt(number).toLocaleString('nl')
+  }
   updateLookbackAantal(tableController) {
     let lookbackAantal = 0
     const afgehandeld = tableController.totals.find((total) => total.key === 'afgehandeld')
@@ -66,12 +79,22 @@ export default class extends Controller {
       lookbackAantal = aangemaakt.value - afgehandeld.value
     }
     if (this.hasLookbackAantalTarget) {
+      this.lookbackAantalTarget.innerHTML = ''
+      const span = document.createElement('SPAN')
       if (lookbackAantal != 0) {
-        this.lookbackAantalTarget.textContent = `${Math.abs(lookbackAantal)} ${
+        const strong = document.createElement('STRONG')
+        span.textContent = ` dan ${this.hoursToWeeksDaysHours(this.periode)} geleden`
+        strong.textContent = `${this.localeNumber(Math.abs(lookbackAantal))} meldingen ${
           lookbackAantal < 0 ? 'minder' : 'meer'
-        } meldingen dan ${this.periode} uur geleden'`
+        }`
+
+        this.lookbackAantalTarget.appendChild(strong)
+        this.lookbackAantalTarget.appendChild(span)
       } else {
-        this.lookbackAantalTarget.textContent = `${this.periode} uur geleden was dit hetzelfde`
+        span.textContent = `${this.hoursToWeeksDaysHours(
+          this.periode
+        )} uur geleden was dit hetzelfde`
+        this.lookbackAantalTarget.appendChild(span)
       }
     }
   }
@@ -123,7 +146,9 @@ export default class extends Controller {
           ].slice(1)}PercentageTarget`
         ]
       if (hasAantal) {
-        this[`${columnKeyAantalTargets[v.key]}AantalTarget`].textContent = v.value
+        this[`${columnKeyAantalTargets[v.key]}AantalTarget`].textContent = this.localeNumber(
+          v.value
+        )
       }
       if (alleMeldingenAantal && hasPercentage) {
         this[`${columnKeyAantalTargets[v.key]}PercentageTarget`].textContent = `${Math.round(

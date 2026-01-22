@@ -1,0 +1,11 @@
+<fieldset class="fieldset-radio-select-compact" data-controller="radio-select-compact" >
+    <span class="legend">
+        {{ field.field.icon }}
+        <legend>
+        {{ field.label }}
+        </legend>
+    </span>
+    {{ field }}
+    {% if field.help_text %}<div class="helptext"{% if field.auto_id %} id="{{ field.auto_id }}_helptext"{% endif %}>{{ field.help_text|safe }}</div>{% endif %}
+    {{ field.errors }}
+</fieldset>
