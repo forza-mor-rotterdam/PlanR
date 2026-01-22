@@ -1,6 +1,5 @@
 import { Controller } from '@hotwired/stimulus'
 export default class extends Controller {
-  static targets = ['sidesheet', 'turboframe']
   static values = {
     data: String,
     id: String,
@@ -14,15 +13,31 @@ export default class extends Controller {
     }
     this.element.controllers[this.identifier] = this
     this.tableData = JSON.parse(this.dataValue)
+    this.tableDataFilteredSorted = []
     this.id = this.idValue
-    this.type = this.typeValue
     this.sortKey = this.sortKeyValue
     this.sortDirection = 'asc'
-    this.stadsdeel = this.stadsdeelValue
     this.rowFilters = JSON.parse(this.rowFiltersValue)
-
     this.render()
   }
+  download(data) {
+    const blob = new Blob([data], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `download_${this.id}.csv`
+    a.click()
+  }
+  csvmaker(data) {
+    let csvRows = []
+    const headers = data[0].columns.map((columnData) => columnData.column)
+    csvRows.push(headers.join(','))
+    this.tableDataFilteredSorted.map((rowData) => {
+      csvRows.push(rowData.columns.map((column) => column.value).join(','))
+    })
+    return csvRows.join('\n')
+  }
+
   setRowFilters(obj) {
     Object.entries(obj).map(([name, value]) => {
       if (value) {
@@ -42,6 +57,11 @@ export default class extends Controller {
     }
     this.render()
   }
+  onExportClickHandler() {
+    const csvdata = this.csvmaker(this.tableDataFilteredSorted)
+    console.log(csvdata)
+    this.download(csvdata)
+  }
   render() {
     const rowTemplate = document.getElementById(`${this.id}_table_row`)
     const headCellTemplate = document.getElementById(`${this.id}_table_head_cell`)
@@ -60,7 +80,7 @@ export default class extends Controller {
     const rowFiltersEntries = Object.entries(this.rowFilters)
 
     // filter & sort data
-    const tableData = this.tableData
+    this.tableDataFilteredSorted = this.tableData
       .filter(
         (rowData) =>
           rowFiltersEntries.filter(([key, value]) => rowData.filters[key] === value).length >=
@@ -82,7 +102,7 @@ export default class extends Controller {
       })
 
     // exit when no data
-    if (!tableData.length) {
+    if (!this.tableDataFilteredSorted.length) {
       return
     }
 
@@ -92,7 +112,7 @@ export default class extends Controller {
     thead.appendChild(headRow)
 
     // redraw table head
-    tableData[0].columns.map((columnData) => {
+    this.tableDataFilteredSorted[0].columns.map((columnData) => {
       const headCellClone = headCellTemplate.content.cloneNode(true)
       const cell = headCellClone.querySelector('[data-table-head-cell]')
       const title = cell.querySelector('[data-table-head-title]')
@@ -116,7 +136,7 @@ export default class extends Controller {
       headRow.appendChild(cell)
     })
     // redraw table body
-    tableData.map((rowData) => {
+    this.tableDataFilteredSorted.map((rowData) => {
       const rowClone = rowTemplate.content.cloneNode(true)
       const row = rowClone.querySelector('[data-table-row]')
       rowData.columns.map((columnData) => {
@@ -131,23 +151,27 @@ export default class extends Controller {
     })
 
     // redraw table footer
-    this.totals = tableData[0].columns.map((columnData) => {
+    this.totals = this.tableDataFilteredSorted[0].columns.map((columnData) => {
       return {
         value: Number.isInteger(columnData.value) ? 0 : 'Totaal',
         key: columnData.key,
       }
     })
-    tableData.map((rowData) => {
+    this.tableDataFilteredSorted.map((rowData) => {
       rowData.columns.map((columnData, ii) => {
         if (Number.isInteger(columnData.value)) {
           this.totals[ii].value += columnData.value
         }
       })
     })
+    this.tableDataFilteredSorted.push({
+      columns: this.totals,
+    })
     this.totals.map((v) => {
       const footCellClone = footCellTemplate.content.cloneNode(true)
       const cell = footCellClone.querySelector('[data-table-foot-cell]')
       cell.textContent = v.value
+      // this.tableDataFilteredSorted[this.tableDataFilteredSorted.length-1]
       footRow.appendChild(cell)
     })
     tfoot.appendChild(footRow)

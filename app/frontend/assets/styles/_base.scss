@@ -97,6 +97,15 @@ body.wide--xl {
         }
     }
 }
+body.wide--xxl {
+    main,
+    header,
+    .container--env {
+        > .container {
+            max-width: 1920px;
+        }
+    }
+}
 
 main,
 header {
@@ -190,6 +199,11 @@ main {
             }
         }
     }
+}
+hr {
+    border-style: none;
+    border-top: 1px solid $gray-600;
+    margin: (map-get($container-margin, md)) 0;
 }
 
 // HEADINGS

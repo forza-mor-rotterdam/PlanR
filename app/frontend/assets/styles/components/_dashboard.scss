@@ -15,17 +15,40 @@ canvas {
     .container__title {
         h1 {
             margin: 0.5em 0;
+            color: $green;
+            font-size: $h4-font-size;
         }
-
-        + div {
-            margin-top: 1.25em;
+    }
+    .container__inzicht {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background-color: white;
+        padding: 16px;
+        flex: 1;
+        &__top {
+            font-size: 3rem;
+            font-weight: 700;
+        }
+        &__subtop {
+            font-size: 1rem;
+        }
+        &__description {
+            font-size: $fz-12;
+            color: #666;
+            padding: 8px 0;
+        }
+        &__footer {
+            font-size: $fz-14;
+            padding-top: 14px;
+            border-top: 1px solid $gray-200;
         }
     }
 
     .container__filters {
         display: flex;
         justify-content: space-between;
-        margin-top: 1em;
+        gap: 16px;
 
         .list-horizontal {
             justify-content: flex-start;

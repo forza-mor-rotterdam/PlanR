@@ -483,21 +483,7 @@ class DashboardV2(PermissionRequiredMixin, FormView):
 
     def dispatch(self, request, *args, **kwargs):
         locatie_service = LocatieService()
-        mor_core_service = MORCoreService()
-        melding_status_buurt_aantallen_url = "/api/v1/melding/status-buurt-aantallen"
-
         buurten_json_response = locatie_service.buurten()
-
-        self.melding_status_buurt_aantallen = mor_core_service.haal_data(
-            url=melding_status_buurt_aantallen_url
-        ).get("results", [])
-        self.melding_status_buurt_aantallen_spoed = mor_core_service.haal_data(
-            url=melding_status_buurt_aantallen_url,
-            params={
-                "spoed": "true",
-            },
-        ).get("results", [])
-
         self.stadsdeel_met_wijknaam = {
             wijk.get("wijknaam"): wijk.get("stadsdeel") for wijk in PDOK_WIJKEN
         }
@@ -543,10 +529,10 @@ class DashboardV2(PermissionRequiredMixin, FormView):
     def get_historische_table_data(self, hours=24):
         mor_core_service = MORCoreService()
         melding_afgehandeld_per_buurt_aantallen_url = (
-            "/api/v1/melding/afgehandeld-aantallen"
+            "/api/v1/melding/afgehandeld-aantallen/"
         )
         melding_aangemaakt_per_buurt_aantallen_url = (
-            "/api/v1/melding/aangemaakt-aantallen"
+            "/api/v1/melding/aangemaakt-aantallen/"
         )
 
         dt_past = (timezone.now() - timedelta(hours=int(hours))).isoformat()
@@ -630,6 +616,19 @@ class DashboardV2(PermissionRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        mor_core_service = MORCoreService()
+        melding_status_buurt_aantallen_url = "/api/v1/melding/status-buurt-aantallen/"
+
+        self.melding_status_buurt_aantallen = mor_core_service.haal_data(
+            url=melding_status_buurt_aantallen_url
+        ).get("results", [])
+
+        self.melding_status_buurt_aantallen_spoed = mor_core_service.haal_data(
+            url=melding_status_buurt_aantallen_url,
+            params={
+                "spoed": "true",
+            },
+        ).get("results", [])
 
         historische_table_data = self.get_historische_table_data(
             hours=self.default_lookback_hours
@@ -789,14 +788,6 @@ class DashboardV2(PermissionRequiredMixin, FormView):
                 in [MELDING_STATUS_PAUZE, MELDING_STATUS_WACHTEN_MELDER]
             ]
         )
-
-        print("alle_meldingen_aantal")
-        print(alle_meldingen_aantal)
-        print("melding_afgehandeld_per_buurt_aantallen_totaal")
-        print(self.melding_afgehandeld_per_buurt_aantallen_totaal)
-        print("melding_aangemaakt_per_buurt_aantallen_totaal")
-        print(self.melding_aangemaakt_per_buurt_aantallen_totaal)
-
         context.update(
             {
                 "alle_meldingen_aantal": alle_meldingen_aantal,
@@ -804,24 +795,28 @@ class DashboardV2(PermissionRequiredMixin, FormView):
                 - self.melding_afgehandeld_per_buurt_aantallen_totaal,
                 "nieuwe_meldingen_aantal": nieuwe_meldingen_aantal,
                 "nieuwe_meldingen_percentage": (
-                    nieuwe_meldingen_aantal / alle_meldingen_aantal
+                    (nieuwe_meldingen_aantal / alle_meldingen_aantal) * 100
                 )
-                * 100,
+                if alle_meldingen_aantal
+                else 0,
                 "meldingen_in_behandeling_aantal": meldingen_in_behandeling_aantal,
                 "meldingen_in_behandeling_percentage": (
-                    meldingen_in_behandeling_aantal / alle_meldingen_aantal
+                    (meldingen_in_behandeling_aantal / alle_meldingen_aantal) * 100
                 )
-                * 100,
+                if alle_meldingen_aantal
+                else 0,
                 "meldingen_in_controle_aantal": meldingen_in_controle_aantal,
                 "meldingen_in_controle_percentage": (
-                    meldingen_in_controle_aantal / alle_meldingen_aantal
+                    (meldingen_in_controle_aantal / alle_meldingen_aantal) * 100
                 )
-                * 100,
+                if alle_meldingen_aantal
+                else 0,
                 "meldingen_op_pauze_aantal": meldingen_op_pauze_aantal,
                 "meldingen_op_pauze_percentage": (
-                    meldingen_op_pauze_aantal / alle_meldingen_aantal
+                    (meldingen_op_pauze_aantal / alle_meldingen_aantal) * 100
                 )
-                * 100,
+                if alle_meldingen_aantal
+                else 0,
                 "historische_table_data": historische_table_data,
                 "actueel_table": actueel_table,
                 "default_row_filters": {
