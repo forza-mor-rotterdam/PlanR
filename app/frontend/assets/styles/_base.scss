@@ -53,7 +53,7 @@ html {
 
         > .bar--top {
             border-bottom: 1px solid $green-400;
-            height: 60px;
+            height: $top-bar-height;
             width: 100vw;
             background-color: $blue-100;
             position: fixed;
@@ -203,7 +203,7 @@ main {
 hr {
     border-style: none;
     border-top: 1px solid $gray-600;
-    margin: (map-get($container-margin, md)) 0;
+    margin: (map-get($container-margin, md)) 0 (map-get($container-margin, lg)) 0;
 }
 
 // HEADINGS

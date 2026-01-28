@@ -135,9 +135,7 @@ class DashboardV2Form(forms.Form):
             ("24", "Één dag"),
             ("48", "2 dagen"),
             ("168", "Één week"),
-            ("672", "4 weken"),
-            ("2688", "16 weken"),
-            ("21504", "128 weken"),
+            ("672", "Één maand"),
         ),
         initial="1",
     )

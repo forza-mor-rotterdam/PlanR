@@ -27,19 +27,24 @@ canvas {
         padding: 16px;
         flex: 1;
         &__top {
-            font-size: 3rem;
+            font-size: $fz-28;
             font-weight: 700;
+            margin-bottom: 5px;
         }
         &__subtop {
-            font-size: 1rem;
+            font-size: $fz-16;
         }
         &__description {
             font-size: $fz-12;
+            line-height: $line-height-base-v2;
             color: #666;
             padding: 8px 0;
+            max-width: 35ch;
+            text-wrap: balance;
         }
         &__footer {
             font-size: $fz-14;
+            line-height: $line-height-base-v2;
             padding-top: 14px;
             border-top: 1px solid $gray-200;
         }
@@ -49,6 +54,13 @@ canvas {
         display: flex;
         justify-content: space-between;
         gap: 16px;
+
+        &--margin-top {
+            margin-top: 10px;
+        }
+        &--margin-bottom {
+            margin-bottom: 10px;
+        }
 
         .list-horizontal {
             justify-content: flex-start;

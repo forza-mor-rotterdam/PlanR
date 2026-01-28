@@ -1,7 +1,7 @@
-<fieldset class="fieldset-radio-select-compact" data-controller="radio-select-compact" >
+<fieldset class="fieldset-radio-select-compact" data-controller="radio-select-compact" data-action="click@window->radio-select-compact#onClickOutsideHandler">
     <span class="legend">
         {{ field.field.icon }}
-        <legend>
+        <legend data-action="">
         {{ field.label }}
         </legend>
     </span>

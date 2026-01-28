@@ -10,7 +10,10 @@
         </template>
         <template id="{{ table_id }}_table_head_cell">
             <th data-table-head-cell>
-                <a class="column-sorter" data-table-head-sorter data-action="table#sorterClickHandler" data-table-head-title></a>
+                <a class="column-sorter" data-table-head-sorter data-action="table#sorterClickHandler" data-table-head-title>
+                    <span data-table-head-label class="column-sorter-label"></span>
+                    <span class="column-sorter-indicator"></span>
+                </a>
             </th>
         </template>
         <template id="{{ table_id }}_table_body_cell">
