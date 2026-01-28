@@ -9,7 +9,7 @@
         {% endfor %}
     {% endfor %}
     <ul {% if id %}id="{{ id }}"{% endif %}
-        class="{{ widget.attrs.class }} options" data-radio-select-compact-target="list">
+        class="{{ widget.attrs.class }} options">
         {% for group, options, index in widget.optgroups %}
             {% for option in options %}
                 <li class="{% if option.selected %}selected{% endif %}">

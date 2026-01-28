@@ -1542,7 +1542,8 @@ form.taken-aanmaken {
         transition-timing-function: $transition-ease-default;
         transition-behavior: allow-discrete;
     }
-    &:hover,
+    // &:hover,
+    &.focus,
     &:focus,
     &:focus-within {
         ul {
@@ -1557,6 +1558,7 @@ form.taken-aanmaken {
     li {
         min-width: 100px;
         margin: 0;
+        list-style-type: none;
         label {
             display: block;
             position: relative;
@@ -1574,10 +1576,10 @@ form.taken-aanmaken {
                 position: absolute;
                 display: block;
                 right: 10px;
-                top: 13px;
+                top: 14px;
                 width: 12px;
                 height: 9px;
-                background-image: url("../icons/checkmark.svg");
+                background-image: url("../icons/checkmark-v2.svg");
                 filter: invert(100%);
                 background-size: 12px 9px;
                 display: inline-block;

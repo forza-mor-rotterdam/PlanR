@@ -91,9 +91,7 @@ export default class extends Controller {
         this.lookbackAantalTarget.appendChild(strong)
         this.lookbackAantalTarget.appendChild(span)
       } else {
-        span.textContent = `${this.hoursToWeeksDaysHours(
-          this.periode
-        )} uur geleden was dit hetzelfde`
+        span.textContent = `${this.hoursToWeeksDaysHours(this.periode)} geleden was dit hetzelfde`
         this.lookbackAantalTarget.appendChild(span)
       }
     }

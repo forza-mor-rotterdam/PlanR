@@ -115,7 +115,7 @@ export default class extends Controller {
     this.tableDataFilteredSorted[0].columns.map((columnData) => {
       const headCellClone = headCellTemplate.content.cloneNode(true)
       const cell = headCellClone.querySelector('[data-table-head-cell]')
-      const title = cell.querySelector('[data-table-head-title]')
+      const title = cell.querySelector('[data-table-head-label]')
       const sorter = cell.querySelector('[data-table-head-sorter]')
 
       title.textContent = columnData.column
