@@ -81,10 +81,12 @@ export default class extends Controller {
     if (this.hasLookbackAantalTarget) {
       this.lookbackAantalTarget.innerHTML = ''
       const span = document.createElement('SPAN')
+      const absLookbackAantal = Math.abs(lookbackAantal)
       if (lookbackAantal != 0) {
         const strong = document.createElement('STRONG')
+        const meldingenLabel = absLookbackAantal === 1 ? 'melding' : 'meldingen'
         span.textContent = ` dan ${this.hoursToWeeksDaysHours(this.periode)} geleden`
-        strong.textContent = `${this.localeNumber(Math.abs(lookbackAantal))} meldingen ${
+        strong.textContent = `${this.localeNumber(absLookbackAantal)} ${meldingenLabel} ${
           lookbackAantal < 0 ? 'minder' : 'meer'
         }`
 
