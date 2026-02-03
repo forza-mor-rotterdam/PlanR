@@ -10,6 +10,8 @@ export default class extends Controller {
 
     if (isThis && !isThisOptions) {
       this.element.classList.toggle('focus')
+    } else if (isThis && isThisOptions) {
+      this.element.classList.remove('focus')
     } else if (!isThis) {
       this.element.classList.remove('focus')
     }

@@ -202,7 +202,7 @@ main {
 }
 hr {
     border-style: none;
-    border-top: 1px solid $gray-600;
+    border-top: 1px solid $gray-200;
     margin: (map-get($container-margin, md)) 0 (map-get($container-margin, lg)) 0;
 }
 
