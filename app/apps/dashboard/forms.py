@@ -117,8 +117,8 @@ class DashboardV2Form(forms.Form):
         ),
         choices=(
             ("", "Heel Rotterdam"),
-            ("noord", "Rotterdam noord"),
-            ("zuid", "Rotterdam zuid"),
+            ("noord", "Rotterdam Noord"),
+            ("zuid", "Rotterdam Zuid"),
         ),
         initial="",
         required=False,

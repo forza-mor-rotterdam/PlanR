@@ -36,7 +36,7 @@
                 </div>
             </section>
             <section>
-                <div class="container__filters container__filters--margin-top">
+                <div class="container__filters container__filters--margin-top container__filters--margin-bottom">
                     <div class="container__inzicht">
                         <div class="container__inzicht__top">
                             <span data-dashboard-target="alleMeldingenAantal">{{alle_meldingen_aantal}}</span>
@@ -93,9 +93,6 @@
                             <span><strong data-dashboard-target="controleMeldingenPercentage">{{ meldingen_in_controle_percentage|floatformat:0 }}%</strong> van alle meldingen</span>
                         </div>
                     </div>
-                    {% comment %} <div>
-                        Meldingen op pauze: <span data-dashboard-target="pauzeMeldingenAantal">{{meldingen_op_pauze_aantal}}</span> (<span data-dashboard-target="pauzeMeldingenPercentage">{{ meldingen_op_pauze_percentage|floatformat:0 }}%</span>)
-                    </div> {% endcomment %}
                 </div>
             </section>
         </div>

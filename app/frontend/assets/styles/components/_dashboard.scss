@@ -22,7 +22,7 @@ canvas {
     .container__inzicht {
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
+        justify-content: flex-start;
         background-color: white;
         padding: 16px;
         flex: 1;
@@ -36,6 +36,7 @@ canvas {
         }
         &__description {
             font-size: $fz-12;
+            flex: 1;
             line-height: $line-height-base-v2;
             color: #666;
             padding: 8px 0;
@@ -47,6 +48,7 @@ canvas {
             line-height: $line-height-base-v2;
             padding-top: 14px;
             border-top: 1px solid $gray-200;
+            min-height: 36px;
         }
     }
 
