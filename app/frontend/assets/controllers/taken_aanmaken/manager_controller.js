@@ -105,7 +105,7 @@ export default class extends Controller {
   taaktypeBerichtHandler(e) {
     if (e) {
       const target = e.target.closest('details').querySelector('.cta--summary')
-      target.textContent = e.target.value.length ? e.target.value : 'Opmerking toevoegen'
+      if (e.target.value.length) target.textContent = e.target.value
       target.classList.toggle('has-text', e.target.value.length > 0)
     }
   }
@@ -230,23 +230,30 @@ export default class extends Controller {
     parents = JSON.stringify([...new Set(parentsArray)])
     selectedChild.dataset.parents = parents
 
+    // het li element heeft een uniek uuid, dit gebruiken als id voor de popover
     const titels = this.getAllOptions()
       .filter((elem) => parentsArray.includes(elem.uuid))
       .map((elem) => elem.titel)
+    console.log('titels', titels)
     const tagElement = geselecteerdFormulierTaaktype.querySelector('[data-status-tag]')
+    const popElement = geselecteerdFormulierTaaktype.querySelector('[data-status-pop]')
     if (titels.length) {
-      tagElement.setAttribute(
-        'title',
-        `Wachten tot de ${titels.length == 1 ? 'taak' : 'taken'} "${titels.join('" en "')}" ${
-          titels.length == 1 ? 'is' : 'zijn'
-        } uitgevoerd`
-      )
+      // TODO id dynamisch maken obv uuid van het list-element
+      tagElement.setAttribute('interestfor', 111)
+      popElement.setAttribute('id', 111)
+      popElement.textContent = `Wacht tot de ${
+        titels.length == 1 ? 'taak' : 'taken'
+      } "${titels.join('" en "')}" ${titels.length == 1 ? 'is' : 'zijn'} uitgevoerd`
     }
+
     tagElement.style.display = titels.length ? 'block' : 'none'
 
     let parentsInput = selectedChild.querySelector(`input[name*='-parents']`)
     parentsInput.value = parents
     this.renderParentOptions(selectedChild, ul)
+    setTimeout(() => {
+      this.removeCurrentParentOptions()
+    }, 200)
   }
   getAllRelatedUuids(allOptions, elem, relation) {
     let allRelatedUuids = []
@@ -274,13 +281,9 @@ export default class extends Controller {
     const parentOptionsContainer = geselecteerdFormulierTaaktype.querySelector(
       '[data-parents-options-container]'
     )
-    parentOptionsContainer.style.background = 'white'
-    parentOptionsContainer.style.position = 'absolute'
-    parentOptionsContainer.style.right = '0px'
-    parentOptionsContainer.style.top = '0px'
-    parentOptionsContainer.style.zIndex = 100
     this.renderParentOptions(geselecteerdFormulierTaaktype, parentOptionsContainer)
   }
+
   renderParentOptions(geselecteerdFormulierTaaktype, ul) {
     ul.innerHTML = ''
     const availableParentElements = this.getAvailableParentElements(geselecteerdFormulierTaaktype)
@@ -439,7 +442,14 @@ export default class extends Controller {
     requestAnimationFrame(animationStep)
   }
 
+  openDetails(e) {
+    const details = e.target.closest('details')
+    details.open = true
+    this.toggleDetailsHandler(e)
+  }
+
   toggleDetailsHandler(e) {
+    console.log('toggleDetailsHandler')
     if (e.target.closest('details').open) {
       setTimeout(() => {
         const container = e.target.closest('.modal-body')
