@@ -1262,105 +1262,75 @@ form.taken-aanmaken {
     //     font-size: 0.8888rem;
     // }
 
-    .list--3cols-form {
+    .list--form-aanmaken {
         @include list-clean();
         font-size: $fz-16;
-        > li:first-child {
+
+        .heading,
+        .taak summary {
+            font-size: $fz-14;
+            position: relative;
+            display: grid;
+            grid-template-columns: minmax(0, 3fr) minmax(0, 2fr) minmax(0, 2fr) minmax(0, 1fr) minmax(
+                    0,
+                    1fr
+                );
+        }
+
+        .heading {
             font-weight: 700;
             padding: 0 0.889rem 0.5rem;
         }
-        > li:not(:first-child) {
+        .taak {
             background-color: $white;
             padding: 0;
             margin-bottom: 4px;
         }
-        > li:first-child,
-        > li > details > summary {
-            display: flex;
-            gap: 1em;
-            > div {
-                &:first-child,
-                &:last-child {
-                    flex: 1 0 30%;
-                    max-width: 30%;
-                }
-                &:nth-child(2) {
-                    flex: 1 1 20%;
-                    max-width: 20%;
-                    word-break: break-word;
+
+        summary {
+            padding: 1rem 0.889rem;
+            border-bottom: 1px solid $neutral-100;
+            box-sizing: border-box;
+            min-height: 56px;
+
+            &::before {
+                left: auto;
+                right: 1rem;
+                top: 1rem;
+                transform-origin: center;
+            }
+
+            .container__titel {
+                font-weight: 700;
+            }
+
+            .cta--summary {
+                max-width: calc(100% - 100px);
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                display: inline-block;
+                text-decoration: none;
+
+                &.has-text {
+                    color: $gray-600;
                 }
             }
         }
 
-        > li {
-            font-size: $fz-14;
-            position: relative;
+        h3 {
+            font-size: $fz-16;
+            color: $green-tint01;
+        }
 
-            .btn--remove {
-                position: absolute;
-                right: 54px;
-                top: 0.5rem;
-                width: 34px;
-                height: 34px;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-
-                svg {
-                    display: block;
-                    margin: 0 auto;
-                }
-
-                path {
-                    fill: $black;
-                }
-            }
-
-            summary {
-                padding: 1rem 0.889rem;
-                border-bottom: 1px solid $neutral-100;
-                box-sizing: border-box;
-                min-height: 56px;
-
-                &::before {
-                    left: auto;
-                    right: 1rem;
-                    top: 1rem;
-                    transform-origin: center;
-                }
-
-                .container__titel {
-                    font-weight: 700;
-                }
-
-                .cta--summary {
-                    max-width: calc(100% - 100px);
-                    overflow: hidden;
-                    white-space: nowrap;
-                    text-overflow: ellipsis;
-                    display: inline-block;
-
-                    &.has-text {
-                        color: $gray-600;
-                        text-decoration: none;
-                    }
-                }
-            }
-
-            h3 {
-                font-size: $fz-16;
-                color: $green-tint01;
-            }
-
-            textarea {
-                max-width: none;
-                line-height: 1.25em;
-                font-family: $font-family-sans-serif;
-                width: 100%;
-                border: 1px solid $gray-200;
-                resize: none;
-                box-sizing: border-box;
-            }
+        textarea {
+            max-width: none;
+            line-height: 1.25em;
+            font-family: $font-family-sans-serif;
+            width: 100%;
+            border: 1px solid $gray-200;
+            resize: none;
+            box-sizing: border-box;
         }
 
         .container__flex {
