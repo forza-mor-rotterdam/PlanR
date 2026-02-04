@@ -140,12 +140,14 @@
                                                                                     {% endfor %}
                                                                                 </dd>
                                                                             </div>
+                                                                            {% if signaal.omschrijving_melder %}
                                                                             <div>
                                                                                 <dt>Omschrijving</dt>
                                                                                 <dd>
-                                                                                    {% if signaal.omschrijving_melder and signaal.omschrijving_melder != "- geen korte omschrijving beschikbaar -" %}{{ signaal.omschrijving_melder }}{% else %}-{% endif %}
+                                                                                    {{ signaal.omschrijving_melder }}
                                                                                 </dd>
                                                                             </div>
+                                                                            {% endif %}
                                                                             {% with aanvullende_vragen=signaal.aanvullende_vragen %}
                                                                                 {% if aanvullende_vragen %}
                                                                                     {% for qa in aanvullende_vragen %}
@@ -189,7 +191,9 @@
                                                                                 </dd>
                                                                             </div>
                                                                         </dl>
+                                                                        {% if signaal.melder.naam or signaal.melder.voornaam or signaal.melder.achternaam or signaal.melder.telefoonnummer or signaal.melder.email %}
                                                                         <dl>
+                                                                            {% if signaal.melder.naam or signaal.melder.voornaam or signaal.melder.achternaam %}
                                                                             <div>
                                                                                 <dt>Melder</dt>
                                                                                 <dd>
@@ -202,19 +206,25 @@
                                                                                     {% endif %}
                                                                                 </dd>
                                                                             </div>
+                                                                            {% endif %}
+                                                                            {% if signaal.melder.telefoonnummer %}
                                                                             <div>
                                                                                 <dt>Telefoonnummer</dt>
                                                                                 <dd>
-                                                                                    {% if signaal.melder.telefoonnummer and signaal.melder.telefoonnummer != "Anoniem" %}<a href="tel:{{ signaal.melder.telefoonnummer }}" class="link--phone">{{ signaal.melder.telefoonnummer }}</a>{% else %}-{% endif%}
+                                                                                    <a href="tel:{{ signaal.melder.telefoonnummer }}" class="link--phone">{{ signaal.melder.telefoonnummer }}</a>
                                                                                 </dd>
                                                                             </div>
+                                                                            {% endif %}
+                                                                            {% if signaal.melder.email %}
                                                                             <div>
                                                                                 <dt>E-mail</dt>
                                                                                 <dd>
-                                                                                    {% if signaal.melder.email %}<a href="mailto:{{ signaal.melder.email }}" class="link--email">{{ signaal.melder.email }}</a>{% else %}-{% endif %}
+                                                                                    <a href="mailto:{{ signaal.melder.email }}" class="link--email">{{ signaal.melder.email }}</a>
                                                                                 </dd>
                                                                             </div>
+                                                                            {% endif %}
                                                                         </dl>
+                                                                        {% endif %}
                                                                         {% if signaal.meta.specifiek_graf or signaal.meta.terugkoppeling_gewenst or signaal.meta.aannemer %}
                                                                         <dl>
                                                                             {% if signaal.meta.aannemer %}
@@ -241,24 +251,28 @@
                                                                             </div>
                                                                         </dl>
                                                                         {% endif %}
+                                                                        {% if signaal.kanaal or laatste_meldinggebeurtenis.gebruiker %}
                                                                         <dl>
+                                                                            {% if signaal.kanaal %}
                                                                             <div>
                                                                                 <dt>Kanaal</dt>
                                                                                 <dd>
-                                                                                    {% if signaal.kanaal %}{{ signaal.kanaal }}{% else %}-{% endif %}
+                                                                                    {{ signaal.kanaal }}
                                                                                 </dd>
                                                                             </div>
+                                                                            {% endif %}
+                                                                            {% if laatste_meldinggebeurtenis.gebruiker %}
                                                                             <div>
                                                                                 <dt>Medewerker</dt>
                                                                                 <dd>
-                                                                                    {% if laatste_meldinggebeurtenis.gebruiker %}
                                                                                     {% with gebruiker_object=laatste_meldinggebeurtenis.gebruiker|get_gebruiker_object_middels_email %}
                                                                                     <a href="" data-action="modal#openModal" data-modal-action-param="{% url 'gebruiker_info' gebruiker_email=laatste_meldinggebeurtenis.gebruiker %}">{{ gebruiker_object.full_name }}</a>
                                                                                     {% endwith %}
-                                                                                    {% else %}-{% endif %}
                                                                                 </dd>
                                                                             </div>
+                                                                            {% endif %}
                                                                         </dl>
+                                                                        {% endif %}
                                                                         {% if perms.authorisatie.beheer_bekijken %}
                                                                         <dl>
                                                                             <div>
