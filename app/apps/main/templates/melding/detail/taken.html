@@ -57,9 +57,19 @@
                                 </span>
                             </div>
                             <div class="" data-detail-target="taakStatusContainer">
-                                <span class="tag tag--qualification tag--{{ taak|taak_status_css_class }}">
-                                    {{ taak|taak_status_tekst }}
-                                </span>
+                                {% if taak|taak_status_css_class != "in_de_wacht" %}
+                                    <span class="tag tag--qualification tag--{{ taak|taak_status_css_class }}">
+                                        {{ taak|taak_status_tekst }}
+                                    </span>
+                                {% else %}
+                                    <button class="tag tag--qualification tag--{{ taak|taak_status_css_class }}" interestfor="taak">
+                                        {{ taak|taak_status_tekst }}
+                                    </button>
+                                    {% comment %} TODO @Maurice popover met uniek id {% endcomment %}
+                                    <div popover id="taak">
+                                        Wacht tot de taak ... is uitgevoerd
+                                    </div>
+                                {% endif %}
                             </div>
                             {% if perms.authorisatie.taak_verwijderen %}
                             <div>

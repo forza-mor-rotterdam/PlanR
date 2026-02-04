@@ -170,7 +170,7 @@
         </li>
     </template>
     <template id="template_geselecteerd_formulier_taaktype">
-        <li data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktype" data-parents="[]">
+        <li data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktype" data-parents="[]" class="taak">
             <details data-action="taken-aanmaken--manager#toggleDetailsHandler">
                 <summary>
                     <div class="container__titel">
@@ -180,29 +180,44 @@
                         <span data-verantwoordelijke-afdeling></span>
                     </div>
                     <div>
-                        <span class="cta--summary">Opmerking toevoegen</span>
+                        <span class="cta--summary">-</span>
                     </div>
                     <div data-status>
-                        <span data-status-tag class="tag tag--qualification tag--in_de_wacht" style="display: none;">In de wacht</span>
+                        <button data-status-tag class="tag tag--qualification tag--in_de_wacht" style="display: none;" type="button">In de wacht</button>
+                        <div popover data-status-pop class="" ></div>
                     </div>
                     <div class="container__uitklapper">
                         <span>{% include "icons/dots.svg" %}</span>
                         <div class="legenda">
-
-                                <button type="button"
+                            <ul class="list-clean">
+                                <li>
+                                    <button type="button"
+                                        class="btn"
+                                        data-action="taken-aanmaken--manager#openDetails">
+                                        {% include "icons/comment.svg" %} Opmerking toevoegen
+                                    </button>
+                                </li>
+                                <li>
+                                    <button type="button"
                                         class="btn"
                                         data-action="taken-aanmaken--manager#taaktypeVerwijderenHandler:prevent">
-                                    {% include "icons/bin.svg" %}
-                                </button>
-
-                                <button type="button"
-                                        class="btn"
-                                        data-action="taken-aanmaken--manager#showParentOptionsHandler:prevent">
-                                    Wachten op...
-                                </button>
+                                        {% include "icons/bin.svg" %} Taak verwijderen
+                                    </button>
+                                </li>
+                                <li>
+                                    <div class="list__wrapper">
+                                        <button type="button"
+                                                class="btn"
+                                                data-action="taken-aanmaken--manager#showParentOptionsHandler:prevent">
+                                            {% include "icons/list_numbers.svg" %}Wacht op...
+                                            <span class="arrow--right">{% include "icons/arrow-right-v2.svg" %}</span>
+                                        </button>
+                                        <ul data-parents-options-container class="list__nested"></ul>
+                                    </div>
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                    <ul data-parents-options-container></ul>
                 </summary>
                 <div class="container__flex">
                     <div>

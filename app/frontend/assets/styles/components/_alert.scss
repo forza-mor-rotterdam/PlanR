@@ -168,6 +168,14 @@
         }
     }
 
+    &--in_de_wacht {
+        background-color: $gray-200;
+
+        &::before {
+            background-color: $gray-800;
+        }
+    }
+
     &--voltooid,
     &--opgelost,
     &--geannuleerd,
@@ -186,4 +194,12 @@
             background-color: $purple-800;
         }
     }
+}
+
+[popover] {
+    inset: unset;
+    bottom: anchor(bottom);
+    left: anchor(center);
+    transform: translate(-50%, 110%);
+    max-width: 300px;
 }

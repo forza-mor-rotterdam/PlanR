@@ -10,6 +10,11 @@ button {
     &:focus-visible {
         @include focus-outline();
     }
+
+    &.tag {
+        border: none;
+        cursor: pointer;
+    }
 }
 input[type="text"],
 textarea {

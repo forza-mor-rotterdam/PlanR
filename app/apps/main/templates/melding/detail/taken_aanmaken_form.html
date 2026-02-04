@@ -14,16 +14,16 @@
             {{ form.management_form }}
             <div class="form-row">
                 <ul data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktypeContainer"
-                    class="list--3cols-form">
-                    <li>
+                    class="list--form-aanmaken">
+                    <li class="heading">
                         <div>Taak</div>
-                        <div>Verantwoordelijke afdeling</div>
+                        <div>Afdeling</div>
                         <div>Opmerking</div>
                         <div>Status</div>
                         <div>Opties</div>
                     </li>
                     {% for taaktype_form in form %}
-                        <li data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktype">
+                        <li data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktype" class="taak">
                             {{ taaktype_form }}
                         </li>
                     {% endfor %}
