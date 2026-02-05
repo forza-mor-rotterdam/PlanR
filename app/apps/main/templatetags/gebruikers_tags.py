@@ -68,12 +68,10 @@ def get_gebruiker_object_middels_email(value):
             gebruiker["email"] = user_from_model.email or ""
         if not gebruiker.get("telefoonnummer"):
             gebruiker["telefoonnummer"] = user_from_model.telefoonnummer or ""
-        if not gebruiker.get("full_name"):
-            first_name = (
-                user_from_model.first_name if user_from_model.first_name else ""
-            )
-            last_name = user_from_model.last_name if user_from_model.last_name else ""
-            full_name = f"{first_name} {last_name}".strip()
-            gebruiker["full_name"] = full_name or gebruiker["email"]
+        # if not gebruiker.get("full_name"):
+        first_name = user_from_model.first_name if user_from_model.first_name else ""
+        last_name = user_from_model.last_name if user_from_model.last_name else ""
+        full_name = f"{first_name} {last_name}".strip()
+        gebruiker["full_name"] = full_name or gebruiker["email"]
 
     return gebruiker
