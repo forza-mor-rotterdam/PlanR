@@ -7,9 +7,9 @@ De documentatie is bedoeld voor overdracht aan een opvolgende front-end develope
 De front-end documentatie bestaat uit vier onderdelen:
 
 - docs/frontend/README.md (dit document)
-- docs/frontend/controllers/README.md
-- docs/frontend/styling/README.md
-- docs/frontend/patterns/README.md
+- [docs/frontend/controllers/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/controllers/README.md)
+- [docs/frontend/styling/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/styling/README.md)
+- [docs/frontend/patterns/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/patterns/README.md)
 
 ---
 
