@@ -10,7 +10,7 @@ Voor JavaScript-gedrag en interactie wordt verwezen naar:
 
 Voor de globale context zie:
 
-- docs/frontend/README.md
+- [docs/frontend/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/README.md)
 
 ---
 

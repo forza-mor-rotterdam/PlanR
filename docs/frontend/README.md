@@ -2,7 +2,7 @@
 
 Deze documentatie beschrijft hoe de front-end van PlanR in de praktijk is opgebouwd en hoe deze in de loop van de tijd is gegroeid.
 
-De documentatie is bedoeld voor overdracht aan een opvolgende front-end developer en richt zich op begrip van de bestaande code, niet op het opleggen van nieuwe architectuurprincipes.
+De documentatie is bedoeld voor overdracht aan een opvolgende front-end developer en richt zich op begrip van de bestaande code.
 
 De front-end documentatie bestaat uit vier onderdelen:
 
@@ -93,9 +93,9 @@ Hierdoor hoeven bestandsnamen met hashes niet handmatig te worden aangepast.
 De front-end documentatie is opgesplitst in vier delen die samen gelezen moeten worden:
 
 - Dit document beschrijft de globale opzet en context
-- controllers/README.md beschrijft waar de JavaScript-logica zit
-- styling/README.md beschrijft hoe de visuele laag is opgebouwd
-- patterns/README.md beschrijft terugkerende technische oplossingen
+- [controllers/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/controllers/README.md) beschrijft waar de JavaScript-logica zit
+- [styling/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/styling/README.md) beschrijft hoe de visuele laag is opgebouwd
+- [patterns/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/patterns/README.md) beschrijft terugkerende technische oplossingen
 
 Geen van deze documenten is op zichzelf volledig; ze vullen elkaar aan.
 
