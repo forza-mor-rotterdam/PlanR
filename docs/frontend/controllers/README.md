@@ -2,7 +2,7 @@
 
 Dit document vormt samen met:
 
-- [frontend/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/controllers/README.md)
+- [frontend/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/README.md)
 - [frontend/styling/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/styling/README.md)
 - [frontend/patterns/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/patterns/README.md)
 
@@ -55,17 +55,26 @@ De indeling is historisch gegroeid en niet overal strikt doorgevoerd.
 
 ## Registratie en bootstrap
 
-De initialisatie van Stimulus gebeurt via:
+De front-end start vanuit `app/frontend/assets/app.js`. Dit bestand importeert:
 
-- app.js
-- bootstrap.js
-- controllers.json
+- `./styles/app.scss` (alle styling wordt zo in de bundle opgenomen)
+- `./bootstrap` (start Stimulus en Turbo)
 
-`controllers.json` fungeert als manifest van beschikbare controllers.
+De daadwerkelijke controller-registratie gebeurt in `app/frontend/assets/bootstrap.js`.
 
-Tijdens het opstarten van de front-end worden deze controllers geregistreerd en gekoppeld aan hun identifiers.
+Daar wordt Stimulus gestart en worden alle controllers automatisch geladen via Webpack:
 
-Nieuwe controllers moeten in de praktijk zowel als bestand bestaan als in de bootstrap/manifest opgenomen zijn.
+- Webpack `require.context('./controllers', true, /\.js$/)` selecteert alle controllerbestanden (ook in submappen).
+- `definitionsFromContext(context)` zet die bestanden om naar Stimulus-definities.
+- `document.App.load(...)` registreert ze in één keer.
+
+In de praktijk betekent dit dat een nieuwe controller “meedoet” zodra het bestand onder `app/frontend/assets/controllers/` staat en de bundling opnieuw draait.
+
+Naast de lokale controllers wordt ook een externe controller geregistreerd:
+
+- `document.App.register('chart', Chart)` voor `@stimulus-components/chartjs`.
+
+Er staat ook een bestand `controllers.json` in de repo, maar dit wordt in deze setup niet gebruikt voor registratie (het bevat momenteel lege arrays).
 
 ---
 
