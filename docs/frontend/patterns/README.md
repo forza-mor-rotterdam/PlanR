@@ -4,9 +4,9 @@ Dit document beschrijft terugkerende technische patronen die in de praktijk binn
 
 Het vormt een aanvulling op:
 
-- docs/frontend/README.md (context)
-- docs/frontend/controllers/README.md (implementatie)
-- docs/frontend/styling/README.md (presentatie)
+- [docs/frontend/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/README.md) (context)
+- [docs/frontend/controllers/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/controllers/README.md) (implementatie)
+- [docs/frontend/styling/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/styling/README.md) (presentatie)
 
 De beschreven patronen zijn gebaseerd op bestaande code en gewoontes, niet op theoretische architectuurprincipes.
 

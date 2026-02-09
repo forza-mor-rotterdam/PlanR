@@ -5,8 +5,8 @@ Het beschrijft uitsluitend de visuele laag (SCSS en themaconfiguratie).
 
 Voor JavaScript-gedrag en interactie wordt verwezen naar:
 
-- docs/frontend/controllers/README.md
-- docs/frontend/patterns/README.md
+- [frontend/controllers/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/controllers/README.md)
+- [frontend/patterns/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/patterns/README.md)
 
 Voor de globale context zie:
 
