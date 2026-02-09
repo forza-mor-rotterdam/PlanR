@@ -2,6 +2,13 @@
 
 Applicatie voor midoffice medewerkers om regie uit te voeren op de MOR-keten
 
+## Meer in-depth documentatie
+**Architectuur:** ...
+
+**Back-end:** ...
+
+**Front-end:** [frontend/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/README.md)
+
 ## Tech Stack
 
 [Django](https://www.djangoproject.com/start/), [Turbo JS](https://turbo.hotwired.dev/), [SCSS](https://sass-lang.com/)
