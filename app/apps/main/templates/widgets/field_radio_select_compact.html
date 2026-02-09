@@ -1,0 +1,21 @@
+{% with id=widget.attrs.id %}
+    {% for group, options, index in widget.optgroups %}
+        {% for option in options %}
+        {% if option.selected %}
+        <span class="selected-label" data-radio-select-compact-target="selectedLabel">
+        {{ option.label }}
+        </span>
+        {% endif %}
+        {% endfor %}
+    {% endfor %}
+    <ul {% if id %}id="{{ id }}"{% endif %}
+        class="{{ widget.attrs.class }} options">
+        {% for group, options, index in widget.optgroups %}
+            {% for option in options %}
+                <li class="{% if option.selected %}selected{% endif %}">
+                    {% include option.template_name with widget=option %}
+                </li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+{% endwith %}

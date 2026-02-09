@@ -1,0 +1,7 @@
+{% load json_encode from json_tags %}
+{% load to_abs from number_tags %}
+<turbo-stream target="dashboard_historisch" action="update">
+    <template>
+        {% include "snippets/table.html" with table_data=historische_table_data table_id="dashboard_historisch" table_row_filters=default_row_filters sort_key="weergave" only %}
+    </template>
+</turbo-stream>

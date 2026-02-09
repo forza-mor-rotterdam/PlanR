@@ -135,3 +135,11 @@ BEGRAAFPLAATSEN = (
 BEGRAAFPLAATSEN_LOOKUP = {
     begraafplaats[0]: begraafplaats[1] for begraafplaats in BEGRAAFPLAATSEN
 }
+
+MELDING_STATUS_OPENSTAAAND = "openstaand"
+MELDING_STATUS_IN_BEHANDELING = "in_behandeling"
+MELDING_STATUS_CONTROLE = "controle"
+MELDING_STATUS_WACHTEN_MELDER = "wachten_melder"
+MELDING_STATUS_PAUZE = "pauze"
+MELDING_STATUS_AFGEHANDELD = "afgehandeld"
+MELDING_STATUS_GEANNULEERD = "geannuleerd"

@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% load rotterdam_formulier_html %}
+{% load l10n %}
+{% load humanize %}
+{% load tz %}
+{% load json_encode from json_tags %}
+{% load to_abs from number_tags %}
+{% block title %}
+    Dashboard | PlanR
+{% endblock title %}
+{% block header %}
+    {% with pageTitle="Dashboard" %}
+        {% include "snippets/pageheader.html" %}
+    {% endwith %}
+{% endblock header %}
+{% block body_class %}
+    wide--xxl
+{% endblock body_class %}
+{% block body %}
+    <turbo-frame id="overview" data-turbo-action="advance" data-controller="sidesheet">
+    {% block content %}
+    <form method="post" action="{% url 'dashboard' %}" data-controller="dashboard" data-dashboard-data-value="{{ actueel_table|json_encode }}" data-dashboard-row-filters-value="{{ default_row_filters|json_encode }}">
+        {% csrf_token %}
+        <div class="container__dashboard">
+            <section>
+                <div class="container__filters">
+                    <div class="container__title">
+                        <h1>
+                            Inzichten
+                        </h1>
+                    </div>
+                    <div class="container__filters">
+                            {{ form.weergave.as_field_group }}
+                            {{ form.stadsdeel.as_field_group }}
+                    </div>
+                </div>
+            </section>
+            <section>
+                <div class="container__filters container__filters--margin-top container__filters--margin-bottom">
+                    <div class="container__inzicht">
+                        <div class="container__inzicht__top">
+                            <span data-dashboard-target="alleMeldingenAantal">{{alle_meldingen_aantal}}</span>
+                        </div>
+                        <div class="container__inzicht__subtop">
+                            Alle meldingen
+                        </div>
+                        <div class="container__inzicht__description">
+                            Totaal van alle nieuwe meldingen, meldingen in behandeling en meldingen ter controle.
+                        </div>
+                        <div class="container__inzicht__footer">
+                            <span data-dashboard-target="lookbackAantal">{% include "dashboard/v2/lookback_aantal.html" %}</span>
+                        </div>
+                    </div>
+                    <div class="container__inzicht">
+                        <div class="container__inzicht__top">
+                            <span data-dashboard-target="nieuweMeldingenAantal">{{nieuwe_meldingen_aantal}}</span>
+                        </div>
+                        <div class="container__inzicht__subtop">
+                            Nieuwe meldingen
+                        </div>
+                        <div class="container__inzicht__description">
+                            Alle binnengekomen meldingen die nog moeten worden bekeken.
+                        </div>
+                        <div class="container__inzicht__footer">
+                            <span><strong data-dashboard-target="nieuweMeldingenPercentage">{{ nieuwe_meldingen_percentage|floatformat:0 }}%</strong> van alle meldingen</span>
+                        </div>
+                    </div>
+                    <div class="container__inzicht">
+                        <div class="container__inzicht__top">
+                            <span data-dashboard-target="inBehandelingMeldingenAantal">{{meldingen_in_behandeling_aantal}}</span>
+                        </div>
+                        <div class="container__inzicht__subtop">
+                            Meldingen in behandeling
+                        </div>
+                        <div class="container__inzicht__description">
+                            Alle meldingen waarvoor taken zijn aangemaakt, of gepauzeerd zijn.
+                        </div>
+                        <div class="container__inzicht__footer">
+                            <span><strong data-dashboard-target="inBehandelingMeldingenPercentage">{{ meldingen_in_behandeling_percentage|floatformat:0 }}%</strong> van alle meldingen</span>
+                        </div>
+                    </div>
+                    <div class="container__inzicht">
+                        <div class="container__inzicht__top">
+                            <span data-dashboard-target="controleMeldingenAantal">{{meldingen_in_controle_aantal}}</span>
+                        </div>
+                        <div class="container__inzicht__subtop">
+                            Meldingen ter controle
+                        </div>
+                        <div class="container__inzicht__description">
+                            Alle meldingen die gecontroleerd dienen te worden omdat de taken zijn uitgevoerd.
+                        </div>
+                        <div class="container__inzicht__footer">
+                            <span><strong data-dashboard-target="controleMeldingenPercentage">{{ meldingen_in_controle_percentage|floatformat:0 }}%</strong> van alle meldingen</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="container__dashboard">
+            <section>
+                <div class="container__filters container__filters--margin-bottom">
+                    <div class="container__title">
+                        <h1>
+                            Actueel
+                        </h1>
+                    </div>
+                </div>
+            </section>
+            <section>
+                {% include "snippets/table.html" with table_data=actueel_table table_id="dashboard_actueel" table_row_filters=default_row_filters sort_key="alle_meldingen" only %}
+            </section>
+        </div>
+        <hr/>
+        <div class="container__dashboard">
+            <section>
+                <div class="container__filters container__filters--margin-bottom">
+                    <div class="container__title">
+                        <h1>
+                            Historisch
+                        </h1>
+                    </div>
+                    <div class="container__filters">
+                        {{ form.periode.as_field_group }}
+                    </div>
+                </div>
+            </section>
+            <section>
+                {% include "snippets/table.html" with table_data=historische_table_data table_id="dashboard_historisch" table_row_filters=default_row_filters sort_key="weergave" only %}
+            </section>
+        </div>
+    </form>
+    {% endblock content %}
+    </turbo-frame>
+{% endblock body %}

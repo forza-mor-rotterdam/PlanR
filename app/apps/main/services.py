@@ -112,6 +112,23 @@ def render_onderwerp(onderwerp_url, standaard_naam=None, force_cache=False):
     return standaard_naam
 
 
+def render_categorie(onderwerp_url, standaard_naam="-", force_cache=False):
+    onderwerp = OnderwerpenService().get_onderwerp(
+        onderwerp_url, force_cache=force_cache
+    )
+    if onderwerp.get("errors"):
+        return standaard_naam
+
+    categorie = OnderwerpenService().get_groep(
+        onderwerp["group_uuid"], force_cache=force_cache
+    )
+
+    standaard_naam = categorie.get(
+        "name", "Niet gevonden!" if not standaard_naam else standaard_naam
+    )
+    return standaard_naam
+
+
 def render_onderwerp_groepen(context, force_cache=False):
     try:
         groep_uuids = {}

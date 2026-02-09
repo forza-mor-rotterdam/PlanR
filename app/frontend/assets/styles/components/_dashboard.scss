@@ -15,17 +15,54 @@ canvas {
     .container__title {
         h1 {
             margin: 0.5em 0;
+            color: $green;
+            font-size: $h4-font-size;
         }
-
-        + div {
-            margin-top: 1.25em;
+    }
+    .container__inzicht {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        background-color: white;
+        padding: 16px;
+        flex: 1;
+        &__top {
+            font-size: $fz-28;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        &__subtop {
+            font-size: $fz-16;
+        }
+        &__description {
+            font-size: $fz-12;
+            flex: 1;
+            line-height: $line-height-base-v2;
+            color: #666;
+            padding: 8px 0;
+            max-width: 35ch;
+            text-wrap: balance;
+        }
+        &__footer {
+            font-size: $fz-14;
+            line-height: $line-height-base-v2;
+            padding-top: 14px;
+            border-top: 1px solid $gray-200;
+            min-height: 36px;
         }
     }
 
     .container__filters {
         display: flex;
         justify-content: space-between;
-        margin-top: 1em;
+        gap: 16px;
+
+        &--margin-top {
+            margin-top: 10px;
+        }
+        &--margin-bottom {
+            margin-bottom: 10px;
+        }
 
         .list-horizontal {
             justify-content: flex-start;

@@ -569,3 +569,50 @@ class TaakopdrachtTaakAanmakenIssueLijstView(PermissionRequiredMixin, FormView):
         if herstart_taak_aanmaken_taakopdrachten_response.get("error"):
             raise Exception(herstart_taak_aanmaken_taakopdrachten_response.get("error"))
         return super().form_valid(form)
+
+
+def dynamic_table(request):
+    import json
+
+    # with open("app/apps/beheer/files/generated.json", "r") as file:
+    with open("apps/beheer/files/generated.json", "r") as file:
+        data = json.load(file)
+
+    print(len(data))
+    if not data:
+        return render(request, "beheer/dynamic_table.html", {"data": []})
+
+    [k for k in data[0].keys()]
+
+    data_sort_unique_values = {
+        k: sorted(list(set([d[k] for d in data]))) for k in data[0].keys()
+    }
+    # print(json.dumps(data_sort_unique_values, indent=4))
+    data_sort_indexes = {
+        k: [
+            (
+                x,
+                "{n:0{w}d}".format(w=len(str(len(v) - 1)), n=i),
+                "{n:0{w}d}".format(w=len(str(len(v) - 1)), n=len(v) - i - 1),
+            )
+            for i, x in enumerate(v)
+        ]
+        for k, v in data_sort_unique_values.items()
+    }
+    # print(json.dumps(data_sort_indexes, indent=4))
+
+    data = [
+        {
+            k: {
+                "value": v,
+                "sorting": [
+                    (vv[1], vv[2]) for vv in data_sort_indexes.get(k, []) if vv[0] == v
+                ][0],
+            }
+            for k, v in d.items()
+        }
+        for d in data
+    ]
+    print(json.dumps(data, indent=4))
+
+    return render(request, "beheer/dynamic_table.html", {"data": data})

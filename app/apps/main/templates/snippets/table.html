@@ -1,0 +1,30 @@
+{% load json_encode from json_tags %}
+
+<div class="table__container" id="{{ table_id }}" data-controller="table" data-dashboard-target="table" data-table-data-value="{{ table_data|json_encode }}" data-table-id-value="{{ table_id }}" data-table-row-filters-value="{{ table_row_filters|json_encode }}" data-table-sort-key-value="{{ sort_key }}">
+    <table class="table">
+        <thead></thead>
+        <tbody></tbody>
+        <tfoot></tfoot>
+        <template id="{{ table_id }}_table_row">
+            <tr data-table-row></tr>
+        </template>
+        <template id="{{ table_id }}_table_head_cell">
+            <th data-table-head-cell>
+                <a class="column-sorter" data-table-head-sorter data-action="table#sorterClickHandler" data-table-head-title>
+                    <span data-table-head-label class="column-sorter-label"></span>
+                    <span class="column-sorter-indicator"></span>
+                </a>
+            </th>
+        </template>
+        <template id="{{ table_id }}_table_body_cell">
+            <td data-table-body-cell></td>
+        </template>
+        <template id="{{ table_id }}_table_foot_cell">
+            <th data-table-foot-cell></th>
+        </template>
+    </table>
+    <button class="btn btn--table-export" data-action="table#onExportClickHandler">
+        {% include "icons/download.svg" %}
+        Exporteer overzicht
+    </button>
+</div>

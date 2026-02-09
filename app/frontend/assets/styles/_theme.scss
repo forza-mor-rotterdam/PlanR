@@ -128,7 +128,8 @@ $focus-border-color: $gray-tint11;
 $disabled-border-color: $gray-tint08;
 
 $font-weight-normal: 400;
-$line-height-base: 1.35 !default;
+$line-height-base: 1.35;
+$line-height-base-v2: 1.25;
 
 // voor footer links, <small> en input field error messages
 $small-font-size: 0.75rem;
@@ -148,12 +149,16 @@ $h4-font-size: 1.333rem;
 $h5-font-size: 1.111rem;
 $h6-font-size: 1rem;
 $font-size-base: 1rem;
+$fz-28: 1.75rem;
 $fz-16: 1rem;
 $fz-14: 0.875rem;
 $fz-12: 0.75rem;
 
 $body-color: $black;
 $text-muted: $gray-tint08;
+
+// Layout
+$top-bar-height: 60px;
 
 // Form text
 // It should be explicitly associated with the form control it relates to using the aria-describedby attribute.
