@@ -79,6 +79,7 @@ services:
     networks:
       - planr_network
       - mor_bridge_network
+    restart: on-failure
 
   app_celery_beat:
     build: *build-definition
@@ -95,6 +96,7 @@ services:
     networks:
       - planr_network
       - mor_bridge_network
+    restart: on-failure
 
   mercure:
     image: dunglas/mercure:v0.20

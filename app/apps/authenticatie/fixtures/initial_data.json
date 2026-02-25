@@ -1,0 +1,62 @@
+[
+    {
+        "model": "authenticatie.gebruiker",
+        "pk": 1,
+        "fields": {
+            "password": "insecure",
+            "last_login": "2026-02-09T09:00:01.433Z",
+            "is_superuser": true,
+            "first_name": "Admin",
+            "last_name": "Dev",
+            "is_staff": true,
+            "is_active": true,
+            "date_joined": "2023-10-25T08:28:32.728Z",
+            "email": "admin@forzamor.nl",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "authenticatie.gebruiker",
+        "pk": 2,
+        "fields": {
+            "password": "insecure",
+            "last_login": "2026-02-09T09:00:01.433Z",
+            "is_superuser": false,
+            "first_name": "Botje",
+            "last_name": "Knor",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2023-10-25T08:28:32.728Z",
+            "email": "botjeknor@rotterdam.nl",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "authenticatie.profiel",
+        "pk": 1,
+        "fields": {
+            "uuid": "43ba9b6b-7375-45cd-a4c1-f84499c1b943",
+            "aangemaakt_op": "2023-10-25T08:28:32.785Z",
+            "aangepast_op": "2026-02-09T15:25:48.111Z",
+            "gebruiker": 1,
+            "filters": {},
+            "ui_instellingen": {},
+            "context": 1
+        }
+    },
+    {
+        "model": "authenticatie.profiel",
+        "pk": 2,
+        "fields": {
+            "uuid": "f343434b-f4ee-4a1f-a2e1-2b8b6982828f",
+            "aangemaakt_op": "2023-10-25T08:28:32.785Z",
+            "aangepast_op": "2026-02-09T15:25:48.111Z",
+            "gebruiker": 2,
+            "filters": {},
+            "ui_instellingen": {},
+            "context": 3
+        }
+    }
+]

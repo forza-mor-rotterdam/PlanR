@@ -1,0 +1,149 @@
+[
+    {
+        "model": "context.context",
+        "pk": 1,
+        "fields": {
+            "uuid": "a27b44b6-80a2-4540-ac7a-11bad7522f96",
+            "aangemaakt_op": "2023-10-25T13:19:11.868Z",
+            "aangepast_op": "2026-02-18T16:18:15.617Z",
+            "naam": "Midoffice",
+            "filters": {
+                "fields": [
+                    "status",
+                    "onderwerp",
+                    "buurt",
+                    "urgentie_gte"
+                ]
+            },
+            "kolommen": {
+                "sorted": [
+                    "melding_id",
+                    "meldr_nummer",
+                    "adres_buurt_wijk",
+                    "onderwerp",
+                    "origineel_aangemaakt",
+                    "status",
+                    "spoed"
+                ]
+            },
+            "standaard_filters": {
+                "pre_onderwerp": [
+                    "2",
+                    "1",
+                    "3",
+                    "4",
+                    "5",
+                    "6",
+                    "7",
+                    "8",
+                    "21",
+                    "22",
+                    "23",
+                    "24",
+                    "25",
+                    "26",
+                    "27",
+                    "28",
+                    "29",
+                    "30",
+                    "31",
+                    "32",
+                    "33",
+                    "34",
+                    "35",
+                    "36",
+                    "37",
+                    "38",
+                    "39",
+                    "40",
+                    "41",
+                    "42",
+                    "44",
+                    "43",
+                    "45",
+                    "46",
+                    "47",
+                    "48",
+                    "49",
+                    "50",
+                    "51",
+                    "52",
+                    "53"
+                ]
+            },
+            "taaktypes": [
+                "http://fixer.mor.local:8004/api/v1/taaktype/0fd621bf-392e-4c74-9cb9-b85e55ab4946/",
+                "http://fixer.mor.local:8004/api/v1/taaktype/f39e4898-a14b-42d4-a9be-13b324ff928c/",
+                "http://fixer.mor.local:8004/api/v1/taaktype/143d569a-b2be-4144-9c2f-7982589d7410/",
+                "http://fixer.mor.local:8004/api/v1/taaktype/c08e999b-8044-4ac8-ae1e-d533a8e1b700/",
+                "http://fixer.mor.local:8008/api/v1/taaktype/a24bfa86-a57a-4fd5-9be2-7bb3c9a494f3/",
+                "http://fixer.mor.local:8004/api/v1/taaktype/088fb376-baf0-44af-9925-04d2e08e9d94/",
+                "http://externr.mor.local:8008/api/v1/taaktype/5b02f44e-6c60-4180-a0a6-021489b19598/"
+            ],
+            "template": "standaard"
+        }
+    },
+    {
+        "model": "context.context",
+        "pk": 2,
+        "fields": {
+            "uuid": "f96d4b2b-b351-4140-9751-3160de040f12",
+            "aangemaakt_op": "2024-02-07T09:36:34.997Z",
+            "aangepast_op": "2026-02-18T16:18:39.292Z",
+            "naam": "B&C",
+            "filters": {
+                "fields": [
+                    "status",
+                    "begraafplaats",
+                    "onderwerp"
+                ]
+            },
+            "kolommen": {
+                "sorted": [
+                    "melding_id",
+                    "begraafplaats",
+                    "grafnummer",
+                    "vak",
+                    "onderwerp",
+                    "origineel_aangemaakt",
+                    "status"
+                ]
+            },
+            "standaard_filters": {
+                "pre_onderwerp": [
+                    "9",
+                    "10",
+                    "11",
+                    "12",
+                    "13",
+                    "14",
+                    "15",
+                    "16",
+                    "17",
+                    "18",
+                    "19",
+                    "20"
+                ]
+            },
+            "taaktypes": [
+                "http://fixer.mor.local:8004/api/v1/taaktype/07ebcf88-94c0-4c0d-b2e2-527d587af08b/"
+            ],
+            "template": "benc"
+        }
+    },
+    {
+        "model": "context.context",
+        "pk": 3,
+        "fields": {
+            "uuid": "4a0cbdf5-a22f-491f-97cd-e9fda2000f71",
+            "aangemaakt_op": "2024-02-07T09:36:34.997Z",
+            "aangepast_op": "2026-02-18T16:18:39.292Z",
+            "naam": "Bot voor de MOR-keten",
+            "filters": {},
+            "kolommen": {},
+            "standaard_filters": {},
+            "taaktypes": [],
+            "template": "standaard"
+        }
+    }
+]

@@ -11,97 +11,98 @@ Applicatie voor midoffice medewerkers om regie uit te voeren op de MOR-keten
 
 ## Tech Stack
 
-[Django](https://www.djangoproject.com/start/), [Turbo JS](https://turbo.hotwired.dev/), [SCSS](https://sass-lang.com/)
+[Python](https://www.python.org/), [Django](https://www.djangoproject.com/start/), [Turbo JS](https://turbo.hotwired.dev/), [Stimulus JS](https://stimulus.hotwired.dev/), [SCSS](https://sass-lang.com/)
 
 ## Get Started 🚀
 
-To get started, install [Docker](https://www.docker.com/)
+To get started, install [Docker](https://www.docker.com/) and [Node(v18.18.2)](https://nodejs.org/)
 
-#### We use the Makefile for commonly used commands
+### Start MOR applications
 
-### Start MOR core application
+1. https://github.com/forza-mor-rotterdam/locatieservice
+2. https://github.com/forza-mor-rotterdam/onderwerpen
+3. https://github.com/forza-mor-rotterdam/TaakR
+4. https://github.com/forza-mor-rotterdam/mor-core
+5. https://github.com/forza-mor-rotterdam/FixeR
+6. https://github.com/forza-mor-rotterdam/ExternR
 
-https://github.com/forza-mor-rotterdam/mor-core
+### Clone application code
+
+```
+git clone git@github.com:forza-mor-rotterdam/PlanR.git
+```
+
+### Install, build and watch frontend code
+
+In a new console window/tab, go to [project-root]/app/frontend,
+and start front-end and watcher by typing
+
+```bash
+npm install
+npm run watch
+```
 
 ### Create local dns entry
 
+In a new console window/tab, go to [project-root]/
 Add '127.0.0.1 planr.mor.local' to your hosts file
-```
-sudo nano /etc/hosts
-```
 
-### create docker networks
-
-Use the Makefile command:
+### Create docker networks
 
 ```bash
-    make create_docker_networks
+docker network create planr_network
+docker network create mor_bridge_network
 ```
 
-or:
+### Create env variables
+Create .env.local file with the content of .env:
 
 ```bash
-    docker network create planr_network
-    docker network create mor_bridge_network
+cp ./.env .env.local
 ```
 
-### Build and run Docker container
+### Start application
 
-Use the Makefile command:
+Build and run containers:
 
 ```bash
-    make run_and_build
+docker compose up
 ```
 
-or:
+### Initial data
 
+In a new console window/tab, go to [project-root]/
 ```bash
-    docker compose build
-    docker compose up
+docker compose exec planr_app python manage.py local_dev_init
 ```
 
-To only run the docker container use:
-
-```bash
-    make run
-```
-
-This will start a webserver.
-Authorize via the Django admin: http://planr.mor.local:8003/admin/
-You can login with the following credentials:
-  - Email: admin@admin.com
-  - Password: insecure
+By now, a webserver started with correct initial data.
 You can view the website on http://planr.mor.local:8003
 
-### Frontend
+Login with the following credentials:
+  - Email: admin@forzamor.nl
+  - Password: insecure
 
-Use the Makefile command:
-
-```bash
-    make run_frontend
-```
-
-or in terminal go to 'app/frontend' and start front-end and watcher by typing
-
-```bash
-    npm install
-    npm run watch
-```
+Once authenticated, you will be redirected to http://planr.mor.local:8003/admin/
+You can view 'melding' items on http://planr.mor.local:8003/melding/
 
 ### Code style
+
 Pre-commit is used for formatting and linting
 Make sure pre-commit is installed on your system
+Go to [project-root]/
+
 ```bash
-    brew install pre-commit
+brew install pre-commit
 ```
 and run
 ```bash
-    pre-commit install
+pre-commit install
 ```
 
 To manually run the pre-commit formatting run
 
 ```bash
-    make format
+pre-commit run --all-files
 ```
 Pre-commit currently runs black, flake8, autoflake, isort and some pre-commit hooks. Also runs prettier for the frontend.
