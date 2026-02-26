@@ -7,9 +7,9 @@ De documentatie is bedoeld voor overdracht aan een opvolgende front-end develope
 De front-end documentatie bestaat uit vier onderdelen:
 
 - docs/frontend/README.md (dit document)
-- [docs/frontend/controllers/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/controllers/README.md)
-- [docs/frontend/styling/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/styling/README.md)
-- [docs/frontend/patterns/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/patterns/README.md)
+- [docs/frontend/controllers/README.md](docs/frontend/controllers/README.md)
+- [docs/frontend/styling/README.md](docs/frontend/styling/README.md)
+- [docs/frontend/patterns/README.md](docs/frontend/patterns/README.md)
 
 ---
 
@@ -93,9 +93,9 @@ Hierdoor hoeven bestandsnamen met hashes niet handmatig te worden aangepast.
 De front-end documentatie is opgesplitst in vier delen die samen gelezen moeten worden:
 
 - Dit document beschrijft de globale opzet en context
-- [controllers/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/controllers/README.md) beschrijft waar de JavaScript-logica zit
-- [styling/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/styling/README.md) beschrijft hoe de visuele laag is opgebouwd
-- [patterns/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/patterns/README.md) beschrijft terugkerende technische oplossingen
+- [controllers/README.md](docs/frontend/controllers/README.md) beschrijft waar de JavaScript-logica zit
+- [styling/README.md](docs/frontend/styling/README.md) beschrijft hoe de visuele laag is opgebouwd
+- [patterns/README.md](docs/frontend/patterns/README.md) beschrijft terugkerende technische oplossingen
 
 Geen van deze documenten is op zichzelf volledig; ze vullen elkaar aan.
 
