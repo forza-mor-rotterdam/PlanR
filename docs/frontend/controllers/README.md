@@ -2,9 +2,9 @@
 
 Dit document vormt samen met:
 
-- [frontend/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/README.md)
-- [frontend/styling/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/styling/README.md)
-- [frontend/patterns/README.md](https://github.com/forza-mor-rotterdam/PlanR/blob/documentatie-frontend/docs/frontend/patterns/README.md)
+- [frontend/README.md](../frontend/README.md)
+- [frontend/styling/README.md](../frontend/styling/README.md)
+- [frontend/patterns/README.md](../frontend/patterns/README.md)
 
 een samenhangend overzicht van de front-end van PlanR.
 
