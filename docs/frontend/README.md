@@ -7,9 +7,9 @@ De documentatie is bedoeld voor overdracht aan een opvolgende front-end develope
 De front-end documentatie bestaat uit vier onderdelen:
 
 - docs/frontend/README.md (dit document)
-- [docs/frontend/controllers/README.md](docs/frontend/controllers/README.md)
-- [docs/frontend/styling/README.md](docs/frontend/styling/README.md)
-- [docs/frontend/patterns/README.md](docs/frontend/patterns/README.md)
+- [docs/frontend/controllers/README.md](controllers/README.md)
+- [docs/frontend/styling/README.md](styling/README.md)
+- [docs/frontend/patterns/README.md](patterns/README.md)
 
 ---
 
