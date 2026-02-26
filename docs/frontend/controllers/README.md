@@ -2,9 +2,9 @@
 
 Dit document vormt samen met:
 
-- [frontend/README.md](../frontend/README.md)
-- [frontend/styling/README.md](../frontend/styling/README.md)
-- [frontend/patterns/README.md](../frontend/patterns/README.md)
+- [frontend/README.md](../README.md)
+- [frontend/styling/README.md](../styling/README.md)
+- [frontend/patterns/README.md](../patterns/README.md)
 
 een samenhangend overzicht van de front-end van PlanR.
 
