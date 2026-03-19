@@ -1,9 +1,20 @@
 {% load mor_core_url from main_tags %}
 {% if omschrijving_intern and titel != omschrijving_intern %}
+<div class="container__overflow" data-controller="overflow" tabindex="0">
     <p class="content__overflow">
         Notitie: {{ omschrijving_intern }}
     </p>
     {% include "icons/arrow-right.svg" %}
+</div>
+{% endif %}
+
+{% if omschrijving_extern and titel != omschrijving_extern %}
+<div class="container__overflow" data-controller="overflow" tabindex="0">
+    <p class="content__overflow">
+        Bericht voor melder: {{ omschrijving_extern }}
+    </p>
+    {% include "icons/arrow-right.svg" %}
+</div>
 {% endif %}
 
 {% if bijlagen|length > 0 %}

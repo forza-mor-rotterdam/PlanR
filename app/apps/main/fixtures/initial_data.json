@@ -1,0 +1,237 @@
+[
+    {
+        "model": "sites.site",
+        "pk": 1,
+        "fields": {
+            "domain": "planr.mor.local",
+            "name": "planr.mor.local"
+        }
+    },
+    {
+        "model": "main.meldingafhandelreden",
+        "pk": 1,
+        "fields": {
+            "uuid": "15a82835-0bed-40d8-8470-e4d5c7493009",
+            "aangemaakt_op": "2025-07-10T15:49:04.149Z",
+            "aangepast_op": "2025-07-10T15:49:04.149Z",
+            "reden": "reeds_ingepland",
+            "toelichting": "",
+            "specificatie_opties": "[]"
+        }
+    },
+    {
+        "model": "main.meldingafhandelreden",
+        "pk": 2,
+        "fields": {
+            "uuid": "00936ba0-466a-40cd-b4f5-7158a5c81535",
+            "aangemaakt_op": "2025-09-03T12:14:36.777Z",
+            "aangepast_op": "2025-09-03T12:14:36.777Z",
+            "reden": "niet_nu",
+            "toelichting": "Voor meldingen die misschien later opgepakt gaan worden",
+            "specificatie_opties": "[]"
+        }
+    },
+    {
+        "model": "main.meldingafhandelreden",
+        "pk": 3,
+        "fields": {
+            "uuid": "235c5c84-988e-45a2-9dca-8e27c925111d",
+            "aangemaakt_op": "2025-09-03T12:14:36.777Z",
+            "aangepast_op": "2025-09-03T12:14:36.777Z",
+            "reden": "niet_voor_ons",
+            "toelichting": "Voor meldingen die niet door Stadsbeheer mogen/kunnen worden opgepakt.",
+            "specificatie_opties": "[]"
+        }
+    },
+    {
+        "model": "main.meldingafhandelreden",
+        "pk": 4,
+        "fields": {
+            "uuid": "22d2e245-9083-45d5-bb47-b7b5c5f6c456",
+            "aangemaakt_op": "2025-09-03T12:14:36.777Z",
+            "aangepast_op": "2025-09-03T12:14:36.777Z",
+            "reden": "doen_we_niet",
+            "toelichting": "Voor meldingen die we niet gaan uitvoeren.",
+            "specificatie_opties": "[\"http://core.mor.local:8002/api/v1/specificatie/8d6ed9e4-170f-4e52-802f-6a21d151e1bd/\"]"
+        }
+    },
+    {
+        "model": "main.meldingafhandelreden",
+        "pk": 5,
+        "fields": {
+            "uuid": "0e04bd7b-cb81-40db-88f8-e7c4e7f63351",
+            "aangemaakt_op": "2025-09-03T12:14:36.777Z",
+            "aangepast_op": "2025-09-03T12:14:36.777Z",
+            "reden": "onduidelijk",
+            "toelichting": "Voor meldingen die onduidelijk zijn en waarbij er geen contact gelegd kan worden met de melder. En voor meldingen of niet gevonden kunnen worden.",
+            "specificatie_opties": "[]"
+        }
+    },
+    {
+        "model": "main.standaardexterneomschrijving",
+        "pk": 1,
+        "fields": {
+            "uuid": "674087c5-7529-4f6b-b2f1-0b638adca484",
+            "aangemaakt_op": "2025-06-05T12:51:05.493Z",
+            "aangepast_op": "2025-06-24T17:12:01.871Z",
+            "titel": "Grofvuil verwijderd",
+            "tekst": "We hebben het grofvuil verwijderd.",
+            "zichtbaarheid": "opgelost",
+            "reden": null,
+            "specificatie_opties": "[]"
+        }
+    },
+    {
+        "model": "main.standaardexterneomschrijving",
+        "pk": 2,
+        "fields": {
+            "uuid": "337de527-577a-4a26-b950-05ae742f0c7e",
+            "aangemaakt_op": "2025-06-05T15:40:41.522Z",
+            "aangepast_op": "2025-07-10T07:42:20.741Z",
+            "titel": "(Brom-)Fiets is geen wrak",
+            "tekst": "Onze handhavers hebben de fiets/bromfiets onderzocht. De fiets/bromfiets is volgens de regels geen wrak. We mogen deze fiets/bromfiets daarom niet weghalen. Wilt u weten wat de regels voor wrakken zijn? Kijk dan op https://www.rotterdam.nl/handhaving-op-een-bereikbare-stad.",
+            "zichtbaarheid": "niet_opgelost",
+            "reden": 4,
+            "specificatie_opties": "[\"http://core.mor.local:8002/api/v1/specificatie/8d6ed9e4-170f-4e52-802f-6a21d151e1bd/\"]"
+        }
+    },
+    {
+        "model": "main.standaardexterneomschrijving",
+        "pk": 3,
+        "fields": {
+            "uuid": "e2b475fe-668d-4da0-b65c-41df1431f000",
+            "aangemaakt_op": "2025-06-10T15:27:17.224Z",
+            "aangepast_op": "2025-07-10T15:50:18.118Z",
+            "titel": "Geen contactgegevens aanwezig",
+            "tekst": "We willen u er graag iets over vragen. Maar we kunnen u niet bereiken, omdat u geen telefoonnummer of e-mailadres hebt gegeven. We kunnen daarom nu niets met uw melding doen. Is het probleem nog niet opgelost? Maak dan een nieuwe melding aan. Zet uw telefoonnummer of e-mailadres erbij. Dan bellen of mailen we u voor meer informatie. Alvast bedankt voor uw moeite.",
+            "zichtbaarheid": "niet_opgelost",
+            "reden": 5,
+            "specificatie_opties": "[]"
+        }
+    },
+    {
+        "model": "main.standaardexterneomschrijving",
+        "pk": 4,
+        "fields": {
+            "uuid": "83bbd494-ba6d-43b5-aae9-2459b42ba579",
+            "aangemaakt_op": "2025-06-16T14:23:11.936Z",
+            "aangepast_op": "2025-06-25T09:21:48.120Z",
+            "titel": "Havenbedrijf Rotterdam",
+            "tekst": "We hebben de melding doorgestuurd naar het Havenbedrijf Rotterdam. Het Havenbedrijf is verantwoordelijk voor de afhandeling ervan. Heeft u een vraag of opmerking? Het Havenbedrijf is bereikbaar via dit e-mailadres: klachtenbuitenruimte@portofrotterdam.com",
+            "zichtbaarheid": "niet_opgelost",
+            "reden": 3,
+            "specificatie_opties": "[]"
+        }
+    },
+    {
+        "model": "main.standaardexterneomschrijving",
+        "pk": 5,
+        "fields": {
+            "uuid": "52853b28-85ee-49cc-9698-4b9603e4968c",
+            "aangemaakt_op": "2025-06-25T15:00:01.496Z",
+            "aangepast_op": "2025-07-10T07:42:14.760Z",
+            "titel": "Verlichting gerepareerd",
+            "tekst": "We hebben de verlichting gerepareerd.",
+            "zichtbaarheid": "opgelost",
+            "reden": null,
+            "specificatie_opties": "[]"
+        }
+    },
+    {
+        "model": "main.standaardexterneomschrijving",
+        "pk": 6,
+        "fields": {
+            "uuid": "58adfe1d-8c4a-4b96-8e5d-5b32b0a7b644",
+            "aangemaakt_op": "2025-06-26T09:40:57.788Z",
+            "aangepast_op": "2025-07-10T07:42:07.653Z",
+            "titel": "Geluidsoverlast door vuurwerk",
+            "tekst": "Het is vervelend dat u last heeft van vuurwerk. Onze medewerkers van Handhaving gaan snel een kijkje nemen op de plek die u noemt. We sluiten uw melding af.",
+            "zichtbaarheid": "niet_opgelost",
+            "reden": 2,
+            "specificatie_opties": "[]"
+        }
+    },
+    {
+        "model": "main.standaardexterneomschrijving",
+        "pk": 7,
+        "fields": {
+            "uuid": "4e8b4b2e-ba73-43c5-8f0a-f4439f0e1614",
+            "aangemaakt_op": "2025-06-26T11:44:57.575Z",
+            "aangepast_op": "2025-09-03T12:15:08.861Z",
+            "titel": "B&C - Verzakking graf",
+            "tekst": "Naar aanleiding van uw verzoek is het grafmonument gecontroleerd en waar nodig recht gelegd en/of opgehoogd",
+            "zichtbaarheid": "opgelost",
+            "reden": null,
+            "specificatie_opties": "[]"
+        }
+    },
+    {
+        "model": "main.standaardexterneomschrijving",
+        "pk": 8,
+        "fields": {
+            "uuid": "0078cab7-2ace-4f32-b3cc-fe5b6fccdc3c",
+            "aangemaakt_op": "2025-06-26T12:04:50.340Z",
+            "aangepast_op": "2025-09-03T12:15:00.346Z",
+            "titel": "RET",
+            "tekst": "We hebben de melding doorgestuurd naar de RET. De RET is verantwoordelijk voor de afhandeling ervan. Heeft u een vraag of opmerking? De RET is bereikbaar via e-mailadres klantenservice@ret.nl of telefoonnummer 0900 - 500 60 10.",
+            "zichtbaarheid": "niet_opgelost",
+            "reden": 3,
+            "specificatie_opties": "[]"
+        }
+    },
+    {
+        "model": "main.automatrsettings",
+        "pk": 1,
+        "fields": {
+            "uuid": "92c1c16d-a8cf-4988-b788-241643c835b7",
+            "aangemaakt_op": "2025-12-19T11:18:52.604Z",
+            "aangepast_op": "2025-12-23T13:36:30.607Z",
+            "name": "melding_afhandelen_door_taak",
+            "settings": [
+                {
+                    "resolutie": "niet_opgelost",
+                    "afhandelreden": "niet_voor_ons",
+                    "omschrijving_extern": "We hebben de melding doorgestuurd naar het Havenbedrijf Rotterdam. Het Havenbedrijf is verantwoordelijk voor de afhandeling ervan. Heeft u een vraag of opmerking? Het Havenbedrijf is bereikbaar via dit e-mailadres: klachtenbuitenruimte@portofrotterdam.com",
+                    "taakapplicatie_taaktype_url": "http://externr.mor.local:8008/api/v1/taaktype/5b02f44e-6c60-4180-a0a6-021489b19598/"
+                }
+            ]
+        }
+    },
+    {
+        "model": "main.automatrsettings",
+        "pk": 2,
+        "fields": {
+            "uuid": "a24bfa86-a57a-4fd5-9be2-7bb3c9a494f3",
+            "aangemaakt_op": "2025-12-19T18:48:10.413Z",
+            "aangepast_op": "2025-12-19T18:48:10.413Z",
+            "name": "taak_aanmaken_bij_onderwerp",
+            "settings": [
+                {
+                    "onderwerp": {
+                        "url": "http://onderwerpen.mor.local:8006/api/v1/group/41202ca5-929f-423b-9b46-b9127e0a19e0/category/678d1431-23cc-4f4e-916a-99199736639e/",
+                        "questions": [
+                            {
+                                "answers": [
+                                    "Vol"
+                                ],
+                                "question": "Kan je aangeven wat er aan de hand is?"
+                            },
+                            {
+                                "answers": [
+                                    "Papier"
+                                ],
+                                "question": "Welk type container gaat het om?"
+                            }
+                        ]
+                    },
+                    "taakopdrachten": [
+                        {
+                            "bericht": "Deze taak is automatisch aangemaakt",
+                            "taaktype": "http://fixer.mor.local:8004/api/v1/taaktype/a24bfa86-a57a-4fd5-9be2-7bb3c9a494f3/"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+]
