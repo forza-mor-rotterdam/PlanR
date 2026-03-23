@@ -681,7 +681,13 @@ class TakenAanmakenStreamView(TakenAanmakenView):
     def form_valid(self, form):
         mor_core_service = MORCoreService()
         responses = [
-            taak_data | {"response": mor_core_service.taak_aanmaken(**taak_data)}
+            taak_data
+            | {
+                "response": mor_core_service.taak_aanmaken(
+                    **taak_data,
+                    additionele_informatie={"groep": getattr(self.request.user.groups.first(), "name", None)},
+                )
+            }
             for taak_data in form.cleaned_data
         ]
         for response in responses:
