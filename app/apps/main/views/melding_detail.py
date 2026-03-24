@@ -739,7 +739,14 @@ class TakenAanmakenStreamView(TakenAanmakenView):
                             for url in urls
                         ]
                     }
-                    response = mor_core_service.taak_aanmaken(**taak_data)
+                    response = mor_core_service.taak_aanmaken(
+                        **taak_data,
+                        additionele_informatie={
+                            "groep": getattr(
+                                self.request.user.groups.first(), "name", None
+                            )
+                        },
+                    )
                     taakopdracht_url = response.get("_links", {}).get("self")
                     taakopdracht_url = (
                         taakopdracht_url.get("href")
