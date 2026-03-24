@@ -220,6 +220,7 @@ export default class extends Controller {
     const ul = e.target.closest('ul')
     const parentUUID = e.params.parentUuid
     const childUUID = e.params.childUuid
+    const uuid = geselecteerdFormulierTaaktype.dataset.uuid
     const active = e.params.active
     const selectedChild = this.geselecteerdFormulierTaaktypeTargets.find(
       (elem) => elem.dataset.uuid === childUUID
@@ -234,13 +235,11 @@ export default class extends Controller {
     const titels = this.getAllOptions()
       .filter((elem) => parentsArray.includes(elem.uuid))
       .map((elem) => elem.titel)
-    console.log('titels', titels)
     const tagElement = geselecteerdFormulierTaaktype.querySelector('[data-status-tag]')
     const popElement = geselecteerdFormulierTaaktype.querySelector('[data-status-pop]')
     if (titels.length) {
-      // TODO id dynamisch maken obv uuid van het list-element
-      tagElement.setAttribute('interestfor', 111)
-      popElement.setAttribute('id', 111)
+      tagElement.setAttribute('interestfor', `${uuid}_wachten_popover`)
+      popElement.setAttribute('id', `${uuid}_wachten_popover`)
       popElement.textContent = `Wacht tot de ${
         titels.length == 1 ? 'taak' : 'taken'
       } "${titels.join('" en "')}" ${titels.length == 1 ? 'is' : 'zijn'} uitgevoerd`
