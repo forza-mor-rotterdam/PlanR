@@ -395,10 +395,8 @@ export default class extends Controller {
     )
     let titelInput = clone.querySelector(`input[name*='-titel']`)
     let meldingUuidInput = clone.querySelector(`input[name*='-melding_uuid']`)
-    console.log('meldingUuidInput', meldingUuidInput)
     let gebruikerInput = clone.querySelector(`input[name*='-gebruiker']`)
     let uuidInput = clone.querySelector(`input[name*='-uuid']`)
-    console.log('uuidInput', uuidInput)
 
     clone.querySelector('[data-afdelingen]').textContent = taaktypeData.afdelingen
       .map((afd) => afd.naam)
@@ -448,7 +446,6 @@ export default class extends Controller {
   }
 
   toggleDetailsHandler(e) {
-    console.log('toggleDetailsHandler')
     if (e.target.closest('details').open) {
       setTimeout(() => {
         const container = e.target.closest('.modal-body')
