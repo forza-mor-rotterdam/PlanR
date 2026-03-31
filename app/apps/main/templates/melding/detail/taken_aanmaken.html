@@ -204,6 +204,7 @@
                                         {% include "icons/bin.svg" %} Taak verwijderen
                                     </button>
                                 </li>
+                                {% if perms.authorisatie.taak_volgorde %}
                                 <li>
                                     <div class="list__wrapper">
                                         <button type="button"
@@ -215,6 +216,7 @@
                                         <ul data-parents-options-container class="list__nested"></ul>
                                     </div>
                                 </li>
+                                {% endif %}
                             </ul>
                         </div>
                     </div>

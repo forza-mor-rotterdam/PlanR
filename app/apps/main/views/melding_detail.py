@@ -1,5 +1,6 @@
 import json
 import logging
+from graphlib import TopologicalSorter
 
 from apps.context.utils import get_gebruiker_context
 from apps.main.forms import (
@@ -55,7 +56,6 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.files.storage import default_storage
-from django.core.validators import URLValidator
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -702,11 +702,18 @@ class TakenAanmakenStreamView(TakenAanmakenView):
         return self.render_to_response(context)
 
     def form_valid(self, form):
+        heeft_taak_volgorde_permissie = self.request.user.has_perm(
+            "authorisatie.taak_volgorde"
+        )
         taken = [
-            taak | {"parents": json.loads(taak["parents"])}
+            taak
+            | {
+                "parents": json.loads(taak["parents"])
+                if heeft_taak_volgorde_permissie
+                else []
+            }
             for taak in form.cleaned_data
         ]
-        url_validator = URLValidator()
         mor_core_service = MORCoreService()
         taak_aanmaken_api_fields = [
             "melding_uuid",
@@ -715,62 +722,47 @@ class TakenAanmakenStreamView(TakenAanmakenView):
             "bericht",
             "gebruiker",
         ]
-        max_loops = 1000
-        loop_counter = 0
-        while [
-            taak for taak in taken if not taak.get("done")
-        ] and loop_counter < max_loops:
-            loop_counter += 1
-            for taak in taken:
-                urls = None
-                try:
-                    [url for url in taak["parents"] if url_validator(url)]
-                    urls = taak["parents"]
-                except Exception:
-                    ...
-                if urls is not None:
-                    taak_data = {
-                        k: v for k, v in taak.items() if k in taak_aanmaken_api_fields
-                    } | {
-                        "afhankelijkheid": [
-                            {
-                                "taakopdracht_url": url,
-                            }
-                            for url in urls
-                        ]
-                    }
-                    response = mor_core_service.taak_aanmaken(**taak_data)
-                    taakopdracht_url = response.get("_links", {}).get("self")
-                    taakopdracht_url = (
-                        taakopdracht_url.get("href")
-                        if isinstance(taakopdracht_url, dict)
-                        else taakopdracht_url
-                    )
-                    if response.get("errors"):
-                        messages.error(
-                            request=self.request,
-                            message=f"De taak '{taak['titel']}' kon niet worden aangemaakt",
-                        )
-                    elif taakopdracht_url:
-                        messages.success(
-                            request=self.request,
-                            message=f"De taak '{taak['titel']}' is aangemaakt",
-                        )
-                        for t in [tt for tt in taken if taak["uuid"] in tt["parents"]]:
-                            t["parents"] = list(
-                                map(
-                                    lambda x: taakopdracht_url
-                                    if x == taak["uuid"]
-                                    else x,
-                                    t["parents"],
-                                )
-                            )
-                    taak["done"] = True
 
-        for taak in taken:
-            logger.info(taak["titel"])
-            logger.info(taak["parents"])
-            logger.info("")
+        # Build a lookup and dependency graph for topological ordering
+        taak_by_uuid = {taak["uuid"]: taak for taak in taken}
+        graph = {
+            taak["uuid"]: [p for p in taak["parents"] if p in taak_by_uuid]
+            for taak in taken
+        }
+        sorter = TopologicalSorter(graph)
+
+        uuid_to_url = {}
+        for uuid in sorter.static_order():
+            taak = taak_by_uuid[uuid]
+            resolved_parents = [
+                uuid_to_url.get(p, p) for p in taak["parents"]
+            ]
+            taak_data = {
+                k: v for k, v in taak.items() if k in taak_aanmaken_api_fields
+            } | {
+                "afhankelijkheid": [
+                    {"taakopdracht_url": url}
+                    for url in resolved_parents
+                ]
+            }
+            response = mor_core_service.taak_aanmaken(**taak_data)
+            taakopdracht_url = response.get("_links", {}).get("self")
+            taakopdracht_url = (
+                taakopdracht_url.get("href")
+                if isinstance(taakopdracht_url, dict)
+                else taakopdracht_url
+            )
+            if response.get("errors"):
+                messages.error(
+                    request=self.request,
+                    message=f"De taak '{taak['titel']}' kon niet worden aangemaakt",
+                )
+            elif taakopdracht_url:
+                uuid_to_url[uuid] = taakopdracht_url
+                messages.success(
+                    request=self.request,
+                    message=f"De taak '{taak['titel']}' is aangemaakt",
+                )
 
         context = self.get_melding_detail_taaktype_context()
         context.pop("form", None)
@@ -899,62 +891,6 @@ class TakenStartenView(
 
         context.pop("form", None)
         return self.render_to_response(context)
-
-
-@login_required
-@permission_required("authorisatie.taak_verwijderen", raise_exception=True)
-def taak_starten(request, melding_uuid, taakopdracht_uuid=None):
-    mor_core_service = MORCoreService()
-
-    melding = mor_core_service.get_melding(melding_uuid)
-    if isinstance(melding, dict) and melding.get("error"):
-        messages.error(request=request, message=MELDING_OPHALEN_ERROR)
-        return render(
-            request,
-            "melding/melding_actie_form.html",
-        )
-
-    open_taakopdrachten = melding_taken(melding).get("open_taken")
-    taakopdracht_urls = {
-        taakopdracht.get("uuid"): taakopdracht.get("_links", {}).get("self")
-        for taakopdracht in open_taakopdrachten
-    }
-    taakopdracht = (
-        [to for to in open_taakopdrachten if to["uuid"] == str(taakopdracht_uuid)]
-        or [{}]
-    )[0]
-    taakopdracht_opties = [
-        (taakopdracht.get("uuid"), taakopdracht.get("titel"))
-        for taakopdracht in open_taakopdrachten
-        if (taakopdracht_uuid and taakopdracht.get("uuid") == str(taakopdracht_uuid))
-        or not taakopdracht_uuid
-    ]
-    form = TaakVerwijderenForm(taakopdracht_opties=taakopdracht_opties)
-    if request.POST:
-        form = TaakVerwijderenForm(
-            request.POST, taakopdracht_opties=taakopdracht_opties
-        )
-        if form.is_valid():
-            response = mor_core_service.taakopdracht_verwijderen(
-                taakopdracht_url=taakopdracht_urls.get(
-                    form.cleaned_data.get("taakopdracht")
-                ),
-                gebruiker=request.user.email,
-            )
-            if isinstance(response, dict) and response.get("error"):
-                messages.error(request=request, message=TAAK_VERWIJDEREN_ERROR)
-            else:
-                messages.success(request=request, message=TAAK_VERWIJDEREN_SUCCESS)
-            return redirect("melding_detail", id=melding_uuid)
-    return render(
-        request,
-        "melding/detail/taak_starten.html",
-        {
-            "form": form,
-            "melding": melding,
-            "taakopdracht": taakopdracht,
-        },
-    )
 
 
 @login_required

@@ -42,7 +42,8 @@ class TestValidateTaakvolgorde(SimpleTestCase):
 
     def test_relatie_overeenkomstige_ouder(self):
         """
-        Taak 4 is afhankelijk van 3 en 2. En taak 3 is ook afhankelijk van 2
+        Taak 4 is afhankelijk van 3 en 2. En taak 3 is ook afhankelijk van 2.
+        Diamond dependencies zijn toegestaan.
         """
         taken = [
             {
@@ -70,10 +71,7 @@ class TestValidateTaakvolgorde(SimpleTestCase):
                 "parents": "[]",
             },
         ]
-        with self.assertRaisesMessage(
-            ValidationError, "relatie gevonden die een overeenkomstige ouder hebben: 4"
-        ):
-            validate_taakvolgorde(taken)
+        self.assertEquals(len(taken), len(validate_taakvolgorde(taken)))
 
     def test_taak_direct_afhankelijk_van_zichzelf(self):
         """
