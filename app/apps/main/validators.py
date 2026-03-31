@@ -36,6 +36,6 @@ def validate_taakvolgorde(cleaned_data):
     try:
         TopologicalSorter(graph).prepare()
     except CycleError:
-        raise ValidationError("taak komt voor in 1 of meer van z'n ouders")
+        raise ValidationError("taak volgorde bevat een circulaire afhankelijkheid")
 
     return taken
