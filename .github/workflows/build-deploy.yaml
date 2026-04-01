@@ -1,0 +1,129 @@
+name: "Build, test and deploy"
+
+on:
+  workflow_call:
+    inputs:
+      environment_name:
+        description: "GitHub environment name (test/acc/prod)"
+        required: true
+        type: string
+      image_tag:
+        description: "Docker image tag (on-test/on-acc/on-prod)"
+        required: true
+        type: string
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build:
+    name: Build image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - id: convert_image_name
+        name: Convert image name to lower case
+        env:
+          IMAGE_NAME: ${{ github.repository }}
+        run: echo "name=$(echo "$IMAGE_NAME" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+      - id: login
+        name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta_app
+        name: Extract metadata (tags, labels) for Docker
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ steps.convert_image_name.outputs.name }}
+          flavor: |
+            latest=false
+          tags: |
+            type=ref,event=branch
+            type=sha
+            type=sha,format=long
+      - id: build_push
+        name: Build and push app Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: "{{defaultContext}}:app"
+          push: true
+          tags: ${{ steps.meta_app.outputs.tags }}
+          labels: ${{ steps.meta_app.outputs.labels }}
+          build-args: |
+            GIT_SHA=${{ github.sha }}
+    outputs:
+      image_name: ${{ steps.convert_image_name.outputs.name }}
+      image_digest: ${{ steps.build_push.outputs.digest }}
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    needs:
+      - build
+    steps:
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Pull the image from the registry
+        run: docker image pull ${{ env.REGISTRY }}/${{ needs.build.outputs.image_name }}@${{ needs.build.outputs.image_digest }}
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Build Docker test image
+        run: docker compose -f docker-compose.test.yaml build
+      - name: Create Docker network
+        run: docker network create planr_network
+      - name: Start Docker Containers
+        run: docker compose -f docker-compose.test.yaml up -d
+      - name: Run Tests
+        run: docker compose -f docker-compose.test.yaml run app python manage.py test
+
+  deploy:
+    name: Deploy ${{ inputs.environment_name }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment_name }}
+    permissions:
+      contents: read
+      packages: write
+    needs:
+      - build
+      - test
+    steps:
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Pull the image from the registry
+        run: docker image pull ${{ env.REGISTRY }}/${{ needs.build.outputs.image_name }}@${{ needs.build.outputs.image_digest }}
+      - name: Add the ${{ inputs.image_tag }} tag to the image
+        run: docker image tag ${{ env.REGISTRY }}/${{ needs.build.outputs.image_name }}@${{ needs.build.outputs.image_digest }} ${{ env.REGISTRY }}/${{ needs.build.outputs.image_name }}:${{ inputs.image_tag }}
+      - name: Push the image to the registry
+        run: docker push ${{ env.REGISTRY }}/${{ needs.build.outputs.image_name }}:${{ inputs.image_tag }}
+      - name: Start rollout on k8s platform
+        uses: actions-hub/kubectl@master
+        env:
+          KUBE_HOST: ${{ vars.KUBE_HOST }}
+          KUBE_CERTIFICATE: ${{ vars.KUBE_CERTIFICATE }}
+          KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
+        with:
+          args: rollout restart deployment/app deployment/worker --namespace=${{ vars.KUBE_NAMESPACE }}
+      - name: Status rollout on k8s platform
+        uses: actions-hub/kubectl@master
+        env:
+          KUBE_HOST: ${{ vars.KUBE_HOST }}
+          KUBE_CERTIFICATE: ${{ vars.KUBE_CERTIFICATE }}
+          KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
+        with:
+          args: rollout status deployment/app deployment/worker --namespace=${{ vars.KUBE_NAMESPACE }}

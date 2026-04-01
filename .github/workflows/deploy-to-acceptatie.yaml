@@ -1,0 +1,18 @@
+name: "Deploy to Acceptatie"
+
+on:
+  push:
+    branches:
+      - acc
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-deploy:
+    uses: ./.github/workflows/build-deploy.yaml
+    with:
+      environment_name: acc
+      image_tag: on-acc
+    secrets: inherit
