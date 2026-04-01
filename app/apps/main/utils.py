@@ -384,6 +384,27 @@ def melding_taken(melding):
     ]
 
     aantal_actieve_taken = len(actieve_taken)
+    taak_titel_by_url = {
+        taak.get("_links", {}).get("self"): taak.get("titel", "")
+        for taak in taakopdrachten_voor_melding
+    }
+    for taak in niet_verwijderde_taken:
+        titels = [
+            taak_titel_by_url[afh["taakopdracht_url"]]
+            for afh in taak.get("afhankelijkheid", [])
+            if afh.get("taakopdracht_url") in taak_titel_by_url
+        ]
+        taak["afhankelijkheid_titels"] = titels
+        if titels:
+            enkelvoud = len(titels) == 1
+            joined = '" en "'.join(titels)
+            taak["afhankelijkheid_wachttekst"] = (
+                f'Wacht tot de {"taak" if enkelvoud else "taken"} '
+                f'"{joined}" '
+                f'{"is" if enkelvoud else "zijn"} uitgevoerd'
+            )
+        else:
+            taak["afhankelijkheid_wachttekst"] = ""
 
     return {
         "alle_taken": taakopdrachten_voor_melding,

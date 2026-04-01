@@ -62,15 +62,14 @@
                                         {{ taak|taak_status_tekst }}
                                     </span>
                                 {% else %}
-                                {% comment %} TODO back-end popover met uniek id en interestfor {% endcomment %}
-                                    <button class="tag tag--qualification tag--{{ taak|taak_status_css_class }}" interestfor="taak">
+                                    <button class="tag tag--qualification tag--{{ taak|taak_status_css_class }}" interestfor="taak_{{ taak.uuid }}">
                                         {{ taak|taak_status_tekst }}
                                     </button>
-                                    {% comment %} TODO back-end popover met uniek id {% endcomment %}
-                                    <div popover id="taak">
-                                        Wacht tot de taak ... is uitgevoerd
+                                    <div popover id="taak_{{ taak.uuid }}">
+                                        {{ taak.afhankelijkheid_wachttekst }}
                                     </div>
                                 {% endif %}
+
                             </div>
                             {% if perms.authorisatie.taak_verwijderen %}
                             <div>
