@@ -127,38 +127,99 @@
                             </div>
                             {% if taak.afgesloten_op and not taak.verwijderd_op %}
                                 <div class="container__content">
-                                {% if laatste_taakgebeurtenis.resolutie or laatste_taakgebeurtenis.omschrijving_intern or laatste_taakgebeurtenis.bijlagen %}
-                                    <h3>Informatie uitvoerder</h3>
+                                    <h3>Details</h3>
                                     <div class="content">
-                                        {% if laatste_taakgebeurtenis.resolutie %}
+                                        {% if laatste_taakgebeurtenis.resolutie != "opgelost" %}
+                                            {% if laatste_taakgebeurtenis.reden_afwijzing %}
+                                                <div class="message">
+                                                    <h4>Reden</h4>
+                                                    <p>{{ laatste_taakgebeurtenis.reden_afwijzing|vertaal }}</p>
+                                                </div>
+                                            {% endif %}
+                                            {% if laatste_taakgebeurtenis.reden_afwijzing_toelichting %}
+                                                <div class="message">
+                                                    <h4>Toelichting</h4>
+                                                    <p>{{ laatste_taakgebeurtenis.reden_afwijzing_toelichting }}</p>
+                                                </div>
+                                            {% endif %}
+                                            {% if laatste_taakgebeurtenis.omschrijving_intern %}
+                                                <div class="message">
+                                                    <h4>Opmerking</h4>
+                                                    <p>{{ laatste_taakgebeurtenis.omschrijving_intern }}</p>
+                                                </div>
+                                            {% endif %}
+                                            {% if laatste_taakgebeurtenis.bijlagen %}
+                                                <div class="message">
+                                                    <h4>Foto's</h4>
+                                                    <div class="container__thumbs">
+                                                        <ul>
+                                                            {% for bijlage in laatste_taakgebeurtenis.bijlagen %}
+                                                            <li>
+                                                                <div class="container__image">
+                                                                    <div class="image"
+                                                                        style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url|mor_core_url }}')">
+                                                                    </div>
+                                                                </div>
+                                                            </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                            {% if laatste_taakgebeurtenis.vervolg_taaktypes %}
+                                                <div class="message">
+                                                    <h4>Taken aangemaakt</h4>
+                                                    <ul>
+                                                        {% for vervolg_taaktype in laatste_taakgebeurtenis.vervolg_taaktypes %}
+                                                            <li>{{ vervolg_taaktype.omschrijving }}</li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
+                                            {% endif %}
+                                        {% else %}
+                                            
                                             <div class="message">
-                                                <h4>Reden:</h4>
-                                                <p class="margin-bottom">{{ laatste_taakgebeurtenis.resolutie|vertaal }}</p>
+                                                <h4>Opmerking</h4>
+                                                {% if laatste_taakgebeurtenis.omschrijving_intern %}
+                                                    <p>{{ laatste_taakgebeurtenis.omschrijving_intern }}</p>
+                                                {% else %}
+                                                    <p>Geen opmerking</p>
+                                                {% endif %}
                                             </div>
-                                        {% endif %}
-                                        {% if laatste_taakgebeurtenis.omschrijving_intern %}
                                             <div class="message">
-                                                <h4>Opmerking:</h4>
-                                                <p class="margin-bottom">{{ laatste_taakgebeurtenis.omschrijving_intern }}</p>
+                                                <h4>Foto's</h4>
+                                                {% if laatste_taakgebeurtenis.bijlagen %}
+                                                    <div class="container__thumbs">
+                                                        <ul>
+                                                            {% for bijlage in laatste_taakgebeurtenis.bijlagen %}
+                                                            <li>
+                                                                <div class="container__image">
+                                                                    <div class="image"
+                                                                        style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url|mor_core_url }}')">
+                                                                    </div>
+                                                                </div>
+                                                            </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </div>
+                                                {% else %}
+                                                    <p>Geen foto's toegevoegd</p>
+                                                {% endif %}
                                             </div>
-                                        {% endif %}
-                                        {% if laatste_taakgebeurtenis.bijlagen %}
-                                            <div class="container__thumbs">
-                                                <ul>
-                                                    {% for bijlage in laatste_taakgebeurtenis.bijlagen %}
-                                                    <li>
-                                                        <div class="container__image">
-                                                            <div class="image"
-                                                                style="background-image:url('{{ bijlage.afbeelding_verkleind_relative_url|mor_core_url }}')">
-                                                            </div>
-                                                        </div>
-                                                    </li>
-                                                    {% endfor %}
-                                                </ul>
+                                            <div class="message">
+                                                <h4>Taken aangemaakt</h4>
+                                                {% if laatste_taakgebeurtenis.vervolg_taaktypes %}
+                                                    <ul>
+                                                        {% for vervolg_taaktype in laatste_taakgebeurtenis.vervolg_taaktypes %}
+                                                            <li>{{ vervolg_taaktype.omschrijving }}</li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                {% else %}
+                                                    <p>Geen taken aangemaakt</p>
+                                                {% endif %}
                                             </div>
                                         {% endif %}
                                     </div>
-                                {% endif %}
                                 </div>
                             {% elif taak.verwijderd_op %}
                                 <div class="container__content">
