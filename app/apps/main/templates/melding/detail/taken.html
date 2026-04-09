@@ -86,15 +86,6 @@
                                                     Taak verwijderen
                                                 </button>
                                                 {% endif %}
-                                                {% if not taak.uitgezet_op and not taak.verwijderd_op and taak.afhankelijkheid|length == 0 %}
-                                                <button type="button"
-                                                        class="btn"
-                                                        data-action="modal#openModal"
-                                                        data-modal-action-param="{% url 'taak_starten' melding.uuid taak.uuid %}">
-                                                    {% include "icons/bin.svg" %}
-                                                    Taak starten
-                                                </button>
-                                                {% endif %}
                                         </div>
                                     </div>
                                 {% endif %}
