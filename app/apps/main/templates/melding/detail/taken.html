@@ -133,19 +133,7 @@
                                             {% if laatste_taakgebeurtenis.reden_afwijzing %}
                                                 <div class="message">
                                                     <h4>Reden</h4>
-                                                    <p>{{ laatste_taakgebeurtenis.reden_afwijzing|vertaal }}</p>
-                                                </div>
-                                            {% endif %}
-                                            {% if laatste_taakgebeurtenis.reden_afwijzing_toelichting %}
-                                                <div class="message">
-                                                    <h4>Toelichting</h4>
-                                                    <p>{{ laatste_taakgebeurtenis.reden_afwijzing_toelichting }}</p>
-                                                </div>
-                                            {% endif %}
-                                            {% if laatste_taakgebeurtenis.omschrijving_intern %}
-                                                <div class="message">
-                                                    <h4>Opmerking</h4>
-                                                    <p>{{ laatste_taakgebeurtenis.omschrijving_intern }}</p>
+                                                    <p class="pill-badge">{{ laatste_taakgebeurtenis.reden_afwijzing|vertaal }}</p>
                                                 </div>
                                             {% endif %}
                                             {% if laatste_taakgebeurtenis.bijlagen %}
@@ -166,10 +154,22 @@
                                                     </div>
                                                 </div>
                                             {% endif %}
+                                            {% if laatste_taakgebeurtenis.reden_afwijzing_toelichting %}
+                                                <div class="message">
+                                                    <h4>Toelichting</h4>
+                                                    <p>{{ laatste_taakgebeurtenis.reden_afwijzing_toelichting }}</p>
+                                                </div>
+                                            {% endif %}
+                                            {% if laatste_taakgebeurtenis.omschrijving_intern %}
+                                                <div class="message">
+                                                    <h4>Opmerking</h4>
+                                                    <p>{{ laatste_taakgebeurtenis.omschrijving_intern }}</p>
+                                                </div>
+                                            {% endif %}
                                             {% if laatste_taakgebeurtenis.vervolg_taaktypes %}
                                                 <div class="message">
                                                     <h4>Taken aangemaakt</h4>
-                                                    <ul>
+                                                    <ul class="taken-aangemaakt-list">
                                                         {% for vervolg_taaktype in laatste_taakgebeurtenis.vervolg_taaktypes %}
                                                             <li>{{ vervolg_taaktype.omschrijving }}</li>
                                                         {% endfor %}
@@ -209,7 +209,7 @@
                                             <div class="message">
                                                 <h4>Taken aangemaakt</h4>
                                                 {% if laatste_taakgebeurtenis.vervolg_taaktypes %}
-                                                    <ul>
+                                                    <ul class="taken-aangemaakt-list">
                                                         {% for vervolg_taaktype in laatste_taakgebeurtenis.vervolg_taaktypes %}
                                                             <li>{{ vervolg_taaktype.omschrijving }}</li>
                                                         {% endfor %}
