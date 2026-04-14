@@ -11,9 +11,10 @@ from apps.main.models import (
 )
 from apps.main.services import MORCoreService, render_onderwerp
 from apps.main.utils import get_valide_filter_classes, get_valide_kolom_classes
+from apps.main.validators import validate_taakvolgorde
 from django import forms
 from django.core.files.storage import default_storage
-from django.forms import formset_factory
+from django.forms import BaseFormSet, formset_factory
 from django.utils import timezone
 from django_select2.forms import Select2Widget
 from utils.rd_convert import rd_to_wgs
@@ -345,9 +346,27 @@ class TakenAanmakenForm(forms.Form):
         required=True,
         max_length=200,
     )
+    uuid = forms.CharField(
+        widget=forms.HiddenInput(),
+        required=True,
+        max_length=200,
+    )
+    parents = forms.CharField(
+        widget=forms.HiddenInput(),
+        required=True,
+        max_length=5000,
+    )
 
 
-TakenAanmakenFormset = formset_factory(TakenAanmakenForm, extra=0)
+class BaseTakenAanmakenFormSet(BaseFormSet):
+    def clean(self):
+        super().clean()
+        validate_taakvolgorde(self.cleaned_data)
+
+
+TakenAanmakenFormset = formset_factory(
+    TakenAanmakenForm, extra=0, formset=BaseTakenAanmakenFormSet
+)
 
 
 class TaakAfrondenForm(forms.Form):
@@ -413,6 +432,28 @@ class TaakAfrondenForm(forms.Form):
 
 
 class TaakVerwijderenForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        taakopdracht_opties = kwargs.pop("taakopdracht_opties", None)
+        super().__init__(*args, **kwargs)
+
+        if taakopdracht_opties:
+            self.fields["taakopdracht"] = forms.ChoiceField(
+                label="Taak",
+                widget=Select2Widget(
+                    attrs={
+                        "class": "select2",
+                        "data-select2Modal-target": "targetField",
+                    }
+                )
+                if len(taakopdracht_opties) > 1
+                else forms.HiddenInput(),
+                choices=taakopdracht_opties,
+                initial=taakopdracht_opties[0][0],
+                required=True,
+            )
+
+
+class TaakStartenForm(forms.Form):
     def __init__(self, *args, **kwargs):
         taakopdracht_opties = kwargs.pop("taakopdracht_opties", None)
         super().__init__(*args, **kwargs)

@@ -14,14 +14,16 @@
             {{ form.management_form }}
             <div class="form-row">
                 <ul data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktypeContainer"
-                    class="list--3cols-form">
-                    <li>
+                    class="list--form-aanmaken">
+                    <li class="heading">
                         <div>Taak</div>
-                        <div>Verantwoordelijke afdeling</div>
+                        <div>Afdeling</div>
                         <div>Opmerking</div>
+                        <div>Status</div>
+                        <div>Opties</div>
                     </li>
                     {% for taaktype_form in form %}
-                        <li data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktype">
+                        <li data-taken-aanmaken--manager-target="geselecteerdFormulierTaaktype" class="taak">
                             {{ taaktype_form }}
                         </li>
                     {% endfor %}
@@ -29,6 +31,22 @@
             </div>
             <div class="form-row btn-row"></div>
         </form>
+    {% elif pending_batch %}
+        <div id="pending-batch-undo"
+             data-batch-uuid="{{ pending_batch.batch_uuid }}"
+             data-melding-uuid="{{ pending_batch.melding_uuid }}"
+             data-countdown="{{ pending_batch.countdown }}">
+            <p>Taken worden verstuurd over {{ pending_batch.countdown }}s (met marge)</p>
+            <ul>
+                {% for taak in pending_batch.taken %}
+                    <li data-taak-uuid="{{ taak.uuid }}">{{ taak.titel }}</li>
+                {% endfor %}
+            </ul>
+            <!-- POST /melding/{melding_uuid}/taken/{batch_uuid}/verstuur/ => verstuur direct -->
+            <!-- POST /melding/{melding_uuid}/taken/{batch_uuid}/taak/{taak_uuid}/annuleer/ => annuleer taak (+ children) -->
+            <!-- PATCH /melding/{melding_uuid}/taken/{batch_uuid}/taak/{taak_uuid}/pause/ => pauzeer taak -->
+            <!-- PATCH /melding/{melding_uuid}/taken/{batch_uuid}/taak/{taak_uuid}/resume/ => hervat taak -->
+        </div>
     {% else %}
         <div data-modal-target="modalSluiten"></div>
     {% endif %}

@@ -10,6 +10,11 @@ from apps.main.views import (
     TaakRTaaktypeView,
     TakenAanmakenStreamView,
     TakenAanmakenView,
+    TakenAnnuleerView,
+    TakenPauseView,
+    TakenResumeView,
+    TakenStartenView,
+    TakenVerstuurView,
     gebruiker_info,
     http_403,
     http_404,
@@ -135,6 +140,26 @@ urlpatterns = [
         name="taken_aanmaken_stream",
     ),
     path(
+        "melding/<uuid:id>/taken/<str:batch_uuid>/verstuur/",
+        TakenVerstuurView.as_view(),
+        name="taken_verstuur",
+    ),
+    path(
+        "melding/<uuid:id>/taken/<str:batch_uuid>/taak/<str:taak_uuid>/annuleer/",
+        TakenAnnuleerView.as_view(),
+        name="taken_annuleer",
+    ),
+    path(
+        "melding/<uuid:id>/taken/<str:batch_uuid>/taak/<str:taak_uuid>/pause/",
+        TakenPauseView.as_view(),
+        name="taken_pause",
+    ),
+    path(
+        "melding/<uuid:id>/taken/<str:batch_uuid>/taak/<str:taak_uuid>/resume/",
+        TakenResumeView.as_view(),
+        name="taken_resume",
+    ),
+    path(
         "melding/<uuid:melding_uuid>/taak-verwijderen/",
         taak_verwijderen,
         name="taak_verwijderen",
@@ -143,6 +168,11 @@ urlpatterns = [
         "melding/<uuid:melding_uuid>/taak-verwijderen/<uuid:taakopdracht_uuid>/",
         taak_verwijderen,
         name="taak_verwijderen",
+    ),
+    path(
+        "melding/<uuid:id>/taak-starten/<uuid:taakopdracht_uuid>/",
+        TakenStartenView.as_view(),
+        name="taak_starten",
     ),
     path(
         "melding/<uuid:id>/informatie-toevoegen/",
