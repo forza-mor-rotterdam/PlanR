@@ -156,3 +156,38 @@ class TaaktypeCategorie(models.Model):
 
     def __str__(self):
         return self.naam
+
+
+def resolve_automatr_settings_batch(settings_values):
+    all_settings = list(settings_values)
+    ids = {
+        v["omschrijving_id"]
+        for s in all_settings if isinstance(s, list)
+        for v in s if isinstance(v, dict) and isinstance(v.get("omschrijving_id"), int)
+    }
+    tekst_by_id = (
+        dict(
+            StandaardExterneOmschrijving.objects
+            .filter(pk__in=ids).values_list("pk", "tekst")
+        )
+        if ids else {}
+    )
+
+    def resolve_one(settings):
+        if not isinstance(settings, list):
+            return settings
+        out = []
+        for v in settings:
+            if not isinstance(v, dict) or "omschrijving_id" not in v:
+                out.append(v)
+                continue
+            tekst = tekst_by_id.get(v["omschrijving_id"])
+            if tekst is None:
+                continue
+            out.append(
+                {k: val for k, val in v.items() if k != "omschrijving_id"}
+                | {"omschrijving_extern": tekst}
+            )
+        return out
+
+    return [resolve_one(s) for s in all_settings]
