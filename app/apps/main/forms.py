@@ -167,12 +167,12 @@ class FilterForm(forms.Form):
                 yield self[field_name]
 
     def pagina_eerste_melding(self):
-        offset = int(self.data["offset"])
+        offset = int(self.data.get("offset") or 0)
         return offset + 1
 
     def pagina_laatste_melding(self):
-        limit = int(self.data["limit"])
-        offset = int(self.data["offset"])
+        limit = int(self.data.get("limit") or 25)
+        offset = int(self.data.get("offset") or 0)
         return (
             offset + limit
             if offset + limit < self.meldingen_count
@@ -228,6 +228,32 @@ class FilterForm(forms.Form):
             for cls in filter_classes
         ]
 
+    def active_filter_opties(self):
+        """Yields (key, value, label) for each currently selected filter option."""
+        def get_label(raw):
+            if isinstance(raw, str):
+                return raw
+            if isinstance(raw, dict):
+                return raw.get("label") or raw.get("naam") or str(raw)
+            return str(raw)
+
+        for veld_info in self.filter_velden:
+            key = veld_info.get("key")
+            opties = veld_info.get("opties", [])
+            selected = set(self.data.getlist(key) or [])
+            if not selected:
+                continue
+            flat = {}
+            for opt in opties:
+                val, meta = opt[0], opt[1]
+                if isinstance(meta, (list, tuple)):
+                    for sub in meta:
+                        flat[str(sub[0])] = get_label(sub[1])
+                else:
+                    flat[str(val)] = get_label(meta)
+            for v in selected:
+                yield key, v, flat.get(v, v)
+
     def __init__(self, *args, **kwargs):
         gebruiker = kwargs.pop("gebruiker", None)
         gebruiker_context = get_gebruiker_context(gebruiker)
@@ -257,7 +283,7 @@ class FilterForm(forms.Form):
                         "class": "list--form-check-input",
                         "data-action": "filter#onChangeFilter",
                         "hideLabel": True,
-                        "foldout_states": self.data["foldout_states"],
+                            "foldout_states": self.data.get("foldout_states") or "[]",
                         "has_group": v.get("opties", [])
                         and isinstance(v.get("opties", [])[0][1], (list, tuple)),
                     }

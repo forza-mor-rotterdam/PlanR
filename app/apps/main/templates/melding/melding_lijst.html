@@ -6,7 +6,6 @@
 {% load get_bijlagen from melding_tags %}
 {% load mor_core_url from main_tags %}
 {% load rotterdam_formulier_html %}
-{% load json_encode from main_tags %}
 {% block title %}
     Meldingen overzicht | PlanR
 {% endblock title %}
@@ -24,6 +23,8 @@
               data-controller="filter"
               data-turbo-action="advance">
             {% csrf_token %}
+            {{ form.limit }}
+            {{ form.foldout_states }}
             <div class="filter-header">
                 <span>
                     {% if form.limit.value|add:0 <= data.count %}
@@ -34,29 +35,24 @@
                 </span>
             </div>
             <div class="container__tools">
-                {{ form.foldout_states }}
-                {{ form.limit|render_rotterdam_formulier }}
-                <div>
-                    <h2 class="h5">Filters</h2>
-                    <div class="container__filter {% if not form.search_with_profiel_context.value %}disabled{% endif %}"
-                         data-filter-target="filterOverview">
-                        {% for veld in form.filters %}
-                            {% with foldout_name="foldout_filter-"|add:veld.name %}
-                                <div class="container__multiselect{% if foldout_name in form.foldout_states.value|json_encode %} show{% endif %}">
-                                    <label class="visually-hidden">{{ veld.label }}</label>
-                                    <button data-action="filter#toggleFilterElements"
-                                            data-filter-target="filterButton"
-                                            data-foldout-name="{{ foldout_name }}"
-                                            class="toggle js-toggle{% if veld.data|length > 0 %} active {% endif %}"
-                                            type="button"
-                                            {% if not form.search_with_profiel_context.value %}tabindex="-1"{% endif %}>
-                                        {{ veld.label|capfirst }}
-                                    </button>
-                                    <div class="wrapper">{{ veld }}</div>
-                                </div>
-                            {% endwith %}
-                        {% endfor %}
-                    </div>
+                <div class="container__filter-actions">
+                    <button type="button"
+                            class="btn btn-filter"
+                            data-action="filter#showFilters">
+                        {% include "icons/filter.svg" %}
+                        <span>Filters</span>
+                        <span class="count count--filter"
+                              data-filter-target="selectedChoicesTotalCount">0</span>
+                    </button>
+                    {% for key, value, label in form.active_filter_opties %}
+                        <button type="button"
+                                class="btn btn-filter--active"
+                                data-action="filter#removeFilter"
+                                data-filter-name-param="{{ key }}"
+                                data-filter-value-param="{{ value }}">
+                            <span>{{ label }}</span>
+                        </button>
+                    {% endfor %}
                 </div>
                 <div class="container__search">
                     <div class="container__info">
@@ -80,6 +76,55 @@
                     </div>
                 </div>
             </div>
+            <dialog class="filter-dialog" data-filter-target="filtersheet">
+                <div class="full-page-view__header">
+                    <h2>Filters</h2>
+                    <button type="button"
+                            class="btn-close--small"
+                            data-action="filter#hideFilters"
+                            aria-label="Sluiten">{% include "icons/close.svg" %}</button>
+                </div>
+                <div class="full-page-view__scroll-pane">
+                    <div class="full-page-view__content">
+                        {% for veld in form.filters %}
+                            <details class="filter" id="foldout_{{ veld.name }}" open>
+                                <summary>
+                                    <span>{{ veld.label|capfirst }}</span>
+                                    <span>(<span data-filter-target="selectedChoicesCount"></span>)</span>
+                                </summary>
+                                <div class="foldout">
+                                    <div class="container__list--header">
+                                        <div>
+                                            <button type="button"
+                                                    class="btn btn-textlink"
+                                                    data-action="filter#selectAll"
+                                                    data-filter-filter-type-param="all">Selecteer alles</button>
+                                            /
+                                            <button type="button"
+                                                    class="btn btn-textlink"
+                                                    data-action="filter#selectAll">niets</button>
+                                        </div>
+                                    </div>
+                                    {{ veld }}
+                                </div>
+                            </details>
+                        {% endfor %}
+                        <button type="button"
+                                class="btn btn-textlink btn-with-icon"
+                                data-action="filter#removeAllFilters">
+                            {% include "icons/bin.svg" %}
+                            <span>Verwijder alle filters</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="full-page-view__footer">
+                    <button type="button"
+                            class="btn btn-action"
+                            data-action="filter#hideFiltersAndSubmit">
+                        Toon {{ data.count }} meldingen
+                    </button>
+                </div>
+            </dialog>
             <div class="container__table">
                 <table class="table--overview">
                     <thead>

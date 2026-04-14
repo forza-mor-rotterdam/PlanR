@@ -1,11 +1,9 @@
 import { Controller } from '@hotwired/stimulus'
-import debounce from 'debounce'
 
 export default class extends Controller {
   static targets = ['groupCheckbox', 'subCheckbox', 'selectedCount']
 
   initialize() {
-    this.submit = debounce(this.submit.bind(this), 400)
     const checkboxCount = this.subCheckboxTargets.length
     const checkboxSelectedCount = this.subCheckboxTargets.filter(
       (checkbox) => checkbox.checked
@@ -20,27 +18,24 @@ export default class extends Controller {
       this.groupCheckboxTarget.classList.add('half-checked')
     }
   }
+
   connect() {
     let self = this
     self.element[self.identifier] = self
-    self.filterController = document.querySelector('[data-controller="filter"]').filter
+    self.filterController = document.querySelector('[data-controller="filter"]')?.filter
   }
+
   checkboxChangeHandler() {
     this.subCheckboxTargets.map((checkbox) => {
       checkbox.checked = this.groupCheckboxTarget.checked
     })
-    this.submit()
+    const selected = this.subCheckboxTargets.filter((c) => c.checked).length
+    this.selectedCountTarget.textContent = `${selected}/${this.subCheckboxTargets.length}`
+    this.groupCheckboxTarget.classList.toggle('half-checked', selected > 0 && selected < this.subCheckboxTargets.length)
+    this.filterController?.updateSelectedChoicesCount?.()
   }
+
   toggleGroupElements(e) {
-    let self = this
-    e.stopImmediatePropagation()
-    if (self.filterController && e.target.hasAttribute('open')) {
-      self.filterController.addToFoldoutStates([e.params.foldoutId])
-    } else if (self.filterController) {
-      self.filterController.removeFromFoldoutStates([e.params.foldoutId])
-    }
-  }
-  submit() {
-    this.element.closest('form').submit()
+    // Foldout state tracking removed — native <details> handles open/closed state.
   }
 }
