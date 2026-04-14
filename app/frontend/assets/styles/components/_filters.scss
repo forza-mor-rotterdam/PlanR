@@ -291,7 +291,6 @@
 .btn-filter {
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
     background-color: $white;
     border: 1px solid $gray-tint04;
     padding: 8px 12px;
@@ -304,6 +303,11 @@
         width: 18px;
         height: 18px;
         flex-shrink: 0;
+        margin-right: 0.25rem;
+    }
+
+    > span {
+        padding: 0;
     }
 
     &:hover {
@@ -339,7 +343,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    margin: 0 2px;
+    margin: 0;
     box-sizing: border-box;
     line-height: 1;
 }
@@ -439,70 +443,73 @@ dialog.filter-dialog {
         .btn {
             width: 100%;
             margin-bottom: 0;
+
+            > span {
+                padding: 0;
+            }
         }
     }
 
     // Per-filter accordion
     details.filter {
-        border-top: 1px solid $gray-tint04;
-
-        &:last-of-type {
-            border-bottom: 1px solid $gray-tint04;
-        }
-
         > summary {
             display: flex;
             justify-content: space-between;
+            flex-direction: row;
             align-items: center;
-            padding: 16px 40px 16px 16px;
+            padding: 24px 16px 24px 40px;
             position: relative;
             cursor: pointer;
-            list-style: none;
-            user-select: none;
+            border-top: 1px solid $gray-tint04;
 
             &::-webkit-details-marker {
                 display: none;
             }
 
-            &::after {
+            &::before {
                 content: url("../icons/arrow-right.svg");
                 position: absolute;
-                right: 12px;
-                top: 50%;
-                transform: translateY(-50%) rotate(90deg);
-                width: 16px;
-                height: 16px;
-                display: flex;
-                align-items: center;
+                top: calc(50% - 10px);
+                left: 16px;
+                transform: rotate(90deg);
             }
         }
 
-        &[open] > summary::after {
-            transform: translateY(-50%) rotate(-90deg);
+        &:not([open]) {
+            &:last-of-type {
+                > summary {
+                    border-bottom: 1px solid $gray-tint04;
+                }
+            }
+        }
+
+        &[open] > summary::before {
+            transform: rotate(-90deg);
+            left: 19px;
         }
 
         .foldout {
-            padding: 0 16px 16px;
+            padding: 0 16px;
         }
 
         .container__list--header {
             display: flex;
-            justify-content: flex-end;
-            padding: 4px 0 8px;
+            justify-content: space-between;
+            align-items: center;
 
-            .btn-textlink {
-                background: none;
-                border: none;
-                cursor: pointer;
-                font-size: $fz-14;
-                color: $blue-900;
-                padding: 0 4px;
-                min-height: 0;
+            > div {
+                flex: 1;
+                text-align: right;
+                padding-right: 1rem;
+            }
+
+            .btn {
+                flex: 0 1 25%;
+                white-space: nowrap;
+                display: inline;
                 width: auto;
-
-                &:hover {
-                    text-decoration: underline;
-                }
+                font-size: 0.75em;
+                color: inherit;
             }
         }
 
@@ -534,8 +541,43 @@ dialog.filter-dialog {
             > details {
                 flex: none;
                 min-width: 0;
+                // Bleed the full coloured block edge-to-edge past the foldout padding
+                margin: 0 -16px;
+                width: calc(100% + 32px);
+                background-color: $gray-tint01;
+
+                summary {
+                    background-color: $gray-tint01;
+                    padding: 24px 32px 24px 65px;
+
+                    &::before {
+                        left: 42px;
+                    }
+
+                    input[type="checkbox"][data-subselect-target="groupCheckbox"],
+                    input[type="checkbox"][data-subSelect-target="groupCheckbox"] {
+                        display: none;
+                    }
+                }
+
+                ul {
+                    margin: 0;
+                    padding: 0 16px;
+                }
+
+                .form-check {
+                    margin-left: -4px;
+                }
+
+                &[open] > summary::before {
+                    left: 45px;
+                }
             }
         }
+    }
+
+    .foldout .foldout .container__list--header > div {
+        padding-right: 0;
     }
 
     // "Verwijder alle filters" button

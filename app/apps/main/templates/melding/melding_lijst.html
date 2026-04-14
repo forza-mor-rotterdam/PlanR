@@ -44,15 +44,6 @@
                         <span class="count count--filter"
                               data-filter-target="selectedChoicesTotalCount">0</span>
                     </button>
-                    {% for key, value, label in form.active_filter_opties %}
-                        <button type="button"
-                                class="btn btn-filter--active"
-                                data-action="filter#removeFilter"
-                                data-filter-name-param="{{ key }}"
-                                data-filter-value-param="{{ value }}">
-                            <span>{{ label }}</span>
-                        </button>
-                    {% endfor %}
                 </div>
                 <div class="container__search">
                     <div class="container__info">
@@ -76,7 +67,8 @@
                     </div>
                 </div>
             </div>
-            <dialog class="filter-dialog" data-filter-target="filtersheet">
+                <dialog class="infosheet full-page-view full-page-view__filters filter-dialog"
+                    data-filter-target="filtersheet">
                 <div class="full-page-view__header">
                     <h2>Filters</h2>
                     <button type="button"
@@ -86,6 +78,29 @@
                 </div>
                 <div class="full-page-view__scroll-pane">
                     <div class="full-page-view__content">
+                        <details class="filter filter--active" id="foldout_active-filters" open>
+                            <summary>
+                                <span>Actieve filters</span>
+                            </summary>
+                            <div class="foldout">
+                                <ul class="list-filters--active list-clean">
+                                    {% for key, value, label in form.active_filter_opties %}
+                                        <li class="js-filter-active">
+                                            <button type="button"
+                                                    class="btn btn-filter--active"
+                                                    data-action="filter#removeFilter"
+                                                    data-filter-name-param="{{ key }}"
+                                                    data-filter-value-param="{{ value }}">
+                                                <span>{{ label }}</span>
+                                            </button>
+                                        </li>
+                                    {% empty %}
+                                        <li>Geen actieve filters</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </details>
+
                         {% for veld in form.filters %}
                             <details class="filter" id="foldout_{{ veld.name }}" open>
                                 <summary>

@@ -23,6 +23,23 @@ export default class extends Controller {
     let self = this
     self.element[self.identifier] = self
     self.filterController = document.querySelector('[data-controller="filter"]')?.filter
+
+    // Update group count when an individual sub-checkbox is clicked
+    self.element.addEventListener('change', (e) => {
+      if (self.subCheckboxTargets.includes(e.target)) {
+        self.updateGroupCount()
+      }
+    })
+  }
+
+  updateGroupCount() {
+    const selected = this.subCheckboxTargets.filter((c) => c.checked).length
+    this.selectedCountTarget.textContent = `${selected}`
+    this.groupCheckboxTarget.checked = selected === this.subCheckboxTargets.length
+    this.groupCheckboxTarget.classList.toggle(
+      'half-checked',
+      selected > 0 && selected < this.subCheckboxTargets.length
+    )
   }
 
   checkboxChangeHandler() {
