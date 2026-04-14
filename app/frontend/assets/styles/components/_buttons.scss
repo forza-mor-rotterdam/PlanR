@@ -1,3 +1,5 @@
+@use "sass:color";
+
 // Buttons with only an icon intended for fields with extra information
 button[class="icon"] {
     border: none;
@@ -52,8 +54,8 @@ textarea {
 
         &:hover,
         &:focus-visible {
-            background-color: darken($action, 10%);
-            border-color: darken($action, 10%);
+            background-color: color.adjust($action, $lightness: -10%);
+            border-color: color.adjust($action, $lightness: -10%);
         }
         &[disabled] {
             background-color: $gray-tint04;
@@ -68,8 +70,8 @@ textarea {
 
             &:hover,
             &:focus-visible {
-                background-color: darken($green-900, 10%);
-                border-color: darken($green-900, 10%);
+                background-color: color.adjust($green-900, $lightness: -10%);
+                border-color: color.adjust($green-900, $lightness: -10%);
             }
         }
     }

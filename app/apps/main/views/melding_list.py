@@ -16,7 +16,7 @@ from apps.main.utils import (
 from deepdiff import DeepDiff
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.http import QueryDict
+from django.http import JsonResponse, QueryDict
 from django.shortcuts import render
 
 logger = logging.getLogger(__name__)
@@ -25,6 +25,10 @@ logger = logging.getLogger(__name__)
 @login_required
 @permission_required("authorisatie.melding_lijst_bekijken", raise_exception=True)
 def melding_lijst(request):
+    # Handle AJAX filter count request
+    if request.GET.get('action') == 'filter_count':
+        return _get_filter_count(request)
+    
     mor_core_service = MORCoreService()
     gebruiker = request.user
     gebruiker_context = get_gebruiker_context(gebruiker)
@@ -142,3 +146,57 @@ def melding_lijst(request):
             "kolommen": get_valide_kolom_classes(gebruiker_context),
         },
     )
+
+
+def _get_filter_count(request):
+    """Return the count of melding matching the current filter selection."""
+    try:
+        mor_core_service = MORCoreService()
+        gebruiker = request.user
+        gebruiker_context = get_gebruiker_context(gebruiker)
+        
+        from apps.main.utils import get_valide_filter_classes
+        
+        # Get all possible filter field names
+        filter_classes = get_valide_filter_classes(gebruiker_context)
+        filter_field_names = [cls.key() for cls in filter_classes]
+        
+        # Build query dict with filter data from the POST request
+        form_qs = QueryDict("", mutable=True)
+        
+        # Include search query if present
+        if request.POST.get('q'):
+            form_qs['q'] = request.POST.get('q')
+
+        # Mirror regular form behavior for applying profile defaults.
+        if request.POST.get('search_with_profiel_context'):
+            form_qs['search_with_profiel_context'] = request.POST.get('search_with_profiel_context')
+        
+        # Add filter values from POST data for all filter fields
+        for field_name in filter_field_names:
+            values = request.POST.getlist(field_name)
+            if values:
+                form_qs.setlist(field_name, values)
+        
+        logger.debug(f"Filter count query: {dict(form_qs)}")
+        
+        # Build the filter query dict
+        meldingen_filter_query_dict = update_qd_met_standaard_meldingen_filter_qd(
+            form_qs, gebruiker_context
+        )
+        
+        logger.debug(f"Processed filter query: {dict(meldingen_filter_query_dict)}")
+        
+        # Get the filtered data with count
+        meldingen_data = mor_core_service.get_melding_lijst(
+            query_string=FilterManager(
+                gebruiker_context=gebruiker_context
+            ).get_query_string(meldingen_filter_query_dict)
+        )
+        
+        count = meldingen_data.get("count", 0)
+        logger.debug(f"Filter result count: {count}")
+        return JsonResponse({"count": count})
+    except Exception as e:
+        logger.exception(f"Error in _get_filter_count: {e}")
+        return JsonResponse({"error": str(e), "count": 0}, status=500)

@@ -192,7 +192,7 @@ def get_valide_filter_classes(gebruiker_context):
 
 def update_qd_met_standaard_meldingen_filter_qd(qd, gebruiker_context=None):
     meldingen_filter_qd = QueryDict("", mutable=True)
-    if gebruiker_context:
+    if gebruiker_context and qd.get("search_with_profiel_context"):
         for k, v in gebruiker_context.standaard_filters.items():
             if k == "pre_onderwerp":
                 continue
@@ -202,10 +202,6 @@ def update_qd_met_standaard_meldingen_filter_qd(qd, gebruiker_context=None):
             else:
                 meldingen_filter_qd.update({k: v})
     meldingen_filter_qd.update(qd)
-    if not qd.get("search_with_profiel_context"):
-        for f in gebruiker_context.filters.get("fields", []):
-            if meldingen_filter_qd.get(f):
-                del meldingen_filter_qd[f]
     return meldingen_filter_qd
 
 

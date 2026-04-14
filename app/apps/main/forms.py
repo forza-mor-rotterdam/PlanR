@@ -274,10 +274,15 @@ class FilterForm(forms.Form):
         )
 
         for v in self.filter_velden:
-            if opties := v.get("opties"):
-                total_opties = self._count_options(opties)
+            opties = v.get("opties", [])
+            formatted_opties = []
+            
+            if opties:
+                # Extract labels from the option metadata
+                formatted_opties = self._format_opties_for_form(opties)
+            
             self.fields[v.get("key")] = MultipleChoiceField(
-                label=f"{v.get('naam')} ({v.get('aantal_actief')}/{total_opties})",
+                label=v.get("naam"),
                 widget=CheckboxSelectMultiple(
                     attrs={
                         "class": "list--form-check-input",
@@ -288,7 +293,7 @@ class FilterForm(forms.Form):
                         and isinstance(v.get("opties", [])[0][1], (list, tuple)),
                     }
                 ),
-                choices=v.get("opties", []),
+                choices=formatted_opties,
                 required=False,
             )
 
@@ -300,6 +305,31 @@ class FilterForm(forms.Form):
             else:
                 count += 1
         return count
+
+    def _format_opties_for_form(self, opties):
+        """Convert opties from [key, {label, item_count}] to [key, label] format for form display."""
+        formatted = []
+        for option in opties:
+            key = option[0]
+            meta = option[1]
+            
+            # Check if this is a grouped option (has sub-options)
+            if isinstance(meta, (list, tuple)):
+                # Recursively format sub-options
+                formatted_group = [
+                    key,
+                    self._format_opties_for_form([sub_opt for sub_opt in meta])
+                ]
+                formatted.append(formatted_group)
+            elif isinstance(meta, dict):
+                # Extract just the label from metadata dict
+                label = meta.get("label", str(key))
+                formatted.append([key, label])
+            else:
+                # Already a string label, use as-is
+                formatted.append([key, meta])
+        
+        return formatted
 
 
 class LoginForm(forms.Form):

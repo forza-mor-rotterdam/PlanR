@@ -120,8 +120,9 @@
                 <div class="full-page-view__footer">
                     <button type="button"
                             class="btn btn-action"
-                            data-action="filter#hideFiltersAndSubmit">
-                        Toon {{ data.count }} meldingen
+                            data-action="filter#hideFiltersAndSubmit"
+                            data-filter-target="filterButton">
+                        Toon <span data-filter-target="filteredCount">{{ data.count }}</span> meldingen
                     </button>
                 </div>
             </dialog>

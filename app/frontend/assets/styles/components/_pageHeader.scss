@@ -1,3 +1,5 @@
+@use "sass:color";
+
 .bar {
     background-color: $gray-tint01;
 
@@ -122,7 +124,7 @@
                     }
                     > .trigger--profile {
                         .initials {
-                            background-color: darken($color: $blue-200, $amount: 10);
+                            background-color: color.adjust($blue-200, $lightness: -10%);
                         }
                     }
                 }

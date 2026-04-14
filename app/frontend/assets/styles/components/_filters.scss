@@ -350,6 +350,7 @@
 dialog.filter-dialog {
     position: fixed;
     inset: 0;
+    align-items: stretch;
     width: 100vw;
     height: 100dvh;
     max-width: 100vw;
@@ -359,6 +360,8 @@ dialog.filter-dialog {
     background: $white;
     margin: 0;
     z-index: 3000;
+    opacity: 1;
+    box-shadow: none;
     overflow: hidden;
     display: none;
     flex-direction: column;

@@ -10,7 +10,7 @@ export default class extends Controller {
     ).length
     this.selectedCountTarget.textContent = `${
       this.subCheckboxTargets.filter((checkbox) => checkbox.checked).length
-    }/${this.subCheckboxTargets.length}`
+    }`
     if (checkboxCount == checkboxSelectedCount) {
       this.groupCheckboxTarget.checked = true
     }
@@ -30,9 +30,10 @@ export default class extends Controller {
       checkbox.checked = this.groupCheckboxTarget.checked
     })
     const selected = this.subCheckboxTargets.filter((c) => c.checked).length
-    this.selectedCountTarget.textContent = `${selected}/${this.subCheckboxTargets.length}`
+    this.selectedCountTarget.textContent = `${selected}`
     this.groupCheckboxTarget.classList.toggle('half-checked', selected > 0 && selected < this.subCheckboxTargets.length)
     this.filterController?.updateSelectedChoicesCount?.()
+    this.filterController?.updateFilteredCount?.()
   }
 
   toggleGroupElements(e) {

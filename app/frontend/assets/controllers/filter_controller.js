@@ -10,6 +10,8 @@ export default class extends Controller {
     'selectedChoicesTotalCount',
     'searchProfielContext',
     'toggleSearchProfileContainer',
+    'filterButton',
+    'filteredCount',
   ]
 
   initialize() {
@@ -45,8 +47,12 @@ export default class extends Controller {
   }
 
   hideFiltersAndSubmit() {
-    this.hideFilters()
+    // Submit form first, then close dialog after submission completes
     this.submit()
+    // Give form submission time to process before closing
+    setTimeout(() => {
+      this.hideFilters()
+    }, 100)
   }
 
   // ===========================================================
@@ -56,6 +62,7 @@ export default class extends Controller {
     // Inside dialog: update counts only. Outside (e.g. ordering): submit.
     if (this.hasFiltersheetTarget && this.filtersheetTarget.contains(e.target)) {
       this.updateSelectedChoicesCount()
+      this.updateFilteredCount()
     } else {
       this.submit()
     }
@@ -76,6 +83,7 @@ export default class extends Controller {
       input.checked = false
     })
     this.updateSelectedChoicesCount()
+    this.updateFilteredCount()
   }
 
   selectAll(e) {
@@ -89,6 +97,7 @@ export default class extends Controller {
       el.checked = doCheck
     })
     this.updateSelectedChoicesCount()
+    this.updateFilteredCount()
   }
 
   // ===========================================================
@@ -119,6 +128,44 @@ export default class extends Controller {
     if (this.hasSelectedChoicesTotalCountTarget) {
       const total = this.filterInputs.filter((i) => i.checked).length
       this.selectedChoicesTotalCountTarget.textContent = `${total}`
+    }
+  }
+
+  async updateFilteredCount() {
+    if (!this.hasFilteredCountTarget) return
+    
+    // Create FormData with current filter selections
+    const formData = new FormData(this.element)
+    
+    try {
+      // Build URL with filter_count action parameter
+      const url = new URL(window.location)
+      url.searchParams.set('action', 'filter_count')
+      
+      console.log('Fetching filter count from:', url.toString())
+      console.log('Form data:', Object.fromEntries(formData))
+      
+      const response = await fetch(url.toString(), {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+        }
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        console.log('Filter count response:', data)
+        if (data.count !== undefined) {
+          this.filteredCountTarget.textContent = data.count
+          console.log('Updated button text to:', data.count)
+        }
+      } else {
+        const text = await response.text()
+        console.warn('Error response from filter count endpoint:', response.status, text)
+      }
+    } catch (error) {
+      console.error('Error fetching filtered count:', error)
     }
   }
 
