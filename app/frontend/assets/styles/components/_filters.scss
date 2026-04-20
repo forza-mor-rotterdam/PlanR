@@ -539,14 +539,20 @@ dialog.filter-dialog {
             min-width: 0;
 
             > details {
+                display: block;
                 flex: none;
                 min-width: 0;
                 // Bleed the full coloured block edge-to-edge past the foldout padding
                 margin: 0 -16px;
                 width: calc(100% + 32px);
+                box-sizing: border-box;
                 background-color: $gray-tint01;
 
                 summary {
+                    display: flex;
+                    width: 100%;
+                    box-sizing: border-box;
+                    margin: 0;
                     background-color: $gray-tint01;
                     padding: 24px 32px 24px 65px;
 
@@ -557,6 +563,11 @@ dialog.filter-dialog {
                     input[type="checkbox"][data-subselect-target="groupCheckbox"],
                     input[type="checkbox"][data-subSelect-target="groupCheckbox"] {
                         display: none;
+                    }
+
+                    .form-check-label {
+                        display: block;
+                        width: 100%;
                     }
                 }
 
