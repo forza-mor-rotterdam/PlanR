@@ -42,6 +42,11 @@ VERTALINGEN = {
     "signaal_toegevoegd": "Samengevoegd",
     "urgentie_aangepast": "Spoed aangepast",
     "melding_heropend": "Heropend",
+    "al_verholpen": "De taak is al verholpen",
+    "niet_gemeente": "De taak is niet voor de gemeente",
+    "niet_voor_mij": "De taak is niet voor mij",
+    "locatie_onduidelijk": "De locatie van de taak is onduidelijk",
+    "anders": "Anders",
 }
 
 DAGEN_VAN_DE_WEEK_KORT = [
