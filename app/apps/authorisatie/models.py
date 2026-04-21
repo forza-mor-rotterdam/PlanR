@@ -261,6 +261,11 @@ class DashboardBekijkenPermissie(BasisPermissie):
     codenaam = "dashboard_bekijken"
 
 
+class TaakVolgordePermissie(BasisPermissie):
+    naam = "Taakvolgorde instellen"
+    codenaam = "taak_volgorde"
+
+
 gebruikersgroep_permissies = (
     MeldingAfhandelenPermissie,
     MeldingAnnulerenPermissie,
@@ -312,6 +317,7 @@ gebruikersgroep_permissies = (
     ReleaseNoteVerwijderenPermissie,
     TaakAanmakenIssueLijstBekijkenPermissie,
     DashboardBekijkenPermissie,
+    TaakVolgordePermissie,
 )
 
 gebruikersgroep_permissie_opties = [

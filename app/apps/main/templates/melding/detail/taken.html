@@ -57,9 +57,19 @@
                                 </span>
                             </div>
                             <div class="" data-detail-target="taakStatusContainer">
-                                <span class="tag tag--qualification tag--{{ taak|taak_status_css_class }}">
-                                    {{ taak|taak_status_tekst }}
-                                </span>
+                                {% if taak|taak_status_css_class != "in_de_wacht" %}
+                                    <span class="tag tag--qualification tag--{{ taak|taak_status_css_class }}">
+                                        {{ taak|taak_status_tekst }}
+                                    </span>
+                                {% else %}
+                                    <button class="tag tag--qualification tag--{{ taak|taak_status_css_class }}" interestfor="taak_{{ taak.uuid }}">
+                                        {{ taak|taak_status_tekst }}
+                                    </button>
+                                    <div popover id="taak_{{ taak.uuid }}">
+                                        {{ taak.afhankelijkheid_wachttekst }}
+                                    </div>
+                                {% endif %}
+
                             </div>
                             {% if perms.authorisatie.taak_verwijderen %}
                             <div>
@@ -67,6 +77,7 @@
                                     <div class="container__uitklapper">
                                         <span>{% include "icons/dots.svg" %}</span>
                                         <div class="legenda">
+                                                {% if not taak.afgesloten_op and not taak.verwijderd_op %}
                                                 <button type="button"
                                                         class="btn"
                                                         data-action="modal#openModal"
@@ -74,6 +85,7 @@
                                                     {% include "icons/bin.svg" %}
                                                     Taak verwijderen
                                                 </button>
+                                                {% endif %}
                                         </div>
                                     </div>
                                 {% endif %}
