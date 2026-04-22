@@ -10,10 +10,10 @@ from apps.main.views import (
     TaakRTaaktypeView,
     TakenAanmakenStreamView,
     TakenAanmakenView,
+
     TakenAnnuleerView,
     TakenPauseView,
     TakenResumeView,
-    TakenStartenView,
     TakenVerstuurView,
     gebruiker_info,
     http_403,
@@ -168,11 +168,6 @@ urlpatterns = [
         "melding/<uuid:melding_uuid>/taak-verwijderen/<uuid:taakopdracht_uuid>/",
         taak_verwijderen,
         name="taak_verwijderen",
-    ),
-    path(
-        "melding/<uuid:id>/taak-starten/<uuid:taakopdracht_uuid>/",
-        TakenStartenView.as_view(),
-        name="taak_starten",
     ),
     path(
         "melding/<uuid:id>/informatie-toevoegen/",

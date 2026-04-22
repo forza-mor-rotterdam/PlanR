@@ -119,7 +119,7 @@ class TestValidateTaakvolgorde(SimpleTestCase):
             },
         ]
         with self.assertRaisesMessage(
-            ValidationError, "taak komt voor in 1 of meer van z'n"
+            ValidationError, "taak volgorde bevat een circulaire afhankelijkheid"
         ):
             validate_taakvolgorde(taken)
 

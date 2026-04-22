@@ -13,7 +13,6 @@ from apps.main.forms import (
     MeldingHervattenForm,
     MeldingPauzerenForm,
     MeldingSpoedForm,
-    TaakStartenForm,
     TaakVerwijderenForm,
     TakenAanmakenFormset,
 )
@@ -36,8 +35,6 @@ from apps.main.messages import (
     MELDING_PAUZEREN_SUCCESS,
     MELDING_URGENTIE_AANPASSEN_ERROR,
     MELDING_URGENTIE_AANPASSEN_SUCCESS,
-    TAAK_UITZETTEN_ERROR,
-    TAAK_UITZETTEN_SUCCESS,
     TAAK_VERWIJDEREN_ERROR,
     TAAK_VERWIJDEREN_SUCCESS,
 )
@@ -832,73 +829,6 @@ def taak_verwijderen(request, melding_uuid, taakopdracht_uuid=None):
         },
     )
 
-
-class TakenStartenView(
-    MeldingDetailTaaktypeViewMixin, StreamViewMixin, PermissionRequiredMixin, FormView
-):
-    template_name = "melding/detail/taak_starten.html"
-    permission_required = "authorisatie.taak_starten"
-    form_class = TaakStartenForm
-    taakopdrachten = None
-
-    def dispatch(self, request, *args, **kwargs):
-        context = super().get_melding_detail_context(**kwargs)
-        self.melding = context["melding"]
-        taakopdracht_uuid = self.kwargs.get("taakopdracht_uuid")
-        self.taakopdrachten = [
-            taakopdracht
-            for taakopdracht in context["taken"]["in_de_wacht_taken"]
-            if taakopdracht["uuid"] == str(taakopdracht_uuid)
-        ]
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        if self.taakopdrachten:
-            kwargs.update(
-                {
-                    "taakopdracht_opties": [
-                        (
-                            taakopdracht.get("_links", {}).get("self"),
-                            taakopdracht.get("titel"),
-                        )
-                        for taakopdracht in self.taakopdrachten
-                    ],
-                }
-            )
-        return kwargs
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        context.update(
-            {
-                "taakopdracht": next(iter(self.taakopdrachten), None),
-                "melding": self.melding,
-            }
-        )
-        return context
-
-    def form_invalid(self, form):
-        logger.error(f"{self.__class__.__name__} form invalid: {form.errors}")
-        return super().form_invalid(form)
-
-    def form_valid(self, form):
-        context = super().get_melding_detail_taaktype_context()
-        print(form.cleaned_data)
-        melding_url = get_url_from_links(context["melding"], "self")
-        response = MORCoreService().taakopdracht_uitzetten(
-            melding_url=melding_url,
-            taakopdracht_url=form.cleaned_data["taakopdracht"],
-            gebruiker=self.request.user.email,
-        )
-        if isinstance(response, dict) and response.get("error"):
-            messages.error(request=self.request, message=TAAK_UITZETTEN_ERROR)
-        else:
-            messages.success(request=self.request, message=TAAK_UITZETTEN_SUCCESS)
-
-        context.pop("form", None)
-        return self.render_to_response(context)
 
 
 @login_required
