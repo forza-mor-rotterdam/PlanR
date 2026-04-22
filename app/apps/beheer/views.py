@@ -1,5 +1,6 @@
 import logging
 import math
+from urllib.parse import urlencode
 
 from apps.beheer.forms import (
     MeldingAfhandelredenForm,
@@ -616,3 +617,48 @@ def dynamic_table(request):
     print(json.dumps(data, indent=4))
 
     return render(request, "beheer/dynamic_table.html", {"data": data})
+
+
+class VernietigingslijstView(PermissionRequiredMixin, TemplateView):
+    permission_required = "authorisatie.beheer_bekijken"
+    template_name = "beheer/vernietigingslijst_lijst.html"
+    PAGINA_GROOTTE = 25
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        try:
+            huidige_pagina = max(1, int(self.request.GET.get("page", "1")))
+        except ValueError:
+            huidige_pagina = 1
+
+        query_string = urlencode({
+            "limit": self.PAGINA_GROOTTE,
+            "offset": (huidige_pagina - 1) * self.PAGINA_GROOTTE,
+            "ordering": "signaal_te_vernietigen_per",
+        })
+        envelope = MORCoreService().get_vernietigingslijst(query_string=query_string)
+
+        if isinstance(envelope, dict) and envelope.get("error"):
+            messages.error(
+                self.request,
+                "Kon de vernietigingslijst niet ophalen.",
+            )
+            envelope = {
+                "count": 0,
+                "next": None,
+                "previous": None,
+                "results": [],
+            }
+
+        aantal = envelope.get("count", 0) or 0
+        context.update({
+            "resultaten": envelope.get("results", []) or [],
+            "aantal": aantal,
+            "huidige_pagina": huidige_pagina,
+            "heeft_vorige": envelope.get("previous") is not None,
+            "heeft_volgende": envelope.get("next") is not None,
+            "totaal_paginas": (
+                math.ceil(aantal / self.PAGINA_GROOTTE) if aantal else 1
+            ),
+        })
+        return context

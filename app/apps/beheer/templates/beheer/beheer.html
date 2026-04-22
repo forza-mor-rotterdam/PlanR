@@ -33,6 +33,9 @@
         <li>
             <a href="{% url 'release_note_lijst' %}" class="btn btn-tertiary"><span>Berichten</span></a>
         </li>
+        <li>
+            <a href="{% url 'vernietigingslijst_lijst' %}" class="btn btn-tertiary"><span>Vernietigingslijst</span></a>
+        </li>
         {% if perms.authorisatie.taakopdrachten_taak_aanmaken_issue_lijst_bekijken %}
         <li>
             <a href="{% url 'taakopdrachten_taak_aanmaken_issues' %}" class="btn btn-tertiary"><span>Niet aangemaakte taken</span></a>
