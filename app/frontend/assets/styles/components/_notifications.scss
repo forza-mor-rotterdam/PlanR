@@ -121,6 +121,17 @@
         }
         .container__content {
             flex: 1;
+            .container__actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5em;
+                margin-top: 0.35em;
+
+                .btn {
+                    font-size: 0.85em;
+                }
+            }
+
             .container__message {
                 display: block;
 
@@ -181,6 +192,44 @@
         &.error {
             background-color: $red-200;
         }
+
+        &.pending-batch-toast {
+            background-color: $white;
+
+            .container__message {
+                display: flex;
+                align-items: center;
+                gap: 0.75em;
+            }
+
+            .btn.btn-textlink {
+                white-space: nowrap;
+            }
+
+            .btn-close--small {
+                opacity: 1;
+                pointer-events: all;
+                background: transparent;
+                color: $black;
+                padding: 0;
+                width: auto;
+                height: auto;
+
+                &:hover,
+                &:focus-visible {
+                    background: transparent;
+                    color: $black;
+                }
+
+                span {
+                    display: inline-block;
+                    color: $black;
+                    font-size: 1.125rem;
+                    line-height: 1;
+                }
+            }
+        }
+
         &:hover {
             transform: scale(1.01, 1.02);
         }

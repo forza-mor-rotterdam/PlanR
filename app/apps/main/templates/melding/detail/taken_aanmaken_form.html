@@ -33,13 +33,19 @@
         </form>
     {% elif pending_batch %}
         <div id="pending-batch-undo"
+             data-controller="taken-aanmaken--pending-batch"
              data-batch-uuid="{{ pending_batch.batch_uuid }}"
              data-melding-uuid="{{ pending_batch.melding_uuid }}"
-             data-countdown="{{ pending_batch.countdown }}">
-            <p>Taken worden verstuurd over {{ pending_batch.countdown }}s (met marge)</p>
-            <ul>
+             data-countdown="{{ pending_batch.countdown }}"
+             data-verstuur-url="{% url 'taken_verstuur' pending_batch.melding_uuid pending_batch.batch_uuid %}"
+             style="display: none;"
+             aria-hidden="true">
+            <ul style="display: none;">
                 {% for taak in pending_batch.taken %}
-                    <li data-taak-uuid="{{ taak.uuid }}">{{ taak.titel }}</li>
+                    <li data-taak-uuid="{{ taak.uuid }}"
+                        data-annuleer-url="{% url 'taken_annuleer' pending_batch.melding_uuid pending_batch.batch_uuid taak.uuid %}"
+                        data-pause-url="{% url 'taken_pause' pending_batch.melding_uuid pending_batch.batch_uuid taak.uuid %}"
+                        data-resume-url="{% url 'taken_resume' pending_batch.melding_uuid pending_batch.batch_uuid taak.uuid %}">{{ taak.titel }}</li>
                 {% endfor %}
             </ul>
             <!-- POST /melding/{melding_uuid}/taken/{batch_uuid}/verstuur/ => verstuur direct -->
@@ -47,6 +53,7 @@
             <!-- PATCH /melding/{melding_uuid}/taken/{batch_uuid}/taak/{taak_uuid}/pause/ => pauzeer taak -->
             <!-- PATCH /melding/{melding_uuid}/taken/{batch_uuid}/taak/{taak_uuid}/resume/ => hervat taak -->
         </div>
+        <div data-modal-target="modalSluiten"></div>
     {% else %}
         <div data-modal-target="modalSluiten"></div>
     {% endif %}
