@@ -200,6 +200,22 @@
                 display: flex;
                 align-items: center;
                 gap: 0.75em;
+
+                p {
+                    word-break: break-word;
+
+                    .task-name {
+                        display: -webkit-box;
+                        -webkit-line-clamp: 1;
+                        -webkit-box-orient: vertical;
+                        overflow: hidden;
+                    }
+
+                    .task-name,
+                    .task-suffix {
+                        display: block;
+                    }
+                }
             }
 
             .btn.btn-textlink {

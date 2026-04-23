@@ -37,6 +37,7 @@
              data-batch-uuid="{{ pending_batch.batch_uuid }}"
              data-melding-uuid="{{ pending_batch.melding_uuid }}"
              data-countdown="{{ pending_batch.countdown }}"
+             data-csrf-token="{{ csrf_token }}"
              data-verstuur-url="{% url 'taken_verstuur' pending_batch.melding_uuid pending_batch.batch_uuid %}"
              style="display: none;"
              aria-hidden="true">

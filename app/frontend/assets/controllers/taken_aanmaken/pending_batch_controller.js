@@ -1,15 +1,13 @@
 import { Controller } from '@hotwired/stimulus'
 
-// Development helper: keep undo toast visible for styling.
-const DISABLE_TOAST_TIMER_FOR_DEVELOPMENT = true
-
 export default class extends Controller {
   connect() {
     this.batchUuid = this.element.dataset.batchUuid
     this.countdown = Number.parseInt(this.element.dataset.countdown || '0', 10)
     this.remaining = Number.isFinite(this.countdown) ? this.countdown : 0
     this.verstuurUrl = this.element.dataset.verstuurUrl
-    this.csrfToken = this.getCsrfToken()
+    const csrfInput = this.element.querySelector('input[name="csrfmiddlewaretoken"]')
+    this.csrfToken = csrfInput?.value || this.element.dataset.csrfToken || this.getCsrfToken()
     this.isPaused = false
     this.isFinalized = false
     this.intervalId = null
@@ -36,21 +34,18 @@ export default class extends Controller {
     }
 
     this.renderToast()
-    if (!DISABLE_TOAST_TIMER_FOR_DEVELOPMENT) {
-      this.startCountdown()
-    } else {
-      this.updateCountdownUI()
-    }
+    this.startCountdown()
     this.element.style.display = 'none'
   }
 
   disconnect() {
-    this.stopCountdown()
-    this.removeHoverHandlers()
+    // The source payload lives inside the modal, but the toast is appended outside it.
+    // When the modal closes this controller disconnects; do not stop the active toast here.
   }
 
   renderToast() {
-    const taakTitel = this.taken[0]?.titel || 'Taak'
+    const rawTitel = this.taken[0]?.titel || 'Taak'
+    const taakTitel = rawTitel.length > 10 ? `${rawTitel.slice(0, 10)}...` : rawTitel
     const toast = document.createElement('div')
     toast.className = 'notification pending-batch-toast'
     toast.dataset.pendingBatchToast = this.batchUuid
@@ -65,7 +60,10 @@ export default class extends Controller {
       </div>
       <div class="container__content">
         <div class="container__message">
-          <p data-countdown-message>Taak <strong>${taakTitel}</strong> ophalen aangemaakt</p>
+          <p data-countdown-message>
+            <span class="task-name">Taak <strong>${taakTitel}</strong></span>
+            <span class="task-suffix">is aangemaakt</span>
+          </p>
           <button type="button" class="btn btn-textlink" data-undo-button>Ongedaan maken</button>
         </div>
       </div>
@@ -73,7 +71,7 @@ export default class extends Controller {
         type="button"
         class="btn-close--small"
         aria-label="Sluit"
-        data-action="notificaties--toast-item#hideNotification"
+        data-close-button
       >
         <span aria-hidden="true">×</span>
       </button>
@@ -82,21 +80,31 @@ export default class extends Controller {
     this.toastContainer.appendChild(toast)
     this.toastElement = toast
     this.undoButton = this.toastElement.querySelector('[data-undo-button]')
+    this.closeButton = this.toastElement.querySelector('[data-close-button]')
     this.countdownMessage = this.toastElement.querySelector('[data-countdown-message]')
 
     this.undoClickHandler = () => this.annuleerAlles()
+    this.closeClickHandler = (event) => this.verwerkEnSluit(event)
     this.mouseEnterHandler = () => this.pauseBatch()
     this.mouseLeaveHandler = () => this.resumeBatch()
 
     this.undoButton?.addEventListener('click', this.undoClickHandler)
+    this.closeButton?.addEventListener('click', this.closeClickHandler)
     this.toastElement.addEventListener('mouseenter', this.mouseEnterHandler)
     this.toastElement.addEventListener('mouseleave', this.mouseLeaveHandler)
   }
 
   removeHoverHandlers() {
     this.undoButton?.removeEventListener('click', this.undoClickHandler)
+    this.closeButton?.removeEventListener('click', this.closeClickHandler)
     this.toastElement?.removeEventListener('mouseenter', this.mouseEnterHandler)
     this.toastElement?.removeEventListener('mouseleave', this.mouseLeaveHandler)
+  }
+
+  verwerkEnSluit(event) {
+    event?.preventDefault()
+    event?.stopPropagation()
+    this.verstuurNu()
   }
 
   startCountdown() {
@@ -104,8 +112,7 @@ export default class extends Controller {
     this.intervalId = window.setInterval(() => {
       if (this.isPaused || this.isFinalized) return
       if (this.remaining <= 0) {
-        this.stopCountdown()
-        this.disableUndo()
+        this.verstuurNu()
         return
       }
       this.remaining -= 1
@@ -135,15 +142,8 @@ export default class extends Controller {
   }
 
   updateCountdownUI() {
-    if (DISABLE_TOAST_TIMER_FOR_DEVELOPMENT) {
-      if (this.undoButton) {
-        this.undoButton.textContent = 'Ongedaan maken'
-      }
-      return
-    }
-
     if (this.undoButton) {
-      this.undoButton.textContent = `Ongedaan maken (${this.remaining}s)`
+      this.undoButton.textContent = 'Ongedaan maken'
     }
   }
 
@@ -176,7 +176,13 @@ export default class extends Controller {
     try {
       await this.request(this.verstuurUrl, 'POST')
       this.hideToast()
-    } catch {
+    } catch (error) {
+      console.error('[pending-batch] send failed', {
+        batchUuid: this.batchUuid,
+        method: 'POST',
+        url: this.verstuurUrl,
+        error: error?.message || error,
+      })
       this.isFinalized = false
       this.updateCountdownUI()
       if (this.undoButton) this.undoButton.disabled = false
@@ -193,10 +199,16 @@ export default class extends Controller {
       await Promise.all(
         this.taken
           .filter((taak) => Boolean(taak.annuleerUrl))
-          .map((taak) => this.request(taak.annuleerUrl, 'POST').catch(() => null))
+          .map((taak) => this.request(taak.annuleerUrl, 'POST'))
       )
       this.hideToast()
-    } catch {
+    } catch (error) {
+      console.error('[pending-batch] cancel failed', {
+        batchUuid: this.batchUuid,
+        method: 'POST',
+        urls: annuleerUrls,
+        error: error?.message || error,
+      })
       this.isFinalized = false
       this.updateCountdownUI()
       if (this.undoButton) this.undoButton.disabled = false
@@ -204,6 +216,8 @@ export default class extends Controller {
   }
 
   hideToast() {
+    this.stopCountdown()
+    this.removeHoverHandlers()
     this.toastElement?.classList.add('hide')
     window.setTimeout(() => {
       this.toastElement?.remove()
@@ -234,7 +248,7 @@ export default class extends Controller {
   getCsrfToken() {
     const cookie = document.cookie
       .split('; ')
-      .find((row) => row.startsWith('csrftoken='))
+      .find((row) => row.startsWith('__Host-csrftoken=') || row.startsWith('csrftoken='))
     return cookie ? decodeURIComponent(cookie.split('=')[1]) : ''
   }
 }
