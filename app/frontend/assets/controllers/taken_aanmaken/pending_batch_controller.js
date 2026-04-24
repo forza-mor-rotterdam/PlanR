@@ -4,13 +4,15 @@ export default class extends Controller {
   connect() {
     this.batchUuid = this.element.dataset.batchUuid
     this.countdown = Number.parseInt(this.element.dataset.countdown || '0', 10)
-    this.remaining = Number.isFinite(this.countdown) ? this.countdown : 0
+    if (!Number.isFinite(this.remaining)) {
+      this.remaining = Number.isFinite(this.countdown) ? this.countdown : 0
+    }
     this.verstuurUrl = this.element.dataset.verstuurUrl
     const csrfInput = this.element.querySelector('input[name="csrfmiddlewaretoken"]')
     this.csrfToken = csrfInput?.value || this.element.dataset.csrfToken || this.getCsrfToken()
-    this.isPaused = false
-    this.isFinalized = false
-    this.intervalId = null
+    if (typeof this.isPaused !== 'boolean') this.isPaused = false
+    if (typeof this.isFinalized !== 'boolean') this.isFinalized = false
+    if (!Number.isInteger(this.intervalId)) this.intervalId = null
 
     this.taken = Array.from(this.element.querySelectorAll('[data-taak-uuid]')).map((item) => ({
       uuid: item.dataset.taakUuid,
@@ -20,68 +22,37 @@ export default class extends Controller {
       resumeUrl: item.dataset.resumeUrl,
     }))
 
-    this.toastContainer = document.getElementById('toast_lijst')
-    if (!this.toastContainer || !this.batchUuid || !this.taken.length || !this.verstuurUrl) {
+    this.toastContainer = document.getElementById('toast_lijst') || this.element.parentElement
+    if (!this.batchUuid || !this.verstuurUrl) {
       return
     }
 
     const existingToast = this.toastContainer.querySelector(
       `[data-pending-batch-toast="${this.batchUuid}"]`
     )
-    if (existingToast) {
-      this.element.style.display = 'none'
+    if (existingToast && existingToast !== this.element) {
+      this.element.remove()
       return
     }
 
-    this.renderToast()
-    this.startCountdown()
-    this.element.style.display = 'none'
-  }
+    this.element.dataset.pendingBatchToast = this.batchUuid
+    if (this.taken.length) {
+      const rawTitel = this.taken[0]?.titel || 'Taak'
+      const taakTitel = rawTitel.length > 10 ? `${rawTitel.slice(0, 10)}...` : rawTitel
+      const titleElement = this.element.querySelector('[data-task-title]')
+      if (titleElement) titleElement.textContent = taakTitel
+    }
 
-  disconnect() {
-    // The source payload lives inside the modal, but the toast is appended outside it.
-    // When the modal closes this controller disconnects; do not stop the active toast here.
-  }
+    if (this.toastContainer && !this.toastContainer.contains(this.element)) {
+      this.toastContainer.appendChild(this.element)
+    }
 
-  renderToast() {
-    const rawTitel = this.taken[0]?.titel || 'Taak'
-    const taakTitel = rawTitel.length > 10 ? `${rawTitel.slice(0, 10)}...` : rawTitel
-    const toast = document.createElement('div')
-    toast.className = 'notification pending-batch-toast'
-    toast.dataset.pendingBatchToast = this.batchUuid
-    toast.setAttribute('data-controller', 'notificaties--toast-item')
-    toast.setAttribute('data-notificaties--manager-target', 'toastItem')
-
-    toast.innerHTML = `
-      <div class="container__icon" aria-hidden="true">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M21.9 12C21.9 6.5 17.5 2.1 12 2.1C6.5 2.1 2.1 6.5 2.1 12C2.1 17.5 6.5 21.9 12 21.9C17.5 21.9 21.9 17.5 21.9 12ZM0 12C0 5.4 5.4 0 12 0C18.6 0 24 5.4 24 12C24 18.6 18.6 24 12 24C5.4 24 0 18.6 0 12ZM16.6 7.1L18 8.5L10.5 16L7.10001 12.6L8.50001 11.2L10.5 13.2L16.6 7.1Z" fill="#00811F"/>
-        </svg>
-      </div>
-      <div class="container__content">
-        <div class="container__message">
-          <p data-countdown-message>
-            <span class="task-name">Taak <strong>${taakTitel}</strong></span>
-            <span class="task-suffix">is aangemaakt</span>
-          </p>
-          <button type="button" class="btn btn-textlink" data-undo-button>Ongedaan maken</button>
-        </div>
-      </div>
-      <button
-        type="button"
-        class="btn-close--small"
-        aria-label="Sluit"
-        data-close-button
-      >
-        <span aria-hidden="true">×</span>
-      </button>
-    `
-
-    this.toastContainer.appendChild(toast)
-    this.toastElement = toast
+    this.toastElement = this.element
     this.undoButton = this.toastElement.querySelector('[data-undo-button]')
     this.closeButton = this.toastElement.querySelector('[data-close-button]')
     this.countdownMessage = this.toastElement.querySelector('[data-countdown-message]')
+
+    this.removeHoverHandlers()
 
     this.undoClickHandler = () => this.annuleerAlles()
     this.closeClickHandler = (event) => this.verwerkEnSluit(event)
@@ -92,6 +63,15 @@ export default class extends Controller {
     this.closeButton?.addEventListener('click', this.closeClickHandler)
     this.toastElement.addEventListener('mouseenter', this.mouseEnterHandler)
     this.toastElement.addEventListener('mouseleave', this.mouseLeaveHandler)
+
+    if (!this.intervalId) {
+      this.startCountdown()
+    }
+  }
+
+  disconnect() {
+    // This element may briefly disconnect/reconnect when moved into #toast_lijst.
+    // Keep timer and handlers intact unless toast is explicitly hidden.
   }
 
   removeHoverHandlers() {
@@ -174,7 +154,14 @@ export default class extends Controller {
     this.stopCountdown()
 
     try {
-      await this.request(this.verstuurUrl, 'POST')
+      const result = await this.request(this.verstuurUrl, 'POST')
+      if (result.status === 200) {
+        console.info('[pending-batch] verstuur acknowledged (200)', {
+          batchUuid: this.batchUuid,
+          url: this.verstuurUrl,
+          status: result.status,
+        })
+      }
       this.hideToast()
     } catch (error) {
       console.error('[pending-batch] send failed', {
@@ -196,17 +183,24 @@ export default class extends Controller {
     this.stopCountdown()
 
     try {
-      await Promise.all(
+      const results = await Promise.all(
         this.taken
           .filter((taak) => Boolean(taak.annuleerUrl))
           .map((taak) => this.request(taak.annuleerUrl, 'POST'))
       )
+      const successCount = results.filter((result) => result.status === 200).length
+      if (successCount > 0) {
+        console.info('[pending-batch] annuleer acknowledged (200)', {
+          batchUuid: this.batchUuid,
+          successfulCancels: successCount,
+          requestedCancels: results.length,
+        })
+      }
       this.hideToast()
     } catch (error) {
       console.error('[pending-batch] cancel failed', {
         batchUuid: this.batchUuid,
         method: 'POST',
-        urls: annuleerUrls,
         error: error?.message || error,
       })
       this.isFinalized = false
@@ -239,10 +233,17 @@ export default class extends Controller {
     }
 
     const contentType = response.headers.get('content-type') || ''
+    const status = response.status
     if (contentType.includes('application/json')) {
-      return response.json()
+      return {
+        status,
+        body: await response.json(),
+      }
     }
-    return response.text()
+    return {
+      status,
+      body: await response.text(),
+    }
   }
 
   getCsrfToken() {
