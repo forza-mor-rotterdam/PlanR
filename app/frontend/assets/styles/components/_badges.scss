@@ -43,6 +43,21 @@
     transform: translateY(-50%);
 }
 
+.pill-badge {
+    display: inline-block;
+    padding: 8px 16px;
+    border: 1px solid #B7BDC7;
+    border-radius: 20px;
+    font-size: 14px;
+    color: #333;
+    max-width: fit-content;
+    margin-bottom: 12px;
+}
+
+.message .pill-badge {
+    margin-bottom: 12px;
+}
+
 .container--env {
     position: fixed;
     top: 0;
