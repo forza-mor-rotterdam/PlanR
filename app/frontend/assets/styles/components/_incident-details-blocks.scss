@@ -297,12 +297,13 @@
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
+                gap: 0.25rem;
 
                 h4,
                 p {
                     font-size: $fz-14;
                     margin-bottom: 0;
-                    line-height: 1rem;
+                    line-height: 1.25rem;
                     word-break: break-word;
                 }
 
@@ -313,6 +314,24 @@
                     white-space: normal;
                     font-size: $fz-14;
                 }
+            }
+
+            > .message {
+                padding-bottom: 0.75rem;
+
+                &:not(:first-child) {
+                    padding-top: 0.75rem;
+                }
+
+                &:last-child {
+                    padding-bottom: 0;
+                }
+            }
+
+            .taken-aangemaakt-list {
+                margin-left: 0;
+                padding-left: 0;
+                list-style-position: inside;
             }
             small {
                 color: $gray-600;
