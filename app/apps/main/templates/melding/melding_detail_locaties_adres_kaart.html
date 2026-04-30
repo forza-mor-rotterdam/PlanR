@@ -1,4 +1,18 @@
 <div>
+    <label for="tijdelijke_verkeersmaatregelen_id">
+        <input id="tijdelijke_verkeersmaatregelen_id"
+               type="checkbox"
+               data-detail-map-layer-types-param='["tijdelijkeVerkeersmaatregelen"]'
+               data-action="detail#onMapLayerChange">
+        Toon tijdelijke verkeersmaatregelen-kaartlaag
+    </label>
+    <label for="containers_id">
+        <input id="containers_id"
+               type="checkbox"
+               data-detail-map-layer-types-param='["containers"]'
+               data-action="detail#onMapLayerChange">
+        Toon containers-kaartlaag
+    </label>
     <label for="egd_id">
         <input id="egd_id"
                type="checkbox"
@@ -11,7 +25,14 @@
                type="checkbox"
                data-detail-map-layer-types-param='["lichtmasten"]'
                data-action="detail#onMapLayerChange">
-        Toon lichtmasten-kaartlaag
+        Toon openbare verlichting-kaartlaag
+    </label>
+    <label for="projecten_id">
+        <input id="projecten_id"
+               type="checkbox"
+               data-detail-map-layer-types-param='["projecten"]'
+               data-action="detail#onMapLayerChange">
+        Toon projecten-kaartlaag
     </label>
     <div class="container__uitklapper">
         <span>{% include "icons/info.svg" %}</span>
