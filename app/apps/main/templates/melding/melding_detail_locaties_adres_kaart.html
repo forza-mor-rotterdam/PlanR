@@ -6,6 +6,13 @@
                data-action="detail#onMapLayerChange">
         Toon EGD-kaartlaag
     </label>
+    <label for="lichtmasten_id">
+        <input id="lichtmasten_id"
+               type="checkbox"
+               data-detail-map-layer-types-param='["lichtmasten"]'
+               data-action="detail#onMapLayerChange">
+        Toon lichtmasten-kaartlaag
+    </label>
     <div class="container__uitklapper">
         <span>{% include "icons/info.svg" %}</span>
         <div class="legenda">
