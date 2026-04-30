@@ -47,55 +47,68 @@ export default class extends Controller {
     )
     const locatie = locatiePrimair ? locatiePrimair : validLocaties[0]
     const mapDiv = document.getElementById('incidentMap')
+    const wmsHandlerUrl = 'https://www.gis.rotterdam.nl/GisWeb2/js/modules/kaart/WmsHandler.ashx'
     this.mapLayers = {
+      tijdelijkeVerkeersmaatregelen: {
+        layer: L.tileLayer.wms(wmsHandlerUrl, {
+          layers: 'TVM.ACT.BB',
+          format: 'image/png',
+          transparent: true,
+          zIndex: 210,
+          minZoom: 10,
+          maxZoom: 19,
+        }),
+      },
       containers: {
-        layer: L.tileLayer.wms(
-          'https://www.gis.rotterdam.nl/GisWeb2/js/modules/kaart/WmsHandler.ashx',
-          {
-            layers: 'OBS.OO.CONTAINER',
-            format: 'image/png',
-            transparent: true,
-            minZoom: 10,
-            maxZoom: 19,
-          }
-        ),
+        layer: L.tileLayer.wms(wmsHandlerUrl, {
+          layers: 'OBS.OO.CONTAINER',
+          format: 'image/png',
+          transparent: true,
+          zIndex: 220,
+          minZoom: 10,
+          maxZoom: 19,
+        }),
         legend: [],
       },
       EGD: {
-        layer: L.tileLayer.wms(
-          'https://www.gis.rotterdam.nl/GisWeb2/js/modules/kaart/WmsHandler.ashx',
-          {
-            layers: 'BSB.OBJ.EGD',
-            format: 'image/png',
-            transparent: true,
-            minZoom: 10,
-            maxZoom: 19,
-          }
-        ),
+        layer: L.tileLayer.wms(wmsHandlerUrl, {
+          layers: 'BSB.OBJ.EGD',
+          format: 'image/png',
+          transparent: true,
+          zIndex: 200,
+          minZoom: 10,
+          maxZoom: 19,
+        }),
       },
       lichtmasten: {
-        layer: L.tileLayer.wms(
-          'https://www.gis.rotterdam.nl/GisWeb2/js/modules/kaart/WmsHandler.ashx',
-          {
-            layers: 'OBSURV.OVL.LP',
-            format: 'image/png',
-            transparent: true,
-            minZoom: 10,
-            maxZoom: 19,
-          }
-        ),
+        layer: L.tileLayer.wms(wmsHandlerUrl, {
+          layers: 'OBSURV.OVL.LP',
+          format: 'image/png',
+          transparent: true,
+          zIndex: 230,
+          minZoom: 10,
+          maxZoom: 19,
+        }),
       },
       lichtmastenSto: {
-        layer: L.tileLayer.wms(
-          'https://www.gis.rotterdam.nl/GisWeb2/js/modules/kaart/WmsHandler.ashx',
-          {
-            layers: 'OBSURV.OVL.LP.STO',
-            format: 'image/png',
-            transparent: true,
-            minZoom: 10,
-            maxZoom: 19,
-          }
-        ),
+        layer: L.tileLayer.wms(wmsHandlerUrl, {
+          layers: 'OBSURV.OVL.LP.STO',
+          format: 'image/png',
+          transparent: true,
+          zIndex: 235,
+          minZoom: 10,
+          maxZoom: 19,
+        }),
+      },
+      projecten: {
+        layer: L.tileLayer.wms(wmsHandlerUrl, {
+          layers: 'SB.PIDG',
+          format: 'image/png',
+          transparent: true,
+          zIndex: 240,
+          minZoom: 10,
+          maxZoom: 19,
+        }),
       },
     }
 
