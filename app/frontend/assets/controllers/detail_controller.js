@@ -100,16 +100,16 @@ export default class extends Controller {
           maxZoom: 19,
         }),
       },
-      projecten: {
-        layer: L.tileLayer.wms(wmsHandlerUrl, {
-          layers: 'SB.PIDG',
-          format: 'image/png',
-          transparent: true,
-          zIndex: 240,
-          minZoom: 10,
-          maxZoom: 19,
-        }),
-      },
+      // projecten: {
+      //   layer: L.tileLayer.wms(wmsHandlerUrl, {
+      //     layers: 'SB.PIDG',  // unauthorized — requires GIS service account
+      //     format: 'image/png',
+      //     transparent: true,
+      //     zIndex: 240,
+      //     minZoom: 10,
+      //     maxZoom: 19,
+      //   }),
+      // },
     }
 
     if (mapDiv && locatie) {

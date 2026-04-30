@@ -27,13 +27,13 @@
                data-action="detail#onMapLayerChange">
         Toon openbare verlichting-kaartlaag
     </label>
-    <label for="projecten_id">
-        <input id="projecten_id"
-               type="checkbox"
-               data-detail-map-layer-types-param='["projecten"]'
-               data-action="detail#onMapLayerChange">
-        Toon projecten-kaartlaag
-    </label>
+    {# <label for="projecten_id"> #}
+    {#     <input id="projecten_id" #}
+    {#            type="checkbox" #}
+    {#            data-detail-map-layer-types-param='["projecten"]' #}
+    {#            data-action="detail#onMapLayerChange"> #}
+    {#     Toon projecten-kaartlaag — uitgeschakeld: vereist GIS serviceaccount #}
+    {# </label> #}
     <div class="container__uitklapper">
         <span>{% include "icons/info.svg" %}</span>
         <div class="legenda">
