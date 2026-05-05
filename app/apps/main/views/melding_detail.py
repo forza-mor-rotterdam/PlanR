@@ -699,6 +699,9 @@ class TakenAanmakenStreamView(TakenAanmakenView):
         return self.render_to_response(context)
 
     def form_valid(self, form):
+        from apps.main.services.pending_batch import PendingBatchService
+        from apps.main.tasks import verstuur_batch_naar_mor_core
+
         heeft_taak_volgorde_permissie = self.request.user.has_perm(
             "authorisatie.taak_volgorde"
         )
@@ -711,7 +714,7 @@ class TakenAanmakenStreamView(TakenAanmakenView):
             }
             for taak in form.cleaned_data
         ]
-        mor_core_service = MORCoreService()
+
         taak_aanmaken_api_fields = [
             "melding_uuid",
             "titel",
@@ -720,7 +723,7 @@ class TakenAanmakenStreamView(TakenAanmakenView):
             "gebruiker",
         ]
 
-        # Build a lookup and dependency graph for topological ordering
+        # Build topological order
         taak_by_uuid = {taak["uuid"]: taak for taak in taken}
         graph = {
             taak["uuid"]: [p for p in taak["parents"] if p in taak_by_uuid]
@@ -728,48 +731,46 @@ class TakenAanmakenStreamView(TakenAanmakenView):
         }
         sorter = TopologicalSorter(graph)
 
-        uuid_to_url = {}
+        groep = getattr(self.request.user.groups.first(), "name", None)
+
+        # Build batch payload in topological order
+        batch_taken = []
         for uuid in sorter.static_order():
             taak = taak_by_uuid[uuid]
-            resolved_parents = [
-                uuid_to_url.get(p, p) for p in taak["parents"]
-            ]
             taak_data = {
                 k: v for k, v in taak.items() if k in taak_aanmaken_api_fields
-            } | {
-                "afhankelijkheid": [
-                    {"taakopdracht_url": url}
-                    for url in resolved_parents
-                ]
             }
-            response = mor_core_service.taak_aanmaken(
-                **taak_data,
-                additionele_informatie={
-                    "groep": getattr(
-                        self.request.user.groups.first(), "name", None
-                    )
-                }
-            )
-            taakopdracht_url = response.get("_links", {}).get("self")
-            taakopdracht_url = (
-                taakopdracht_url.get("href")
-                if isinstance(taakopdracht_url, dict)
-                else taakopdracht_url
-            )
-            if response.get("errors"):
-                messages.error(
-                    request=self.request,
-                    message=f"De taak '{taak['titel']}' kon niet worden aangemaakt",
-                )
-            elif taakopdracht_url:
-                uuid_to_url[uuid] = taakopdracht_url
-                messages.success(
-                    request=self.request,
-                    message=f"De taak '{taak['titel']}' is aangemaakt",
-                )
+            taak_data["additionele_informatie"] = {"groep": groep}
+            batch_taken.append({
+                "uuid": uuid,
+                "taak_data": taak_data,
+                "parents": taak["parents"],
+            })
 
+        # Prepare context, as this takes the longest in this view
         context = self.get_melding_detail_taaktype_context()
         context.pop("form", None)
+
+        # Stage in Redis instead of sending directly
+        service = PendingBatchService()
+        batch = service.aanmaken(batch_taken)
+
+        from apps.main.services.pending_batch import COUNTDOWN, MARGE
+        result = verstuur_batch_naar_mor_core.apply_async(
+            args=[batch["batch_uuid"]],
+            countdown=COUNTDOWN + MARGE,
+        )
+        service.update_celery_task_id(batch["batch_uuid"], result.id)
+        context["pending_batch"] = {
+            "melding_uuid": str(self.kwargs.get("id")),
+            "batch_uuid": batch["batch_uuid"],
+            "countdown": COUNTDOWN,
+            "taken": [
+                {"uuid": t["uuid"], "titel": t["taak_data"]["titel"]}
+                for t in batch["taken"]
+            ],
+        }
+
         return self.render_to_response(context)
 
 

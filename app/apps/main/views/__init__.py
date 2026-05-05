@@ -34,6 +34,12 @@ from apps.main.views.melding_detail import melding_taken  # NOQA
 from apps.main.views.melding_detail import melding_verzonden  # NOQA
 from apps.main.views.melding_detail import publiceer_topic  # NOQA
 from apps.main.views.melding_detail import taak_verwijderen  # NOQA
+from apps.main.views.taken_undo import (  # NOQA
+    TakenAnnuleerView,
+    TakenPauseView,
+    TakenResumeView,
+    TakenVerstuurView,
+)
 from apps.main.views.melding_list import melding_lijst  # NOQA
 from bs4 import BeautifulSoup
 from config.context_processors import general_settings

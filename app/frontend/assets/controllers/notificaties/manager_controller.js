@@ -54,7 +54,28 @@ export default class extends Controller {
     snackItem.controller.initializeManager(this)
   }
   toastItemTargetConnected(toastItem) {
-    toastItem.controller.initializeManager(this)
+    const controller =
+      toastItem.controller ||
+      this.application.getControllerForElementAndIdentifier(
+        toastItem,
+        'notificaties--toast-item'
+      )
+
+    if (controller) {
+      controller.initializeManager(this)
+      return
+    }
+
+    // Toasts can be appended dynamically; controller connection may happen slightly later.
+    requestAnimationFrame(() => {
+      const delayedController =
+        toastItem.controller ||
+        this.application.getControllerForElementAndIdentifier(
+          toastItem,
+          'notificaties--toast-item'
+        )
+      delayedController?.initializeManager(this)
+    })
   }
   snackOverzichtItemTargetConnected(snackOverzichtItem) {
     snackOverzichtItem.controller.initializeManager(this)
