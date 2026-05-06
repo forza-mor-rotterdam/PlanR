@@ -136,6 +136,49 @@
             cursor: pointer;
             margin: 0;
         }
+
+        input[type='checkbox'] {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 1px solid #000;
+            background: $white;
+            background-image: none;
+            margin: 0;
+            display: grid;
+            place-items: center;
+
+            &::after {
+                content: '';
+                display: block;
+            }
+
+            &:focus-visible {
+                outline: 2px solid #000;
+                outline-offset: 2px;
+            }
+        }
+
+        &[data-map-layer-panel='kaartenlaag'] {
+            input[type='checkbox']:checked::after {
+                width: 8px;
+                height: 5px;
+                border-left: 2px solid #000;
+                border-bottom: 2px solid #000;
+                transform: rotate(-45deg) translateY(-1px);
+            }
+        }
+
+        &[data-map-layer-panel='objectenlaag'] {
+            input[type='checkbox']:checked::after {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: #000;
+            }
+        }
     }
 
     .map__layer-btn,
