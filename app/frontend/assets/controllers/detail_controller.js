@@ -20,6 +20,8 @@ export default class extends Controller {
     'taakStatusContainer',
     'tabContent',
     'tabButton',
+    'mapLayerPanel',
+    'mapLayerToggle',
   ]
 
   containerActionsTargetConnected(inputHeight = 0) {
@@ -287,6 +289,14 @@ export default class extends Controller {
     })
   }
 
+  toggleMapLayerPanel() {
+    const panel = this.mapLayerPanelTarget
+    const toggle = this.mapLayerToggleTarget
+    const isOpen = !panel.hidden
+    panel.hidden = isOpen
+    toggle.querySelector('.map__layer-btn-icon--default').hidden = !isOpen
+    toggle.querySelector('.map__layer-btn-icon--active').hidden = isOpen
+  }
   onMapLayerChange(e) {
     const layerTypes = e.params.mapLayerTypes
     if (e.target.checked) {
