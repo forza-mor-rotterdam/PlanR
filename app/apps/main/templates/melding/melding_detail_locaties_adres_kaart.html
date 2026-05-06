@@ -1,75 +1,3 @@
-<div>
-    <label for="tijdelijke_verkeersmaatregelen_id">
-        <input id="tijdelijke_verkeersmaatregelen_id"
-               type="checkbox"
-               data-detail-map-layer-types-param='["tijdelijkeVerkeersmaatregelen"]'
-               data-action="detail#onMapLayerChange">
-        Toon tijdelijke verkeersmaatregelen-kaartlaag
-    </label>
-    <label for="containers_id">
-        <input id="containers_id"
-               type="checkbox"
-               data-detail-map-layer-types-param='["containers"]'
-               data-action="detail#onMapLayerChange">
-        Toon containers-kaartlaag
-    </label>
-    <label for="egd_id">
-        <input id="egd_id"
-               type="checkbox"
-               data-detail-map-layer-types-param='["EGD"]'
-               data-action="detail#onMapLayerChange">
-        Toon EGD-kaartlaag
-    </label>
-    <label for="lichtmasten_id">
-        <input id="lichtmasten_id"
-               type="checkbox"
-               data-detail-map-layer-types-param='["lichtmasten"]'
-               data-action="detail#onMapLayerChange">
-        Toon openbare verlichting-kaartlaag
-    </label>
-    {# <label for="projecten_id"> #}
-    {#     <input id="projecten_id" #}
-    {#            type="checkbox" #}
-    {#            data-detail-map-layer-types-param='["projecten"]' #}
-    {#            data-action="detail#onMapLayerChange"> #}
-    {#     Toon projecten-kaartlaag — uitgeschakeld: vereist GIS serviceaccount #}
-    {# </label> #}
-    <div class="container__uitklapper">
-        <span>{% include "icons/info.svg" %}</span>
-        <div class="legenda">
-            <ul class="list-clean">
-                <li>
-                    <span class="legenda-item openbaar"></span>
-                    <span>Openbaar</span>
-                </li>
-                <li>
-                    <span class="legenda-item ret"></span>
-                    <span>RET</span>
-                </li>
-                <li>
-                    <span class="legenda-item kunst"></span>
-                    <span>Civiele kunstwerken</span>
-                </li>
-                <li>
-                    <span class="legenda-item begraafplaats"></span>
-                    <span>Begraafplaatsen</span>
-                </li>
-                <li>
-                    <span class="legenda-item aquisitie"></span>
-                    <span>Aquisitie</span>
-                </li>
-                <li>
-                    <span class="legenda-item vastgoed"></span>
-                    <span>Vastgoed</span>
-                </li>
-                <li>
-                    <span class="legenda-item"></span>
-                    <span>Overig</span>
-                </li>
-            </ul>
-        </div>
-    </div>
-</div>
 <div class="container__map">
     <div class="wrapper__map" data-detail-target="kaartDefault">
         <div class="map"
@@ -85,4 +13,50 @@
         ' data-modal-css-class-param="modal-dialog--full" data-modal-show-map-param="true" aria-label="Vergroot de kaart">
         {% include "icons/expand.svg" %}
     </button>
+    <div class="map__layer-controls">
+        <div class="map__layer-panel" data-detail-target="mapLayerPanel" hidden>
+            <label for="tijdelijke_verkeersmaatregelen_id">
+                <input id="tijdelijke_verkeersmaatregelen_id"
+                       type="checkbox"
+                       data-detail-map-layer-types-param='["tijdelijkeVerkeersmaatregelen"]'
+                       data-action="detail#onMapLayerChange">
+                Tijdelijke verkeersmaatregelen
+            </label>
+            <label for="containers_id">
+                <input id="containers_id"
+                       type="checkbox"
+                       data-detail-map-layer-types-param='["containers"]'
+                       data-action="detail#onMapLayerChange">
+                Containers
+            </label>
+            <label for="egd_id">
+                <input id="egd_id"
+                       type="checkbox"
+                       data-detail-map-layer-types-param='["EGD"]'
+                       data-action="detail#onMapLayerChange">
+                EGD
+            </label>
+            <label for="lichtmasten_id">
+                <input id="lichtmasten_id"
+                       type="checkbox"
+                       data-detail-map-layer-types-param='["lichtmasten"]'
+                       data-action="detail#onMapLayerChange">
+                Openbare verlichting
+            </label>
+            {# <label for="projecten_id"> #}
+            {#     <input id="projecten_id" #}
+            {#            type="checkbox" #}
+            {#            data-detail-map-layer-types-param='["projecten"]' #}
+            {#            data-action="detail#onMapLayerChange"> #}
+            {#     Projecten — uitgeschakeld: vereist GIS serviceaccount #}
+            {# </label> #}
+        </div>
+        <button class="map__layer-btn"
+                data-action="click->detail#toggleMapLayerPanel"
+                data-detail-target="mapLayerToggle"
+                aria-label="Kaartlagen">
+            <span class="map__layer-btn-icon--default">{% include "icons/map_controls.svg" %}</span>
+            <span class="map__layer-btn-icon--active" hidden>{% include "icons/map_controls_active.svg" %}</span>
+        </button>
+    </div>
 </div>
