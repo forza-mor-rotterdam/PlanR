@@ -20,6 +20,7 @@ export default class extends Controller {
     'taakStatusContainer',
     'tabContent',
     'tabButton',
+    'mapLayerMenu',
     'mapLayerPanel',
     'mapLayerToggle',
   ]
@@ -290,13 +291,52 @@ export default class extends Controller {
   }
 
   toggleMapLayerPanel() {
-    const panel = this.mapLayerPanelTarget
-    const toggle = this.mapLayerToggleTarget
-    const isOpen = !panel.hidden
-    panel.hidden = isOpen
-    toggle.querySelector('.map__layer-btn-icon--default').hidden = !isOpen
-    toggle.querySelector('.map__layer-btn-icon--active').hidden = isOpen
+    if (this.mapLayerMenuTarget.hidden) {
+      this.mapLayerMenuTarget.hidden = false
+      this.setMapLayerToggleState(true)
+      return
+    }
+
+    this.closeMapLayerMenu()
   }
+
+  setMapLayerToggleState(isOpen) {
+    const toggle = this.mapLayerToggleTarget
+    toggle.querySelector('.map__layer-btn-icon--default').hidden = isOpen
+    toggle.querySelector('.map__layer-btn-icon--active').hidden = !isOpen
+  }
+
+  closeMapLayerMenu() {
+    this.mapLayerMenuTarget.hidden = true
+    this.hideAllMapLayerPanels()
+    this.setMapLayerToggleState(false)
+  }
+
+  hideAllMapLayerPanels() {
+    this.mapLayerPanelTargets.forEach((panel) => {
+      panel.hidden = true
+    })
+  }
+
+  showMapLayerPanel(e) {
+    if (this.mapLayerMenuTarget.hidden) {
+      return
+    }
+
+    const panelName = e.params.panelName
+    this.mapLayerPanelTargets.forEach((panel) => {
+      panel.hidden = panel.dataset.mapLayerPanel !== panelName
+    })
+  }
+
+  hideMapLayerPanel(e) {
+    if (e.relatedTarget && e.currentTarget.contains(e.relatedTarget)) {
+      return
+    }
+
+    this.hideAllMapLayerPanels()
+  }
+
   onMapLayerChange(e) {
     const layerTypes = e.params.mapLayerTypes
     if (e.target.checked) {

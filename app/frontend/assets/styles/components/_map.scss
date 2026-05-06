@@ -93,7 +93,28 @@
         gap: 8px;
     }
 
+    .map__layer-menu {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    .map__layer-item {
+        position: relative;
+        display: flex;
+        justify-content: flex-end;
+    }
+
     .map__layer-panel {
+        position: absolute;
+        top: 50%;
+        right: calc(100% + 12px);
+        transform: translateY(-50%);
         background: $white;
         border-radius: 4px;
         padding: 12px 16px;
@@ -101,6 +122,10 @@
         display: flex;
         flex-direction: column;
         gap: 10px;
+
+        &[hidden] {
+            display: none;
+        }
 
         label {
             display: flex;
@@ -113,13 +138,42 @@
         }
     }
 
-    .map__layer-btn {
+    .map__layer-btn,
+    .map__layer-sub-btn {
         background: none;
         border: none;
         padding: 0;
         cursor: pointer;
         line-height: 0;
         display: block;
+        filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.07));
+    }
+
+    .map__layer-sub-btn {
+        margin-right: 4px;
+    }
+
+    .map__layer-icon {
+        display: block;
+
+        &[hidden] {
+            display: none;
+        }
+
+        svg {
+            display: block;
+            margin-right: -14px;
+            margin-bottom: -14px;
+        }
+    }
+
+    .map__layer-icon--sub {
+        svg {
+            width: 57px;
+            height: 57px;
+            margin-right: -11px;
+            margin-bottom: -11px;
+        }
     }
 }
 .container__map-tools {
