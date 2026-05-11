@@ -123,6 +123,15 @@
         flex-direction: column;
         gap: 10px;
 
+        &::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 100%;
+            width: 16px;
+        }
+
         &[hidden] {
             display: none;
         }
@@ -135,48 +144,73 @@
             white-space: nowrap;
             cursor: pointer;
             margin: 0;
+            position: relative;
         }
 
         input[type='checkbox'] {
             appearance: none;
             -webkit-appearance: none;
-            -moz-appearance: none;
+            opacity: 0;
             width: 16px;
             height: 16px;
-            border: 1px solid #000;
-            background: $white;
-            background-image: none;
+            flex-shrink: 0;
             margin: 0;
-            display: grid;
-            place-items: center;
+            cursor: pointer;
+            border: 0;
+            background: transparent;
+            box-shadow: none;
+            outline: none;
 
-            &::after {
-                content: '';
-                display: block;
-            }
-
-            &:focus-visible {
-                outline: 2px solid #000;
-                outline-offset: 2px;
+            &:hover,
+            &:focus,
+            &:focus-visible,
+            &:active {
+                opacity: 0;
+                border: 0;
+                background: transparent;
+                box-shadow: none;
+                outline: none;
             }
         }
 
+        &[data-map-layer-panel] input[type='checkbox']:hover:not([disabled]),
+        &[data-map-layer-panel] input[type='checkbox']:focus-visible:not([disabled]),
+        &[data-map-layer-panel] input[type='checkbox']:focus-visible:checked,
+        &[data-map-layer-panel] input[type='checkbox']:focus-visible:not([checked]) {
+            opacity: 0;
+            border: 0;
+            background: transparent;
+            box-shadow: none;
+            outline: none;
+        }
+
         &[data-map-layer-panel='kaartenlaag'] {
-            input[type='checkbox']:checked::after {
+            label:has(input:checked)::after {
+                content: '';
+                position: absolute;
+                left: 3px;
+                top: 50%;
                 width: 8px;
                 height: 5px;
                 border-left: 2px solid #000;
                 border-bottom: 2px solid #000;
-                transform: rotate(-45deg) translateY(-1px);
+                transform: translateY(-60%) rotate(-45deg);
+                pointer-events: none;
             }
         }
 
         &[data-map-layer-panel='objectenlaag'] {
-            input[type='checkbox']:checked::after {
+            label:has(input:checked)::after {
+                content: '';
+                position: absolute;
+                left: 5px;
+                top: 50%;
                 width: 6px;
                 height: 6px;
                 border-radius: 50%;
                 background: #000;
+                transform: translateY(-50%);
+                pointer-events: none;
             }
         }
     }
