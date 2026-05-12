@@ -8,10 +8,22 @@
             </div>
         </div>
     </div>
+    <div class="map__egd-legend" data-detail-target="egdLegendPanel" hidden>
+        <ul class="list-clean">
+            <li><span class="legenda-item openbaar"></span><span>Openbaar</span></li>
+            <li><span class="legenda-item ret"></span><span>RET</span></li>
+            <li><span class="legenda-item kunst"></span><span>Civiele kunstwerken</span></li>
+            <li><span class="legenda-item begraafplaats"></span><span>Begraafplaatsen</span></li>
+            <li><span class="legenda-item aquisitie"></span><span>Acquisitie</span></li>
+            <li><span class="legenda-item vastgoed"></span><span>Vastgoed</span></li>
+            <li><span class="legenda-item"></span><span>Overig</span></li>
+        </ul>
+    </div>
     <button class="btn-on-map btn-on-map--egd-info"
             type="button"
             aria-label="EGD laag informatie"
             data-detail-target="egdInfoBtn"
+            data-action="click->detail#toggleEgdLegend"
             hidden>
         {% include "icons/info-bare.svg" %}
     </button>

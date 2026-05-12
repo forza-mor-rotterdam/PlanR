@@ -24,6 +24,7 @@ export default class extends Controller {
     'mapLayerPanel',
     'mapLayerToggle',
     'egdInfoBtn',
+    'egdLegendPanel',
   ]
 
   containerActionsTargetConnected(inputHeight = 0) {
@@ -339,6 +340,25 @@ export default class extends Controller {
     this.setMapLayerToggleState(false)
   }
 
+  toggleEgdLegend() {
+    if (!this.hasEgdLegendPanelTarget) return
+    const panel = this.egdLegendPanelTarget
+    const isOpen = !panel.hidden
+    panel.hidden = isOpen
+    if (!isOpen) {
+      this._egdLegendOutsideClick = (e) => {
+        if (!panel.contains(e.target) && e.target !== this.egdInfoBtnTarget) {
+          panel.hidden = true
+          document.removeEventListener('click', this._egdLegendOutsideClick)
+        }
+      }
+      // defer so this click event doesn't immediately close the panel
+      setTimeout(() => document.addEventListener('click', this._egdLegendOutsideClick), 0)
+    } else {
+      document.removeEventListener('click', this._egdLegendOutsideClick)
+    }
+  }
+
   hideAllMapLayerPanels() {
     this.mapLayerPanelTargets.forEach((panel) => {
       panel.hidden = true
@@ -370,6 +390,10 @@ export default class extends Controller {
 
     if (layerTypes.includes('EGD') && this.hasEgdInfoBtnTarget) {
       this.egdInfoBtnTarget.hidden = !e.target.checked
+      if (!e.target.checked && this.hasEgdLegendPanelTarget) {
+        this.egdLegendPanelTarget.hidden = true
+        document.removeEventListener('click', this._egdLegendOutsideClick)
+      }
     }
 
     if (panel?.dataset.mapLayerPanel === 'objectenlaag') {
