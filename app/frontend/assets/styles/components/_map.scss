@@ -147,7 +147,8 @@
             position: relative;
         }
 
-        input[type='checkbox'] {
+        input[type='checkbox'],
+        input[type='radio'] {
             appearance: none;
             -webkit-appearance: none;
             opacity: 0;
@@ -176,7 +177,11 @@
         &[data-map-layer-panel] input[type='checkbox']:hover:not([disabled]),
         &[data-map-layer-panel] input[type='checkbox']:focus-visible:not([disabled]),
         &[data-map-layer-panel] input[type='checkbox']:focus-visible:checked,
-        &[data-map-layer-panel] input[type='checkbox']:focus-visible:not([checked]) {
+        &[data-map-layer-panel] input[type='checkbox']:focus-visible:not([checked]),
+        &[data-map-layer-panel] input[type='radio']:hover:not([disabled]),
+        &[data-map-layer-panel] input[type='radio']:focus-visible:not([disabled]),
+        &[data-map-layer-panel] input[type='radio']:focus-visible:checked,
+        &[data-map-layer-panel] input[type='radio']:focus-visible:not([checked]) {
             opacity: 0;
             border: 0;
             background: transparent;

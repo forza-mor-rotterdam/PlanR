@@ -290,14 +290,39 @@ export default class extends Controller {
     })
   }
 
-  toggleMapLayerPanel() {
-    if (this.mapLayerMenuTarget.hidden) {
-      this.mapLayerMenuTarget.hidden = false
-      this.setMapLayerToggleState(true)
+  toggleMapLayerPanel(e) {
+    const panelName = e?.params?.panelName
+
+    if (!panelName) {
+      if (this.mapLayerMenuTarget.hidden) {
+        this.mapLayerMenuTarget.hidden = false
+        this.setMapLayerToggleState(true)
+        return
+      }
+
+      this.closeMapLayerMenu()
       return
     }
 
-    this.closeMapLayerMenu()
+    if (this.mapLayerMenuTarget.hidden) {
+      this.mapLayerMenuTarget.hidden = false
+      this.setMapLayerToggleState(true)
+    }
+
+    const panel = this.mapLayerPanelTargets.find(
+      (item) => item.dataset.mapLayerPanel === panelName
+    )
+    if (!panel) {
+      return
+    }
+
+    if (!panel.hidden) {
+      this.closeMapLayerMenu()
+      return
+    }
+
+    this.hideAllMapLayerPanels()
+    panel.hidden = false
   }
 
   setMapLayerToggleState(isOpen) {
@@ -339,6 +364,18 @@ export default class extends Controller {
 
   onMapLayerChange(e) {
     const layerTypes = e.params.mapLayerTypes
+    const panel = e.target.closest('.map__layer-panel')
+
+    if (panel?.dataset.mapLayerPanel === 'objectenlaag') {
+      panel.querySelectorAll('input[type="checkbox"]').forEach((input) => {
+        if (input !== e.target && input.checked) {
+          const siblingLayerTypes = JSON.parse(input.dataset.detailMapLayerTypesParam || '[]')
+          siblingLayerTypes.map((type) => this.map.removeLayer(this.mapLayers[type].layer))
+          input.checked = false
+        }
+      })
+    }
+
     if (e.target.checked) {
       layerTypes.map((type) => this.mapLayers[type].layer.addTo(this.map))
     } else {

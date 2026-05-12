@@ -15,9 +15,7 @@
     </button>
     <div class="map__layer-controls">
         <div class="map__layer-menu" data-detail-target="mapLayerMenu" hidden>
-            <div class="map__layer-item"
-                 data-action="mouseenter->detail#showMapLayerPanel mouseleave->detail#hideMapLayerPanel focusin->detail#showMapLayerPanel focusout->detail#hideMapLayerPanel"
-                 data-detail-panel-name-param="kaartenlaag">
+                        <div class="map__layer-item">
                 <div class="map__layer-panel" data-detail-target="mapLayerPanel" data-map-layer-panel="kaartenlaag" hidden>
                     <label for="egd_id">
                         <input id="egd_id"
@@ -34,16 +32,19 @@
                         Tijdelijke verkeersmaatregelen
                     </label>
                 </div>
-                <button class="map__layer-sub-btn" type="button" aria-label="Kaartenlaag">
+                <button class="map__layer-sub-btn"
+                        type="button"
+                        aria-label="Kaartenlaag"
+                        data-action="click->detail#toggleMapLayerPanel"
+                        data-detail-panel-name-param="kaartenlaag">
                     <span class="map__layer-icon map__layer-icon--sub">{% include "icons/kaartenlaag.svg" %}</span>
                 </button>
             </div>
-            <div class="map__layer-item"
-                 data-action="mouseenter->detail#showMapLayerPanel mouseleave->detail#hideMapLayerPanel focusin->detail#showMapLayerPanel focusout->detail#hideMapLayerPanel"
-                 data-detail-panel-name-param="objectenlaag">
+            <div class="map__layer-item">
                 <div class="map__layer-panel" data-detail-target="mapLayerPanel" data-map-layer-panel="objectenlaag" hidden>
                     <label for="containers_id">
                         <input id="containers_id"
+                               name="objectenlaag"
                                type="checkbox"
                                data-detail-map-layer-types-param='["containers"]'
                                data-action="detail#onMapLayerChange">
@@ -51,6 +52,7 @@
                     </label>
                     <label for="lichtmasten_id">
                         <input id="lichtmasten_id"
+                               name="objectenlaag"
                                type="checkbox"
                                data-detail-map-layer-types-param='["lichtmasten"]'
                                data-action="detail#onMapLayerChange">
@@ -64,7 +66,11 @@
                     {#     Projecten — uitgeschakeld: vereist GIS serviceaccount #}
                     {# </label> #}
                 </div>
-                <button class="map__layer-sub-btn" type="button" aria-label="Objectenlaag">
+                <button class="map__layer-sub-btn"
+                        type="button"
+                        aria-label="Objectenlaag"
+                        data-action="click->detail#toggleMapLayerPanel"
+                        data-detail-panel-name-param="objectenlaag">
                     <span class="map__layer-icon map__layer-icon--sub">{% include "icons/objectenlaag.svg" %}</span>
                 </button>
             </div>
