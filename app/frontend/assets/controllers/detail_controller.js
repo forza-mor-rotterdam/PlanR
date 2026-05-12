@@ -23,6 +23,8 @@ export default class extends Controller {
     'mapLayerMenu',
     'mapLayerPanel',
     'mapLayerToggle',
+    'egdInfoBtn',
+    'egdLegendPanel',
   ]
 
   containerActionsTargetConnected(inputHeight = 0) {
@@ -131,6 +133,7 @@ export default class extends Controller {
         attribution: '',
       }
       this.map = L.map('incidentMap').setView(this.coordinates[0], 18)
+      this.map.zoomControl.setPosition('bottomleft')
       L.tileLayer(url, config).addTo(this.map)
 
       this.addSignalen()
@@ -290,14 +293,39 @@ export default class extends Controller {
     })
   }
 
-  toggleMapLayerPanel() {
-    if (this.mapLayerMenuTarget.hidden) {
-      this.mapLayerMenuTarget.hidden = false
-      this.setMapLayerToggleState(true)
+  toggleMapLayerPanel(e) {
+    const panelName = e?.params?.panelName
+
+    if (!panelName) {
+      if (this.mapLayerMenuTarget.hidden) {
+        this.mapLayerMenuTarget.hidden = false
+        this.setMapLayerToggleState(true)
+        return
+      }
+
+      this.closeMapLayerMenu()
       return
     }
 
-    this.closeMapLayerMenu()
+    if (this.mapLayerMenuTarget.hidden) {
+      this.mapLayerMenuTarget.hidden = false
+      this.setMapLayerToggleState(true)
+    }
+
+    const panel = this.mapLayerPanelTargets.find(
+      (item) => item.dataset.mapLayerPanel === panelName
+    )
+    if (!panel) {
+      return
+    }
+
+    if (!panel.hidden) {
+      this.closeMapLayerMenu()
+      return
+    }
+
+    this.hideAllMapLayerPanels()
+    panel.hidden = false
   }
 
   setMapLayerToggleState(isOpen) {
@@ -310,6 +338,25 @@ export default class extends Controller {
     this.mapLayerMenuTarget.hidden = true
     this.hideAllMapLayerPanels()
     this.setMapLayerToggleState(false)
+  }
+
+  toggleEgdLegend() {
+    if (!this.hasEgdLegendPanelTarget) return
+    const panel = this.egdLegendPanelTarget
+    const isOpen = !panel.hidden
+    panel.hidden = isOpen
+    if (!isOpen) {
+      this._egdLegendOutsideClick = (e) => {
+        if (!panel.contains(e.target) && e.target !== this.egdInfoBtnTarget) {
+          panel.hidden = true
+          document.removeEventListener('click', this._egdLegendOutsideClick)
+        }
+      }
+      // defer so this click event doesn't immediately close the panel
+      setTimeout(() => document.addEventListener('click', this._egdLegendOutsideClick), 0)
+    } else {
+      document.removeEventListener('click', this._egdLegendOutsideClick)
+    }
   }
 
   hideAllMapLayerPanels() {
@@ -339,6 +386,26 @@ export default class extends Controller {
 
   onMapLayerChange(e) {
     const layerTypes = e.params.mapLayerTypes
+    const panel = e.target.closest('.map__layer-panel')
+
+    if (layerTypes.includes('EGD') && this.hasEgdInfoBtnTarget) {
+      this.egdInfoBtnTarget.hidden = !e.target.checked
+      if (!e.target.checked && this.hasEgdLegendPanelTarget) {
+        this.egdLegendPanelTarget.hidden = true
+        document.removeEventListener('click', this._egdLegendOutsideClick)
+      }
+    }
+
+    if (panel?.dataset.mapLayerPanel === 'objectenlaag') {
+      panel.querySelectorAll('input[type="checkbox"]').forEach((input) => {
+        if (input !== e.target && input.checked) {
+          const siblingLayerTypes = JSON.parse(input.dataset.detailMapLayerTypesParam || '[]')
+          siblingLayerTypes.map((type) => this.map.removeLayer(this.mapLayers[type].layer))
+          input.checked = false
+        }
+      })
+    }
+
     if (e.target.checked) {
       layerTypes.map((type) => this.mapLayers[type].layer.addTo(this.map))
     } else {
