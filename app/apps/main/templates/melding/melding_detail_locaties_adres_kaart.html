@@ -8,6 +8,13 @@
             </div>
         </div>
     </div>
+    <button class="btn-on-map btn-on-map--egd-info"
+            type="button"
+            aria-label="EGD laag informatie"
+            data-detail-target="egdInfoBtn"
+            hidden>
+        {% include "icons/info-bare.svg" %}
+    </button>
     <button data-action="click->modal#openModal" class="btn btn-textlink" data-modal-content-param='
         {% include "melding/detail/kaart_modal_content.html" %}
         ' data-modal-css-class-param="modal-dialog--full" data-modal-show-map-param="true" aria-label="Vergroot de kaart">

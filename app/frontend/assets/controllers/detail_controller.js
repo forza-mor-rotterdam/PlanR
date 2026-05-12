@@ -23,6 +23,7 @@ export default class extends Controller {
     'mapLayerMenu',
     'mapLayerPanel',
     'mapLayerToggle',
+    'egdInfoBtn',
   ]
 
   containerActionsTargetConnected(inputHeight = 0) {
@@ -366,6 +367,10 @@ export default class extends Controller {
   onMapLayerChange(e) {
     const layerTypes = e.params.mapLayerTypes
     const panel = e.target.closest('.map__layer-panel')
+
+    if (layerTypes.includes('EGD') && this.hasEgdInfoBtnTarget) {
+      this.egdInfoBtnTarget.hidden = !e.target.checked
+    }
 
     if (panel?.dataset.mapLayerPanel === 'objectenlaag') {
       panel.querySelectorAll('input[type="checkbox"]').forEach((input) => {
