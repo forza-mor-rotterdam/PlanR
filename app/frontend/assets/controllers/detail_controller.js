@@ -131,6 +131,7 @@ export default class extends Controller {
         attribution: '',
       }
       this.map = L.map('incidentMap').setView(this.coordinates[0], 18)
+      this.map.zoomControl.setPosition('bottomleft')
       L.tileLayer(url, config).addTo(this.map)
 
       this.addSignalen()
