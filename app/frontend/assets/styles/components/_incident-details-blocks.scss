@@ -415,6 +415,36 @@
             padding-right: 0;
         }
     }
+
+    .container__taak--placeholder {
+        > summary {
+            cursor: default;
+            list-style: none;
+
+            &::before {
+                content: none;
+                display: none;
+            }
+
+            &::-webkit-details-marker {
+                display: none;
+            }
+        }
+
+        .description p {
+            color: $gray-tint08;
+        }
+
+        .pending-task-placeholder__spinner {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            svg {
+                animation: spinner 2s linear infinite;
+            }
+        }
+    }
 }
 
 .container__status {
