@@ -21,7 +21,6 @@ from apps.main.views.melding_detail import MeldingAfhandelenView  # NOQA
 from apps.main.views.melding_detail import MeldingDetail  # NOQA
 from apps.main.views.melding_detail import TakenAanmakenStreamView  # NOQA
 from apps.main.views.melding_detail import TakenAanmakenView  # NOQA
-from apps.main.views.melding_detail import TakenStartenView  # NOQA
 from apps.main.views.melding_detail import informatie_toevoegen  # NOQA
 from apps.main.views.melding_detail import locatie_aanpassen  # NOQA
 from apps.main.views.melding_detail import melding_aanmaken  # NOQA
@@ -83,19 +82,7 @@ def http_404(request):
 
 
 def http_500(request):
-    current_time = datetime.now()
-    server_id = os.getenv("APP_ENV", "Onbekend")
-
-    return render(
-        request,
-        "500.html",
-        {
-            "current_time": current_time,
-            "server_id": server_id,
-            "user_agent": request.META.get("HTTP_USER_AGENT", "Onbekend"),
-            "path": request.build_absolute_uri(request.path),
-        },
-    )
+    return render(request, "500.html")
 
 
 class LoginView(View):

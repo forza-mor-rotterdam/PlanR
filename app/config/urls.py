@@ -57,6 +57,7 @@ from drf_spectacular.views import (
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
+from mor_api_services.teams_logging import test_teams_error_view
 from rest_framework.authtoken import views
 from rest_framework.routers import DefaultRouter
 
@@ -170,11 +171,6 @@ urlpatterns = [
         name="taak_verwijderen",
     ),
     path(
-        "melding/<uuid:id>/taak-starten/<uuid:taakopdracht_uuid>/",
-        TakenStartenView.as_view(),
-        name="taak_starten",
-    ),
-    path(
         "melding/<uuid:id>/informatie-toevoegen/",
         informatie_toevoegen,
         name="informatie_toevoegen",
@@ -253,6 +249,11 @@ urlpatterns = [
     path("select2/", include(select2_urls)),
     re_path(r"core/media/", meldingen_bestand, name="meldingen_bestand"),
     path("ckeditor5/", include("django_ckeditor_5.urls")),
+    path(
+        "beheer/test-teams-foutmelding/",
+        test_teams_error_view,
+        name="test_teams_foutmelding",
+    ),
     path("beheer/", include("apps.beheer.urls")),
     path("dashboard/", include("apps.dashboard.urls")),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),

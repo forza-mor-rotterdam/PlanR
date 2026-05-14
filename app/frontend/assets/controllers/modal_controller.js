@@ -133,7 +133,12 @@ export default class extends Controller {
   showMapLarge() {
     setTimeout(() => {
       this.mapElement = this.detailController.getMapElement()
+      this.mapControlsElement = document.querySelector('.map__layer-controls')
       this.kaartLargeTarget.appendChild(this.mapElement)
+      if (this.mapControlsElement) {
+        this.kaartLargeTarget.appendChild(this.mapControlsElement)
+        this.bindMapControls()
+      }
     }, 100)
     setTimeout(() => {
       this.detailController.getMapInstance().invalidateSize()
@@ -143,9 +148,110 @@ export default class extends Controller {
 
   hideMapLarge() {
     document.querySelector('[data-detail-target="kaartDefault"]').appendChild(this.mapElement)
+    if (this.mapControlsElement) {
+      this.unbindMapControls()
+      document.querySelector('.container__map').appendChild(this.mapControlsElement)
+    }
     setTimeout(() => {
       this.detailController.getMapInstance().invalidateSize()
     }, 100)
+  }
+
+  bindMapControls() {
+    if (!this.mapControlsElement || this.mapControlsElement.dataset.modalBound === 'true') {
+      return
+    }
+
+    this.mapControlsClickHandler = (event) => {
+      const button = event.target.closest('.map__layer-btn, .map__layer-sub-btn')
+      if (!button || !this.mapControlsElement.contains(button)) {
+        return
+      }
+
+      event.preventDefault()
+      this.toggleMovedMapControls(button)
+    }
+
+    this.mapControlsChangeHandler = (event) => {
+      const input = event.target.closest('.map__layer-panel input')
+      if (!input || !this.mapControlsElement.contains(input)) {
+        return
+      }
+
+      this.detailController.onMapLayerChange({
+        params: {
+          mapLayerTypes: JSON.parse(input.dataset.detailMapLayerTypesParam || '[]'),
+        },
+        target: input,
+      })
+    }
+
+    this.mapControlsElement.addEventListener('click', this.mapControlsClickHandler)
+    this.mapControlsElement.addEventListener('change', this.mapControlsChangeHandler)
+    this.mapControlsElement.dataset.modalBound = 'true'
+  }
+
+  unbindMapControls() {
+    if (!this.mapControlsElement || this.mapControlsElement.dataset.modalBound !== 'true') {
+      return
+    }
+
+    this.mapControlsElement.removeEventListener('click', this.mapControlsClickHandler)
+    this.mapControlsElement.removeEventListener('change', this.mapControlsChangeHandler)
+    delete this.mapControlsElement.dataset.modalBound
+  }
+
+  toggleMovedMapControls(button) {
+    const menu = this.mapControlsElement.querySelector('.map__layer-menu')
+    const toggle = this.mapControlsElement.querySelector('.map__layer-btn')
+    if (!menu || !toggle) {
+      return
+    }
+
+    const panels = menu.querySelectorAll('.map__layer-panel')
+    const setToggleState = (isOpen) => {
+      toggle.querySelector('.map__layer-btn-icon--default').hidden = isOpen
+      toggle.querySelector('.map__layer-btn-icon--active').hidden = !isOpen
+    }
+    const hideAllPanels = () => {
+      panels.forEach((panel) => {
+        panel.hidden = true
+      })
+    }
+
+    if (button.classList.contains('map__layer-btn')) {
+      if (menu.hidden) {
+        menu.hidden = false
+        setToggleState(true)
+        return
+      }
+
+      menu.hidden = true
+      hideAllPanels()
+      setToggleState(false)
+      return
+    }
+
+    if (menu.hidden) {
+      menu.hidden = false
+      setToggleState(true)
+    }
+
+    const panelName = button.dataset.detailPanelNameParam
+    const panel = menu.querySelector(`[data-map-layer-panel="${panelName}"]`)
+    if (!panel) {
+      return
+    }
+
+    if (!panel.hidden) {
+      menu.hidden = true
+      hideAllPanels()
+      setToggleState(false)
+      return
+    }
+
+    hideAllPanels()
+    panel.hidden = false
   }
 
   elementContentHeight(elem) {
