@@ -133,7 +133,22 @@ export default class extends Controller {
   showMapLarge() {
     setTimeout(() => {
       this.mapElement = this.detailController.getMapElement()
+      this.originalMapContainer = this.mapElement.closest('.container__map')
+      this.mapControlsElement = document.querySelector('.map__layer-controls')
+      this.egdLegendElement = document.querySelector('[data-detail-target="egdLegendPanel"]')
+      this.egdInfoBtnElement = document.querySelector('[data-detail-target="egdInfoBtn"]')
       this.kaartLargeTarget.appendChild(this.mapElement)
+      if (this.mapControlsElement) {
+        this.kaartLargeTarget.appendChild(this.mapControlsElement)
+        this.bindMapControls()
+      }
+      if (this.egdLegendElement) {
+        this.kaartLargeTarget.appendChild(this.egdLegendElement)
+      }
+      if (this.egdInfoBtnElement) {
+        this.kaartLargeTarget.appendChild(this.egdInfoBtnElement)
+      }
+      this.syncMovedEgdControls()
     }, 100)
     setTimeout(() => {
       this.detailController.getMapInstance().invalidateSize()
@@ -143,9 +158,171 @@ export default class extends Controller {
 
   hideMapLarge() {
     document.querySelector('[data-detail-target="kaartDefault"]').appendChild(this.mapElement)
+    if (this.mapControlsElement) {
+      this.unbindMapControls()
+      this.originalMapContainer?.appendChild(this.mapControlsElement)
+    }
+    if (this.egdLegendElement) {
+      this.originalMapContainer?.appendChild(this.egdLegendElement)
+    }
+    if (this.egdInfoBtnElement) {
+      this.originalMapContainer?.appendChild(this.egdInfoBtnElement)
+    }
+    document.removeEventListener('click', this._modalEgdLegendOutsideClick)
     setTimeout(() => {
       this.detailController.getMapInstance().invalidateSize()
     }, 100)
+  }
+
+  bindMapControls() {
+    if (!this.mapControlsElement || this.mapControlsElement.dataset.modalBound === 'true') {
+      return
+    }
+
+    this.mapControlsClickHandler = (event) => {
+      const button = event.target.closest('.map__layer-btn, .map__layer-sub-btn, .btn-on-map--egd-info')
+      if (!button || !this.kaartLargeTarget.contains(button)) {
+        return
+      }
+
+      event.preventDefault()
+      if (button.classList.contains('btn-on-map--egd-info')) {
+        this.toggleMovedEgdLegend()
+        return
+      }
+
+      this.toggleMovedMapControls(button)
+    }
+
+    this.mapControlsChangeHandler = (event) => {
+      const input = event.target.closest('.map__layer-panel input')
+      if (!input || !this.mapControlsElement.contains(input)) {
+        return
+      }
+
+      this.detailController.onMapLayerChange({
+        params: {
+          mapLayerTypes: JSON.parse(input.dataset.detailMapLayerTypesParam || '[]'),
+        },
+        target: input,
+      })
+
+      this.syncMovedEgdControls()
+    }
+
+    this.kaartLargeTarget.addEventListener('click', this.mapControlsClickHandler)
+    this.mapControlsElement.addEventListener('change', this.mapControlsChangeHandler)
+    this.mapControlsElement.dataset.modalBound = 'true'
+  }
+
+  unbindMapControls() {
+    if (!this.mapControlsElement || this.mapControlsElement.dataset.modalBound !== 'true') {
+      return
+    }
+
+    this.kaartLargeTarget.removeEventListener('click', this.mapControlsClickHandler)
+    this.mapControlsElement.removeEventListener('change', this.mapControlsChangeHandler)
+    delete this.mapControlsElement.dataset.modalBound
+  }
+
+  toggleMovedMapControls(button) {
+    const menu = this.mapControlsElement.querySelector('.map__layer-menu')
+    const toggle = this.mapControlsElement.querySelector('.map__layer-btn')
+    if (!menu || !toggle) {
+      return
+    }
+
+    const panels = menu.querySelectorAll('.map__layer-panel')
+    const setToggleState = (isOpen) => {
+      toggle.querySelector('.map__layer-btn-icon--default').hidden = isOpen
+      toggle.querySelector('.map__layer-btn-icon--active').hidden = !isOpen
+    }
+    const hideAllPanels = () => {
+      panels.forEach((panel) => {
+        panel.hidden = true
+      })
+    }
+
+    if (button.classList.contains('map__layer-btn')) {
+      if (menu.hidden) {
+        menu.hidden = false
+        setToggleState(true)
+        return
+      }
+
+      menu.hidden = true
+      hideAllPanels()
+      setToggleState(false)
+      return
+    }
+
+    if (menu.hidden) {
+      menu.hidden = false
+      setToggleState(true)
+    }
+
+    const panelName = button.dataset.detailPanelNameParam
+    const panel = menu.querySelector(`[data-map-layer-panel="${panelName}"]`)
+    if (!panel) {
+      return
+    }
+
+    if (!panel.hidden) {
+      menu.hidden = true
+      hideAllPanels()
+      setToggleState(false)
+      return
+    }
+
+    hideAllPanels()
+    panel.hidden = false
+  }
+
+  isEgdLayerChecked() {
+    if (!this.mapControlsElement) {
+      return false
+    }
+
+    const layerInputs = this.mapControlsElement.querySelectorAll('.map__layer-panel input[type="checkbox"]')
+    return Array.from(layerInputs).some((input) => {
+      const types = JSON.parse(input.dataset.detailMapLayerTypesParam || '[]')
+      return types.includes('EGD') && input.checked
+    })
+  }
+
+  syncMovedEgdControls() {
+    if (!this.egdInfoBtnElement) {
+      return
+    }
+
+    const shouldShowButton = this.isEgdLayerChecked()
+    this.egdInfoBtnElement.hidden = !shouldShowButton
+
+    if (!shouldShowButton && this.egdLegendElement) {
+      this.egdLegendElement.hidden = true
+      document.removeEventListener('click', this._modalEgdLegendOutsideClick)
+    }
+  }
+
+  toggleMovedEgdLegend() {
+    if (!this.egdLegendElement || !this.egdInfoBtnElement || this.egdInfoBtnElement.hidden) {
+      return
+    }
+
+    const isOpen = !this.egdLegendElement.hidden
+    this.egdLegendElement.hidden = isOpen
+
+    if (!isOpen) {
+      this._modalEgdLegendOutsideClick = (e) => {
+        if (!this.egdLegendElement.contains(e.target) && e.target !== this.egdInfoBtnElement) {
+          this.egdLegendElement.hidden = true
+          document.removeEventListener('click', this._modalEgdLegendOutsideClick)
+        }
+      }
+      setTimeout(() => document.addEventListener('click', this._modalEgdLegendOutsideClick), 0)
+    } else {
+      document.removeEventListener('click', this._modalEgdLegendOutsideClick)
+    }
   }
 
   elementContentHeight(elem) {

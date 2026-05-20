@@ -1,4 +1,6 @@
+import json
 import logging
+from graphlib import TopologicalSorter
 
 from apps.context.utils import get_gebruiker_context
 from apps.main.forms import (
@@ -40,6 +42,7 @@ from apps.main.models import MeldingAfhandelreden, StandaardExterneOmschrijving
 from apps.main.services import MORCoreService, TaakRService
 from apps.main.utils import (
     Logboek,
+    get_url_from_links,
     melding_locaties,
     melding_taken,
     publiceer_topic_met_subscriptions,
@@ -60,12 +63,11 @@ logger = logging.getLogger(__name__)
 
 
 class MeldingDetailViewMixin(ContextMixin):
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def get_melding_detail_context(self, **kwargs):
         mor_core_service = MORCoreService()
         gebruiker_context = get_gebruiker_context(self.request.user)
         melding = mor_core_service.get_melding(self.kwargs.get("id"))
-
+        kwargs = {}
         if isinstance(melding, dict) and melding.get("error"):
             status_code = melding.get("error", {}).get("status_code")
             if status_code == 404:
@@ -75,7 +77,7 @@ class MeldingDetailViewMixin(ContextMixin):
             else:
                 messages.error(request=self.request, message=MELDING_OPHALEN_ERROR)
             melding = {}
-        context.update(
+        kwargs.update(
             {
                 "melding": melding,
                 "locaties": melding_locaties(melding),
@@ -83,6 +85,7 @@ class MeldingDetailViewMixin(ContextMixin):
                 "gebruiker_context": gebruiker_context,
             }
         )
+        context = super().get_context_data(**kwargs)
         return context
 
 
@@ -191,8 +194,8 @@ class MeldingDetailTaaktypeViewMixin(MeldingDetailViewMixin):
             key=lambda b: b["omschrijving"].lower(),
         )
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def get_melding_detail_taaktype_context(self, **kwargs):
+        context = super().get_melding_detail_context(**kwargs)
         melding = context["melding"]
         gebruiker_context = context["gebruiker_context"]
 
@@ -297,6 +300,11 @@ class MeldingDetailTaaktypeViewMixin(MeldingDetailViewMixin):
             context["taken"]["niet_verwijderde_taken"] = [
                 taak for taak in alle_taken if not taak["verwijderd_op"]
             ]
+            context["taken"]["openstaande_taken"] = [
+                taak
+                for taak in alle_taken
+                if not taak["verwijderd_op"] and not taak["afgesloten_op"]
+            ]
 
         context.update(
             {
@@ -332,7 +340,7 @@ class MeldingDetail(
             )
             return {}
 
-        context = super().get_context_data(**kwargs)
+        context = super().get_melding_detail_taaktype_context(**kwargs)
         melding = context["melding"]
         if not melding:
             return context
@@ -358,7 +366,7 @@ class MeldingDetail(
         return context
 
     def get(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
+        context = self.get_melding_detail_taaktype_context(**kwargs)
         if not context.get("meldingen_index") and self.request_next_data():
             return redirect(reverse("melding_detail", args=[self.kwargs.get("id")]))
         return self.render_to_response(context)
@@ -379,7 +387,7 @@ class MeldingAfhandelenView(
     form_class = MeldingAfhandelenForm
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super().get_melding_detail_context(**kwargs)
 
         standaard_externe_omschrijving_lijst = (
             StandaardExterneOmschrijving.objects.exclude(
@@ -665,6 +673,10 @@ class TakenAanmakenView(
     template_name = "melding/detail/taken_aanmaken.html"
     permission_required = "authorisatie.taak_aanmaken"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_melding_detail_taaktype_context(**kwargs)
+        return context
+
     def get_success_url(self):
         return reverse("taken_aanmaken", args=[self.kwargs.get("id")])
 
@@ -674,34 +686,89 @@ class TakenAanmakenStreamView(TakenAanmakenView):
     permission_required = "authorisatie.taak_aanmaken"
 
     def form_invalid(self, form):
-        logger.error("TakenAanmakenStreamView: FORM INVALID")
+        logger.error("TakenAanmakenStreamView errors: FORM INVALID")
         logger.error(form.errors)
-        return super().form_invalid(form)
+        logger.error(form.non_form_errors().as_json())
+
+        messages.error(
+            request=self.request,
+            message="De taken konden niet worden aangemaakt",
+        )
+        context = self.get_melding_detail_taaktype_context()
+        context.pop("form", None)
+        return self.render_to_response(context)
 
     def form_valid(self, form):
-        mor_core_service = MORCoreService()
-        responses = [
-            taak_data
+        heeft_taak_volgorde_permissie = self.request.user.has_perm(
+            "authorisatie.taak_volgorde"
+        )
+        taken = [
+            taak
             | {
-                "response": mor_core_service.taak_aanmaken(
-                    **taak_data,
-                    additionele_informatie={"groep": getattr(self.request.user.groups.first(), "name", None)},
-                )
+                "parents": json.loads(taak["parents"])
+                if heeft_taak_volgorde_permissie
+                else []
             }
-            for taak_data in form.cleaned_data
+            for taak in form.cleaned_data
         ]
-        for response in responses:
-            if response.get("response").get("error"):
+        mor_core_service = MORCoreService()
+        taak_aanmaken_api_fields = [
+            "melding_uuid",
+            "titel",
+            "taakapplicatie_taaktype_url",
+            "bericht",
+            "gebruiker",
+        ]
+
+        # Build a lookup and dependency graph for topological ordering
+        taak_by_uuid = {taak["uuid"]: taak for taak in taken}
+        graph = {
+            taak["uuid"]: [p for p in taak["parents"] if p in taak_by_uuid]
+            for taak in taken
+        }
+        sorter = TopologicalSorter(graph)
+
+        uuid_to_url = {}
+        for uuid in sorter.static_order():
+            taak = taak_by_uuid[uuid]
+            resolved_parents = [
+                uuid_to_url.get(p, p) for p in taak["parents"]
+            ]
+            taak_data = {
+                k: v for k, v in taak.items() if k in taak_aanmaken_api_fields
+            } | {
+                "afhankelijkheid": [
+                    {"taakopdracht_url": url}
+                    for url in resolved_parents
+                ]
+            }
+            response = mor_core_service.taak_aanmaken(
+                **taak_data,
+                additionele_informatie={
+                    "groep": getattr(
+                        self.request.user.groups.first(), "name", None
+                    )
+                }
+            )
+            taakopdracht_url = response.get("_links", {}).get("self")
+            taakopdracht_url = (
+                taakopdracht_url.get("href")
+                if isinstance(taakopdracht_url, dict)
+                else taakopdracht_url
+            )
+            if response.get("errors"):
                 messages.error(
                     request=self.request,
-                    message=f"De taak '{response.get('titel')}' kon niet worden aangemaakt",
+                    message=f"De taak '{taak['titel']}' kon niet worden aangemaakt",
                 )
-            else:
+            elif taakopdracht_url:
+                uuid_to_url[uuid] = taakopdracht_url
                 messages.success(
                     request=self.request,
-                    message=f"De taak '{response.get('titel')}' is aangemaakt",
+                    message=f"De taak '{taak['titel']}' is aangemaakt",
                 )
-        context = self.get_context_data()
+
+        context = self.get_melding_detail_taaktype_context()
         context.pop("form", None)
         return self.render_to_response(context)
 
@@ -760,6 +827,7 @@ def taak_verwijderen(request, melding_uuid, taakopdracht_uuid=None):
             "taakopdracht": taakopdracht,
         },
     )
+
 
 
 @login_required
@@ -957,7 +1025,7 @@ class LogboekView(MeldingDetailViewMixin, PermissionRequiredMixin, TemplateView)
     permission_required = "authorisatie.melding_bekijken"
 
     def get_context_data(self, **kwargs):
-        kwargs = super().get_context_data(**kwargs)
+        kwargs = super().get_melding_detail_context(**kwargs)
         kwargs.update(
             {
                 "logboek": Logboek(kwargs["melding"], self.request),

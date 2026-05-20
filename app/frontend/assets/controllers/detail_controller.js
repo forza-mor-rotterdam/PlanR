@@ -20,6 +20,11 @@ export default class extends Controller {
     'taakStatusContainer',
     'tabContent',
     'tabButton',
+    'mapLayerMenu',
+    'mapLayerPanel',
+    'mapLayerToggle',
+    'egdInfoBtn',
+    'egdLegendPanel',
   ]
 
   containerActionsTargetConnected(inputHeight = 0) {
@@ -47,56 +52,69 @@ export default class extends Controller {
     )
     const locatie = locatiePrimair ? locatiePrimair : validLocaties[0]
     const mapDiv = document.getElementById('incidentMap')
+    const wmsHandlerUrl = 'https://www.gis.rotterdam.nl/GisWeb2/js/modules/kaart/WmsHandler.ashx'
     this.mapLayers = {
+      tijdelijkeVerkeersmaatregelen: {
+        layer: L.tileLayer.wms(wmsHandlerUrl, {
+          layers: 'TVM.ACT.BB',
+          format: 'image/png',
+          transparent: true,
+          zIndex: 210,
+          minZoom: 10,
+          maxZoom: 19,
+        }),
+      },
       containers: {
-        layer: L.tileLayer.wms(
-          'https://www.gis.rotterdam.nl/GisWeb2/js/modules/kaart/WmsHandler.ashx',
-          {
-            layers: 'OBS.OO.CONTAINER',
-            format: 'image/png',
-            transparent: true,
-            minZoom: 10,
-            maxZoom: 19,
-          }
-        ),
+        layer: L.tileLayer.wms(wmsHandlerUrl, {
+          layers: 'OBS.OO.CONTAINER',
+          format: 'image/png',
+          transparent: true,
+          zIndex: 220,
+          minZoom: 10,
+          maxZoom: 19,
+        }),
         legend: [],
       },
       EGD: {
-        layer: L.tileLayer.wms(
-          'https://www.gis.rotterdam.nl/GisWeb2/js/modules/kaart/WmsHandler.ashx',
-          {
-            layers: 'BSB.OBJ.EGD',
-            format: 'image/png',
-            transparent: true,
-            minZoom: 10,
-            maxZoom: 19,
-          }
-        ),
+        layer: L.tileLayer.wms(wmsHandlerUrl, {
+          layers: 'BSB.OBJ.EGD',
+          format: 'image/png',
+          transparent: true,
+          zIndex: 200,
+          minZoom: 10,
+          maxZoom: 19,
+        }),
       },
       lichtmasten: {
-        layer: L.tileLayer.wms(
-          'https://www.gis.rotterdam.nl/GisWeb2/js/modules/kaart/WmsHandler.ashx',
-          {
-            layers: 'OBSURV.OVL.LP',
-            format: 'image/png',
-            transparent: true,
-            minZoom: 10,
-            maxZoom: 19,
-          }
-        ),
+        layer: L.tileLayer.wms(wmsHandlerUrl, {
+          layers: 'OBSURV.OVL.LP',
+          format: 'image/png',
+          transparent: true,
+          zIndex: 230,
+          minZoom: 10,
+          maxZoom: 19,
+        }),
       },
       lichtmastenSto: {
-        layer: L.tileLayer.wms(
-          'https://www.gis.rotterdam.nl/GisWeb2/js/modules/kaart/WmsHandler.ashx',
-          {
-            layers: 'OBSURV.OVL.LP.STO',
-            format: 'image/png',
-            transparent: true,
-            minZoom: 10,
-            maxZoom: 19,
-          }
-        ),
+        layer: L.tileLayer.wms(wmsHandlerUrl, {
+          layers: 'OBSURV.OVL.LP.STO',
+          format: 'image/png',
+          transparent: true,
+          zIndex: 235,
+          minZoom: 10,
+          maxZoom: 19,
+        }),
       },
+      // projecten: {
+      //   layer: L.tileLayer.wms(wmsHandlerUrl, {
+      //     layers: 'SB.PIDG',  // unauthorized — requires GIS service account
+      //     format: 'image/png',
+      //     transparent: true,
+      //     zIndex: 240,
+      //     minZoom: 10,
+      //     maxZoom: 19,
+      //   }),
+      // },
     }
 
     if (mapDiv && locatie) {
@@ -115,6 +133,7 @@ export default class extends Controller {
         attribution: '',
       }
       this.map = L.map('incidentMap').setView(this.coordinates[0], 18)
+      this.map.zoomControl.setPosition('bottomleft')
       L.tileLayer(url, config).addTo(this.map)
 
       this.addSignalen()
@@ -274,8 +293,119 @@ export default class extends Controller {
     })
   }
 
+  toggleMapLayerPanel(e) {
+    const panelName = e?.params?.panelName
+
+    if (!panelName) {
+      if (this.mapLayerMenuTarget.hidden) {
+        this.mapLayerMenuTarget.hidden = false
+        this.setMapLayerToggleState(true)
+        return
+      }
+
+      this.closeMapLayerMenu()
+      return
+    }
+
+    if (this.mapLayerMenuTarget.hidden) {
+      this.mapLayerMenuTarget.hidden = false
+      this.setMapLayerToggleState(true)
+    }
+
+    const panel = this.mapLayerPanelTargets.find(
+      (item) => item.dataset.mapLayerPanel === panelName
+    )
+    if (!panel) {
+      return
+    }
+
+    if (!panel.hidden) {
+      this.closeMapLayerMenu()
+      return
+    }
+
+    this.hideAllMapLayerPanels()
+    panel.hidden = false
+  }
+
+  setMapLayerToggleState(isOpen) {
+    const toggle = this.mapLayerToggleTarget
+    toggle.querySelector('.map__layer-btn-icon--default').hidden = isOpen
+    toggle.querySelector('.map__layer-btn-icon--active').hidden = !isOpen
+  }
+
+  closeMapLayerMenu() {
+    this.mapLayerMenuTarget.hidden = true
+    this.hideAllMapLayerPanels()
+    this.setMapLayerToggleState(false)
+  }
+
+  toggleEgdLegend() {
+    if (!this.hasEgdLegendPanelTarget) return
+    const panel = this.egdLegendPanelTarget
+    const isOpen = !panel.hidden
+    panel.hidden = isOpen
+    if (!isOpen) {
+      this._egdLegendOutsideClick = (e) => {
+        if (!panel.contains(e.target) && e.target !== this.egdInfoBtnTarget) {
+          panel.hidden = true
+          document.removeEventListener('click', this._egdLegendOutsideClick)
+        }
+      }
+      // defer so this click event doesn't immediately close the panel
+      setTimeout(() => document.addEventListener('click', this._egdLegendOutsideClick), 0)
+    } else {
+      document.removeEventListener('click', this._egdLegendOutsideClick)
+    }
+  }
+
+  hideAllMapLayerPanels() {
+    this.mapLayerPanelTargets.forEach((panel) => {
+      panel.hidden = true
+    })
+  }
+
+  showMapLayerPanel(e) {
+    if (this.mapLayerMenuTarget.hidden) {
+      return
+    }
+
+    const panelName = e.params.panelName
+    this.mapLayerPanelTargets.forEach((panel) => {
+      panel.hidden = panel.dataset.mapLayerPanel !== panelName
+    })
+  }
+
+  hideMapLayerPanel(e) {
+    if (e.relatedTarget && e.currentTarget.contains(e.relatedTarget)) {
+      return
+    }
+
+    this.hideAllMapLayerPanels()
+  }
+
   onMapLayerChange(e) {
     const layerTypes = e.params.mapLayerTypes
+    const panel = e.target.closest('.map__layer-panel')
+
+    if (layerTypes.includes('EGD') && this.hasEgdInfoBtnTarget) {
+      this.egdInfoBtnTarget.hidden = !e.target.checked
+      if (!e.target.checked && this.hasEgdLegendPanelTarget) {
+        this.egdLegendPanelTarget.hidden = true
+        document.removeEventListener('click', this._egdLegendOutsideClick)
+      }
+    }
+
+    if (panel?.dataset.mapLayerPanel === 'objectenlaag') {
+      panel.querySelectorAll('input[type="checkbox"]').forEach((input) => {
+        if (input !== e.target && input.checked) {
+          const siblingLayerTypes = JSON.parse(input.dataset.detailMapLayerTypesParam || '[]')
+          siblingLayerTypes.map((type) => this.map.removeLayer(this.mapLayers[type].layer))
+          input.checked = false
+        }
+      })
+    }
+
     if (e.target.checked) {
       layerTypes.map((type) => this.mapLayers[type].layer.addTo(this.map))
     } else {
