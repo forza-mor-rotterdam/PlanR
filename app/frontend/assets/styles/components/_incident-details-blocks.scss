@@ -543,7 +543,9 @@
             }
         }
 
-        &:hover {
+        &:hover,
+        &:focus,
+        &:focus-within {
             z-index: 20;
         }
     }
