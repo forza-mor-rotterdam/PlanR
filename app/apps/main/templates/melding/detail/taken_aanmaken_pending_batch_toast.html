@@ -1,0 +1,46 @@
+<turbo-stream action="append" target="toast_lijst">
+<template>
+        <div class="notification pending-batch-toast"
+         data-controller="taken-aanmaken--pending-batch"
+         data-pending-batch-toast="{{ pending_batch.batch_uuid }}"
+         data-batch-uuid="{{ pending_batch.batch_uuid }}"
+         data-melding-uuid="{{ pending_batch.melding_uuid }}"
+         data-countdown="{{ pending_batch.countdown }}"
+         data-csrf-token="{{ csrf_token }}"
+         data-verstuur-url="{% url 'taken_verstuur' pending_batch.melding_uuid pending_batch.batch_uuid %}">
+        {% csrf_token %}
+        <ul style="display: none;">
+            {% for taak in pending_batch.taken %}
+                <li data-taak-uuid="{{ taak.uuid }}"
+                    data-annuleer-url="{% url 'taken_annuleer' pending_batch.melding_uuid pending_batch.batch_uuid taak.uuid %}"
+                    data-pause-url="{% url 'taken_pause' pending_batch.melding_uuid pending_batch.batch_uuid taak.uuid %}"
+                    data-resume-url="{% url 'taken_resume' pending_batch.melding_uuid pending_batch.batch_uuid taak.uuid %}">{{ taak.titel }}</li>
+            {% endfor %}
+        </ul>
+        <div class="container__icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M21.9 12C21.9 6.5 17.5 2.1 12 2.1C6.5 2.1 2.1 6.5 2.1 12C2.1 17.5 6.5 21.9 12 21.9C17.5 21.9 21.9 17.5 21.9 12ZM0 12C0 5.4 5.4 0 12 0C18.6 0 24 5.4 24 12C24 18.6 18.6 24 12 24C5.4 24 0 18.6 0 12ZM16.6 7.1L18 8.5L10.5 16L7.10001 12.6L8.50001 11.2L10.5 13.2L16.6 7.1Z" fill="#00811F"/>
+            </svg>
+        </div>
+        <div class="container__content">
+            <div class="container__message">
+                <p data-countdown-message>
+                    <span class="task-name">Taak <strong data-task-title>{{ pending_batch.taken.0.titel }}</strong></span>
+                    <span class="task-suffix">is aangemaakt</span>
+                </p>
+                <button type="button" class="btn btn-textlink" data-undo-button>Ongedaan maken</button>
+            </div>
+        </div>
+        <button type="button"
+                class="btn-close--small"
+                aria-label="Sluit"
+                data-close-button>
+            <span aria-hidden="true">×</span>
+        </button>
+        <!-- POST /melding/{melding_uuid}/taken/{batch_uuid}/verstuur/ => verstuur direct -->
+        <!-- POST /melding/{melding_uuid}/taken/{batch_uuid}/taak/{taak_uuid}/annuleer/ => annuleer taak (+ children) -->
+        <!-- PATCH /melding/{melding_uuid}/taken/{batch_uuid}/taak/{taak_uuid}/pause/ => pauzeer taak -->
+        <!-- PATCH /melding/{melding_uuid}/taken/{batch_uuid}/taak/{taak_uuid}/resume/ => hervat taak -->
+    </div>
+</template>
+</turbo-stream>

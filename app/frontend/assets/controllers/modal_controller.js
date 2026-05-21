@@ -65,7 +65,6 @@ export default class extends Controller {
   }
   contentTargetConnected() {
     document.body.classList.add('show-modal')
-    console.log('CLONE')
     if (this.params.action) {
       this.fetchModalContent(this.params.action)
       // this.observer.observe(this.dialogTarget, { childList: true })
