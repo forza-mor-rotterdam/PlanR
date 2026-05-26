@@ -52,7 +52,132 @@ export default class extends Controller {
     window.setTimeout(() => {
       this.searchInputTarget.focus()
     }, 600)
+
+    this.boundPositionUitklapperMenu = this.positionUitklapperMenuHandler.bind(this)
+    this.element.addEventListener('mouseover', this.boundPositionUitklapperMenu)
+    this.element.addEventListener('focusin', this.boundPositionUitklapperMenu)
+    this.element.addEventListener('click', this.boundPositionUitklapperMenu)
   }
+
+  disconnect() {
+    this.element.removeEventListener('mouseover', this.boundPositionUitklapperMenu)
+    this.element.removeEventListener('focusin', this.boundPositionUitklapperMenu)
+    this.element.removeEventListener('click', this.boundPositionUitklapperMenu)
+  }
+
+  positionUitklapperMenuHandler(e) {
+    const uitklapper = e.target.closest('.container__uitklapper')
+    if (!uitklapper || !this.element.contains(uitklapper)) {
+      return
+    }
+
+    this.positionUitklapperMenu(uitklapper)
+  }
+
+  getTemporaryStyleValues(element) {
+    return {
+      position: element.style.position,
+      display: element.style.display,
+      visibility: element.style.visibility,
+      left: element.style.left,
+      top: element.style.top,
+    }
+  }
+
+  restoreTemporaryStyleValues(element, values) {
+    element.style.position = values.position
+    element.style.display = values.display
+    element.style.visibility = values.visibility
+    element.style.left = values.left
+    element.style.top = values.top
+  }
+
+  getFloatingMenuRect(menu) {
+    const previousStyles = this.getTemporaryStyleValues(menu)
+
+    menu.style.position = 'fixed'
+    menu.style.left = '-9999px'
+    menu.style.top = '-9999px'
+    menu.style.display = 'block'
+    menu.style.visibility = 'hidden'
+
+    const rect = menu.getBoundingClientRect()
+    this.restoreTemporaryStyleValues(menu, previousStyles)
+    return rect
+  }
+
+  getParentOptionsRect(parentOptionsContainer) {
+    const previousStyles = this.getTemporaryStyleValues(parentOptionsContainer)
+    parentOptionsContainer.style.display = 'block'
+    parentOptionsContainer.style.visibility = 'hidden'
+
+    const rect = parentOptionsContainer.getBoundingClientRect()
+    this.restoreTemporaryStyleValues(parentOptionsContainer, previousStyles)
+    return rect
+  }
+
+  getModalVisibleBounds(spacing = 8) {
+    const modalElement = this.element.closest('dialog') || this.element
+    const modalRect = modalElement.getBoundingClientRect()
+
+    return {
+      top: modalRect.top + spacing,
+      bottom: modalRect.bottom - spacing,
+    }
+  }
+
+  getViewportAwareTop(triggerRect, menuHeight, bounds = null, spacing = 8, offset = 6) {
+    const topLimit = bounds?.top ?? spacing
+    const bottomLimit = bounds?.bottom ?? window.innerHeight - spacing
+
+    let top = triggerRect.bottom + offset
+    let openUp = false
+
+    if (top + menuHeight > bottomLimit) {
+      top = triggerRect.top - menuHeight - offset
+      openUp = true
+    }
+
+    top = Math.max(topLimit, Math.min(top, bottomLimit - menuHeight))
+    return { top, openUp }
+  }
+
+  getViewportAwareLeft(triggerRect, menuWidth, spacing = 8) {
+    let left = triggerRect.right - menuWidth
+    let alignRight = false
+
+    if (left < spacing) {
+      left = spacing
+    }
+
+    if (left + menuWidth > window.innerWidth - spacing) {
+      left = window.innerWidth - menuWidth - spacing
+      alignRight = true
+    }
+
+    return { left, alignRight }
+  }
+
+  positionUitklapperMenu(uitklapper) {
+    const menu = uitklapper.querySelector('.legenda')
+    if (!menu) {
+      return
+    }
+
+    menu.classList.add('legenda--floating')
+    const menuRect = this.getFloatingMenuRect(menu)
+    const triggerRect = uitklapper.getBoundingClientRect()
+    const modalBounds = this.getModalVisibleBounds()
+    const { top, openUp } = this.getViewportAwareTop(triggerRect, menuRect.height, modalBounds)
+    const { left, alignRight } = this.getViewportAwareLeft(triggerRect, menuRect.width)
+
+    menu.classList.toggle('legenda--open-up', openUp)
+    menu.classList.toggle('legenda--align-right', alignRight)
+
+    menu.style.setProperty('--legenda-floating-top', `${top}px`)
+    menu.style.setProperty('--legenda-floating-left', `${left}px`)
+  }
+
   uuidv4() {
     return '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, (c) =>
       (+c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))).toString(16)
@@ -250,6 +375,7 @@ export default class extends Controller {
     let parentsInput = selectedChild.querySelector(`input[name*='-parents']`)
     parentsInput.value = parents
     this.renderParentOptions(selectedChild, ul)
+    this.positionParentOptionsMenu(ul)
     setTimeout(() => {
       this.removeCurrentParentOptions()
     }, 200)
@@ -281,6 +407,30 @@ export default class extends Controller {
       '[data-parents-options-container]'
     )
     this.renderParentOptions(geselecteerdFormulierTaaktype, parentOptionsContainer)
+    this.positionParentOptionsMenu(parentOptionsContainer)
+  }
+
+  positionParentOptionsMenu(parentOptionsContainer) {
+    if (!parentOptionsContainer) {
+      return
+    }
+
+    parentOptionsContainer.classList.remove('list__nested--open-up')
+    const menuRect = this.getParentOptionsRect(parentOptionsContainer)
+    const wrapperRect = parentOptionsContainer.closest('.list__wrapper')?.getBoundingClientRect()
+
+    if (!wrapperRect) {
+      return
+    }
+
+    const modalBounds = this.getModalVisibleBounds()
+
+    const hasRoomDown = wrapperRect.top + menuRect.height <= modalBounds.bottom
+    const hasRoomUp = wrapperRect.bottom - menuRect.height >= modalBounds.top
+
+    if (!hasRoomDown && hasRoomUp) {
+      parentOptionsContainer.classList.add('list__nested--open-up')
+    }
   }
 
   renderParentOptions(geselecteerdFormulierTaaktype, ul) {
