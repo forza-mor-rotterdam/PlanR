@@ -74,46 +74,19 @@ export default class extends Controller {
     this.positionUitklapperMenu(uitklapper)
   }
 
-  getTemporaryStyleValues(element) {
-    return {
-      position: element.style.position,
-      display: element.style.display,
-      visibility: element.style.visibility,
-      left: element.style.left,
-      top: element.style.top,
-    }
-  }
-
-  restoreTemporaryStyleValues(element, values) {
-    element.style.position = values.position
-    element.style.display = values.display
-    element.style.visibility = values.visibility
-    element.style.left = values.left
-    element.style.top = values.top
+  measureRect(element, measuringClassName) {
+    element.classList.add(measuringClassName)
+    const rect = element.getBoundingClientRect()
+    element.classList.remove(measuringClassName)
+    return rect
   }
 
   getFloatingMenuRect(menu) {
-    const previousStyles = this.getTemporaryStyleValues(menu)
-
-    menu.style.position = 'fixed'
-    menu.style.left = '-9999px'
-    menu.style.top = '-9999px'
-    menu.style.display = 'block'
-    menu.style.visibility = 'hidden'
-
-    const rect = menu.getBoundingClientRect()
-    this.restoreTemporaryStyleValues(menu, previousStyles)
-    return rect
+    return this.measureRect(menu, 'legenda--measuring-floating')
   }
 
   getParentOptionsRect(parentOptionsContainer) {
-    const previousStyles = this.getTemporaryStyleValues(parentOptionsContainer)
-    parentOptionsContainer.style.display = 'block'
-    parentOptionsContainer.style.visibility = 'hidden'
-
-    const rect = parentOptionsContainer.getBoundingClientRect()
-    this.restoreTemporaryStyleValues(parentOptionsContainer, previousStyles)
-    return rect
+    return this.measureRect(parentOptionsContainer, 'list__nested--measuring')
   }
 
   getModalVisibleBounds(spacing = 8) {
