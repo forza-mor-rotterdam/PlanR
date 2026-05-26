@@ -126,19 +126,45 @@ export default class extends Controller {
     }
   }
 
+  getMainPopupVerticalBounds(spacing = 8) {
+    const modalBounds = this.getModalVisibleBounds(spacing)
+
+    if (!this.hasKnopAanmakenTarget) {
+      return modalBounds
+    }
+
+    const aanmakenButton = this.knopAanmakenTarget
+    const computedStyle = window.getComputedStyle(aanmakenButton)
+    const buttonVisible =
+      computedStyle.display !== 'none' &&
+      computedStyle.visibility !== 'hidden' &&
+      aanmakenButton.getClientRects().length > 0
+
+    if (!buttonVisible) {
+      return modalBounds
+    }
+
+    const buttonRect = aanmakenButton.getBoundingClientRect()
+    return {
+      top: modalBounds.top,
+      bottom: Math.min(modalBounds.bottom, buttonRect.top - spacing),
+    }
+  }
+
   getViewportAwareTop(triggerRect, menuHeight, bounds = null, spacing = 8, offset = 6) {
     const topLimit = bounds?.top ?? spacing
     const bottomLimit = bounds?.bottom ?? window.innerHeight - spacing
+    const clampedBottomLimit = Math.max(topLimit, bottomLimit)
 
     let top = triggerRect.bottom + offset
     let openUp = false
 
-    if (top + menuHeight > bottomLimit) {
+    if (top + menuHeight > clampedBottomLimit) {
       top = triggerRect.top - menuHeight - offset
       openUp = true
     }
 
-    top = Math.max(topLimit, Math.min(top, bottomLimit - menuHeight))
+    top = Math.max(topLimit, Math.min(top, clampedBottomLimit - menuHeight))
     return { top, openUp }
   }
 
@@ -167,8 +193,8 @@ export default class extends Controller {
     menu.classList.add('legenda--floating')
     const menuRect = this.getFloatingMenuRect(menu)
     const triggerRect = uitklapper.getBoundingClientRect()
-    const modalBounds = this.getModalVisibleBounds()
-    const { top, openUp } = this.getViewportAwareTop(triggerRect, menuRect.height, modalBounds)
+    const popupBounds = this.getMainPopupVerticalBounds()
+    const { top, openUp } = this.getViewportAwareTop(triggerRect, menuRect.height, popupBounds)
     const { left, alignRight } = this.getViewportAwareLeft(triggerRect, menuRect.width)
 
     menu.classList.toggle('legenda--open-up', openUp)
