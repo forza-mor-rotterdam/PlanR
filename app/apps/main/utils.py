@@ -31,6 +31,16 @@ def querystring_to_dict(s: str) -> dict:
     return dict(QueryDict(s))
 
 
+def get_url_from_links(data, name):
+    try:
+        return data["_links"][name].get("href", "-")
+    except Exception:
+        try:
+            return data["_links"].get(name, "-")
+        except Exception:
+            return "-"
+
+
 def to_base64(file):
     binary_file = default_storage.open(file)
     binary_file_data = binary_file.read()
@@ -329,6 +339,8 @@ def taak_status_tekst(taak, css_class=False):
             if not css_class
             else to_kebab(taak.get("resolutie", NIET_OPGELOST))
         )
+    if not taak.get("uitgezet_op"):
+        return "In de wacht" if not css_class else "in_de_wacht"
     return (
         taak_statussen.get(huidige_status_naam, huidige_status_naam)
         if not css_class
@@ -365,8 +377,34 @@ def melding_taken(melding):
         for taakopdracht in taakopdrachten_voor_melding
         if taakopdracht.get("resolutie") in ("niet_opgelost",)
     ]
+    in_de_wacht_taken = [
+        taakopdracht
+        for taakopdracht in taakopdrachten_voor_melding
+        if not taakopdracht.get("uitgezet_op") and not taakopdracht.get("verwijderd_op")
+    ]
 
     aantal_actieve_taken = len(actieve_taken)
+    taak_titel_by_url = {
+        taak.get("_links", {}).get("self"): taak.get("titel", "")
+        for taak in taakopdrachten_voor_melding
+    }
+    for taak in niet_verwijderde_taken:
+        titels = [
+            taak_titel_by_url[afh["taakopdracht_url"]]
+            for afh in taak.get("afhankelijkheid", [])
+            if afh.get("taakopdracht_url") in taak_titel_by_url
+        ]
+        taak["afhankelijkheid_titels"] = titels
+        if titels:
+            enkelvoud = len(titels) == 1
+            joined = '" en "'.join(titels)
+            taak["afhankelijkheid_wachttekst"] = (
+                f'Wacht tot de {"taak" if enkelvoud else "taken"} '
+                f'"{joined}" '
+                f'{"is" if enkelvoud else "zijn"} uitgevoerd'
+            )
+        else:
+            taak["afhankelijkheid_wachttekst"] = ""
 
     return {
         "alle_taken": taakopdrachten_voor_melding,
@@ -376,6 +414,7 @@ def melding_taken(melding):
         "aantal_actieve_taken": aantal_actieve_taken,
         "niet_opgeloste_taken": niet_opgeloste_taken,
         "opgeloste_taken": opgeloste_taken,
+        "in_de_wacht_taken": in_de_wacht_taken,
     }
 
 
