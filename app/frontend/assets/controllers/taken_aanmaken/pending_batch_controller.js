@@ -85,7 +85,7 @@ export default class extends Controller {
     this.toastElement.addEventListener('mouseenter', this.mouseEnterHandler)
     this.toastElement.addEventListener('mouseleave', this.mouseLeaveHandler)
 
-    this.renderAdditionalTaskToasts()
+    this.bindAdditionalTaskToasts()
     this.updatePendingToastStackState()
 
     if (!this.intervalId) {
@@ -287,51 +287,28 @@ export default class extends Controller {
     }, 550)
   }
 
-  renderAdditionalTaskToasts() {
+  bindAdditionalTaskToasts() {
     if (!this.toastContainer || this.taken.length <= 1) return
 
     this.clearAdditionalTaskToasts()
 
-    this.taken.slice(1).forEach((taak, index) => {
-      const toast = document.createElement('div')
-      toast.className = 'notification pending-batch-toast pending-batch-toast--clone'
-      this.ensureToastItemController(toast)
-      toast.dataset.pendingBatchGhost = `${this.batchUuid}-${taak.uuid}-${index}`
-      toast.dataset.pendingBatchGroup = this.batchUuid
-      toast.innerHTML = `
-        <div class="container__icon" aria-hidden="true">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M21.9 12C21.9 6.5 17.5 2.1 12 2.1C6.5 2.1 2.1 6.5 2.1 12C2.1 17.5 6.5 21.9 12 21.9C17.5 21.9 21.9 17.5 21.9 12ZM0 12C0 5.4 5.4 0 12 0C18.6 0 24 5.4 24 12C24 18.6 18.6 24 12 24C5.4 24 0 18.6 0 12ZM16.6 7.1L18 8.5L10.5 16L7.10001 12.6L8.50001 11.2L10.5 13.2L16.6 7.1Z" fill="#00811F"/>
-          </svg>
-        </div>
-        <div class="container__content">
-          <div class="container__message">
-            <p>
-              <span class="task-name">Taak <strong>${this.escapeHtml(taak.titel || 'Taak')}</strong></span>
-              <span class="task-suffix">is aangemaakt</span>
-            </p>
-            <button type="button" class="btn btn-textlink" data-undo-button>Ongedaan maken</button>
-          </div>
-        </div>
-        <button type="button"
-                class="btn-close--small"
-                aria-label="Sluit"
-                data-close-button>
-          <span aria-hidden="true">×</span>
-        </button>
-      `
-
-      this.toastContainer.appendChild(toast)
+    Array.from(
+      this.toastContainer.querySelectorAll(
+        `[data-pending-batch-group="${this.batchUuid}"][data-pending-batch-ghost]`
+      )
+    ).forEach((toast) => {
+      const taakUuid = toast.dataset.pendingBatchTaskUuid
+      if (!taakUuid) {
+        return
+      }
 
       const undoButton = toast.querySelector('[data-undo-button]')
       const closeButton = toast.querySelector('[data-close-button]')
-      const undoHandler = () => this.annuleerTaak(taak.uuid, taak.annuleerUrl)
+      const undoHandler = () =>
+        this.annuleerTaak(taakUuid, toast.dataset.pendingBatchAnnuleerUrl || null)
       const closeHandler = (event) => this.verwerkEnSluit(event)
       const mouseEnterHandler = () => this.pauseBatch()
       const mouseLeaveHandler = () => this.resumeBatch()
-
-      toast.dataset.pendingBatchTaskUuid = taak.uuid
-      toast.dataset.pendingBatchAnnuleerUrl = taak.annuleerUrl || ''
 
       undoButton?.addEventListener('click', undoHandler)
       closeButton?.addEventListener('click', closeHandler)
@@ -339,7 +316,7 @@ export default class extends Controller {
       toast.addEventListener('mouseleave', mouseLeaveHandler)
 
       this.additionalToastEntries.push({
-        taakUuid: taak.uuid,
+        taakUuid,
         toast,
         undoButton,
         closeButton,
