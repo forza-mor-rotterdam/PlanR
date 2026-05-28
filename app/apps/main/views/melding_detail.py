@@ -366,7 +366,8 @@ class MeldingDetail(
         return context
 
     def get(self, request, *args, **kwargs):
-        context = self.get_melding_detail_taaktype_context(**kwargs)
+        context = self.get_context_data(**kwargs)
+
         if not context.get("meldingen_index") and self.request_next_data():
             return redirect(reverse("melding_detail", args=[self.kwargs.get("id")]))
         return self.render_to_response(context)
