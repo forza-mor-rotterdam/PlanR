@@ -3,6 +3,7 @@ import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
   connect() {
+    this.maxPauseMs = 60 * 1000
     this.batchUuid = this.element.dataset.batchUuid
     this.countdown = Number.parseInt(this.element.dataset.countdown || '0', 10)
     if (!Number.isFinite(this.remaining)) {
@@ -14,6 +15,8 @@ export default class extends Controller {
     if (typeof this.isPaused !== 'boolean') this.isPaused = false
     if (typeof this.isFinalized !== 'boolean') this.isFinalized = false
     if (!Number.isInteger(this.intervalId)) this.intervalId = null
+    if (!Number.isInteger(this.pauseTimeoutId)) this.pauseTimeoutId = null
+    if (!Array.isArray(this.additionalToastEntries)) this.additionalToastEntries = []
 
     this.taken = Array.from(this.element.querySelectorAll('[data-taak-uuid]')).map((item) => ({
       uuid: item.dataset.taakUuid,
@@ -22,17 +25,13 @@ export default class extends Controller {
       pauseUrl: item.dataset.pauseUrl,
       resumeUrl: item.dataset.resumeUrl,
     }))
+    this.takenByUuid = new Map(this.taken.map((taak) => [taak.uuid, taak]))
+    this.primaryTaakUuid = this.taken[0]?.uuid || null
 
     this.placeholderContainer = document.querySelector('[data-testid="detailTaken"] .container__taken')
     this.placeholderSection = this.placeholderContainer?.closest('.section--separated')
+    this.realTaskCountAtConnect = this.getRealTaskCount(document)
     this.ensurePlaceholders()
-    this.streamRenderHandler = (event) => {
-      const streamTarget = event.target?.getAttribute?.('target')
-      if (streamTarget === 'melding_detail_taken') {
-        this.removePlaceholders()
-      }
-    }
-    document.addEventListener('turbo:before-stream-render', this.streamRenderHandler)
 
     this.toastContainer = document.getElementById('toast_lijst') || this.element.parentElement
     if (!this.batchUuid || !this.verstuurUrl) {
@@ -48,6 +47,12 @@ export default class extends Controller {
     }
 
     this.element.dataset.pendingBatchToast = this.batchUuid
+    this.element.dataset.pendingBatchGroup = this.batchUuid
+    if (this.primaryTaakUuid) {
+      this.element.dataset.pendingBatchTaskUuid = this.primaryTaakUuid
+      this.element.dataset.pendingBatchAnnuleerUrl =
+        this.takenByUuid.get(this.primaryTaakUuid)?.annuleerUrl || ''
+    }
     if (this.taken.length) {
       const rawTitel = this.taken[0]?.titel || 'Taak'
       const taakTitel = rawTitel.length > 10 ? `${rawTitel.slice(0, 10)}...` : rawTitel
@@ -60,13 +65,17 @@ export default class extends Controller {
     }
 
     this.toastElement = this.element
+    this.ensureToastItemController(this.toastElement)
     this.undoButton = this.toastElement.querySelector('[data-undo-button]')
     this.closeButton = this.toastElement.querySelector('[data-close-button]')
-    this.countdownMessage = this.toastElement.querySelector('[data-countdown-message]')
 
     this.removeHoverHandlers()
 
-    this.undoClickHandler = () => this.annuleerAlles()
+    this.undoClickHandler = () =>
+      this.annuleerTaak(
+        this.primaryTaakUuid,
+        this.element.dataset.pendingBatchAnnuleerUrl || null
+      )
     this.closeClickHandler = (event) => this.verwerkEnSluit(event)
     this.mouseEnterHandler = () => this.pauseBatch()
     this.mouseLeaveHandler = () => this.resumeBatch()
@@ -76,6 +85,9 @@ export default class extends Controller {
     this.toastElement.addEventListener('mouseenter', this.mouseEnterHandler)
     this.toastElement.addEventListener('mouseleave', this.mouseLeaveHandler)
 
+    this.renderAdditionalTaskToasts()
+    this.updatePendingToastStackState()
+
     if (!this.intervalId) {
       this.startCountdown()
     }
@@ -84,7 +96,7 @@ export default class extends Controller {
   disconnect() {
     // This element may briefly disconnect/reconnect when moved into #toast_lijst.
     // Keep timer and handlers intact unless toast is explicitly hidden.
-    document.removeEventListener('turbo:before-stream-render', this.streamRenderHandler)
+    this.clearPauseTimeout()
   }
 
   removeHoverHandlers() {
@@ -92,6 +104,13 @@ export default class extends Controller {
     this.closeButton?.removeEventListener('click', this.closeClickHandler)
     this.toastElement?.removeEventListener('mouseenter', this.mouseEnterHandler)
     this.toastElement?.removeEventListener('mouseleave', this.mouseLeaveHandler)
+
+    this.additionalToastEntries.forEach((entry) => {
+      entry.undoButton?.removeEventListener('click', entry.undoHandler)
+      entry.closeButton?.removeEventListener('click', entry.closeHandler)
+      entry.toast?.removeEventListener('mouseenter', entry.mouseEnterHandler)
+      entry.toast?.removeEventListener('mouseleave', entry.mouseLeaveHandler)
+    })
   }
 
   verwerkEnSluit(event) {
@@ -101,7 +120,6 @@ export default class extends Controller {
   }
 
   startCountdown() {
-    this.updateCountdownUI()
     this.intervalId = window.setInterval(() => {
       if (this.isPaused || this.isFinalized) return
       if (this.remaining <= 0) {
@@ -109,7 +127,6 @@ export default class extends Controller {
         return
       }
       this.remaining -= 1
-      this.updateCountdownUI()
     }, 1000)
   }
 
@@ -120,31 +137,36 @@ export default class extends Controller {
     }
   }
 
+  startPauseTimeout() {
+    this.clearPauseTimeout()
+
+    this.pauseTimeoutId = window.setTimeout(() => {
+      if (this.isFinalized || !this.isPaused) return
+      this.isPaused = false
+      this.verstuurNu()
+    }, this.maxPauseMs)
+  }
+
+  clearPauseTimeout() {
+    if (this.pauseTimeoutId) {
+      window.clearTimeout(this.pauseTimeoutId)
+      this.pauseTimeoutId = null
+    }
+  }
+
   disableActions() {
-    if (this.undoButton) this.undoButton.disabled = true
-  }
-
-  disableUndo() {
-    if (this.undoButton) {
-      this.undoButton.disabled = true
-      this.undoButton.textContent = 'Ongedaan maken (verlopen)'
-    }
-    if (this.countdownMessage) {
-      this.countdownMessage.textContent = 'Taken worden nu verwerkt.'
-    }
-  }
-
-  updateCountdownUI() {
-    if (this.undoButton) {
-      this.undoButton.textContent = 'Ongedaan maken'
-    }
+    this.getBatchUndoButtons().forEach((button) => {
+      button.disabled = true
+    })
   }
 
   async pauseBatch() {
     if (this.isPaused || this.isFinalized) return
     this.isPaused = true
+    this.startPauseTimeout()
+    const activeTaken = this.getActiveTaken()
     await Promise.all(
-      this.taken
+      activeTaken
         .filter((taak) => Boolean(taak.pauseUrl))
         .map((taak) => this.request(taak.pauseUrl, 'PATCH').catch(() => null))
     )
@@ -153,8 +175,10 @@ export default class extends Controller {
   async resumeBatch() {
     if (!this.isPaused || this.isFinalized) return
     this.isPaused = false
+    this.clearPauseTimeout()
+    const activeTaken = this.getActiveTaken()
     await Promise.all(
-      this.taken
+      activeTaken
         .filter((taak) => Boolean(taak.resumeUrl))
         .map((taak) => this.request(taak.resumeUrl, 'PATCH').catch(() => null))
     )
@@ -174,7 +198,10 @@ export default class extends Controller {
           url: this.verstuurUrl,
           status: result.status,
         })
-        this.refreshTakenBlock()
+        await Promise.race([
+          this.refreshTakenBlock(),
+          this.sleep(4000),
+        ])
       }
       this.hideToast()
     } catch (error) {
@@ -185,52 +212,278 @@ export default class extends Controller {
         error: error?.message || error,
       })
       this.isFinalized = false
-      this.updateCountdownUI()
-      if (this.undoButton) this.undoButton.disabled = false
+      this.getBatchUndoButtons().forEach((button) => {
+        button.disabled = false
+      })
     }
   }
 
-  async annuleerAlles() {
-    if (this.isFinalized) return
-    this.isFinalized = true
-    this.disableActions()
-    this.stopCountdown()
+  async annuleerTaak(taakUuid, annuleerUrl = null) {
+    if (this.isFinalized || !taakUuid) return
+
+    const taak = this.takenByUuid.get(taakUuid)
+    const cancelUrl = annuleerUrl || taak?.annuleerUrl || null
+    if (!cancelUrl) {
+      console.error('[pending-batch] cancel skipped - missing annuleerUrl', {
+        batchUuid: this.batchUuid,
+        taakUuid,
+      })
+      return
+    }
+
+    const clickedUndoButtons = Array.from(
+      this.toastContainer?.querySelectorAll(
+        `[data-pending-batch-task-uuid="${taakUuid}"] [data-undo-button]`
+      ) || []
+    )
+    clickedUndoButtons.forEach((button) => {
+      button.disabled = true
+    })
 
     try {
-      const results = await Promise.all(
-        this.taken
-          .filter((taak) => Boolean(taak.annuleerUrl))
-          .map((taak) => this.request(taak.annuleerUrl, 'POST'))
-      )
-      const successCount = results.filter((result) => result.status === 200).length
-      if (successCount > 0) {
-        console.info('[pending-batch] annuleer acknowledged (200)', {
-          batchUuid: this.batchUuid,
-          successfulCancels: successCount,
-          requestedCancels: results.length,
-        })
+      const result = await this.request(cancelUrl, 'POST')
+      const geannuleerdeUuids = result.body?.geannuleerde_uuids || [taakUuid]
+      const allesGeannuleerd = Boolean(result.body?.alles_geannuleerd)
+
+      console.info('[pending-batch] annuleer acknowledged (200)', {
+        batchUuid: this.batchUuid,
+        requestedCancel: taakUuid,
+        cancelled: geannuleerdeUuids,
+      })
+
+      this.removePlaceholdersForUuids(geannuleerdeUuids)
+      this.removeToastsForUuids(geannuleerdeUuids)
+
+      if (allesGeannuleerd || this.getRemainingTaskUuids().length === 0) {
+        this.hideToast()
       }
-      this.removePlaceholders()
-      this.hideToast()
     } catch (error) {
       console.error('[pending-batch] cancel failed', {
         batchUuid: this.batchUuid,
         method: 'POST',
+        taakUuid,
         error: error?.message || error,
       })
-      this.isFinalized = false
-      this.updateCountdownUI()
-      if (this.undoButton) this.undoButton.disabled = false
+      clickedUndoButtons.forEach((button) => {
+        button.disabled = false
+      })
     }
   }
 
   hideToast() {
     this.stopCountdown()
+    this.clearPauseTimeout()
     this.removeHoverHandlers()
-    this.toastElement?.classList.add('hide')
+
+    this.additionalToastEntries.forEach((entry) => {
+      this.hideToastElement(entry.toast)
+    })
+    this.hideToastElement(this.toastElement)
+
     window.setTimeout(() => {
+      this.clearAdditionalTaskToasts()
       this.toastElement?.remove()
-    }, 400)
+      this.updatePendingToastStackState()
+    }, 550)
+  }
+
+  renderAdditionalTaskToasts() {
+    if (!this.toastContainer || this.taken.length <= 1) return
+
+    this.clearAdditionalTaskToasts()
+
+    this.taken.slice(1).forEach((taak, index) => {
+      const toast = document.createElement('div')
+      toast.className = 'notification pending-batch-toast pending-batch-toast--clone'
+      this.ensureToastItemController(toast)
+      toast.dataset.pendingBatchGhost = `${this.batchUuid}-${taak.uuid}-${index}`
+      toast.dataset.pendingBatchGroup = this.batchUuid
+      toast.innerHTML = `
+        <div class="container__icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M21.9 12C21.9 6.5 17.5 2.1 12 2.1C6.5 2.1 2.1 6.5 2.1 12C2.1 17.5 6.5 21.9 12 21.9C17.5 21.9 21.9 17.5 21.9 12ZM0 12C0 5.4 5.4 0 12 0C18.6 0 24 5.4 24 12C24 18.6 18.6 24 12 24C5.4 24 0 18.6 0 12ZM16.6 7.1L18 8.5L10.5 16L7.10001 12.6L8.50001 11.2L10.5 13.2L16.6 7.1Z" fill="#00811F"/>
+          </svg>
+        </div>
+        <div class="container__content">
+          <div class="container__message">
+            <p>
+              <span class="task-name">Taak <strong>${this.escapeHtml(taak.titel || 'Taak')}</strong></span>
+              <span class="task-suffix">is aangemaakt</span>
+            </p>
+            <button type="button" class="btn btn-textlink" data-undo-button>Ongedaan maken</button>
+          </div>
+        </div>
+        <button type="button"
+                class="btn-close--small"
+                aria-label="Sluit"
+                data-close-button>
+          <span aria-hidden="true">×</span>
+        </button>
+      `
+
+      this.toastContainer.appendChild(toast)
+
+      const undoButton = toast.querySelector('[data-undo-button]')
+      const closeButton = toast.querySelector('[data-close-button]')
+      const undoHandler = () => this.annuleerTaak(taak.uuid, taak.annuleerUrl)
+      const closeHandler = (event) => this.verwerkEnSluit(event)
+      const mouseEnterHandler = () => this.pauseBatch()
+      const mouseLeaveHandler = () => this.resumeBatch()
+
+      toast.dataset.pendingBatchTaskUuid = taak.uuid
+      toast.dataset.pendingBatchAnnuleerUrl = taak.annuleerUrl || ''
+
+      undoButton?.addEventListener('click', undoHandler)
+      closeButton?.addEventListener('click', closeHandler)
+      toast.addEventListener('mouseenter', mouseEnterHandler)
+      toast.addEventListener('mouseleave', mouseLeaveHandler)
+
+      this.additionalToastEntries.push({
+        taakUuid: taak.uuid,
+        toast,
+        undoButton,
+        closeButton,
+        undoHandler,
+        closeHandler,
+        mouseEnterHandler,
+        mouseLeaveHandler,
+      })
+    })
+  }
+
+  clearAdditionalTaskToasts() {
+    if (!this.toastContainer) return
+    this.additionalToastEntries.forEach((entry) => {
+      entry.undoButton?.removeEventListener('click', entry.undoHandler)
+      entry.closeButton?.removeEventListener('click', entry.closeHandler)
+      entry.toast?.removeEventListener('mouseenter', entry.mouseEnterHandler)
+      entry.toast?.removeEventListener('mouseleave', entry.mouseLeaveHandler)
+      entry.toast?.remove()
+    })
+    this.additionalToastEntries = []
+  }
+
+  getBatchUndoButtons() {
+    if (!this.toastContainer) return []
+    return Array.from(
+      this.toastContainer.querySelectorAll(
+        `[data-pending-batch-group="${this.batchUuid}"] [data-undo-button]`
+      )
+    )
+  }
+
+  getRemainingTaskUuids() {
+    const uuids = this.additionalToastEntries.map((entry) => entry.taakUuid)
+    if (this.primaryTaakUuid) uuids.unshift(this.primaryTaakUuid)
+    return uuids
+  }
+
+  getActiveTaken() {
+    return Array.from(this.takenByUuid.values())
+  }
+
+  removePlaceholdersForUuids(uuids) {
+    uuids.forEach((uuid) => {
+      document
+        .querySelectorAll(`[data-pending-taak-placeholder="${uuid}"]`)
+        .forEach((placeholder) => placeholder.remove())
+    })
+
+    if (!document.querySelector('[data-pending-batch-uuid]')) {
+      this.placeholderSection?.classList.remove('has-taken')
+    }
+  }
+
+  removeToastsForUuids(uuids) {
+    this.taken = this.taken.filter((taak) => !uuids.includes(taak.uuid))
+    uuids.forEach((uuid) => {
+      this.takenByUuid.delete(uuid)
+    })
+
+    this.additionalToastEntries = this.additionalToastEntries.filter((entry) => {
+      if (!uuids.includes(entry.taakUuid)) {
+        return true
+      }
+
+      entry.undoButton?.removeEventListener('click', entry.undoHandler)
+      entry.closeButton?.removeEventListener('click', entry.closeHandler)
+      entry.toast?.removeEventListener('mouseenter', entry.mouseEnterHandler)
+      entry.toast?.removeEventListener('mouseleave', entry.mouseLeaveHandler)
+      entry.toast?.remove()
+      return false
+    })
+
+    if (this.primaryTaakUuid && uuids.includes(this.primaryTaakUuid)) {
+      const replacement = this.additionalToastEntries.shift()
+      if (replacement) {
+        this.primaryTaakUuid = replacement.taakUuid
+        this.toastElement.dataset.pendingBatchTaskUuid = replacement.taakUuid
+        this.toastElement.dataset.pendingBatchAnnuleerUrl =
+          this.takenByUuid.get(replacement.taakUuid)?.annuleerUrl || ''
+        const replacementTitle = this.takenByUuid.get(replacement.taakUuid)?.titel || 'Taak'
+        const titleElement = this.toastElement?.querySelector('[data-task-title]')
+        if (titleElement) {
+          titleElement.textContent =
+            replacementTitle.length > 10
+              ? `${replacementTitle.slice(0, 10)}...`
+              : replacementTitle
+        }
+
+        replacement.undoButton?.removeEventListener('click', replacement.undoHandler)
+        replacement.closeButton?.removeEventListener('click', replacement.closeHandler)
+        replacement.toast?.removeEventListener('mouseenter', replacement.mouseEnterHandler)
+        replacement.toast?.removeEventListener('mouseleave', replacement.mouseLeaveHandler)
+        replacement.toast?.remove()
+      } else {
+        this.primaryTaakUuid = null
+        delete this.toastElement.dataset.pendingBatchTaskUuid
+        delete this.toastElement.dataset.pendingBatchAnnuleerUrl
+      }
+    }
+
+    this.updatePendingToastStackState()
+  }
+
+  updatePendingToastStackState() {
+    if (!this.toastContainer) return
+
+    const hasPendingToasts = this.toastContainer.querySelectorAll('.pending-batch-toast').length > 0
+    this.toastContainer.classList.toggle('has-pending-batch-toasts', hasPendingToasts)
+  }
+
+  ensureToastItemController(element) {
+    if (!element) return
+
+    const controllerAttr = element.getAttribute('data-controller') || ''
+    const controllerNames = controllerAttr
+      .split(/\s+/)
+      .map((name) => name.trim())
+      .filter(Boolean)
+
+    if (!controllerNames.includes('notificaties--toast-item')) {
+      controllerNames.push('notificaties--toast-item')
+      element.setAttribute('data-controller', controllerNames.join(' '))
+    }
+  }
+
+  hideToastElement(element) {
+    if (!element) return
+
+    const toastController = this.application.getControllerForElementAndIdentifier(
+      element,
+      'notificaties--toast-item'
+    )
+    if (toastController && typeof toastController.hideNotification === 'function') {
+      toastController.hideNotification()
+      return
+    }
+
+    if (element.classList.contains('notification')) {
+      element.classList.add('hide')
+      window.setTimeout(() => {
+        element.remove()
+      }, 500)
+    }
   }
 
   ensurePlaceholders() {
@@ -326,7 +579,65 @@ export default class extends Controller {
   }
 
   async refreshTakenBlock() {
-    window.Turbo?.visit(window.location.href)
+    const pollIntervalMs = 500
+    const maxAttempts = 60
+
+    for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+      try {
+        const refreshUrl = new URL(window.location.href)
+        refreshUrl.searchParams.set('_taken_refresh', `${Date.now()}`)
+
+        const response = await fetch(refreshUrl.toString(), {
+          method: 'GET',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          credentials: 'same-origin',
+          cache: 'no-store',
+        })
+
+        if (!response.ok) {
+          throw new Error('Failed to refresh taken block')
+        }
+
+        const html = await response.text()
+        const parser = new DOMParser()
+        const nextDocument = parser.parseFromString(html, 'text/html')
+        const nextTakenBlock = nextDocument.querySelector('#melding_detail_taken')
+        const currentTakenBlock = document.querySelector('#melding_detail_taken')
+
+        if (!nextTakenBlock || !currentTakenBlock) {
+          throw new Error('Taken block not found in refresh response')
+        }
+
+        const nextRealTaskCount = this.getRealTaskCount(nextDocument)
+
+        if (nextRealTaskCount > this.realTaskCountAtConnect) {
+          currentTakenBlock.replaceWith(nextTakenBlock)
+          this.realTaskCountAtConnect = nextRealTaskCount
+          return
+        }
+      } catch (error) {
+        console.error('[pending-batch] refresh taken block failed', {
+          batchUuid: this.batchUuid,
+          error: error?.message || error,
+        })
+      }
+
+      if (attempt < maxAttempts - 1) {
+        await this.sleep(pollIntervalMs)
+      }
+    }
+  }
+
+  getRealTaskCount(root) {
+    return root.querySelectorAll('[data-testid="detailTaken"] .container__taken .container__taak:not(.container__taak--placeholder)').length
+  }
+
+  sleep(ms) {
+    return new Promise((resolve) => {
+      window.setTimeout(resolve, ms)
+    })
   }
 
   async request(url, method) {
