@@ -206,6 +206,7 @@
 
                     .task-name {
                         display: -webkit-box;
+                        line-clamp: 1;
                         -webkit-line-clamp: 1;
                         -webkit-box-orient: vertical;
                         overflow: hidden;
@@ -377,9 +378,19 @@
         pointer-events: none;
         font-size: 1em;
 
+        &.has-pending-batch-toasts {
+            gap: 8px;
+            flex-direction: column-reverse;
+        }
+
         .notification {
             animation: slide-in-from-bottom $transition-duration-default $transition-ease-default
                 forwards 0.5s;
+
+            &.hide {
+                animation: slide-out-to-bottom $transition-duration-default
+                    $transition-ease-default;
+            }
 
             .btn-close--small {
                 opacity: 0;
@@ -405,13 +416,6 @@
             transform: none;
             animation: slide-in-from-bottom $transition-duration-default $transition-ease-default
                 forwards 0.5s;
-
-            .notification {
-                &.hide {
-                    animation: slide-out-to-bottom $transition-duration-default
-                        $transition-ease-default;
-                }
-            }
         }
     }
 }
