@@ -124,7 +124,7 @@ export default class extends Controller {
     }
   }
 
-  getViewportAwareTop(triggerRect, menuHeight, bounds = null, spacing = 8, offset = 6) {
+  getViewportAwareTop(triggerRect, menuHeight, bounds = null, spacing = 8, offset = 2) {
     const topLimit = bounds?.top ?? spacing
     const bottomLimit = bounds?.bottom ?? window.innerHeight - spacing
     const clampedBottomLimit = Math.max(topLimit, bottomLimit)

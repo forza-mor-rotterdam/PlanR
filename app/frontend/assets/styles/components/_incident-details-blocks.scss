@@ -602,6 +602,22 @@
     .container__uitklapper {
         width: 30px;
 
+        &::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: -10px;
+            width: calc(100% + 20px);
+            height: 14px;
+            display: none;
+        }
+
+        &:hover::after,
+        &:focus::after,
+        &:focus-within::after {
+            display: block;
+        }
+
         .legenda {
             left: auto;
             right: -90px;
