@@ -394,6 +394,11 @@ export default class extends Controller {
               : replacementTitle
         }
 
+        const primaryUndoButton = this.toastElement?.querySelector('[data-undo-button]')
+        if (primaryUndoButton) {
+          primaryUndoButton.disabled = false
+        }
+
         replacement.undoButton?.removeEventListener('click', replacement.undoHandler)
         replacement.closeButton?.removeEventListener('click', replacement.closeHandler)
         replacement.toast?.remove()
