@@ -77,13 +77,13 @@ export default class extends Controller {
         this.element.dataset.pendingBatchAnnuleerUrl || null
       )
     this.closeClickHandler = (event) => this.verwerkEnSluit(event)
-    this.mouseEnterHandler = () => this.pauseBatch()
-    this.mouseLeaveHandler = () => this.resumeBatch()
+    this.containerMouseEnterHandler = () => this.pauseBatch()
+    this.containerMouseLeaveHandler = () => this.resumeBatch()
 
     this.undoButton?.addEventListener('click', this.undoClickHandler)
     this.closeButton?.addEventListener('click', this.closeClickHandler)
-    this.toastElement.addEventListener('mouseenter', this.mouseEnterHandler)
-    this.toastElement.addEventListener('mouseleave', this.mouseLeaveHandler)
+    this.toastContainer?.addEventListener('mouseenter', this.containerMouseEnterHandler)
+    this.toastContainer?.addEventListener('mouseleave', this.containerMouseLeaveHandler)
 
     this.bindAdditionalTaskToasts()
     this.updatePendingToastStackState()
@@ -102,14 +102,12 @@ export default class extends Controller {
   removeHoverHandlers() {
     this.undoButton?.removeEventListener('click', this.undoClickHandler)
     this.closeButton?.removeEventListener('click', this.closeClickHandler)
-    this.toastElement?.removeEventListener('mouseenter', this.mouseEnterHandler)
-    this.toastElement?.removeEventListener('mouseleave', this.mouseLeaveHandler)
+    this.toastContainer?.removeEventListener('mouseenter', this.containerMouseEnterHandler)
+    this.toastContainer?.removeEventListener('mouseleave', this.containerMouseLeaveHandler)
 
     this.additionalToastEntries.forEach((entry) => {
       entry.undoButton?.removeEventListener('click', entry.undoHandler)
       entry.closeButton?.removeEventListener('click', entry.closeHandler)
-      entry.toast?.removeEventListener('mouseenter', entry.mouseEnterHandler)
-      entry.toast?.removeEventListener('mouseleave', entry.mouseLeaveHandler)
     })
   }
 
@@ -307,13 +305,9 @@ export default class extends Controller {
       const undoHandler = () =>
         this.annuleerTaak(taakUuid, toast.dataset.pendingBatchAnnuleerUrl || null)
       const closeHandler = (event) => this.verwerkEnSluit(event)
-      const mouseEnterHandler = () => this.pauseBatch()
-      const mouseLeaveHandler = () => this.resumeBatch()
 
       undoButton?.addEventListener('click', undoHandler)
       closeButton?.addEventListener('click', closeHandler)
-      toast.addEventListener('mouseenter', mouseEnterHandler)
-      toast.addEventListener('mouseleave', mouseLeaveHandler)
 
       this.additionalToastEntries.push({
         taakUuid,
@@ -322,8 +316,6 @@ export default class extends Controller {
         closeButton,
         undoHandler,
         closeHandler,
-        mouseEnterHandler,
-        mouseLeaveHandler,
       })
     })
   }
@@ -333,8 +325,6 @@ export default class extends Controller {
     this.additionalToastEntries.forEach((entry) => {
       entry.undoButton?.removeEventListener('click', entry.undoHandler)
       entry.closeButton?.removeEventListener('click', entry.closeHandler)
-      entry.toast?.removeEventListener('mouseenter', entry.mouseEnterHandler)
-      entry.toast?.removeEventListener('mouseleave', entry.mouseLeaveHandler)
       entry.toast?.remove()
     })
     this.additionalToastEntries = []
@@ -384,8 +374,6 @@ export default class extends Controller {
 
       entry.undoButton?.removeEventListener('click', entry.undoHandler)
       entry.closeButton?.removeEventListener('click', entry.closeHandler)
-      entry.toast?.removeEventListener('mouseenter', entry.mouseEnterHandler)
-      entry.toast?.removeEventListener('mouseleave', entry.mouseLeaveHandler)
       entry.toast?.remove()
       return false
     })
@@ -408,8 +396,6 @@ export default class extends Controller {
 
         replacement.undoButton?.removeEventListener('click', replacement.undoHandler)
         replacement.closeButton?.removeEventListener('click', replacement.closeHandler)
-        replacement.toast?.removeEventListener('mouseenter', replacement.mouseEnterHandler)
-        replacement.toast?.removeEventListener('mouseleave', replacement.mouseLeaveHandler)
         replacement.toast?.remove()
       } else {
         this.primaryTaakUuid = null
