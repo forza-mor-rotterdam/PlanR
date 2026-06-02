@@ -68,7 +68,6 @@ export default class extends Controller {
     this.ensureToastItemController(this.toastElement)
     this.undoButton = this.toastElement.querySelector('[data-undo-button]')
     this.closeButton = this.toastElement.querySelector('[data-close-button]')
-
     this.removeHoverHandlers()
 
     this.undoClickHandler = () =>
@@ -162,24 +161,22 @@ export default class extends Controller {
     if (this.isPaused || this.isFinalized) return
     this.isPaused = true
     this.startPauseTimeout()
-    const activeTaken = this.getActiveTaken()
-    await Promise.all(
-      activeTaken
-        .filter((taak) => Boolean(taak.pauseUrl))
-        .map((taak) => this.request(taak.pauseUrl, 'PATCH').catch(() => null))
-    )
+    const pauseUrl = this.getBatchPauseUrl()
+    if (!pauseUrl) {
+      return
+    }
+    await this.request(pauseUrl, 'PATCH').catch(() => null)
   }
 
   async resumeBatch() {
     if (!this.isPaused || this.isFinalized) return
     this.isPaused = false
     this.clearPauseTimeout()
-    const activeTaken = this.getActiveTaken()
-    await Promise.all(
-      activeTaken
-        .filter((taak) => Boolean(taak.resumeUrl))
-        .map((taak) => this.request(taak.resumeUrl, 'PATCH').catch(() => null))
-    )
+    const resumeUrl = this.getBatchResumeUrl()
+    if (!resumeUrl) {
+      return
+    }
+    await this.request(resumeUrl, 'PATCH').catch(() => null)
   }
 
   async verstuurNu() {
@@ -347,6 +344,14 @@ export default class extends Controller {
 
   getActiveTaken() {
     return Array.from(this.takenByUuid.values())
+  }
+
+  getBatchPauseUrl() {
+    return this.getActiveTaken().find((taak) => Boolean(taak.pauseUrl))?.pauseUrl || null
+  }
+
+  getBatchResumeUrl() {
+    return this.getActiveTaken().find((taak) => Boolean(taak.resumeUrl))?.resumeUrl || null
   }
 
   removePlaceholdersForUuids(uuids) {
