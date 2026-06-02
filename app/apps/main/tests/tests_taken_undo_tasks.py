@@ -139,3 +139,60 @@ class VerstuurBatchNaarMorCoreTests(TestCase):
             second_call_kwargs["afhankelijkheid"],
             [{"taakopdracht_url": "http://core/taak/aaa-url"}],
         )
+
+    @patch("apps.main.tasks.MORCoreService")
+    def test_verstuur_geeft_batch_uuid_door_aan_taak_aanmaken(self, MockMORCoreService):
+        from apps.main.tasks import verstuur_batch_naar_mor_core
+
+        mock_service = MagicMock()
+        mock_service.taak_aanmaken.return_value = {
+            "_links": {"self": {"href": "http://core/taak/x"}}
+        }
+        MockMORCoreService.return_value = mock_service
+
+        batch = self.service.aanmaken(self.taken)
+        verstuur_batch_naar_mor_core(batch["batch_uuid"])
+
+        # Beide aanroepen krijgen de batch-entry uuid mee als idempotency key.
+        ontvangen_uuids = [
+            kall.kwargs.get("uuid")
+            for kall in mock_service.taak_aanmaken.call_args_list
+        ]
+        self.assertEqual(ontvangen_uuids, ["aaa", "bbb"])
+
+    @patch("apps.main.tasks.MORCoreService")
+    def test_retry_geeft_dezelfde_uuids_door(self, MockMORCoreService):
+        from apps.main.tasks import verstuur_batch_naar_mor_core
+
+        # Eerste poging: A slaagt, B faalt.
+        mock_service_1 = MagicMock()
+        mock_service_1.taak_aanmaken.side_effect = [
+            {"_links": {"self": {"href": "http://core/taak/aaa-url"}}},
+            Exception("netwerkprobleem"),
+        ]
+
+        # Tweede poging (retry): beide moeten dezelfde uuids hergebruiken.
+        mock_service_2 = MagicMock()
+        mock_service_2.taak_aanmaken.side_effect = [
+            {"_links": {"self": {"href": "http://core/taak/aaa-url"}}},
+            {"_links": {"self": {"href": "http://core/taak/bbb-url"}}},
+        ]
+
+        MockMORCoreService.side_effect = [mock_service_1, mock_service_2]
+
+        batch = self.service.aanmaken(self.taken)
+
+        # Eerste poging valt om door de exception in B.
+        with self.assertRaises(Exception):
+            verstuur_batch_naar_mor_core(batch["batch_uuid"])
+
+        # Retry vanuit Celery: batch staat nog in cache met dezelfde uuids.
+        verstuur_batch_naar_mor_core(batch["batch_uuid"])
+
+        retry_uuids = [
+            kall.kwargs.get("uuid")
+            for kall in mock_service_2.taak_aanmaken.call_args_list
+        ]
+        # Beide taken worden met DEZELFDE uuids opnieuw verstuurd, zodat
+        # mor-core's idempotency replay de eerste niet dupliceert.
+        self.assertEqual(retry_uuids, ["aaa", "bbb"])

@@ -8,8 +8,8 @@ logger = logging.getLogger(__name__)
 
 BATCH_CACHE_PREFIX = "pending_batch"
 COUNTDOWN = 10  # seconds before auto-send
-MARGE = 10  # seconds extra before Celery fallback fires
-MAX_PAUSE_DUUR = 60  # seconds max pause duration
+MARGE = 15  # seconds extra before Celery fallback fires
+MAX_PAUSE_DUUR = 90  # seconds max pause duration
 # TTL must outlive the longest possible delay + safety margin
 BATCH_TTL = MAX_PAUSE_DUUR + MARGE + 60  # seconds
 

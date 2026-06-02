@@ -87,7 +87,7 @@ def verstuur_batch_naar_mor_core(self, batch_uuid):
             {"taakopdracht_url": url} for url in resolved_parents
         ]
 
-        response = mor_core_service.taak_aanmaken(**taak_data)
+        response = mor_core_service.taak_aanmaken(uuid=taak["uuid"], **taak_data)
         taakopdracht_url = response.get("_links", {}).get("self")
         taakopdracht_url = (
             taakopdracht_url.get("href")
