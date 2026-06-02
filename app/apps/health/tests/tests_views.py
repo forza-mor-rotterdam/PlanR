@@ -7,7 +7,7 @@ from health_check.exceptions import ServiceUnavailable
 
 
 class HealthCheckViewTest(TestCase):
-    databases = {"default"}
+    databases = {"default", "alternate"}
 
     def test_returns_503_on_service_unavailable(self):
         with patch.object(
