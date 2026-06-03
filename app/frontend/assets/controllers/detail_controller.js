@@ -73,6 +73,18 @@ export default class extends Controller {
           maxZoom: 19,
         }),
       },
+      gmrDamNum: {
+        layer: L.tileLayer.wms(wmsHandlerUrl, {
+          layers: 'GMRDAM.NUM',
+          crs: rdNewCrs,
+          pane: 'egdPane',
+          format: 'image/png',
+          transparent: true,
+          zIndex: 205,
+          minZoom: 10,
+          maxZoom: 19,
+        }),
+      },
       containers: {
         layer: L.tileLayer.wms(wmsHandlerUrl, {
           layers: 'OBS.OO.CONTAINER',
