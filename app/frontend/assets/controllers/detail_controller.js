@@ -74,16 +74,8 @@ export default class extends Controller {
         }),
       },
       gmrDamNum: {
-        layer: L.tileLayer.wms(wmsHandlerUrl, {
-          layers: 'GMRDAM.NUM',
-          crs: rdNewCrs,
-          pane: 'egdPane',
-          format: 'image/png',
-          transparent: true,
-          zIndex: 205,
-          minZoom: 10,
-          maxZoom: 19,
-        }),
+        // Use a LayerGroup that will be populated from the ArcGIS FeatureServer
+        layer: L.layerGroup(),
       },
       containers: {
         layer: L.tileLayer.wms(wmsHandlerUrl, {
@@ -167,6 +159,9 @@ export default class extends Controller {
       this.map.zoomControl.setPosition('bottomleft')
 
       this.map.createPane('egdPane')
+      // pane for huisnummer markers to ensure they are on top
+      this.map.createPane('huisnummerPane')
+      this.map.getPane('huisnummerPane').style.zIndex = 1000
 
       L.tileLayer(url, config).addTo(this.map)
 
@@ -442,8 +437,178 @@ export default class extends Controller {
 
     if (e.target.checked) {
       layerTypes.map((type) => this.mapLayers[type].layer.addTo(this.map))
+      // if the huisnummer layer was toggled on, (re)load features and attach handlers
+      if (layerTypes.includes('gmrDamNum')) {
+        this._attachHuisnummerHandlers()
+        this.fetchHuisnummers()
+      }
     } else {
       layerTypes.map((type) => this.map.removeLayer(this.mapLayers[type].layer))
+      if (layerTypes.includes('gmrDamNum')) {
+        this._detachHuisnummerHandlers()
+        // clear any displayed features
+        try {
+          this.mapLayers.gmrDamNum.layer.clearLayers()
+        } catch (e) {}
+      }
+    }
+  }
+
+  // Huisnummer FeatureServer handling
+  get huisnummerFeatureServerUrl() {
+    return (
+      'https://services.arcgis.com/zP1tGdLpGvt2qNJ6/arcgis/rest/services/Huisnummers/FeatureServer/0'
+    )
+  }
+
+  _attachHuisnummerHandlers() {
+    if (!this.map) return
+    if (this._huisnummerMoveHandler) return
+    this._huisnummerMoveHandler = () => this._scheduleHuisnummerFetch()
+    this.map.on('moveend', this._huisnummerMoveHandler)
+    this.map.on('zoomend', this._huisnummerMoveHandler)
+  }
+
+  _detachHuisnummerHandlers() {
+    if (!this.map || !this._huisnummerMoveHandler) return
+    this.map.off('moveend', this._huisnummerMoveHandler)
+    this.map.off('zoomend', this._huisnummerMoveHandler)
+    clearTimeout(this._huisnummerTimeout)
+    this._huisnummerMoveHandler = null
+  }
+
+  _scheduleHuisnummerFetch() {
+    clearTimeout(this._huisnummerTimeout)
+    this._huisnummerTimeout = setTimeout(() => this.fetchHuisnummers(), 300)
+  }
+
+  async fetchHuisnummers() {
+    if (!this.map) return
+    if (!this.map.hasLayer(this.mapLayers.gmrDamNum.layer)) return
+    const minZoom = 10
+    if (this.map.getZoom() < minZoom) return
+
+    const b = this.map.getBounds()
+    const geometry = [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()].join(',')
+    const url = `${this.huisnummerFeatureServerUrl}/query?where=1%3D1&geometry=${geometry}&geometryType=esriGeometryEnvelope&inSR=4326&outFields=*&outSR=4326&f=geojson`
+
+    try {
+      const res = await fetch(url)
+      if (!res.ok) return
+      const data = await res.json()
+      
+      // clear previous features
+      this.mapLayers.gmrDamNum.layer.clearLayers()
+      const getHouseNumber = (props = {}) => {
+        if (!props || Object.keys(props).length === 0) return ''
+        const normalized = {}
+        Object.entries(props).forEach(([k, v]) => {
+          normalized[String(k).toLowerCase().replace(/\s+/g, '')] = v
+        })
+
+        const priorities = [
+          'tekst',
+          'huisnummer',
+          'huisnr',
+          'hnr',
+          'huisnmr',
+          'huisnummerlabel',
+          'huisnummer_l',
+          'huisnummer_label',
+          'nummer',
+          'label',
+          'display',
+          'fulladdress',
+          'fulladress',
+          'name',
+          'naam',
+          'code_oms',
+          'code',
+        ]
+
+        for (const p of priorities) {
+          if (Object.prototype.hasOwnProperty.call(normalized, p)) {
+            const v = normalized[p]
+            if (v != null) {
+              const s = String(v).trim()
+              if (s) return s
+            }
+          }
+        }
+
+        // Try to find a numeric-like value in any property
+        for (const v of Object.values(normalized)) {
+          if (v == null) continue
+          const s = String(v).trim()
+          const m = s.match(/^(\d+[A-Za-z\-/ ]*)$/)
+          if (m) return m[1]
+        }
+
+        // Try to extract first digits from any string value
+        for (const v of Object.values(normalized)) {
+          if (v == null) continue
+          const s = String(v)
+          const m = s.match(/(\d+[A-Za-z\-/ ]*)/)
+          if (m) return m[1].trim()
+        }
+
+        return ''
+      }
+
+      const findNumericInProps = (props = {}) => {
+        for (const v of Object.values(props)) {
+          if (v == null) continue
+          const s = String(v).trim()
+          if (/^\d+[A-Za-z\-\/ ]*$/.test(s)) return s
+        }
+        return ''
+      }
+
+      const buildFallbackLabel = (props = {}) => {
+        const keys = Object.keys(props).map((k) => k.toLowerCase())
+        const street = props[keys.find((k) => k.includes('straat') || k.includes('road') || k.includes('weg'))]
+        const num = props[keys.find((k) => k.includes('huis') && k.includes('nr'))] || props[keys.find((k) => k.includes('huis') && k.includes('nummer'))]
+        if (street || num) return `${street || ''} ${num || ''}`.trim()
+        const numeric = findNumericInProps(props)
+        if (numeric) return numeric
+        // fallback to any meaningful text property
+        const textProp = props[keys.find((k) => k.includes('naam') || k.includes('display') || k.includes('name'))]
+        return textProp || ''
+      }
+
+      
+      const geoJsonLayer = L.geoJSON(data, {
+        pointToLayer: (feature, latlng) => {
+          const props = feature.properties || {}
+          const rawNum = getHouseNumber(props)
+          let label = rawNum || ''
+          if (!label) {
+            label = buildFallbackLabel(props)
+          }
+          const safeNum = String(label || '').trim()
+          // if still empty, show a subtle placeholder so the marker is visible
+          const displayLabel = safeNum || '•'
+          const inlineHtml = `
+            <div class="huisnummer-marker" style="background:#d63b3b;color:#fff;padding:2px 8px;border-radius:4px;border:1px solid rgba(0,0,0,0.15);box-shadow:0 1px 3px rgba(0,0,0,0.25);font-weight:600;font-size:12px;white-space:nowrap;">${displayLabel}</div>
+          `
+          const m = L.marker(latlng, {
+            pane: 'huisnummerPane',
+            icon: L.divIcon({ className: 'huisnummer-marker-wrapper', html: inlineHtml, iconSize: [36, 22], iconAnchor: [18, 11] }),
+          })
+          
+          return m
+        },
+        onEachFeature: (feature, layer) => {
+          const props = feature.properties || {}
+          const popup = getHouseNumber(props) || Object.values(props).join(' ')
+          layer.bindPopup(popup)
+          
+        },
+      })
+      geoJsonLayer.addTo(this.mapLayers.gmrDamNum.layer)
+    } catch (err) {
+      // silently ignore fetch errors
+      // console.error('huisnummer fetch', err)
     }
   }
   cancelInformatieToevoegen(e) {
