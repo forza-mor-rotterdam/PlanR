@@ -589,20 +589,19 @@ export default class extends Controller {
           // if still empty, show a subtle placeholder so the marker is visible
           const displayLabel = safeNum || '•'
           const inlineHtml = `
-            <div class="huisnummer-marker" style="background:#d63b3b;color:#fff;padding:2px 8px;border-radius:4px;border:1px solid rgba(0,0,0,0.15);box-shadow:0 1px 3px rgba(0,0,0,0.25);font-weight:600;font-size:12px;white-space:nowrap;">${displayLabel}</div>
+            <div class="huisnummer-marker">${displayLabel}</div>
           `
           const m = L.marker(latlng, {
             pane: 'huisnummerPane',
+            interactive: false,
+            keyboard: false,
             icon: L.divIcon({ className: 'huisnummer-marker-wrapper', html: inlineHtml, iconSize: [36, 22], iconAnchor: [18, 11] }),
           })
           
           return m
         },
         onEachFeature: (feature, layer) => {
-          const props = feature.properties || {}
-          const popup = getHouseNumber(props) || Object.values(props).join(' ')
-          layer.bindPopup(popup)
-          
+          // keep labels non-clickable; no popup binding for huisnummer markers
         },
       })
       geoJsonLayer.addTo(this.mapLayers.gmrDamNum.layer)
