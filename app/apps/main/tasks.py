@@ -53,49 +53,77 @@ def publiseer_melding_gebruikers_activiteiten(self):
     return f"Topics gepubliceerd: {topics}"
 
 
-@shared_task(bind=True, base=BaseTaskWithRetry)
+@shared_task(bind=True)
 def verstuur_batch_naar_mor_core(self, batch_uuid):
-    service = PendingBatchService()
-    batch = service.ophalen(batch_uuid)
+    from apps.main.models import PendingBatch
 
-    if batch is None:
-        logger.info(f"Batch {batch_uuid} niet gevonden, al verwerkt.")
+    obj = PendingBatch.objects.filter(batch_uuid=str(batch_uuid)).first()
+
+    if obj is None:
+        # Met een duurzame store betekent "niet gevonden" een echte anomalie
+        # (bv. verloren bericht) -- geen stille success meer.
+        logger.error(
+            f"Batch {batch_uuid} niet gevonden in database; mogelijk verloren."
+        )
         return f"Batch {batch_uuid} niet gevonden"
 
+    if obj.status in (PendingBatch.STATUS_SENT, PendingBatch.STATUS_CANCELLED):
+        logger.info(f"Batch {batch_uuid} status={obj.status}; niets te doen.")
+        return f"Batch {batch_uuid} status={obj.status}"
+
+    obj.status = PendingBatch.STATUS_SENDING
+    obj.save()
+
     mor_core_service = MORCoreService()
+    cancelled_uuids = {
+        t["uuid"] for t in obj.taken if t["status"] == "cancelled"
+    }
     uuid_to_url = {}
 
-    for taak in batch["taken"]:
-        if taak["status"] == "cancelled":
-            continue
+    try:
+        for taak in obj.taken:
+            if taak["status"] == "cancelled":
+                continue
+            if taak["status"] == "sent":
+                # Al verstuurd (defensief bij her-invocatie): url herstellen
+                # zodat kinderen hun parent-url kunnen resolven.
+                if taak.get("taakopdracht_url"):
+                    uuid_to_url[taak["uuid"]] = taak["taakopdracht_url"]
+                continue
 
-        # Edge case: user hovert over undo knop en de browser crasht.
-        # De timer wordt niet herstart. Om deze reden hebben wij een max pauze tijd van 60 sec.
-        # Zie MAX_PAUSE_DUUR in tasks.py
-
-        taak_data = taak["taak_data"].copy()
-        # Resolve parent UUIDs to MOR Core URLs
-        resolved_parents = [
-            uuid_to_url.get(p, p) for p in taak["parents"]
-            if p not in [
-                t["uuid"]
-                for t in batch["taken"]
-                if t["status"] == "cancelled"
+            taak_data = taak["taak_data"].copy()
+            resolved_parents = [
+                uuid_to_url.get(p, p)
+                for p in taak["parents"]
+                if p not in cancelled_uuids
             ]
-        ]
-        taak_data["afhankelijkheid"] = [
-            {"taakopdracht_url": url} for url in resolved_parents
-        ]
+            taak_data["afhankelijkheid"] = [
+                {"taakopdracht_url": url} for url in resolved_parents
+            ]
 
-        response = mor_core_service.taak_aanmaken(**taak_data)
-        taakopdracht_url = response.get("_links", {}).get("self")
-        taakopdracht_url = (
-            taakopdracht_url.get("href")
-            if isinstance(taakopdracht_url, dict)
-            else taakopdracht_url
+            response = mor_core_service.taak_aanmaken(
+                uuid=taak["uuid"], **taak_data
+            )
+            taakopdracht_url = response.get("_links", {}).get("self")
+            taakopdracht_url = (
+                taakopdracht_url.get("href")
+                if isinstance(taakopdracht_url, dict)
+                else taakopdracht_url
+            )
+            if taakopdracht_url:
+                uuid_to_url[taak["uuid"]] = taakopdracht_url
+                taak["taakopdracht_url"] = taakopdracht_url
+            taak["status"] = "sent"
+            obj.save()
+    except Exception:
+        # Geen retry: markeer error, bewaar reeds verstuurde taken, log.
+        obj.status = PendingBatch.STATUS_ERROR
+        obj.save()
+        logger.exception(
+            f"Batch {batch_uuid} versturen mislukt; status=error gezet."
         )
-        if taakopdracht_url:
-            uuid_to_url[taak["uuid"]] = taakopdracht_url
+        return f"Batch {batch_uuid} error"
 
-    service.verwijderen(batch_uuid)
+    obj.status = PendingBatch.STATUS_SENT
+    obj.save()
     return f"Batch {batch_uuid} verstuurd: {len(uuid_to_url)} taken"

@@ -1,5 +1,5 @@
 from apps.authenticatie.views import GebruikerProfielView, SessionTimerView
-from apps.health.views import healthz
+from apps.health.views import HealthCheckView, healthz
 from apps.main.views import (
     LichtmastView,
     LogboekView,
@@ -13,7 +13,6 @@ from apps.main.views import (
     TakenAnnuleerView,
     TakenPauseView,
     TakenResumeView,
-    TakenStartenView,
     TakenVerstuurView,
     gebruiker_info,
     http_403,
@@ -98,7 +97,7 @@ urlpatterns = [
         name="melding_next_vorige",
     ),
     path("publiceer-topic/<uuid:id>/", publiceer_topic, name="publiceer_topic"),
-    path("health/", include("health_check.urls")),
+    path("health/", HealthCheckView.as_view(), name="health_check_home"),
     path("healthz/", healthz, name="healthz"),
     path(
         "melding/<uuid:id>/afhandelen/",

@@ -19,16 +19,14 @@ export default class extends Controller {
     const maxCount = this.element.maxLength
     const targetElement = this.element.parentNode.querySelector('small')
     if (targetElement) {
-      if (maxCount - count >= 0) {
-        targetElement.classList.remove('error')
-        if (maxCount - count <= 10) {
-          targetElement.classList.add('warning')
-        } else {
-          targetElement.classList.remove('warning', 'error')
-        }
-      } else {
-        targetElement.classList.remove('warning')
+      if (count >= maxCount) {
         targetElement.classList.add('error')
+        targetElement.classList.remove('warning')
+      } else if (maxCount - count <= 10) {
+        targetElement.classList.remove('error')
+        targetElement.classList.add('warning')
+      } else {
+        targetElement.classList.remove('error', 'warning')
       }
       targetElement.innerHTML = `${maxCharacterPrefix}${count}/${this.element.maxLength}`
     }

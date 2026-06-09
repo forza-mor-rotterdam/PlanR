@@ -1,0 +1,12 @@
+<turbo-stream action="append" target="toast_lijst">
+<template>
+        {% include "melding/detail/taken_aanmaken_pending_batch_toast_item.html" with pending_batch=pending_batch taak=pending_batch.taken.0 is_primary=True csrf_token=csrf_token only %}
+        {% for taak in pending_batch.taken|slice:"1:" %}
+            {% include "melding/detail/taken_aanmaken_pending_batch_toast_item.html" with pending_batch=pending_batch taak=taak csrf_token=csrf_token only %}
+        {% endfor %}
+        <!-- POST /melding/{melding_uuid}/taken/{batch_uuid}/verstuur/ => verstuur direct -->
+        <!-- POST /melding/{melding_uuid}/taken/{batch_uuid}/taak/{taak_uuid}/annuleer/ => annuleer taak (+ children) -->
+        <!-- PATCH /melding/{melding_uuid}/taken/{batch_uuid}/taak/{taak_uuid}/pause/ => pauzeer taak -->
+        <!-- PATCH /melding/{melding_uuid}/taken/{batch_uuid}/taak/{taak_uuid}/resume/ => hervat taak -->
+</template>
+</turbo-stream>

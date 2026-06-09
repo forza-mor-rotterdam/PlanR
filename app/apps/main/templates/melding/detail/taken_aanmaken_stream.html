@@ -1,6 +1,9 @@
 {% include "melding/detail/taken.html" %}
 {% include "melding/detail/melding_detail_titel.html" %}
-{% include "melding/detail/taken_aanmaken_form.html" with form=form view=view pending_batch=pending_batch only %}
+{% include "melding/detail/taken_aanmaken_form.html" with form=form view=view pending_batch=pending_batch csrf_token=csrf_token only %}
+{% if pending_batch %}
+	{% include "melding/detail/taken_aanmaken_pending_batch_toast.html" with pending_batch=pending_batch csrf_token=csrf_token only %}
+{% endif %}
 {% include "melding/detail/tijdlijn.html" with melding=melding only %}
 {% include "melding/detail/acties.html" %}
 {% include "public/notificaties/toast_lijst.html" with messages=messages only %}
