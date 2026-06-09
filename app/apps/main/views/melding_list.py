@@ -65,7 +65,7 @@ def melding_lijst(request):
         standaard_waardes["foldout_states"] = qs.get("foldout_states")
 
         # reset pagination offset if meldingen count most likely will change by changing filters
-        if DeepDiff(actieve_filters, nieuwe_actieve_filters) or qs.get(
+        if DeepDiff(actieve_filters, nieuwe_actieve_filters, ignore_order=True) or qs.get(
             "q", ""
         ) != request.session.get("q", ""):
             request.session["offset"] = "0"

@@ -34,6 +34,12 @@ from apps.main.views.melding_detail import melding_taken  # NOQA
 from apps.main.views.melding_detail import melding_verzonden  # NOQA
 from apps.main.views.melding_detail import publiceer_topic  # NOQA
 from apps.main.views.melding_detail import taak_verwijderen  # NOQA
+from apps.main.views.taken_undo import (  # NOQA
+    TakenAnnuleerView,
+    TakenPauseView,
+    TakenResumeView,
+    TakenVerstuurView,
+)
 from apps.main.views.melding_list import melding_lijst  # NOQA
 from bs4 import BeautifulSoup
 from config.context_processors import general_settings
@@ -76,19 +82,7 @@ def http_404(request):
 
 
 def http_500(request):
-    current_time = datetime.now()
-    server_id = os.getenv("APP_ENV", "Onbekend")
-
-    return render(
-        request,
-        "500.html",
-        {
-            "current_time": current_time,
-            "server_id": server_id,
-            "user_agent": request.META.get("HTTP_USER_AGENT", "Onbekend"),
-            "path": request.build_absolute_uri(request.path),
-        },
-    )
+    return render(request, "500.html")
 
 
 class LoginView(View):

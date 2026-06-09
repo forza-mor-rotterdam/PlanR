@@ -1,5 +1,5 @@
 from apps.authenticatie.views import GebruikerProfielView, SessionTimerView
-from apps.health.views import healthz
+from apps.health.views import HealthCheckView, healthz
 from apps.main.views import (
     LichtmastView,
     LogboekView,
@@ -10,6 +10,11 @@ from apps.main.views import (
     TaakRTaaktypeView,
     TakenAanmakenStreamView,
     TakenAanmakenView,
+
+    TakenAnnuleerView,
+    TakenPauseView,
+    TakenResumeView,
+    TakenVerstuurView,
     gebruiker_info,
     http_403,
     http_404,
@@ -52,6 +57,7 @@ from drf_spectacular.views import (
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
+from mor_api_services.teams_logging import test_teams_error_view
 from rest_framework.authtoken import views
 from rest_framework.routers import DefaultRouter
 
@@ -92,7 +98,7 @@ urlpatterns = [
         name="melding_next_vorige",
     ),
     path("publiceer-topic/<uuid:id>/", publiceer_topic, name="publiceer_topic"),
-    path("health/", include("health_check.urls")),
+    path("health/", HealthCheckView.as_view(), name="health_check_home"),
     path("healthz/", healthz, name="healthz"),
     path(
         "melding/<uuid:id>/afhandelen/",
@@ -133,6 +139,26 @@ urlpatterns = [
         "melding/<uuid:id>/taken-aanmaken/stream/",
         TakenAanmakenStreamView.as_view(),
         name="taken_aanmaken_stream",
+    ),
+    path(
+        "melding/<uuid:id>/taken/<str:batch_uuid>/verstuur/",
+        TakenVerstuurView.as_view(),
+        name="taken_verstuur",
+    ),
+    path(
+        "melding/<uuid:id>/taken/<str:batch_uuid>/taak/<str:taak_uuid>/annuleer/",
+        TakenAnnuleerView.as_view(),
+        name="taken_annuleer",
+    ),
+    path(
+        "melding/<uuid:id>/taken/<str:batch_uuid>/taak/<str:taak_uuid>/pause/",
+        TakenPauseView.as_view(),
+        name="taken_pause",
+    ),
+    path(
+        "melding/<uuid:id>/taken/<str:batch_uuid>/taak/<str:taak_uuid>/resume/",
+        TakenResumeView.as_view(),
+        name="taken_resume",
     ),
     path(
         "melding/<uuid:melding_uuid>/taak-verwijderen/",
@@ -223,6 +249,11 @@ urlpatterns = [
     path("select2/", include(select2_urls)),
     re_path(r"core/media/", meldingen_bestand, name="meldingen_bestand"),
     path("ckeditor5/", include("django_ckeditor_5.urls")),
+    path(
+        "beheer/test-teams-foutmelding/",
+        test_teams_error_view,
+        name="test_teams_foutmelding",
+    ),
     path("beheer/", include("apps.beheer.urls")),
     path("dashboard/", include("apps.dashboard.urls")),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
