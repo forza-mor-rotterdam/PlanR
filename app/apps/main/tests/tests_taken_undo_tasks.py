@@ -1,22 +1,13 @@
-import json
 from unittest.mock import MagicMock, patch
 
-from django.core.cache import cache
-from django.test import TestCase, override_settings
+from django.test import TestCase
 
+from apps.main.models import PendingBatch
 from apps.main.services.pending_batch import PendingBatchService
 
 
-@override_settings(
-    CACHES={
-        "default": {
-            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        }
-    }
-)
 class VerstuurBatchNaarMorCoreTests(TestCase):
     def setUp(self):
-        cache.clear()
         self.service = PendingBatchService()
         self.taken = [
             {
@@ -46,7 +37,7 @@ class VerstuurBatchNaarMorCoreTests(TestCase):
         ]
 
     @patch("apps.main.tasks.MORCoreService")
-    def test_verstuurt_pending_taken_naar_mor_core(self, MockMORCoreService):
+    def test_verstuurt_pending_taken_en_markeert_sent(self, MockMORCoreService):
         from apps.main.tasks import verstuur_batch_naar_mor_core
 
         mock_service = MagicMock()
@@ -59,7 +50,9 @@ class VerstuurBatchNaarMorCoreTests(TestCase):
         verstuur_batch_naar_mor_core(batch["batch_uuid"])
 
         self.assertEqual(mock_service.taak_aanmaken.call_count, 2)
-        self.assertIsNone(self.service.ophalen(batch["batch_uuid"]))
+        opgehaald = self.service.ophalen(batch["batch_uuid"])
+        self.assertEqual(opgehaald["status"], PendingBatch.STATUS_SENT)
+        self.assertTrue(all(t["status"] == "sent" for t in opgehaald["taken"]))
 
     @patch("apps.main.tasks.MORCoreService")
     def test_skipt_cancelled_taken(self, MockMORCoreService):
@@ -76,8 +69,9 @@ class VerstuurBatchNaarMorCoreTests(TestCase):
         verstuur_batch_naar_mor_core(batch["batch_uuid"])
 
         self.assertEqual(mock_service.taak_aanmaken.call_count, 1)
-        call_kwargs = mock_service.taak_aanmaken.call_args_list[0]
-        self.assertEqual(call_kwargs[1]["titel"], "Taak A")
+        self.assertEqual(
+            mock_service.taak_aanmaken.call_args_list[0][1]["titel"], "Taak A"
+        )
 
     @patch("apps.main.tasks.MORCoreService")
     def test_behandelt_paused_als_pending(self, MockMORCoreService):
@@ -95,8 +89,11 @@ class VerstuurBatchNaarMorCoreTests(TestCase):
 
         self.assertEqual(mock_service.taak_aanmaken.call_count, 2)
 
+    @patch("apps.main.tasks.logger")
     @patch("apps.main.tasks.MORCoreService")
-    def test_noop_als_batch_niet_bestaat(self, MockMORCoreService):
+    def test_ontbrekende_batch_logt_error_geen_silent_success(
+        self, MockMORCoreService, mock_logger
+    ):
         from apps.main.tasks import verstuur_batch_naar_mor_core
 
         mock_service = MagicMock()
@@ -105,6 +102,24 @@ class VerstuurBatchNaarMorCoreTests(TestCase):
         verstuur_batch_naar_mor_core("niet-bestaand-uuid")
 
         mock_service.taak_aanmaken.assert_not_called()
+        mock_logger.error.assert_called_once()
+
+    @patch("apps.main.tasks.MORCoreService")
+    def test_al_sent_batch_is_noop(self, MockMORCoreService):
+        from apps.main.tasks import verstuur_batch_naar_mor_core
+
+        mock_service = MagicMock()
+        mock_service.taak_aanmaken.return_value = {
+            "_links": {"self": {"href": "http://core/taak/1"}},
+        }
+        MockMORCoreService.return_value = mock_service
+
+        batch = self.service.aanmaken(self.taken)
+        verstuur_batch_naar_mor_core(batch["batch_uuid"])  # -> SENT
+        verstuur_batch_naar_mor_core(batch["batch_uuid"])  # opnieuw
+
+        # Geen dubbele verzending bij her-invocatie.
+        self.assertEqual(mock_service.taak_aanmaken.call_count, 2)
 
     @patch("apps.main.tasks.MORCoreService")
     def test_alle_cancelled_verstuurt_niks(self, MockMORCoreService):
@@ -114,7 +129,7 @@ class VerstuurBatchNaarMorCoreTests(TestCase):
         MockMORCoreService.return_value = mock_service
 
         batch = self.service.aanmaken(self.taken)
-        self.service.annuleer_taak(batch["batch_uuid"], "aaa")  # cascades to bbb
+        self.service.annuleer_taak(batch["batch_uuid"], "aaa")  # cascade -> bbb
         verstuur_batch_naar_mor_core(batch["batch_uuid"])
 
         mock_service.taak_aanmaken.assert_not_called()
@@ -133,7 +148,6 @@ class VerstuurBatchNaarMorCoreTests(TestCase):
         batch = self.service.aanmaken(self.taken)
         verstuur_batch_naar_mor_core(batch["batch_uuid"])
 
-        # Second call (taak B) should have resolved parent URL
         second_call_kwargs = mock_service.taak_aanmaken.call_args_list[1][1]
         self.assertEqual(
             second_call_kwargs["afhankelijkheid"],
@@ -141,7 +155,7 @@ class VerstuurBatchNaarMorCoreTests(TestCase):
         )
 
     @patch("apps.main.tasks.MORCoreService")
-    def test_verstuur_geeft_batch_uuid_door_aan_taak_aanmaken(self, MockMORCoreService):
+    def test_geeft_taak_uuids_door_als_idempotency_key(self, MockMORCoreService):
         from apps.main.tasks import verstuur_batch_naar_mor_core
 
         mock_service = MagicMock()
@@ -153,7 +167,6 @@ class VerstuurBatchNaarMorCoreTests(TestCase):
         batch = self.service.aanmaken(self.taken)
         verstuur_batch_naar_mor_core(batch["batch_uuid"])
 
-        # Beide aanroepen krijgen de batch-entry uuid mee als idempotency key.
         ontvangen_uuids = [
             kall.kwargs.get("uuid")
             for kall in mock_service.taak_aanmaken.call_args_list
@@ -161,38 +174,27 @@ class VerstuurBatchNaarMorCoreTests(TestCase):
         self.assertEqual(ontvangen_uuids, ["aaa", "bbb"])
 
     @patch("apps.main.tasks.MORCoreService")
-    def test_retry_geeft_dezelfde_uuids_door(self, MockMORCoreService):
+    def test_fout_zet_status_error_zonder_retry_en_behoudt_verstuurde(
+        self, MockMORCoreService
+    ):
         from apps.main.tasks import verstuur_batch_naar_mor_core
 
-        # Eerste poging: A slaagt, B faalt.
-        mock_service_1 = MagicMock()
-        mock_service_1.taak_aanmaken.side_effect = [
+        # A slaagt, B faalt. Geen retry: status=error, A blijft behouden.
+        mock_service = MagicMock()
+        mock_service.taak_aanmaken.side_effect = [
             {"_links": {"self": {"href": "http://core/taak/aaa-url"}}},
             Exception("netwerkprobleem"),
         ]
-
-        # Tweede poging (retry): beide moeten dezelfde uuids hergebruiken.
-        mock_service_2 = MagicMock()
-        mock_service_2.taak_aanmaken.side_effect = [
-            {"_links": {"self": {"href": "http://core/taak/aaa-url"}}},
-            {"_links": {"self": {"href": "http://core/taak/bbb-url"}}},
-        ]
-
-        MockMORCoreService.side_effect = [mock_service_1, mock_service_2]
+        MockMORCoreService.return_value = mock_service
 
         batch = self.service.aanmaken(self.taken)
-
-        # Eerste poging valt om door de exception in B.
-        with self.assertRaises(Exception):
-            verstuur_batch_naar_mor_core(batch["batch_uuid"])
-
-        # Retry vanuit Celery: batch staat nog in cache met dezelfde uuids.
+        # Geen exception meer naar buiten: de task vangt 'm en zet status=error.
         verstuur_batch_naar_mor_core(batch["batch_uuid"])
 
-        retry_uuids = [
-            kall.kwargs.get("uuid")
-            for kall in mock_service_2.taak_aanmaken.call_args_list
-        ]
-        # Beide taken worden met DEZELFDE uuids opnieuw verstuurd, zodat
-        # mor-core's idempotency replay de eerste niet dupliceert.
-        self.assertEqual(retry_uuids, ["aaa", "bbb"])
+        obj = PendingBatch.objects.get(batch_uuid=batch["batch_uuid"])
+        self.assertEqual(obj.status, PendingBatch.STATUS_ERROR)
+        taak_a = next(t for t in obj.taken if t["uuid"] == "aaa")
+        taak_b = next(t for t in obj.taken if t["uuid"] == "bbb")
+        self.assertEqual(taak_a["status"], "sent")
+        self.assertEqual(taak_a["taakopdracht_url"], "http://core/taak/aaa-url")
+        self.assertEqual(taak_b["status"], "pending")

@@ -752,7 +752,7 @@ class TakenAanmakenStreamView(TakenAanmakenView):
         context = self.get_melding_detail_taaktype_context()
         context.pop("form", None)
 
-        # Stage in Redis instead of sending directly
+        # Stage in database instead of sending directly
         service = PendingBatchService()
         batch = service.aanmaken(batch_taken)
 
