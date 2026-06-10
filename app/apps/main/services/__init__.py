@@ -1,6 +1,7 @@
 import logging
 
 from apps.instellingen.models import Instelling
+from django.conf import settings
 from django.contrib import messages
 from mor_api_services import LocatieService as BasisLocatieService
 from mor_api_services import MercureService as BasisMercureService
@@ -42,6 +43,7 @@ class MORCoreService(BasisMORCoreService):
                 "gebruikersnaam": instellingen.mor_core_gebruiker_email,
                 "wachtwoord": instellingen.mor_core_gebruiker_wachtwoord,
                 "token_timeout": instellingen.mor_core_token_timeout,
+                "timeout": kwargs.get("timeout", settings.SERVICE_REQUEST_TIMEOUT),
             }
         )
         super().__init__(*args, **kwargs)
@@ -56,6 +58,7 @@ class OnderwerpenService(BasisOnderwerpenService):
         kwargs.update(
             {
                 "basis_url": instellingen.onderwerpen_basis_url,
+                "timeout": kwargs.get("timeout", settings.SERVICE_REQUEST_TIMEOUT),
             }
         )
         super().__init__(*args, **kwargs)
@@ -72,6 +75,7 @@ class TaakRService(BasisTaakRService):
             {
                 "basis_url": instellingen.taakr_basis_url,
                 "cache_timeout": kwargs.get("cache_timeout", default_cache_timeout),
+                "timeout": kwargs.get("timeout", settings.SERVICE_REQUEST_TIMEOUT),
             }
         )
         super().__init__(*args, **kwargs)
@@ -88,6 +92,7 @@ class LocatieService(BasisLocatieService):
             {
                 "basis_url": instellingen.locaties_basis_url,
                 "cache_timeout": kwargs.get("cache_timeout", default_cache_timeout),
+                "timeout": kwargs.get("timeout", settings.SERVICE_REQUEST_TIMEOUT),
             }
         )
         super().__init__(*args, **kwargs)

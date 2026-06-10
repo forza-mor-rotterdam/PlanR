@@ -1333,6 +1333,38 @@ form.taken-aanmaken {
             box-sizing: border-box;
         }
 
+        .taak-opmerking-wrapper {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: baseline;
+            column-gap: 0.5rem;
+
+            > h3 {
+                display: flex;
+                align-items: baseline;
+                gap: 0.3rem;
+            }
+
+            .taak-opmerking-title-note {
+                font-size: $fz-12;
+                font-weight: 400;
+                color: $gray-600;
+            }
+
+            > h3,
+            > textarea,
+            > input[type="hidden"] {
+                grid-column: 1 / -1;
+            }
+
+            > textarea.taak-opmerking + .help-block.no-margin {
+                grid-column: 2;
+                text-align: right;
+                font-size: $fz-12;
+                padding-left: 0;
+            }
+        }
+
         .container__flex {
             display: flex;
             gap: 2em;

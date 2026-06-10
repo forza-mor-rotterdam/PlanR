@@ -299,7 +299,7 @@ class InformatieToevoegenForm(forms.Form):
             }
         ),
         required=False,
-        max_length=5000,
+        max_length=1000,
     )
 
     bijlagen_extra = MultipleFileField(
@@ -339,7 +339,7 @@ class TakenAanmakenForm(forms.Form):
     )
     bericht = forms.CharField(
         required=False,
-        max_length=5000,
+        max_length=1000,
     )
     gebruiker = forms.CharField(
         widget=forms.HiddenInput(),

@@ -157,7 +157,6 @@
                 </button>
             </div>
         </div>
-    </div>
     <template id="template_geselecteerd_taaktype">
         <li data-taken-aanmaken--manager-target="geselecteerdTaaktype">
             {# djlint:off #}
@@ -237,15 +236,16 @@
                         <h3>Afdeling(en)</h3>
                         <span data-afdelingen></span>
                     </div>
-                    <div>
-                        <h3>Opmerking</h3>
+                    <div class="taak-opmerking-wrapper">
+                        <h3>Opmerking <span class="taak-opmerking-title-note">(de opmerking wordt met de uitvoerder gedeeld)</span></h3>
                         <textarea name="form-0-bericht"
-                                  maxlength="5000"
+                                  maxlength="1000"
                                   rows="4"
                                   id="id_form-0-bericht"
-                                  data-action="taken-aanmaken--manager#taaktypeBerichtHandler"
+                                  class="taak-opmerking"
+                                  data-controller="characterCount"
+                                  data-action="taken-aanmaken--manager#taaktypeBerichtHandler characterCount#onChangeText"
                                   placeholder="Type om een bericht toe te voegen..."></textarea>
-                        <p class="help-text">De opmerking wordt met de uitvoerder gedeeld.</p>
                         <input type="hidden"
                                name="form-0-titel"
                                maxlength="200"
@@ -275,5 +275,6 @@
             </details>
         </li>
     </template>
+    </div>
 </template>
 </turbo-stream>

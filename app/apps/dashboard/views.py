@@ -547,6 +547,7 @@ class DashboardV2(PermissionRequiredMixin, FormView):
             url=melding_aangemaakt_per_buurt_aantallen_url,
             params={
                 "aangemaakt_op_gt": dt_past,
+                "openstaand": 'false',
             },
         ).get("results", [])
 

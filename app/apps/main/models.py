@@ -156,3 +156,30 @@ class TaaktypeCategorie(models.Model):
 
     def __str__(self):
         return self.naam
+
+
+class PendingBatch(BasisModel):
+    STATUS_STAGED = "staged"
+    STATUS_SENDING = "sending"
+    STATUS_SENT = "sent"
+    STATUS_CANCELLED = "cancelled"
+    STATUS_ERROR = "error"
+    STATUS_CHOICES = (
+        (STATUS_STAGED, "Staged"),
+        (STATUS_SENDING, "Bezig met versturen"),
+        (STATUS_SENT, "Verstuurd"),
+        (STATUS_CANCELLED, "Geannuleerd"),
+        (STATUS_ERROR, "Fout"),
+    )
+
+    batch_uuid = models.CharField(max_length=36, unique=True, db_index=True)
+    melding_uuid = models.CharField(max_length=36)  # alleen voor audit/log-context
+    celery_task_id = models.CharField(max_length=255, null=True, blank=True)
+    send_after = models.DateTimeField()
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default=STATUS_STAGED
+    )
+    taken = models.JSONField(default=list)
+
+    def __str__(self):
+        return f"PendingBatch {self.batch_uuid} ({self.status})"
