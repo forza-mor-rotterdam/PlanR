@@ -10,7 +10,6 @@ from apps.main.views import (
     TaakRTaaktypeView,
     TakenAanmakenStreamView,
     TakenAanmakenView,
-
     TakenAnnuleerView,
     TakenPauseView,
     TakenResumeView,
