@@ -638,11 +638,10 @@ class VernietigingslijstView(PermissionRequiredMixin, TemplateView):
         })
         envelope = MORCoreService().get_vernietigingslijst(query_string=query_string)
 
+        foutmelding = None
         if isinstance(envelope, dict) and envelope.get("error"):
-            messages.error(
-                self.request,
-                "Kon de vernietigingslijst niet ophalen.",
-            )
+            foutmelding = "Kon de vernietigingslijst niet ophalen."
+            messages.error(self.request, foutmelding)
             envelope = {
                 "count": 0,
                 "next": None,
@@ -652,6 +651,7 @@ class VernietigingslijstView(PermissionRequiredMixin, TemplateView):
 
         aantal = envelope.get("count", 0) or 0
         context.update({
+            "foutmelding": foutmelding,
             "resultaten": envelope.get("results", []) or [],
             "aantal": aantal,
             "huidige_pagina": huidige_pagina,

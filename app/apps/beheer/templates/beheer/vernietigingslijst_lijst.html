@@ -19,6 +19,9 @@
         </a>
     </div>
     <div class="container__flex"><h1>Vernietigingslijst</h1></div>
+    {% if foutmelding %}
+        <p class="alert alert--error" role="alert">{{ foutmelding }}</p>
+    {% endif %}
     <p>Aantal: {{ aantal }}</p>
 
     <table>

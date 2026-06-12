@@ -51,11 +51,12 @@ class AutomatRSettingsViewSetTests(TestCase):
         self.assertNotIn("omschrijving_id", variant)
 
     def test_list_query_count_is_bounded_independent_of_row_count(self):
-        # 3 rows, each referencing a mix of SEOs. The SEO fetch must be a
-        # single query across *all* rows.
         AutomatRSettings.objects.create(
             name="melding_afhandelen_door_taak",
-            settings=[{"omschrijving_id": self.seo_haven.id, "resolutie": "niet_opgelost"}],
+            settings=[
+                {"omschrijving_id": self.seo_haven.id, "resolutie": "niet_opgelost"},
+                {"omschrijving_id": self.seo_light.id, "resolutie": "opgelost"},
+            ],
         )
         AutomatRSettings.objects.create(
             name="taak_aanmaken_bij_onderwerp",
@@ -68,14 +69,7 @@ class AutomatRSettingsViewSetTests(TestCase):
                 }
             ],
         )
-        AutomatRSettings.objects.create(
-            name="melding_afhandelen_door_taak",
-            settings=[{"omschrijving_id": self.seo_light.id, "resolutie": "opgelost"}],
-        )
         url = reverse("v1:automatr-settings-list")
-        # LimitOffsetPagination issues COUNT(*) + SELECT, plus our one SEO fetch.
-        # Key property: 3 is independent of the number of rows — add more rows and
-        # it must stay 3.
         with self.assertNumQueries(3):
             response = self.client.get(url)
         self.assertEqual(response.status_code, 200)

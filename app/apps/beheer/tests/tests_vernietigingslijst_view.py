@@ -75,9 +75,11 @@ class VernietigingslijstViewTests(TestCase):
 
     @patch("apps.beheer.views.MORCoreService")
     def test_geen_toegang_zonder_permissie(self, mock_service_klasse):
+        # Een ingelogde gebruiker zonder recht krijgt 403 (PermissionDenied),
+        # net als alle andere beheer-views in deze app.
         self.client.force_login(self.gebruiker_zonder_recht)
         response = self.client.get(self.URL)
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 403)
         mock_service_klasse.return_value.get_vernietigingslijst.assert_not_called()
 
     # --- Happy path ---
