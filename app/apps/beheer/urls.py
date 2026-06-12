@@ -27,6 +27,7 @@ from apps.beheer.views import (
     StandaardExterneOmschrijvingLijstView,
     StandaardExterneOmschrijvingVerwijderenView,
     TaakopdrachtTaakAanmakenIssueLijstView,
+    VernietigingslijstView,
     beheer,
     dynamic_table,
 )
@@ -203,5 +204,10 @@ urlpatterns = [
         "taakopdrachten-taak-aanmaken-issues",
         TaakopdrachtTaakAanmakenIssueLijstView.as_view(),
         name="taakopdrachten_taak_aanmaken_issues",
+    ),
+    path(
+        "vernietigingslijst/",
+        VernietigingslijstView.as_view(),
+        name="vernietigingslijst_lijst",
     ),
 ]

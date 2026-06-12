@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load date_tags %}
+{% load vertaal from vertaal_tags %}
+{% load afhandelreden_titel from melding_tags %}
+{% block title %}
+    Vernietigingslijst | Beheer | PlanR
+{% endblock title %}
+{% block header %}
+    {% with pageTitle="Beheer" %}
+        {% include "snippets/pageheader.html" %}
+    {% endwith %}
+{% endblock header %}
+{% block body %}
+<turbo-frame id="beheer" data-turbo-action="advance">
+<div class="page__beheer">
+    <div>
+        <a href="{% url 'beheer' %}" class="link--back" data-turbo-frame="_top">
+            {% include "icons/arrow-short.svg" %}<span>Beheer</span>
+        </a>
+    </div>
+    <div class="container__flex"><h1>Vernietigingslijst</h1></div>
+    <p>Aantal: {{ aantal }}</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Meldingnummer</th>
+                <th>Aangemaakt op</th>
+                <th>Afgesloten op</th>
+                <th>Resolutie</th>
+                <th>Afhandelreden</th>
+                <th>Categorie selectielijst</th>
+                <th>Bewaartermijn</th>
+                <th>Signaal te vernietigen per</th>
+                <th>Signaal vernietigd op</th>
+                <th>Foto's te vernietigen per</th>
+                <th>Foto's vernietigd op</th>
+                <th>Contactgegevens te vernietigen per</th>
+                <th>Contactgegevens vernietigd op</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rij in resultaten %}
+            <tr>
+                <td>{{ rij.bron_signaal_id|default:"-" }}</td>
+                <td>{{ rij.aangemaakt_op|to_datetime|date:"d-m-Y" }}</td>
+                <td>{{ rij.afgesloten_op|to_datetime|date:"d-m-Y" }}</td>
+                <td>{{ rij.resolutie|vertaal|default:"-" }}</td>
+                <td>{{ rij.afhandelreden|afhandelreden_titel|default:"-" }}</td>
+                <td>{{ rij.categorie_selectielijst }}</td>
+                <td>{{ rij.bewaartermijn }}</td>
+                <td>{{ rij.signaal_te_vernietigen_per|to_datetime|date:"d-m-Y" }}</td>
+                <td>{{ rij.signaal_vernietigd_op|to_datetime|date:"d-m-Y"|default:"-" }}</td>
+                <td>{% if rij.heeft_fotos or rij.fotos_vernietigd_op %}{{ rij.fotos_te_vernietigen_per|to_datetime|date:"d-m-Y" }}{% else %}n.v.t.{% endif %}</td>
+                <td>{{ rij.fotos_vernietigd_op|to_datetime|date:"d-m-Y"|default:"-" }}</td>
+                <td>{% if rij.heeft_contactgegevens or rij.contactgegevens_vernietigd_op %}{{ rij.contactgegevens_te_vernietigen_per|to_datetime|date:"d-m-Y" }}{% else %}n.v.t.{% endif %}</td>
+                <td>{{ rij.contactgegevens_vernietigd_op|to_datetime|date:"d-m-Y"|default:"-" }}</td>
+            </tr>
+
+
+
+            {% empty %}
+            <tr><td colspan="13">Geen signalen om te vernietigen.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <nav class="pagination" aria-label="Paginering">
+        {% if heeft_vorige %}
+            <a href="?page={{ huidige_pagina|add:-1 }}"
+               class="btn btn-tertiary"
+               data-turbo-frame="beheer"><span>Vorige</span></a>
+        {% endif %}
+        <span>Pagina {{ huidige_pagina }} van {{ totaal_paginas }}</span>
+        {% if heeft_volgende %}
+            <a href="?page={{ huidige_pagina|add:1 }}"
+               class="btn btn-tertiary"
+               data-turbo-frame="beheer"><span>Volgende</span></a>
+        {% endif %}
+    </nav>
+</div>
+</turbo-frame>
+{% endblock body %}
